@@ -1,0 +1,3 @@
+model: openai/YOUR_EXISTING_MODEL_ID
+openai-api-base: http://127.0.0.1:18100/v1
+openai-api-key: local

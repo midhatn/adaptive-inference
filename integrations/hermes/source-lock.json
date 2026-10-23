@@ -1,0 +1,24 @@
+{
+  "base_revision": "2587d8231fc7e0f3e846acafa46eb5b67cdc70c8",
+  "excluded_reference_changes": [],
+  "expected_files": {
+    "agent/auxiliary_client.py": "0a34d080fb3ccd5c94a2436af2856340fe3ef128b3f45580679950f32bffc852",
+    "agent/chat_completion_helpers.py": "2eba14f8f85bf8a337b218ac14cbadbb86a4fc0839e816100d243d227980614b",
+    "agent/request_scheduling.py": "51d8326d4e434b70dc434a94fa828dadfe77601ba697b98aaef575a96d23b4d6",
+    "hermes_cli/config.py": "4fa608424941fdd624c7fc9f0e301952a03897beeea15657ec503e7bd00a2f3b",
+    "hermes_cli/config_providers.py": "43c60b936df556bfc315ee50e3e89ac092f1f322ef4dac70b699a5ab7cf943e0",
+    "tests/agent/test_request_scheduling.py": "a76fa1447c4c08d8e6a4d2fa3ccd3b8d60ae8e3dbb18658fc13847301fda6e05",
+    "website/docs/developer-guide/request-scheduling.md": "e43bc1ff0b71b385a8b9d3c00600e8986d5259435a8c6461f7808b0e18cef356"
+  },
+  "file_hash_scope": "canonical Git blob bytes with LF checkout; local Windows checkout line endings may differ",
+  "local_reference_revision": "eaa9b473e5fab3fa94258f17ed6941aabba73d2d",
+  "patches": [
+    {
+      "file": "patches/0001-host-request-intent.patch",
+      "sha256": "0cdf502d66aa23676b596fad75087be2df4ec591f21ed02661019035e8b2df81"
+    }
+  ],
+  "schema": 1,
+  "scope": "complete seven-file host intent change; no historical private hooks",
+  "upstream_url": "https://github.com/NousResearch/hermes-agent.git"
+}

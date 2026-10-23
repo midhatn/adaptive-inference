@@ -1,0 +1,7 @@
+{
+  "max_tokens": 10923,
+  "reasoning_effort": "high",
+  "reasoning_budget_tokens": 8192,
+  "experimental_speed_projection": false,
+  "strata_tune": {"pcie_frac": 0.37}
+}

@@ -1,0 +1,27 @@
+model:
+  provider: custom:adaptive
+  default: YOUR_EXISTING_MODEL_ID
+  base_url: http://127.0.0.1:18100/v1
+  api_mode: chat_completions
+providers:
+  adaptive:
+    api: http://127.0.0.1:18100/v1
+    api_key: local
+    models:
+      - YOUR_EXISTING_MODEL_ID
+  adaptive-background:
+    api: http://127.0.0.1:18100/background/v1
+    api_key: local
+    models:
+      - YOUR_EXISTING_MODEL_ID
+auxiliary:
+  compression:
+    provider: custom:adaptive-background
+    model: YOUR_EXISTING_MODEL_ID
+    base_url: http://127.0.0.1:18100/background/v1
+    api_key: local
+  title_generation:
+    provider: custom:adaptive-background
+    model: YOUR_EXISTING_MODEL_ID
+    base_url: http://127.0.0.1:18100/background/v1
+    api_key: local

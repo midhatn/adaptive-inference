@@ -1,0 +1,9 @@
+{
+  "model": "REPLACE_WITH_LOCAL_MODEL_NAME",
+  "messages": [{"role": "user", "content": "What is 19 times 23?"}],
+  "max_tokens": 10923,
+  "reasoning_budget_tokens": 8192,
+  "reasoning_effort": "high",
+  "experimental_speed_projection": false,
+  "stream": false
+}

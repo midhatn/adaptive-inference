@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=77,<83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adaptive-inference"
+version = "0.1.0"
+description = "Portable, feedback-driven inference scheduling for local engines and agents"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0 AND MIT"
+license-files = ["LICENSE", "NOTICE", "third_party/*/LICENSE", "third_party/*/NOTICE"]
+authors = [{name = "Midhat Nashar and contributors"}]
+dependencies = ["aiohttp==3.14.5", "psutil==7.2.2"]
+keywords = ["inference", "scheduling", "agents", "llama-cpp", "adaptive"]
+classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Operating System :: OS Independent"]
+
+[project.urls]
+Repository = "https://github.com/midhatn/adaptive-inference"
+Issues = "https://github.com/midhatn/adaptive-inference/issues"
+Documentation = "https://github.com/midhatn/adaptive-inference/tree/main/docs"
+
+[project.scripts]
+adaptive-inference = "adaptive_inference.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,19 @@
+# Route fragment, not a complete user profile or a qualified CLI launcher.
+# For the tagged legacy Strata backend. Configure gateway header policy
+# separately when connecting through the new generic gateway.
+model:
+  default: REPLACE_WITH_LOCAL_MODEL_NAME
+  provider: custom:adaptive-strata
+  context_length: 65536
+providers:
+  adaptive-strata:
+    api: http://127.0.0.1:18098/v1
+    default_model: REPLACE_WITH_LOCAL_MODEL_NAME
+    transport: chat_completions
+    request_scheduling:
+      enabled: true
+    extra_body:
+      max_tokens: 10923
+      reasoning_budget_tokens: 8192
+      reasoning_effort: high
+      experimental_speed_projection: false

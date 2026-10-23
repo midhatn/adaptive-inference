@@ -1,0 +1,18 @@
+{
+  "listen": {
+    "host": "127.0.0.1",
+    "port": 18100
+  },
+  "backend": {
+    "kind": "strata",
+    "base_url": "http://127.0.0.1:8080/v1",
+    "api_key_env": null
+  },
+  "scheduler": {
+    "max_pending": 16,
+    "queue_timeout_s": 300,
+    "normal_boost_s": 10,
+    "max_cost_delay_s": 30
+  },
+  "default_class": "normal"
+}

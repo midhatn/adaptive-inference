@@ -1,0 +1,24 @@
+Adaptive Inference
+Copyright 2026 Midhat Nashar and contributors
+
+Original project code is provided under Apache License 2.0.
+
+src/adaptive_inference/costs.py is derived from serve/request_costs.py in
+Niko1221/Strata, local revision c6b23493b01028a18a9eb685d0bb6435c6976316.
+Strata is Copyright (c) 2026 Niko1221 and the Strata contributors, MIT licensed.
+The original MIT license is retained in third_party/strata/LICENSE.
+
+The Peak EWMA update in that module is adapted from Twitter Finagle,
+revision 9cc08d15216497bb03a1cafda96b7266cfbbcff1, Apache License 2.0.
+Its source attribution, license and notice are in third_party/finagle/.
+
+The bounded arrival-offset scheduling design is informed by NVIDIA Dynamo;
+no Dynamo implementation is copied. See docs/research.md and REFERENCES.bib.
+
+Engine and agent names identify interoperability targets. Their respective
+projects do not sponsor or endorse this independent repository.
+Patch overlays retain the original upstream licenses and attribution.
+The optional Hermes overlays are derived from NousResearch/hermes-agent,
+Copyright (c) 2025 NousResearch, under the MIT license retained in
+integrations/hermes/licenses/UPSTREAM-LICENSE.txt. See that integration's NOTICE
+and source-lock.json for exact public base and overlay provenance.

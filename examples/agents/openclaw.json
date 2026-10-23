@@ -1,0 +1,20 @@
+{
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "adaptive": {
+        "baseUrl": "http://127.0.0.1:18100/v1",
+        "apiKey": "local",
+        "api": "openai-completions",
+        "models": [{"id": "YOUR_EXISTING_MODEL_ID", "name": "Existing local model"}]
+      },
+      "adaptive-background": {
+        "baseUrl": "http://127.0.0.1:18100/background/v1",
+        "apiKey": "local",
+        "api": "openai-completions",
+        "models": [{"id": "YOUR_EXISTING_MODEL_ID", "name": "Existing local model, background route"}]
+      }
+    }
+  },
+  "agents": {"defaults": {"model": {"primary": "adaptive/YOUR_EXISTING_MODEL_ID"}}}
+}

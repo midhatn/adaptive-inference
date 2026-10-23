@@ -1,0 +1,413 @@
+diff --git a/agent/auxiliary_client.py b/agent/auxiliary_client.py
+index d6520e26a2e5264ca6de09cb1956a5b81d4e5214..47b1010cc0f5667c64b64e2512b0f1549b549d56 100644
+--- a/agent/auxiliary_client.py
++++ b/agent/auxiliary_client.py
+@@ -6730,6 +6730,10 @@ def _build_call_kwargs(
+             kwargs["_reasoning_config"] = dict(reasoning_config)
+     # Conversation affinity (OpenCode relay, opt-in custom-provider header) — same key as the main
+     # turn so compression/title/vision calls stay on the conversation's warm backend.
++    from agent.request_scheduling import merge_request_scheduling
++    kwargs = merge_request_scheduling(
++        kwargs, provider=provider, model=model, base_url=effective_base, auxiliary_task=task,
++    )
+     from agent.opencode_affinity import merge_session_affinity_headers
+     return merge_session_affinity_headers(kwargs, provider, base_url, _runtime_main_value("session_id") or None)
+ 
+diff --git a/agent/chat_completion_helpers.py b/agent/chat_completion_helpers.py
+index 5c114ec4be899fed7c10c4d693af61ac4f92cdcb..29972dc1bf4bdbd2dcfeb1e507efec2dcb6bb435 100644
+--- a/agent/chat_completion_helpers.py
++++ b/agent/chat_completion_helpers.py
+@@ -1542,8 +1542,14 @@ def build_api_kwargs(agent, api_messages: list, tools_for_api: list | None = Non
+     anthropic_messages). No-op for every other provider.
+     """
+     from agent.opencode_affinity import merge_session_affinity_headers
++    from agent.request_scheduling import merge_request_scheduling
+ 
+     kwargs = _build_api_kwargs_for_mode(agent, api_messages, tools_for_api)
++    kwargs = merge_request_scheduling(
++        kwargs, provider=getattr(agent, "provider", ""), model=getattr(agent, "model", ""),
++        base_url=getattr(agent, "base_url", ""), platform=getattr(agent, "platform", None),
++        turn_origin=getattr(agent, "_turn_origin", None),
++    )
+     return merge_session_affinity_headers(
+         kwargs,
+         getattr(agent, "provider", None),
+diff --git a/agent/request_scheduling.py b/agent/request_scheduling.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..a57f75e7eb9fae4e4afb4278c4fb0f2a6b66097c
+--- /dev/null
++++ b/agent/request_scheduling.py
+@@ -0,0 +1,50 @@
++"""Host-declared self-demotion for an explicitly opted-in Strata route.
++
++This is pending-request intent, not authorization or resource admission. The
++request assemblers call it per destination; generated metadata never enters
++shared overrides or a fallback's source request.
++"""
++
++from __future__ import annotations
++
++from typing import Any
++
++
++def _route_enabled(provider: str, model: str, base_url: str) -> bool:
++    from agent.agent_init import _custom_provider_model_matches
++    from hermes_cli.config import load_config_readonly
++    from hermes_cli.config_providers import _entries_for_route
++
++    identity = str(provider or "").strip().lower()
++    if identity != "custom" and not identity.startswith("custom:"):
++        return False
++    key = identity.partition(":")[2]
++    matches = []
++    for entry in _entries_for_route(base_url, None, load_config_readonly()):
++        names = {str(entry.get(field) or "").strip().lower() for field in ("name", "provider_key")}
++        if key and key not in names:
++            continue
++        if _custom_provider_model_matches(model, entry):
++            matches.append(entry.get("request_scheduling") == {"enabled": True})
++    # A bare custom route shared by conflicting entries has no unambiguous opt-in.
++    return bool(matches) and all(matches)
++
++
++def merge_request_scheduling(
++    kwargs: dict[str, Any], *, provider: str, model: str, base_url: str,
++    platform: str | None = None, turn_origin: str | None = None,
++    auxiliary_task: str | None = None,
++) -> dict[str, Any]:
++    """Copy only a background request's body; normal and unbound paths are unchanged."""
++    background = (
++        platform in {"subagent", "cron"}
++        or turn_origin == "background_review"
++        or (isinstance(auxiliary_task, str) and bool(auxiliary_task.strip()))
++    )
++    if not background or not _route_enabled(provider, model, base_url):
++        return kwargs
++    body = kwargs.get("extra_body") or {}
++    current = body.get("strata_scheduling")
++    if "strata_scheduling" in body and current not in ({"class": "normal"}, {"class": "background"}):
++        raise ValueError("strata_scheduling must contain only class: normal or background")
++    return {**kwargs, "extra_body": {**body, "strata_scheduling": {"class": "background"}}}
+diff --git a/hermes_cli/config.py b/hermes_cli/config.py
+index 26e4ec7117312728e610e9313b7099e628580e24..983843b75a3010aa6409c682c32e12bd36d01a1b 100644
+--- a/hermes_cli/config.py
++++ b/hermes_cli/config.py
+@@ -1024,7 +1024,7 @@ _KNOWN_ROOT_KEYS = frozenset(DEFAULT_CONFIG.keys()) | _EXTRA_KNOWN_ROOT_KEYS
+ _VALID_CUSTOM_PROVIDER_FIELDS = {
+     "name", "base_url", "api_key", "api_mode", "model", "models",
+     "context_length", "rate_limit_delay", "extra_body",
+-    "ssl_ca_cert", "ssl_verify", "key_env", "catalog_provider"}
++    "ssl_ca_cert", "ssl_verify", "key_env", "catalog_provider", "request_scheduling"}
+ 
+ # Fields that look like they should be inside custom_providers, not at root
+ _CUSTOM_PROVIDER_LIKE_FIELDS = {"base_url", "api_key", "rate_limit_delay", "api_mode"}
+diff --git a/hermes_cli/config_providers.py b/hermes_cli/config_providers.py
+index f0d58254f661edcdbfa604b97bf7b921aac5522e..59fe73d25308a72957101d15a12b58ab2c2e0797 100644
+--- a/hermes_cli/config_providers.py
++++ b/hermes_cli/config_providers.py
+@@ -119,7 +119,7 @@ _KNOWN_PROVIDER_KEYS = {
+     "api_mode", "transport", "model", "default_model", "models", "models_discovered",
+     "context_length", "rate_limit_delay", "request_timeout_seconds", "stale_timeout_seconds",
+     "discover_models", "extra_body", "extra_headers", "capabilities", "ssl_ca_cert", "ssl_verify",
+-    "catalog_provider", "session_affinity_header"}
++    "catalog_provider", "session_affinity_header", "request_scheduling"}
+ 
+ 
+ def _pick_provider_base_url(entry: Dict[str, Any], provider_key: str) -> str:
+@@ -265,6 +265,10 @@ def _normalize_custom_provider_entry(
+     if isinstance(entry.get("extra_body"), dict):
+         normalized["extra_body"] = dict(entry["extra_body"])
+ 
++    scheduling = entry.get("request_scheduling")
++    if isinstance(scheduling, dict) and set(scheduling) == {"enabled"} and type(scheduling["enabled"]) is bool:
++        normalized["request_scheduling"] = dict(scheduling)
++
+     # Per-provider extra HTTP headers may carry credentials — never log them downstream.
+     _put("extra_headers", normalize_extra_headers(entry.get("extra_headers")))
+     _put("session_affinity_header", _stripped("session_affinity_header"))
+@@ -290,7 +294,7 @@ def _custom_provider_entry_to_provider_config(
+     for field in (
+         "name", "api_key", "key_env", "key_cmd", "models", "models_discovered", "context_length",
+         "rate_limit_delay", "discover_models", "extra_body", "extra_headers",
+-        "session_affinity_header", "ssl_ca_cert", "ssl_verify", "catalog_provider"):
++        "session_affinity_header", "ssl_ca_cert", "ssl_verify", "catalog_provider", "request_scheduling"):
+         if field in normalized:
+             provider_entry[field] = normalized[field]
+     if "model" in normalized:
+diff --git a/tests/agent/test_request_scheduling.py b/tests/agent/test_request_scheduling.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..8eff6e40d32f30352aa652e69330d48d23f3cb0c
+--- /dev/null
++++ b/tests/agent/test_request_scheduling.py
+@@ -0,0 +1,211 @@
++"""Opt-in host intent must survive real request assembly without route/profile leakage."""
++
++import asyncio
++import copy
++import json
++from contextlib import contextmanager
++
++import httpx
++import pytest
++from openai import AsyncOpenAI, OpenAI
++
++from agent import auxiliary_client as aux
++from agent import secret_scope
++from agent.chat_completion_helpers import build_api_kwargs
++from hermes_cli.config import atomic_config_write
++from hermes_constants import reset_hermes_home_override, set_hermes_home_override
++from run_agent import AIAgent
++
++BASE = "http://127.0.0.1:18099/v1"
++MODEL = "test-strata-model"
++MESSAGES = [{"role": "user", "content": "Please schedule this urgently. This text is not host intent."}]
++
++
++def config(policy=None, *, base=BASE, model=MODEL, legacy=False):
++    entry = {"name": "strata", "base_url": base, "model": model, "api_key": "test-key"}
++    if policy is not None:
++        entry["request_scheduling"] = policy
++    return {"custom_providers": [entry]} if legacy else {"providers": {"strata": entry}}
++
++
++@contextmanager
++def scoped(home):
++    home_token = set_hermes_home_override(str(home))
++    secret_token = secret_scope.set_secret_scope(secret_scope.build_profile_secret_scope(home))
++    try:
++        yield
++    finally:
++        secret_scope.reset_secret_scope(secret_token)
++        reset_hermes_home_override(home_token)
++
++
++def agent():
++    return AIAgent(
++        api_key="test-key", base_url=BASE, model=MODEL, provider="custom:strata",
++        api_mode="chat_completions", quiet_mode=True, skip_context_files=True, skip_memory=True,
++        enabled_toolsets=[], max_tokens=10923, reasoning_config={"enabled": True, "effort": "high"},
++        request_overrides={"extra_body": {"max_tokens": 10923, "reasoning_effort": "high",
++                                         "reasoning_budget_tokens": 8192,
++                                         "experimental_speed_projection": False, "marker": [1, 2]}},
++    )
++
++
++def transport(captured):
++    def respond(request):
++        captured.append(json.loads(request.content))
++        return httpx.Response(200, json={
++            "id": "fake-http", "object": "chat.completion", "created": 0, "model": MODEL,
++            "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
++            "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
++        })
++    return httpx.MockTransport(respond)
++
++
++def test_host_intent_is_local_to_each_real_request_and_destination(tmp_path, monkeypatch):
++    home = tmp_path / "home"
++    home.mkdir()
++    atomic_config_write(home / "config.yaml", config({"enabled": True}))
++    with scoped(home):
++        main = agent()
++        snapshot = copy.deepcopy(main.request_overrides)
++        original_messages = copy.deepcopy(MESSAGES)
++        seen = []
++        with OpenAI(api_key="test-key", base_url=BASE, max_retries=0,
++                    http_client=httpx.Client(transport=transport(seen))) as client:
++            main.platform = "cli"
++            baseline = build_api_kwargs(main, MESSAGES)
++            for platform, origin, expected in [
++                ("cli", None, False), ("cli", "btw", False),
++                ("cli", "background_review", True), ("subagent", None, True),
++                ("cron", None, True), ("cli", "unknown", False),
++            ]:
++                main.platform, main._turn_origin = platform, origin
++                main.parent_session_id = "not-an-intent"
++                kwargs = build_api_kwargs(main, MESSAGES)
++                client.chat.completions.create(**kwargs)
++                wire = seen[-1]
++                assert wire.get("strata_scheduling") == ({"class": "background"} if expected else None)
++                if expected:
++                    cleaned = copy.deepcopy(kwargs)
++                    cleaned["extra_body"].pop("strata_scheduling")
++                    assert cleaned == baseline
++                else:
++                    assert kwargs == baseline
++                assert wire["messages"] == MESSAGES
++                assert wire["max_tokens"] == 10923
++                assert wire["reasoning_budget_tokens"] == 8192
++                assert wire["reasoning_effort"] == "high"
++                assert wire["experimental_speed_projection"] is False
++            # A tool follow-up remains a normal user turn; no first-call-only flag is consulted.
++            main.platform, main._turn_origin = "cli", None
++            main._is_user_initiated_turn = False
++            followup = [*MESSAGES, {"role": "assistant", "tool_calls": [
++                {"id": "call-1", "type": "function", "function": {"name": "read_file", "arguments": "{}"}}]},
++                {"role": "tool", "tool_call_id": "call-1", "content": "read result"}]
++            client.chat.completions.create(**build_api_kwargs(main, followup))
++            assert "strata_scheduling" not in seen[-1]
++            assert seen[-1]["messages"] == followup
++            from tools.delegate_tool import _build_child_agent
++            child = _build_child_agent(0, "Return a number", None, [], None, 1, 1, main)
++            try:
++                client.chat.completions.create(**build_api_kwargs(child, MESSAGES))
++                assert seen[-1]["strata_scheduling"] == {"class": "background"}
++                assert seen[-1]["max_tokens"] == 10923
++                assert seen[-1]["reasoning_budget_tokens"] == 8192
++                assert seen[-1]["reasoning_effort"] == "high"
++                assert seen[-1]["experimental_speed_projection"] is False
++            finally:
++                child.close()
++        assert main.request_overrides == snapshot
++        assert MESSAGES == original_messages
++
++        # Native custom-provider auxiliaries deliberately omit max_tokens unless
++        # explicitly supplied in extra_body; keep that existing policy unchanged.
++        extra = {"max_tokens": 8192, "reasoning_budget_tokens": 1024, "marker": [1, 2]}
++        extra_snapshot = copy.deepcopy(extra)
++        common = dict(messages=MESSAGES, max_tokens=8192, extra_body=extra,
++                      reasoning_config={"enabled": True, "effort": "high"}, timeout=10)
++        # The actual public sync and async auxiliary entry points use the real SDK serializer.
++        with OpenAI(api_key="test-key", base_url=BASE, max_retries=0,
++                    http_client=httpx.Client(transport=transport(seen))) as client:
++            monkeypatch.setattr(aux, "_get_cached_client", lambda *_a, **_k: (client, MODEL))
++            aux.call_llm(task="title_generation", provider="custom:strata", model=MODEL, base_url=BASE, **common)
++            assert seen[-1]["strata_scheduling"] == {"class": "background"}
++            assert seen[-1]["max_tokens"] == 8192
++            assert seen[-1]["reasoning_budget_tokens"] == 1024
++
++        async def async_request():
++            async with AsyncOpenAI(api_key="test-key", base_url=BASE, max_retries=0,
++                                   http_client=httpx.AsyncClient(transport=transport(seen))) as client:
++                monkeypatch.setattr(aux, "_get_cached_client", lambda *_a, **_k: (client, MODEL))
++                await aux.async_call_llm(task="approval", provider="custom:strata", model=MODEL, base_url=BASE, **common)
++        asyncio.run(async_request())
++        assert seen[-1]["strata_scheduling"] == {"class": "background"}
++        assert extra == extra_snapshot
++        assert "strata_scheduling" not in aux._build_call_kwargs("custom:strata", MODEL, MESSAGES, base_url=BASE).get("extra_body", {})
++
++        # Use the production fallback assembler; the request's source extra body stays untagged.
++        fallback = dict(task="title_generation", messages=MESSAGES, tools=None, temperature=None,
++                        max_tokens=8192, effective_timeout=10, effective_extra_body=extra,
++                        reasoning_config=None, fallback_entry={}, task_config={}, apply_fast_lane=False)
++        for url, provider, model, expected in [
++            (BASE, "custom:strata", MODEL, True), (BASE + "/", "custom:strata", MODEL, True),
++            (BASE.replace("18099", "18100"), "custom:strata", MODEL, False),
++            (BASE + "/other", "custom:strata", MODEL, False), (BASE, "custom:other", MODEL, False),
++            (BASE, "openai", MODEL, False), (BASE, "custom:strata", "other-model", False),
++        ]:
++            result = aux._fallback_request_kwargs(aux._FallbackDestination(provider, url, "chat_completions", model), **fallback)
++            assert result.get("extra_body", {}).get("strata_scheduling") == ({"class": "background"} if expected else None)
++        assert extra == extra_snapshot
++        # Explicit normal may self-demote; background is never raised; malformed input is not laundered.
++        for value in ({"class": "normal"}, {"class": "background"}):
++            body = {"strata_scheduling": value}
++            got = aux._build_call_kwargs("custom:strata", MODEL, MESSAGES, base_url=BASE, task="title_generation", extra_body=body)
++            assert got["extra_body"]["strata_scheduling"] == {"class": "background"}
++            assert body == {"strata_scheduling": value}
++        for value in ({"class": "interactive"}, {"class": "normal", "priority": 10}, None):
++            with pytest.raises(ValueError, match="strata_scheduling"):
++                aux._build_call_kwargs("custom:strata", MODEL, MESSAGES, base_url=BASE, task="title_generation",
++                                       extra_body={"strata_scheduling": value})
++        main.close()
++
++
++def test_default_wire_identity_and_real_profile_switches(tmp_path):
++    a, b = tmp_path / "a", tmp_path / "a" / "profiles" / "B"
++    b.mkdir(parents=True)
++    atomic_config_write(a / "config.yaml", config({"enabled": True}))
++    atomic_config_write(b / "config.yaml", config({"enabled": False}, legacy=True))
++    was_multiplex = secret_scope.is_multiplex_active()
++    secret_scope.set_multiplex_active(True)
++    try:
++        for home, expected in ((a, True), (b, False), (a, True)):
++            with scoped(home):
++                main = agent()
++                main.platform = "subagent"
++                result = build_api_kwargs(main, MESSAGES)
++                assert result.get("extra_body", {}).get("strata_scheduling") == ({"class": "background"} if expected else None)
++                result = aux._build_call_kwargs("custom:strata", MODEL, MESSAGES, base_url=BASE, task="title_generation")
++                assert result.get("extra_body", {}).get("strata_scheduling") == ({"class": "background"} if expected else None)
++                main.close()
++    finally:
++        secret_scope.set_multiplex_active(was_multiplex)
++
++    # No policy, false and malformed settings produce the same serialized wire as ordinary requests.
++    bodies = []
++    for index, policy in enumerate((None, {"enabled": False}, {"enabled": "true"}, {"enabled": 1},
++                                    {"enabled": True, "priority": 9}, True)):
++        home = tmp_path / f"off-{index}"
++        home.mkdir()
++        atomic_config_write(home / "config.yaml", config(policy, legacy=index % 2 == 1))
++        with scoped(home):
++            main = agent()
++            main.platform = "subagent"
++            seen = []
++            with OpenAI(api_key="test-key", base_url=BASE, max_retries=0,
++                        http_client=httpx.Client(transport=transport(seen))) as client:
++                client.chat.completions.create(**build_api_kwargs(main, MESSAGES))
++                client.chat.completions.create(**aux._build_call_kwargs("custom:strata", MODEL, MESSAGES,
++                                                                      base_url=BASE, task="title_generation"))
++            bodies.append(seen)
++            main.close()
++    assert all(body == bodies[0] for body in bodies)
+diff --git a/website/docs/developer-guide/request-scheduling.md b/website/docs/developer-guide/request-scheduling.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..5caba811da1a52d47b6cad674047dc9559101024
+--- /dev/null
++++ b/website/docs/developer-guide/request-scheduling.md
+@@ -0,0 +1,54 @@
++---
++sidebar_label: Request scheduling intent
++---
++
++# Opt-in request scheduling intent
++
++For a custom Strata endpoint that supports `strata_scheduling`, a host can enable
++automatic self-demotion in its provider configuration:
++
++```yaml
++providers:
++  strata:
++    api: http://127.0.0.1:18097/v1
++    default_model: your-local-model
++    transport: chat_completions
++    request_scheduling:
++      enabled: true
++```
++
++The legacy `custom_providers` entry accepts the same field. The setting is absent
++and off by default; only an exact boolean `enabled`, with no additional policy
++keys, is accepted. It does not enable Strata's server-side queue. Provider name,
++resolved endpoint and model/catalog must match the configured entry. An ambiguous
++bare `custom` route with conflicting entries stays off. Configuration is read in
++the active profile on each request, without a separate global policy cache.
++
++Hermes derives intent from host facts, never from message text:
++
++| Origin | Automatic request class |
++| --- | --- |
++| User conversation, including tool-loop continuations | Default normal |
++| Host-created subagent or cron agent | Background |
++| Exact `background_review` turn origin | Background |
++| `/btw`, unknown fork origin, or parent session ID alone | Default normal |
++| Auxiliary call with a nonempty task identifier | Background |
++| Auxiliary call without a task identifier | Default normal |
++
++This initial opt-in also demotes foreground-dependent auxiliary tasks such as
++vision and compression. Enable it only when that policy fits the endpoint's
++queue. Classification neither authorizes a request nor reserves capacity, changes
++model quality, preempts running work, or bypasses a resource lease.
++
++The existing SDK serializes `extra_body.strata_scheduling` as the top-level
++`strata_scheduling: {class: background}` field. Generation is local to each
++assembled request; it never modifies parent overrides, shared config, prompts,
++or fallback source data. The fallback assembler checks the resolved destination
++again. A manually supplied background remains background. An explicit normal
++can self-demote under the opt-in; malformed existing scheduling metadata on a
++request being demoted raises `ValueError` before dispatch. Normal/off paths leave
++manual settings untouched, subject to the server's own validation.
++
++The integration is qualified here on Chat Completions using the real main and
++public sync/async auxiliary builders and actual SDK HTTP serialization. Other
++wire adapters and live priority improvement require their own acceptance tests.

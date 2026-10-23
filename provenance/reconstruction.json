@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "checked_date": "2026-10-24",
+  "scope": "fresh public-source reconstruction and CPU tests; no model or native build",
+  "integrations": {
+    "strata": {
+      "upstream_url": "https://github.com/Niko1221/Strata.git",
+      "base_revision": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
+      "local_reference_revision": "c6b23493b01028a18a9eb685d0bb6435c6976316",
+      "source_lock_sha256": "9947c1389daff230cf4d09916479546dd5e92854e4215628012581dbe45a34bd",
+      "patches": [
+        {
+          "file": "patches/0001-adaptive-runtime.patch",
+          "sha256": "dbc7e01100ccdeda88ff0f685e0f9b017994f52b16b57abf50ea8a74cae9a9cf"
+        },
+        {
+          "file": "patches/0002-windows-token-default-process-rights.patch",
+          "sha256": "8caccd2484f61d1f4dc96b082ad17fea8a1336d0543f150b64c0cdb3d6248299"
+        }
+      ],
+      "verified_changed_files": 88,
+      "reconstructed_git_tree": "f2d6e86a0d49aaae47308904a1d5d9ea46e3b9a8"
+    },
+    "hermes": {
+      "upstream_url": "https://github.com/NousResearch/hermes-agent.git",
+      "base_revision": "2587d8231fc7e0f3e846acafa46eb5b67cdc70c8",
+      "local_reference_revision": "eaa9b473e5fab3fa94258f17ed6941aabba73d2d",
+      "source_lock_sha256": "21f8644c16013091b06de66ed024dcd5a36c1c36ad70a334b254933d5856e666",
+      "patches": [
+        {
+          "file": "patches/0001-host-request-intent.patch",
+          "sha256": "0cdf502d66aa23676b596fad75087be2df4ec591f21ed02661019035e8b2df81"
+        }
+      ],
+      "verified_changed_files": 7,
+      "reconstructed_git_tree": "516c9e3a951d5ba5894c5933fda3b833209e5c47"
+    }
+  },
+  "CPU_checks": {
+    "strata": {
+      "tests": 54,
+      "passed": 54,
+      "seconds": 9.882,
+      "runtime": "Windows Python3.11.9"
+    },
+    "hermes": {
+      "tests": 2,
+      "passed": 2,
+      "seconds": 13.15,
+      "runtime": "Windows Python3.14.7"
+    },
+    "setup_admission": {
+      "tests": 4,
+      "passed": 4,
+      "seconds": 0.052
+    }
+  },
+  "ancestry": {
+    "strata_public_base": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
+    "native_qualified_common_ancestor": "a69684f1f2609da46c82f9719d5159f5f9b307dc",
+    "public_report_only_child": "b580e6270c0e8d2756b0ca9e15cbed4e57ba21ab",
+    "local_scheduler_path": [
+      "a31586cc81360d1e5275815d7e99f32832d465c5",
+      "9eff986f6d3179ef41cd53ea3a27d4b390c9e3c0",
+      "c6b23493b01028a18a9eb685d0bb6435c6976316"
+    ],
+    "public_report_child_is_local_scheduler_ancestor": false
+  },
+  "native_dependency": {
+    "upstream_url": "https://github.com/ggml-org/llama.cpp.git",
+    "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d"
+  },
+  "line_endings": "canonical Git blobs / LF, not raw Windows working-copy hashes",
+  "excluded": "private runs, native binaries, models, machine configs, old private Hermes plugin"
+}

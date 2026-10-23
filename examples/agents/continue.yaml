@@ -1,0 +1,18 @@
+name: Adaptive local gateway
+version: 1.0.0
+schema: v1
+models:
+  - name: Existing local model
+    provider: openai
+    model: YOUR_EXISTING_MODEL_ID
+    apiBase: http://127.0.0.1:18100/v1
+    apiKey: local
+    useResponsesApi: false
+    roles: [chat, edit, apply]
+  - name: Existing local model background
+    provider: openai
+    model: YOUR_EXISTING_MODEL_ID
+    apiBase: http://127.0.0.1:18100/background/v1
+    apiKey: local
+    useResponsesApi: false
+    roles: [chat]

@@ -1,0 +1,12 @@
+The Peak EWMA update in serve/request_costs.py is adapted from Twitter Finagle.
+Copyright 2017 Twitter Inc. Licensed under the Apache License, Version 2.0.
+
+Source revision: 9cc08d15216497bb03a1cafda96b7266cfbbcff1
+Source file: finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/PeakEwma.scala
+https://github.com/twitter/finagle
+
+Changes: a Python implementation of the spike-sensitive update is used for
+completed inference executions. It is bounded by request-context groups, a
+recent empirical p90, expiry, sample counts, and explicit cold fallback. It
+does not decay estimates to zero on reads or implement Finagle's endpoint
+selection, pending-request accounting, or network retry behavior.

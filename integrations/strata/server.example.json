@@ -1,0 +1,32 @@
+{
+  "exe": "REPLACE_WITH_BUILT_STRATA_EXECUTABLE",
+  "cwd": "REPLACE_WITH_RECONSTRUCTED_STRATA_SOURCE",
+  "host": "127.0.0.1",
+  "port": 18098,
+  "model_name": "REPLACE_WITH_LOCAL_MODEL_NAME",
+  "tokenizer": "REPLACE_WITH_LOCAL_TOKENIZER_DIRECTORY",
+  "args": [
+    "--pack", "REPLACE_WITH_LOCAL_COMPATIBLE_PACK",
+    "--native", "REPLACE_WITH_LOCAL_IQ3_S_GGUF_FIRST_SHARD",
+    "--ple-gguf", "REPLACE_WITH_LOCAL_IQ3_S_GGUF_SECOND_SHARD",
+    "--expert-cache", "272", "--prefill", "auto", "--spec", "2",
+    "--max-context", "65536", "--kv", "int8", "--mmap-experts",
+    "--kv-resident", "16384", "--vision", "--vram-reserve-mib", "448",
+    "--pool-workers", "7", "--resident-budget-gib", "REPLACE_WITH_SAFE_RESIDENT_GIB",
+    "--pcie-frac", "0.37", "--live-memory", "--ple-io", "direct",
+    "--live-prefill-min-retained", "0", "--suffix-draft", "0"
+  ],
+  "reasoning_effort": "high",
+  "reasoning_budget_tokens": 8192,
+  "sampling": {"temperature": 1.0, "top_p": 0.95, "top_k": 20, "min_p": 0.0, "presence_penalty": 1.5, "repetition_penalty": 1.0, "experimental_speed_projection": false},
+  "vision": {
+    "exe": "REPLACE_WITH_BUILT_STRATA_VISION_EXECUTABLE",
+    "model": "REPLACE_WITH_LOCAL_IQ3_S_GGUF_FIRST_SHARD",
+    "mmproj": "REPLACE_WITH_LOCAL_COMPATIBLE_BF16_MMPROJ",
+    "gpu": false, "threads": 8, "max_tokens": 1024
+  },
+  "api_monitor": false,
+  "memory_policy": {"enabled": true, "mode": "live", "min_ram_headroom_gib": 4, "overhead_ram_gib": 14},
+  "inference_scheduling": {"enabled": true, "normal_boost_seconds": 10, "max_pending": 4, "max_cost_delay_s": 30},
+  "max_queue": 4
+}

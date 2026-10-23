@@ -1,0 +1,7 @@
+This integration contains patches derived from Hermes Agent.
+Copyright (c) 2025 Nous Research. MIT License.
+The preserved upstream license is licenses/UPSTREAM-LICENSE.txt.
+
+The local overlay adds opt-in host-declared background request intent.
+It does not contain the historical private resource-feedback hooks or plugin
+and does not imply endorsement or acceptance by Nous Research.

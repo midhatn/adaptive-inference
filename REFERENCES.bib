@@ -1,0 +1,257 @@
+% Primary references used during implementation and evaluation.
+% Access checked 2026-10-24; revisions are inspected source identities, not performance claims.
+
+@misc{mars2026,
+  title = {{MARS: Efficient, Adaptive Co-Scheduling for Heterogeneous Agentic Systems}},
+  author = {Yifei Wang and Hancheng Ye and Yechen Xu and Cong Guo and Chiyue Wei and Qinsi Wang and Dongting Li and Tingjun Chen and Hai Helen Li and Danyang Zhuo and Yiran Chen},
+  year = {2026},
+  archivePrefix = {arXiv},
+  eprint = {2604.26963v2},
+  url = {https://arxiv.org/abs/2604.26963v2}
+}
+
+@misc{atsinfer2026,
+  title = {{Automated Tensor Scheduling for Hybrid CPU-GPU LLM Inference on Consumer Devices}},
+  author = {Yangyijian Liu and Hongyi Ye and Mingyang Li and Wu-jun Li},
+  year = {2026},
+  archivePrefix = {arXiv},
+  eprint = {2607.10183v2},
+  url = {https://arxiv.org/abs/2607.10183v2}
+}
+
+@misc{conserve2025,
+  title = {{ConServe: Fine-Grained GPU Harvesting for LLM Online and Offline Co-Serving}},
+  author = {Yifan Qiao and Shu Anzai and Shan Yu and Haoran Ma and Shuo Yang and Yang Wang and Miryung Kim and Yongji Wu and Yang Zhou and Jiarong Xing and Joseph E. Gonzalez and Ion Stoica and Harry Xu},
+  year = {2025},
+  archivePrefix = {arXiv},
+  eprint = {2410.01228v2},
+  url = {https://arxiv.org/abs/2410.01228v2}
+}
+
+@misc{agenticcpugpu2026,
+  title = {{Agentic CPU-GPU Scheduling for Heterogeneous AI Workloads}},
+  author = {Tianxi Lu and Sherief Reda},
+  year = {2026},
+  archivePrefix = {arXiv},
+  eprint = {2607.22242},
+  url = {https://arxiv.org/abs/2607.22242}
+}
+
+@misc{hpcevaluation2026,
+  title = {{Deep Reinforcement Learning for HPC Job Scheduling: A Statistical Evaluation}},
+  author = {Justin M. Cheney and Clement N. Nyirenda},
+  year = {2026},
+  archivePrefix = {arXiv},
+  eprint = {2610.21008},
+  url = {https://arxiv.org/abs/2610.21008}
+}
+
+@misc{jevbenchmark2026,
+  title = {{Evaluating and Benchmarking the System One Model Jev}},
+  author = {Tobias Deu{\ss}er and Lorenz Sparrenberg and Rafet Sifa},
+  year = {2026},
+  archivePrefix = {arXiv},
+  eprint = {2609.37647},
+  url = {https://arxiv.org/abs/2609.37647}
+}
+
+@inproceedings{jitserve2026,
+  title = {{JITServe: SLO-aware LLM Serving with Imprecise Request Information}},
+  author = {Wei Zhang and Zhiyu Wu and Yi Mu and Rui Ning and Banruo Liu and Nikhil Sarda and Myungjin Lee and Fan Lai},
+  booktitle = {23rd USENIX Symposium on Networked Systems Design and Implementation (NSDI 26)},
+  year = {2026},
+  publisher = {USENIX Association},
+  note = {arXiv:2504.20068v2; inspected artifact 84584a119b892cf90c65e2b3f5bac67250d39d27},
+  url = {https://www.usenix.org/conference/nsdi26/presentation/zhang-wei}
+}
+
+@inproceedings{agentix2026,
+  title = {{Agentix: An Efficient Serving Engine for LLM Agents as General Programs}},
+  author = {Michael Luo and Xiaoxiang Shi and Colin Cai and Tianjun Zhang and Justin Wong and Yichuan Wang and Chi Wang and Yanping Huang and Zhifeng Chen and Joseph E. Gonzalez and Ion Stoica},
+  booktitle = {23rd USENIX Symposium on Networked Systems Design and Implementation (NSDI 26)},
+  year = {2026},
+  publisher = {USENIX Association},
+  pages = {2443--2459},
+  url = {https://www.usenix.org/conference/nsdi26/presentation/luo}
+}
+
+@inproceedings{fastserve2026,
+  title = {{FastServe: Iteration-Level Preemptive Scheduling for Large Language Model Inference}},
+  author = {Bingyang Wu and Yinmin Zhong and Zili Zhang and Shengyu Liu and Fangyue Liu and Yuanhang Sun and Gang Huang and Xuanzhe Liu and Xin Jin},
+  booktitle = {23rd USENIX Symposium on Networked Systems Design and Implementation (NSDI 26)},
+  year = {2026},
+  publisher = {USENIX Association},
+  pages = {57--74},
+  url = {https://www.usenix.org/conference/nsdi26/presentation/wu-bingyang}
+}
+
+@inproceedings{policycache2026,
+  title = {{PolicyCache: Intra-flow Learning in Congestion Control}},
+  author = {Han Tian and Han Wang and Wenbo Li and Xudong Liao and Decang Sun and Wenxue Li and Donghui Chen and Bin Huang and Senbo Fu and Junxue Zhang and Dian Shen and Kai Chen},
+  booktitle = {23rd USENIX Symposium on Networked Systems Design and Implementation (NSDI 26)},
+  year = {2026},
+  publisher = {USENIX Association},
+  pages = {35--55},
+  url = {https://www.usenix.org/conference/nsdi26/presentation/tian}
+}
+
+@misc{strata,
+  title = {{Strata}},
+  author = {{Strata contributors}},
+  url = {https://github.com/Niko1221/Strata},
+  note = {Native inference and upstream lifecycle foundation; retain upstream licenses. Accessed 2026-10-24}
+}
+
+@misc{hermes,
+  title = {{Hermes Agent}},
+  author = {{Nous Research and Hermes contributors}},
+  url = {https://github.com/NousResearch/hermes-agent},
+  note = {Optional agent integration; MIT license. Accessed 2026-10-24}
+}
+
+@misc{finaglepeak,
+  title = {{Finagle Peak EWMA}},
+  author = {{Twitter Inc.}},
+  url = {https://github.com/twitter/finagle/blob/9cc08d15216497bb03a1cafda96b7266cfbbcff1/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/PeakEwma.scala},
+  note = {Apache-2.0; Copyright 2017 Twitter Inc.; commit 9cc08d15216497bb03a1cafda96b7266cfbbcff1; adapted update equation, retain NOTICE and LICENSE. Accessed 2026-10-24}
+}
+
+@misc{dynamopolicy,
+  title = {{Dynamo router policy queue}},
+  author = {{NVIDIA Corporation and Affiliates}},
+  url = {https://github.com/ai-dynamo/dynamo/blob/868de572ad9e10e2effb16bb0cff57f3973ca1e8/lib/kv-router/src/scheduling/policy_queue.rs},
+  note = {Apache-2.0; inspected commit 868de572ad9e10e2effb16bb0cff57f3973ca1e8; independently implemented queue principles, not a source port. Accessed 2026-10-24}
+}
+
+@misc{dynamopriority,
+  title = {{Dynamo Priority Scheduling}},
+  author = {{NVIDIA}},
+  url = {https://docs.nvidia.com/dynamo/agents/priority-scheduling},
+  note = {Official documentation. Accessed 2026-10-24}
+}
+
+@misc{dynamodrr,
+  title = {{Dynamo Deficit Round Robin Queue Scheduling}},
+  author = {{NVIDIA}},
+  url = {https://docs.dynamo.nvidia.com/dynamo/v1.3.0/components/router/deficit-round-robin-queue-scheduling},
+  note = {Version 1.3.0; future comparison, not the active policy. Accessed 2026-10-24}
+}
+
+@misc{dynamoadmission,
+  title = {{Dynamo Admission Control Architecture}},
+  author = {{NVIDIA}},
+  url = {https://docs.dynamo.nvidia.com/dynamo/dev/knowledge-base/concepts/fault-tolerance/admission-control-architecture},
+  note = {Development documentation; no installed runtime claim. Accessed 2026-10-24}
+}
+
+@misc{marsartifact,
+  title = {{MARS preview artifact}},
+  author = {{MARS contributors}},
+  url = {https://github.com/Afterglow231/MARS_preview/tree/7e649f33f40ceb5d977ea4b7c07538effdad88d7},
+  note = {Inspected commit 7e649f33f40ceb5d977ea4b7c07538effdad88d7; no framework port. Accessed 2026-10-24}
+}
+
+@misc{jitserveartifact,
+  title = {{JITServe artifact}},
+  author = {{UIUC MLSys and JITServe contributors}},
+  url = {https://github.com/UIUC-MLSys/JITServe/tree/84584a119b892cf90c65e2b3f5bac67250d39d27},
+  note = {Inspected commit 84584a119b892cf90c65e2b3f5bac67250d39d27; no predictor assets imported. Accessed 2026-10-24}
+}
+
+@misc{fastserveartifact,
+  title = {{FastServe implementation}},
+  author = {{FastServe contributors}},
+  url = {https://github.com/LLMServe/FastServe},
+  note = {Reference only; no copied implementation. Accessed 2026-10-24}
+}
+
+@misc{envoyconcurrency,
+  title = {{Adaptive Concurrency}},
+  author = {{Envoy contributors}},
+  url = {https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/adaptive_concurrency_filter},
+  note = {Official filter documentation. Accessed 2026-10-24}
+}
+
+@misc{netflixlimits,
+  title = {{concurrency-limits}},
+  author = {{Netflix contributors}},
+  url = {https://github.com/Netflix/concurrency-limits},
+  note = {Reference for latency feedback and bounded admission; not a dependency. Accessed 2026-10-24}
+}
+
+@misc{starpu,
+  title = {{StarPU features}},
+  author = {{StarPU contributors}},
+  url = {https://starpu.gitlabpages.inria.fr/features.html},
+  note = {Measured heterogeneous task costs; official project documentation. Accessed 2026-10-24}
+}
+
+@misc{tvmmetaschedule,
+  title = {{MetaSchedule: Search-Based Auto-Tuning}},
+  author = {{Apache TVM contributors}},
+  url = {https://tvm.apache.org/docs/deep_dive/tensor_ir/tutorials/meta_schedule.html},
+  note = {Official tutorial; no compiler dependency. Accessed 2026-10-24}
+}
+
+@misc{mabwiser,
+  title = {{MABWiser}},
+  author = {{Fidelity Investments and MABWiser contributors}},
+  url = {https://github.com/fidelity/mabwiser},
+  note = {Candidate contextual-bandit library; not installed or enabled. Accessed 2026-10-24}
+}
+
+@misc{mabwiserapi,
+  title = {{MABWiser Public API}},
+  author = {{MABWiser contributors}},
+  url = {https://fidelity.github.io/mabwiser/api.html},
+  note = {LinUCB, LinTS and online updates; reference only. Accessed 2026-10-24}
+}
+
+@misc{jevdocs,
+  title = {{Jev introduction}},
+  author = {{TypeSafe}},
+  url = {https://docs.typesafe.ai/introduction},
+  note = {Hosted structured-decision API; no service call in this evaluation. Accessed 2026-10-24}
+}
+
+@misc{layaruntime,
+  title = {{Receptron Laya Node/TypeScript runtime}},
+  author = {{Receptron contributors}},
+  url = {https://github.com/receptron/laya/tree/60d5ee6ef8e731646e8ca9ac0139d25fcf4fa295},
+  note = {MIT wrapper; inspected and evaluated revision 60d5ee6ef8e731646e8ca9ac0139d25fcf4fa295. Accessed 2026-10-24}
+}
+
+@misc{layaonnx,
+  title = {{Laya English ONNX export}},
+  author = {{Receptron and Convai Innovations}},
+  url = {https://huggingface.co/receptron/laya-onnx/tree/d42786bdff8a7550316339c5fbf8f46caa83ea1b},
+  note = {Evaluated bundle revision d42786bdff8a7550316339c5fbf8f46caa83ea1b; Apache-2.0 model weights; wrapper/export code MIT. Accessed 2026-10-24}
+}
+
+@misc{layatyped,
+  title = {{Laya typed-decisions checkpoint}},
+  author = {{Convai Innovations}},
+  url = {https://huggingface.co/convaiinnovations/laya-typed-decisions},
+  note = {Apache-2.0; distinct trained checkpoint, not the evaluated base English export. Accessed 2026-10-24}
+}
+
+@misc{hermes136671,
+  title = {{Compaction 2.0: selected original tool bodies and lean carry}},
+  author = {{100yenadmin and Hermes contributors}},
+  url = {https://github.com/NousResearch/hermes-agent/pull/136671},
+  note = {Inspected MIT source at 6fc8f700ed9876d4009ec9141d52950cc1a35432; narrow experimental reuse. Accessed 2026-10-24}
+}
+
+@misc{hermes117462,
+  title = {{Anchor ledger tool-call argument harvesting and budget starvation}},
+  author = {{Seldash and Hermes contributors}},
+  url = {https://github.com/NousResearch/hermes-agent/pull/117462},
+  note = {Inspected MIT source at cd3e50f0d67d22a99efead563070b819125365b2; narrow experimental reuse. Accessed 2026-10-24}
+}
+
+@misc{hermes137349,
+  title = {{Carry lean compaction summary sections across compactions}},
+  author = {{PRELVAS94 and Hermes contributors}},
+  url = {https://github.com/NousResearch/hermes-agent/pull/137349},
+  note = {Inspected MIT source at 1ca8ee5f1d29088d7d678871c78323f44f6b0a31; narrow experimental reuse. Accessed 2026-10-24}
+}
