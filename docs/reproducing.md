@@ -26,6 +26,8 @@ Two routes do not create two independent queues. Native servers can still receiv
 
 `scheduler` controls the pending bound, queue/capacity timeout and bounded class/cost offsets. `resources.min_available_ram_gib` enables a read-only host admission floor; default0 disables it. `limits` controls request/response size and upstream total/read timeouts. Defaults are documented by `Config` and are validated before serving.
 
+For sustained recovery after memory pressure, enable `resources.adaptive_headroom` with a positive floor. The [portable policy guide](portable-policies.md) includes a complete example, all defaults and `adaptive-inference budget` usage. Both mechanisms are optional and keep the caller's generation settings unchanged.
+
 `listen.api_key_env` enables gateway authentication and is required for a non-loopback listen address. A reverse proxy is needed for HTTPS deployment. This initial release is primarily a local deployment; it is not a multi-tenant service.
 
 Changing the backend/model/runtime requires restarting the gateway to avoid learning from stale runtime identity. An ambiguous upstream failure also requires checking the backend and restarting. No automatic retry or model reload is performed.

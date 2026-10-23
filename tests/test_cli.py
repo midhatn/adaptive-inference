@@ -119,6 +119,22 @@ class CLIProcessTests(unittest.IsolatedAsyncioTestCase):
                          {"strata", "llamacpp", "vllm", "sglang", "ollama", "lmstudio", "mlx_lm", "tgi"})
         self.assertTrue(all(isinstance(row["endpoints"], list) for row in profiles))
 
+    async def test_budget_command_has_actionable_exit_codes_and_preserves_ceiling(self):
+        for prompt, output, status, expected in ((6545, 4096, 'needs_compaction', 1),
+                                                  (3584, 4096, 'ready', 0),
+                                                  (0, 9000, 'no_room', 1)):
+            with self.subTest(status=status):
+                code, stdout, stderr = await self.command('budget', '--context-tokens', '8192',
+                        '--prompt-tokens', str(prompt), '--required-output-tokens', str(output))
+                self.assertEqual(code, expected, stderr)
+                plan = json.loads(stdout)
+                self.assertEqual(plan['status'], status)
+                self.assertEqual(plan['required_output_tokens'], output)
+        code, stdout, stderr = await self.command('budget', '--context-tokens', '8192',
+                '--prompt-tokens', '-1', '--required-output-tokens', '4096')
+        self.assertEqual(code, 2)
+        self.assertNotIn('Traceback', stderr)
+
     async def test_actual_demo_orders_equal_cost_requests_and_writes_receipt(self):
         target = self.directory / "demo.json"
         code, stdout, stderr = await self.command("demo", "--output", str(target))

@@ -1,0 +1,11 @@
+{
+  "listen": {"host": "127.0.0.1", "port": 18100},
+  "backend": {"kind": "llamacpp", "base_url": "http://127.0.0.1:8080/v1"},
+  "resources": {
+    "min_available_ram_gib": 4,
+    "adaptive_headroom": true,
+    "recovery_margin_gib": 1,
+    "recovery_seconds": 30,
+    "max_sample_age_s": 5
+  }
+}
