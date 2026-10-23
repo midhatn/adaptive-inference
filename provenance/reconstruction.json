@@ -7,7 +7,7 @@
       "upstream_url": "https://github.com/Niko1221/Strata.git",
       "base_revision": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
       "local_reference_revision": "c6b23493b01028a18a9eb685d0bb6435c6976316",
-      "source_lock_sha256": "9947c1389daff230cf4d09916479546dd5e92854e4215628012581dbe45a34bd",
+      "source_lock_sha256": "d2fd43eb296a3916b3cf6a18c45f3abc6b54df83b6bc28d2eb5ba2128d2f3509",
       "patches": [
         {
           "file": "patches/0001-adaptive-runtime.patch",
@@ -25,7 +25,7 @@
       "upstream_url": "https://github.com/NousResearch/hermes-agent.git",
       "base_revision": "2587d8231fc7e0f3e846acafa46eb5b67cdc70c8",
       "local_reference_revision": "eaa9b473e5fab3fa94258f17ed6941aabba73d2d",
-      "source_lock_sha256": "21f8644c16013091b06de66ed024dcd5a36c1c36ad70a334b254933d5856e666",
+      "source_lock_sha256": "e2a0ebc479a21853b2191906f295714c98ee7c2aa7ed4961e60a8c4cff27a06e",
       "patches": [
         {
           "file": "patches/0001-host-request-intent.patch",

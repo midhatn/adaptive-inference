@@ -1,6 +1,22 @@
 # Evidence and limits
 
-Three different things are tracked here: the new generic gateway, reconstruction of optional upstream integrations, and historical local model runs. A pass in one does not establish a pass in another. The gateway's own runnable tests and examples are documented by this repository's main README; the older model checks below did not execute that new gateway.
+Three different things are tracked here: the new generic gateway, reconstruction of optional upstream integrations, and historical local model runs. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
+
+## Portable gateway release acceptance
+
+At commit `e1d14978328d61267dcbda6fbaa55cdc882f3394`, all **45 gateway/profile/CLI tests plus 4 reconstruction-admission tests** passed in each of six GitHub CI jobs: Windows, Linux and macOS, with Python 3.11 and 3.12. Every job also ran the local HTTP demo, listed the eight engine profiles and built wheel/source distributions. [CI run and artifacts](https://github.com/midhatn/adaptive-inference/actions/runs/40038431587).
+
+A separate fresh, non-editable wheel installation outside the checkout passed the installed `profiles`, `demo` and `doctor` commands on Windows. Its eleven Python module files matched the source, required license notices were included, and the source distribution included the reconstruction helpers. The demo's backend is simulated; the HTTP transport, queue and feedback paths are real. The demo proves equal-cost normal/background ordering and one rejected result followed by a caller-validated correction.
+
+The same gateway source then completed **eight real Strata model requests**: four normal and four background. Full returned text was checked against the exact integer answer (`437` or `493`), all requests stopped naturally, and each class's fourth request used three earlier execution observations. The gateway ended with zero active/pending requests and no uncertain-completion state. The separately operated backend owner confirmed all six retained processes exited with server exit code zero. Exact source/model/settings, per-request timing, answers and counters are in the [sanitized receipt](../provenance/gateway-strata-2026-10-24.json); the [runnable check](../examples/validation/README.md) is included.
+
+This is serial arithmetic and feedback engagement on one Windows/Strata composition. It does not establish comparative speed, prediction accuracy, installed-agent tasks, native priority or tool leases. Gateway scheduling metadata is consumed at the gateway; both classes share its queue. The backend owner remains separately operated predecessor software.
+
+### Retained failure: idle backend reload
+
+The first gateway attempt timed out before any model answer. Strata had unloaded after 60 seconds of idle time. A subsequent status observation reported `reload_footprint_unavailable`: the recorded requirement was 55,901,364,224 bytes free physical RAM, versus 50,850,979,840 available. The nonstreaming reload-admission path can wait without sending HTTP bytes until the gateway's 120-second read timeout. Direct no-model HTTP probes and request framing checks succeeded. This diagnosis combines observed backend state and code inspection; the original waiting thread's stack was not captured.
+
+The accepted run started immediately after a fresh owned backend startup. It qualifies the ready-backend path, **not idle unload/reload recovery**. The gateway and old backend sources were unchanged between attempts. No generation was automatically retried; the operator restarted after inspecting the backend. Native lifecycle/admission coordination remains a tracked development stage in [PLAN.md](../PLAN.md).
 
 ## Fresh source reconstruction
 

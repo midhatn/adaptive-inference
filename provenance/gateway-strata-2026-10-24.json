@@ -1,0 +1,311 @@
+{
+  "schema": 1,
+  "date": "2026-10-24",
+  "gateway_commit": "e1d14978328d61267dcbda6fbaa55cdc882f3394",
+  "script_sha256": "a321bb611d09573269a0af303f1f9d9d130d66572a47778521d1bf40ecf0b336",
+  "scope": "Portable gateway against ready Strata backend; eight serial exact-integer arithmetic answers and timing feedback",
+  "passed": true,
+  "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+  "generation": {
+    "max_tokens": 10923,
+    "reasoning_effort": "high",
+    "reasoning_budget_tokens": 8192,
+    "experimental_speed_projection": false,
+    "strata_tune": {
+      "pcie_frac": 0.37
+    }
+  },
+  "backend_revision": "c6b23493-native744205e4-manifest19a85d39",
+  "native_sha256": "744205e4e024b5cbba19e4b560678ffe21e6899e59050929f7af51557f3c6198",
+  "manifest_sha256": "19a85d390981380b3ceeb021a885b25f415110174cedfb3dcdc0552cd0ab052b",
+  "backend_startup_cache_gib": 29.6875,
+  "requests": [
+    {
+      "class": "normal",
+      "repetition": 1,
+      "answer": "437",
+      "finish_reason": "stop",
+      "prediction": {
+        "estimate_s": null,
+        "samples": 0,
+        "reason": "cold",
+        "peak_s": null,
+        "p90_s": null,
+        "observed_range_s": null
+      },
+      "execution_s": 15.547000000020489,
+      "usage": {
+        "prompt_tokens": 68,
+        "completion_tokens": 52,
+        "total_tokens": 120,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "class": "normal",
+      "repetition": 2,
+      "answer": "437",
+      "finish_reason": "stop",
+      "prediction": {
+        "estimate_s": null,
+        "samples": 1,
+        "reason": "sparse",
+        "peak_s": 15.547000000020489,
+        "p90_s": 15.547000000020489,
+        "observed_range_s": [
+          15.547000000020489,
+          15.547000000020489
+        ]
+      },
+      "execution_s": 3.5320000000065193,
+      "usage": {
+        "prompt_tokens": 68,
+        "completion_tokens": 42,
+        "total_tokens": 110,
+        "prompt_tokens_details": {
+          "cached_tokens": 63
+        }
+      }
+    },
+    {
+      "class": "normal",
+      "repetition": 3,
+      "answer": "437",
+      "finish_reason": "stop",
+      "prediction": {
+        "estimate_s": null,
+        "samples": 2,
+        "reason": "sparse",
+        "peak_s": 14.860132148370761,
+        "p90_s": 15.547000000020489,
+        "observed_range_s": [
+          3.5320000000065193,
+          15.547000000020489
+        ]
+      },
+      "execution_s": 7.1560000000172295,
+      "usage": {
+        "prompt_tokens": 68,
+        "completion_tokens": 69,
+        "total_tokens": 137,
+        "prompt_tokens_details": {
+          "cached_tokens": 63
+        }
+      }
+    },
+    {
+      "class": "normal",
+      "repetition": 4,
+      "answer": "437",
+      "finish_reason": "stop",
+      "prediction": {
+        "estimate_s": 15.547000000020489,
+        "samples": 3,
+        "reason": "measured",
+        "peak_s": 13.993964918963478,
+        "p90_s": 15.547000000020489,
+        "observed_range_s": [
+          3.5320000000065193,
+          15.547000000020489
+        ]
+      },
+      "execution_s": 4.046999999962281,
+      "usage": {
+        "prompt_tokens": 68,
+        "completion_tokens": 47,
+        "total_tokens": 115,
+        "prompt_tokens_details": {
+          "cached_tokens": 63
+        }
+      }
+    },
+    {
+      "class": "background",
+      "repetition": 1,
+      "answer": "493",
+      "finish_reason": "stop",
+      "prediction": {
+        "estimate_s": null,
+        "samples": 0,
+        "reason": "cold",
+        "peak_s": null,
+        "p90_s": null,
+        "observed_range_s": null
+      },
+      "execution_s": 7.952999999979511,
+      "usage": {
+        "prompt_tokens": 68,
+        "completion_tokens": 52,
+        "total_tokens": 120,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "class": "background",
+      "repetition": 2,
+      "answer": "493",
+      "finish_reason": "stop",
+      "prediction": {
+        "estimate_s": null,
+        "samples": 1,
+        "reason": "sparse",
+        "peak_s": 7.952999999979511,
+        "p90_s": 7.952999999979511,
+        "observed_range_s": [
+          7.952999999979511,
+          7.952999999979511
+        ]
+      },
+      "execution_s": 3.7660000000032596,
+      "usage": {
+        "prompt_tokens": 68,
+        "completion_tokens": 49,
+        "total_tokens": 117,
+        "prompt_tokens_details": {
+          "cached_tokens": 63
+        }
+      }
+    },
+    {
+      "class": "background",
+      "repetition": 3,
+      "answer": "493",
+      "finish_reason": "stop",
+      "prediction": {
+        "estimate_s": null,
+        "samples": 2,
+        "reason": "sparse",
+        "peak_s": 7.698273747821402,
+        "p90_s": 7.952999999979511,
+        "observed_range_s": [
+          3.7660000000032596,
+          7.952999999979511
+        ]
+      },
+      "execution_s": 5.172000000020489,
+      "usage": {
+        "prompt_tokens": 68,
+        "completion_tokens": 61,
+        "total_tokens": 129,
+        "prompt_tokens_details": {
+          "cached_tokens": 63
+        }
+      }
+    },
+    {
+      "class": "background",
+      "repetition": 4,
+      "answer": "493",
+      "finish_reason": "stop",
+      "prediction": {
+        "estimate_s": 7.952999999979511,
+        "samples": 3,
+        "reason": "measured",
+        "peak_s": 7.489630645000027,
+        "p90_s": 7.952999999979511,
+        "observed_range_s": [
+          3.7660000000032596,
+          7.952999999979511
+        ]
+      },
+      "execution_s": 3.9060000000172295,
+      "usage": {
+        "prompt_tokens": 68,
+        "completion_tokens": 52,
+        "total_tokens": 120,
+        "prompt_tokens_details": {
+          "cached_tokens": 63
+        }
+      }
+    }
+  ],
+  "scheduler": {
+    "active": false,
+    "pending": 0,
+    "normal_pending": 0,
+    "background_pending": 0,
+    "completed": 8,
+    "cancelled": 0,
+    "rejected": 0,
+    "backend_completion_uncertain": false,
+    "closing": false,
+    "maximum_ordering_offset_s": 40,
+    "preemption": false,
+    "resource_reservation": false
+  },
+  "cost_model": {
+    "kind": "peak_ewma_empirical_p90",
+    "groups": 2,
+    "observations": 8,
+    "rejected": 0,
+    "evicted": 0,
+    "max_groups": 128,
+    "max_samples": 32,
+    "minimum_samples": 3,
+    "expires_after_s": 900.0,
+    "recovery_decay_s": 60.0
+  },
+  "backend_owner_cleanup": {
+    "confirmed": true,
+    "retained_processes": 6,
+    "confirmed_exits": 6,
+    "server_exit_code": 0
+  },
+  "observed_backend_headroom": {
+    "vram_free_mib": 1147.28515625,
+    "ram_free_gib": 9.844303131103516,
+    "commit_free_gib": 29.834732055664062
+  },
+  "ci": {
+    "conclusion": "success",
+    "head": "e1d14978328d61267dcbda6fbaa55cdc882f3394",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "portable (macos-latest, 3.11)",
+        "url": "https://github.com/midhatn/adaptive-inference/actions/runs/40038431587/job/120703509258"
+      },
+      {
+        "conclusion": "success",
+        "name": "portable (ubuntu-latest, 3.11)",
+        "url": "https://github.com/midhatn/adaptive-inference/actions/runs/40038431587/job/120703509331"
+      },
+      {
+        "conclusion": "success",
+        "name": "portable (windows-latest, 3.12)",
+        "url": "https://github.com/midhatn/adaptive-inference/actions/runs/40038431587/job/120703509373"
+      },
+      {
+        "conclusion": "success",
+        "name": "portable (ubuntu-latest, 3.12)",
+        "url": "https://github.com/midhatn/adaptive-inference/actions/runs/40038431587/job/120703509424"
+      },
+      {
+        "conclusion": "success",
+        "name": "portable (windows-latest, 3.11)",
+        "url": "https://github.com/midhatn/adaptive-inference/actions/runs/40038431587/job/120703509540"
+      },
+      {
+        "conclusion": "success",
+        "name": "portable (macos-latest, 3.12)",
+        "url": "https://github.com/midhatn/adaptive-inference/actions/runs/40038431587/job/120703509621"
+      }
+    ],
+    "url": "https://github.com/midhatn/adaptive-inference/actions/runs/40038431587"
+  },
+  "limitations": [
+    "Single Windows laptop, single Strata composition, serial arithmetic only.",
+    "Gateway classes share one queue; scheduling metadata is consumed by the gateway, so this does not test native priority or leases.",
+    "No comparative speedup, installed-agent workflow, GPU preemption or broad task-quality claim.",
+    "Backend owner is separately operated predecessor software, not part of the portable gateway.",
+    "First attempt timed out after backend idle unload; observed reload footprint admission was unavailable. Immediate ready-backend run passed; idle reload remains unqualified.",
+    "Model assets were metadata-bound, not fully content-hashed."
+  ],
+  "source_byte_note": "Runtime files match the named Git commit; costs.py was executed with CRLF rather than canonical LF line endings. No other content difference.",
+  "executed_costs_sha256": "1044472fc303568ebc5c0410a6430dd50c3b60a8da07d147a04f93e535e45881",
+  "canonical_costs_sha256": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1"
+}

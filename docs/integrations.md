@@ -129,6 +129,13 @@ and example configuration consistency. The Python examples are checked for
 syntax and import-time inactivity. These are **protocol/configuration tests**;
 they do not install or run the ten applications or eight model backends.
 
+The initial release also passed eight real, exact-answer arithmetic requests
+through this gateway's **Strata** profile, including learned timing for both
+request classes. The other seven profiles have protocol/configuration checks;
+the ten application recipes have not all been exercised in installed apps.
+See the [evidence ledger](evidence.md) for source identities, six-platform/version
+CI jobs, the ready-backend model run and the retained idle-reload failure.
+
 Earlier local project evidence includes actual Strata-native generations and
 actual Hermes parent/child calls through the preceding direct Strata design.
 That is evidence for those exact prior builds and tasks, not verification of

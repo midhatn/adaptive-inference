@@ -72,9 +72,9 @@ Generic profiles do not resize a backend's cache, move KV state or preempt nativ
 
 ## Evidence and lineage
 
-The initial Windows/Strata predecessor completed eight correct real-model requests, learned timing estimates for both request classes, and released all eight owned processes. Its startup planner selected a 23.9375 GiB cache from measured capacity. That is historical evidence for that exact composition; it is not a speed claim for this gateway or every listed backend.
+The portable gateway passed 45 software tests plus four reconstruction checks across six CI jobs (Windows, Linux and macOS; Python 3.11 and 3.12), a fresh wheel installation, and eight real Strata model requests. Both request classes engaged learned timing feedback, all eight integer answers matched exactly, and the separately operated backend shut down cleanly. This is functional evidence for that composition, not a speed claim or qualification of every listed application.
 
-Portable gateway tests and CI are the acceptance evidence for this repository. Read the [evidence ledger](docs/evidence.md) before comparing results. The [upstream PR index](docs/upstream-prs.md) records earlier work, including closed and superseded PRs.
+The [evidence ledger](docs/evidence.md) links exact CI and model receipts, retains the failed idle-reload attempt, and separates predecessor results from the new gateway. The [upstream PR index](docs/upstream-prs.md) records earlier work, including closed and superseded PRs.
 
 ## Research and contributions
 
