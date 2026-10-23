@@ -4,6 +4,8 @@
   "platform": "Windows",
   "python": "3.11.9",
   "baseline_commit": "20f5067f63c61943c51c63a64347ff36f32ed631",
+  "tested_commit": "93ef6a835cace084873b4ea92853e576b3d3af47",
+  "ci_run": "https://github.com/midhatn/adaptive-inference/actions/runs/40041803104",
   "software_tests": {
     "passed": 75,
     "command": "python -m unittest discover -s tests -v"
@@ -18,9 +20,9 @@
     "command": "python -m build"
   },
   "upstream_tests_separate": {
-    "passed": 126,
-    "skipped": 2,
-    "inventory": "medking82-review.json"
+    "passed": 90,
+    "skipped": 1,
+    "scope": "81 pinned upstream memory-policy tests and 9 context-budget tests; one installed-Harness check skipped. Separate from package acceptance."
   },
   "scope": "CPU policies, subprocess CLI and loopback HTTP with synthetic headroom and simulated backend; no new model, GPU, installed-agent or foreground-interference acceptance.",
   "retained_failure": "Independent fault injection found HTTP pool cleanup skipped after an unexpected sampler error; fixed with finally-close and covered by a regression.",

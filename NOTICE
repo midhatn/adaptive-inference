@@ -18,7 +18,7 @@ apps/host/tests/harness-budget.test.mjs at that revision.
 These sources are MIT licensed, Copyright (c) 2026 Niko1221 and the Strata
 contributors; retain third_party/strata/LICENSE. The portable dispatch gate and
 unchanged-output compaction planner are adaptations, not the upstream native or
-App implementations. See docs/medking82-review.md for contribution lineage.
+App implementations. Exact reused source references are in REFERENCES.bib.
 
 The Peak EWMA update in src/adaptive_inference/costs.py is adapted from Twitter Finagle,
 revision 9cc08d15216497bb03a1cafda96b7266cfbbcff1, Apache License 2.0.

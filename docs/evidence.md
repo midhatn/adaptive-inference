@@ -18,13 +18,13 @@ The first gateway attempt timed out before any model answer. Strata had unloaded
 
 The accepted run started immediately after a fresh owned backend startup. It qualifies the ready-backend path, **not idle unload/reload recovery**. The gateway and old backend sources were unchanged between attempts. No generation was automatically retried; the operator restarted after inspecting the backend. Native lifecycle/admission coordination remains a tracked development stage in [PLAN.md](../PLAN.md).
 
-## Portable resource/context additions and contribution review
+## Portable resource/context additions
 
 The post-v0.1.0 source adds the optional sustained-headroom admission policy and explicit context-budget planner. On Windows/Python 3.11, **75 software tests and 4 reconstruction-admission tests passed**, and wheel/source distributions built successfully. The [source-bound acceptance receipt](../provenance/portable-policies-acceptance.json) identifies the tested runtime and test files. This run includes the earlier 45 software tests; the 75 is a total, not 75 additional tests.
 
 New checks exercise fresh/replayed/stale/invalid observations, pressure and recovery, idle sampling, unchanged HTTP request fields, active-owner preservation, cleanup, exact moving-margin compaction targets and CLI exit codes. A fault-injection review found that an already-failed sampler could prevent HTTP-client cleanup; the connection pool now closes in a `finally` block and the regression passes. The software checks use simulated headroom and loopback HTTP fixtures, not new GPU/model or foreground-interference measurements.
 
-Separately, the [contributor audit](medking82-review.md) ran **126 unique pinned-upstream CPU/fixture tests with 2 explicit skips**. Source extraction setup failures were retained and fixed by restoring exact dependency bytes. Those counts do not qualify installed Strata companions, a real compiler/video handoff or the complete [always-on goal](always-on-controller.md).
+Source review also ran the pinned upstream policy and context-budget fixtures for the reused mechanisms. Source extraction setup failures were resolved by restoring exact dependency bytes. These checks do not qualify installed Strata companions, a real compiler/video handoff or the complete [always-on goal](always-on-controller.md).
 
 ## Fresh source reconstruction
 
