@@ -1,0 +1,86 @@
+{
+  "release": "v0.1.0",
+  "verified_at": "2026-10-23T23:21:16.759199+00:00",
+  "comments": [
+    {
+      "repo": "Niko1221/Strata",
+      "number": 1493,
+      "url": "https://github.com/Niko1221/Strata/pull/1493#issuecomment-6376674000",
+      "id": 6376674000,
+      "author": "midhatn",
+      "verified_body": true,
+      "body": "The ongoing work now has a canonical home in [Adaptive Inference](https://github.com/midhatn/adaptive-inference), with a [release](https://github.com/midhatn/adaptive-inference/releases/tag/v0.1.0) and an [evidence ledger](https://github.com/midhatn/adaptive-inference/blob/v0.1.0/docs/evidence.md). New development lives there as a portable gateway with bounded pending-request scheduling, timing feedback and optional engine/agent integrations.\n\nThe new gateway itself passed 45 software tests plus four reconstruction checks in all six Windows/Linux/macOS Python 3.11/3.12 CI jobs. A separate ready-backend run through the gateway completed eight exact-integer model answers and engaged learned timing for both gateway classes. The separately operated backend exited all six retained processes. Its first attempt after idle unload timed out under `reload_footprint_unavailable`; that failure and the narrower ready-backend acceptance are retained. Gateway classes are consumed by its own queue, so this is not a new native-priority or lease test.\n\nThe repository also publishes hash-checked source overlays for the earlier Strata/Hermes composition. Its predecessor Windows owner completed eight correct real-model requests, used three prior timing samples on each class's fourth request, and confirmed all eight retained process handles exited. Those historical results did not execute the new gateway; that owner itself is not shipped by these overlays.\n\nThis PR remains the scoped upstream memory-relief/lease draft. The downstream scheduler, #3399 composition, source-reconstruction checks and new gateway must retain their own identities and validation. This update does not mark the draft ready, transfer downstream results to its public head, or claim a speedup or universal memory safety.\n\n<!-- adaptive-inference-publication-v0.1.0 -->\n",
+      "body_sha256": "bdd299d57bda9f0bbb3a0a49b05f9a39720052e99b995835cdd7dbc1684f922a"
+    },
+    {
+      "repo": "Niko1221/Strata",
+      "number": 3399,
+      "url": "https://github.com/Niko1221/Strata/pull/3399#issuecomment-6376677330",
+      "id": 6376677330,
+      "author": "midhatn",
+      "verified_body": true,
+      "body": "A downstream use of this correction is documented in [Adaptive Inference](https://github.com/midhatn/adaptive-inference), with a [release](https://github.com/midhatn/adaptive-inference/releases/tag/v0.1.0) and [scoped evidence](https://github.com/midhatn/adaptive-inference/blob/v0.1.0/docs/evidence.md). Its optional Strata source integration reconstructs the exact token-default process-rights overlay separately from the runtime patch and preserves the explicit file-ACL helpers.\n\nThe earlier Windows owner used that composition for eight real model requests and normal shutdown, confirming all eight retained process handles exited. This is historical integration evidence; the owner is not included in the new portable gateway or its source overlays. Fresh reconstruction checks verify the exported source, not a new full-suite or exact-head qualification of this PR. The focused baseline comparison already recorded here remains this PR's validation evidence.\n\n<!-- adaptive-inference-publication-v0.1.0 -->\n",
+      "body_sha256": "d96ad4a2c078ab3165a1a50ce33a84db9128eecd124b50d72ae11480fc89b3ab"
+    },
+    {
+      "repo": "Niko1221/Strata",
+      "number": 102,
+      "url": "https://github.com/Niko1221/Strata/pull/102#issuecomment-6376677655",
+      "id": 6376677655,
+      "author": "midhatn",
+      "verified_body": true,
+      "body": "For continuity, the ongoing work is now collected in [Adaptive Inference](https://github.com/midhatn/adaptive-inference), with a [release](https://github.com/midhatn/adaptive-inference/releases/tag/v0.1.0) and [evidence ledger](https://github.com/midhatn/adaptive-inference/blob/v0.1.0/docs/evidence.md). The new portable gateway leaves native allocation and backend lifetime to the backend/operator; optional pinned source overlays preserve the Strata integration.\n\nThe predecessor Windows owner reused Strata's existing unloaded-model memory policy before eager startup, selected a smaller cache from fresh RAM/commit observations, and completed eight requests plus normal owned shutdown. That historical supervisor is not shipped here, and its result does not qualify arbitrary foreground coexistence.\n\nThis preserves the decision to keep authoritative admission inside the server. The PR remains closed by agreement; the project pointer is not a request to revive the old external launcher guard.\n\n<!-- adaptive-inference-publication-v0.1.0 -->\n",
+      "body_sha256": "1872055809c6f2c32ef6d03d9ad0b0d9bbfc6f1205eb5f1e5e102b486771d838"
+    },
+    {
+      "repo": "Niko1221/Strata",
+      "number": 1324,
+      "url": "https://github.com/Niko1221/Strata/pull/1324#issuecomment-6376677920",
+      "id": 6376677920,
+      "author": "midhatn",
+      "verified_body": true,
+      "body": "Related work now has a canonical home in [Adaptive Inference](https://github.com/midhatn/adaptive-inference), with a [release](https://github.com/midhatn/adaptive-inference/releases/tag/v0.1.0) and [source-specific evidence](https://github.com/midhatn/adaptive-inference/blob/v0.1.0/docs/evidence.md). The new portable gateway schedules pending HTTP requests and learns completed execution costs; it does not resize an arbitrary backend's resident cache.\n\nThe earlier Windows supervisor used fresh physical/commit observations and the existing memory policy to choose a smaller startup cache. That supervisor and its successful model run are historical evidence, not functionality supplied by the new gateway or a retest of this PR's elastic LRU implementation.\n\nAll those hardware measurements still come from the same laptop. The independent second-Windows-PC decode-median requirement remains outstanding, and no sustained decode benefit is claimed. The project registry preserves this thread and its qualification limit.\n\n<!-- adaptive-inference-publication-v0.1.0 -->\n",
+      "body_sha256": "4dfa23f26083f86cb697d0579c600b8a80d6149500108e2c86305394487f8a2e"
+    },
+    {
+      "repo": "NousResearch/hermes-agent",
+      "number": 136266,
+      "url": "https://github.com/NousResearch/hermes-agent/pull/136266#issuecomment-6376678193",
+      "id": 6376678193,
+      "author": "midhatn",
+      "verified_body": true,
+      "body": "The project applying this evidence discipline now has a canonical home in [Adaptive Inference](https://github.com/midhatn/adaptive-inference), with a [release](https://github.com/midhatn/adaptive-inference/releases/tag/v0.1.0) and [evidence ledger](https://github.com/midhatn/adaptive-inference/blob/v0.1.0/docs/evidence.md). Its portable gateway includes caller-driven acceptance feedback while keeping original task intent and bounded correction attempts explicit.\n\nThe ledger keeps the predecessor's failed startup/grouping attempts and subsequent eight-answer/cleanup acceptance separate from fresh source reconstruction and portable gateway checks. A successful process exit is not treated as answer correctness, and historical hardware results are not presented as new gateway or installed-agent qualification.\n\nThis is downstream consumer context for the distinction this draft documents, not a new live or full-suite qualification of this PR head. Existing exact-head regression results remain unchanged.\n\n<!-- adaptive-inference-publication-v0.1.0 -->\n",
+      "body_sha256": "66cc2f10d88b9345ad0857e82eef3a9d667a71b9188c91fe216838713363efd5"
+    },
+    {
+      "repo": "NousResearch/hermes-agent",
+      "number": 135418,
+      "url": "https://github.com/NousResearch/hermes-agent/pull/135418#issuecomment-6376678528",
+      "id": 6376678528,
+      "author": "midhatn",
+      "verified_body": true,
+      "body": "The ongoing resource-aware consumer work now lives in [Adaptive Inference](https://github.com/midhatn/adaptive-inference), with a [release](https://github.com/midhatn/adaptive-inference/releases/tag/v0.1.0) and [evidence ledger](https://github.com/midhatn/adaptive-inference/blob/v0.1.0/docs/evidence.md). The portable gateway handles scheduling/timing feedback; optional source integrations preserve Strata runtime controls and Hermes host intent. This PR remains the generic post-approval extension seam.\n\nThe earlier Windows-owner and Hermes parent/child results are historical, separately scoped evidence. The owner and private resource-feedback hooks are not included in the published source overlays, and no new model-selected protected-tool test of this PR is claimed. Existing broker/compiler component checks and exact-head regressions remain the evidence for their recorded scopes. Gateway routing does not grant tool authority.\n\n<!-- adaptive-inference-publication-v0.1.0 -->\n",
+      "body_sha256": "7b4e0ef76993131808c5e5ff389466e43b72118047d85b72e798092ffc7a0c35"
+    },
+    {
+      "repo": "NousResearch/hermes-agent",
+      "number": 127268,
+      "url": "https://github.com/NousResearch/hermes-agent/pull/127268#issuecomment-6376678898",
+      "id": 6376678898,
+      "author": "midhatn",
+      "verified_body": true,
+      "body": "The downstream work now has a canonical home in [Adaptive Inference](https://github.com/midhatn/adaptive-inference), including a [release](https://github.com/midhatn/adaptive-inference/releases/tag/v0.1.0), [evidence ledger](https://github.com/midhatn/adaptive-inference/blob/v0.1.0/docs/evidence.md), portable gateway and optional hash-checked Hermes host-intent overlay.\n\nThe separately recorded predecessor run exercised actual Hermes parent/production-child requests against its direct Strata composition. The new gateway's client recipes and reconstruction checks do not turn that historical result into a new installed-Hermes or full PR-head qualification. The generic Hermes route configuration also does not automatically reclassify delegated children; the optional intent overlay has its own explicit opt-in contract.\n\nThis PR's sequential execution policy and requirement that schema and dispatch share the same session snapshot remain unchanged. No performance improvement is inferred.\n\n<!-- adaptive-inference-publication-v0.1.0 -->\n",
+      "body_sha256": "e81aca2150a498117ecb9f1f47f484e3f26c3da4cbb13981023c30ec2511bb4a"
+    },
+    {
+      "repo": "jeremiahritchey/Strata",
+      "number": 1,
+      "url": "https://github.com/jeremiahritchey/Strata/pull/1#issuecomment-6376679235",
+      "id": 6376679235,
+      "author": "midhatn",
+      "verified_body": true,
+      "body": "The related admission work is now indexed in [Adaptive Inference](https://github.com/midhatn/adaptive-inference), with a [release](https://github.com/midhatn/adaptive-inference/releases/tag/v0.1.0) and [scoped evidence](https://github.com/midhatn/adaptive-inference/blob/v0.1.0/docs/evidence.md). The current portable gateway and the reconstructed Strata source integration are documented separately from the earlier Windows owner.\n\nThat predecessor required fresh physical RAM/commit/GPU observations before selecting its startup cache and completed eight model requests plus owned shutdown. The historical owner is not shipped by the new source overlays. The generic gateway's optional observed resource floor does not reserve memory or establish native GPU capacity. This is downstream context for requiring known capacity, not a new qualification of this PR head.\n\n<!-- adaptive-inference-publication-v0.1.0 -->\n",
+      "body_sha256": "c1ba021e1a13aa40df5ee99d55a867f236d00bc9131e9e533896cd24f1c51099"
+    }
+  ]
+}

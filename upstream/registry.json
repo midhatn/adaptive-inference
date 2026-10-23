@@ -34,12 +34,16 @@
       "relation": "direct-engine",
       "last_checked": "2026-10-23T22:51:07Z",
       "head_sha": "b580e6270c0e8d2756b0ca9e15cbed4e57ba21ab",
-      "update_needed": true,
+      "update_needed": false,
       "update_reason": "The upstream memory-relief/resource-lease draft underlies the predecessor. Publish the canonical portable-gateway/source-overlay pointer; historical owner results do not qualify the new gateway or this PR head.",
       "last_activity": "2026-10-23T21:17:47Z",
       "discussion_records_checked": 13,
       "last_discussion_url": "https://github.com/Niko1221/Strata/pull/1493#issuecomment-6374921715",
-      "publication_status": "draft-prepared-not-posted"
+      "publication_status": "posted-and-readback-verified",
+      "publication_comment_url": "https://github.com/Niko1221/Strata/pull/1493#issuecomment-6376674000",
+      "publication_verified_at": "2026-10-23T23:21:16.759199+00:00",
+      "publication_release": "v0.1.0",
+      "publication_body_sha256": "bdd299d57bda9f0bbb3a0a49b05f9a39720052e99b995835cdd7dbc1684f922a"
     },
     {
       "repo": "Niko1221/Strata",
@@ -53,12 +57,16 @@
       "relation": "direct-ownership-fix",
       "last_checked": "2026-10-23T22:51:07Z",
       "head_sha": "841476cdcc566dcdcf750121ef235749efc06375",
-      "update_needed": true,
+      "update_needed": false,
       "update_reason": "The exact token-default correction is exported as a separate source overlay. Historical predecessor cleanup supports its use case; the new gateway does not ship that Windows owner.",
       "last_activity": "2026-10-23T20:27:31Z",
       "discussion_records_checked": 1,
       "last_discussion_url": "https://github.com/Niko1221/Strata/pull/3399#issuecomment-6374069253",
-      "publication_status": "draft-prepared-not-posted"
+      "publication_status": "posted-and-readback-verified",
+      "publication_comment_url": "https://github.com/Niko1221/Strata/pull/3399#issuecomment-6376677330",
+      "publication_verified_at": "2026-10-23T23:21:16.759199+00:00",
+      "publication_release": "v0.1.0",
+      "publication_body_sha256": "d96ad4a2c078ab3165a1a50ce33a84db9128eecd124b50d72ae11480fc89b3ab"
     },
     {
       "repo": "Niko1221/Strata",
@@ -129,12 +137,16 @@
       "relation": "historical-admission-design",
       "last_checked": "2026-10-23T22:51:07Z",
       "head_sha": "f19efea8ff8d1a54dfba2d38fc7eac693780f945",
-      "update_needed": true,
+      "update_needed": false,
       "update_reason": "Closed by agreement in favor of in-server admission. The predecessor owner reused existing memory policy; the new gateway leaves native allocation and lifecycle to the backend/operator. No reopening requested.",
       "last_activity": "2026-09-29T22:54:00Z",
       "discussion_records_checked": 3,
       "last_discussion_url": "https://github.com/Niko1221/Strata/pull/102#issuecomment-5900606321",
-      "publication_status": "draft-prepared-not-posted"
+      "publication_status": "posted-and-readback-verified",
+      "publication_comment_url": "https://github.com/Niko1221/Strata/pull/102#issuecomment-6376677655",
+      "publication_verified_at": "2026-10-23T23:21:16.759199+00:00",
+      "publication_release": "v0.1.0",
+      "publication_body_sha256": "1872055809c6f2c32ef6d03d9ad0b0d9bbfc6f1205eb5f1e5e102b486771d838"
     },
     {
       "repo": "Niko1221/Strata",
@@ -224,12 +236,16 @@
       "relation": "related-memory-research",
       "last_checked": "2026-10-23T22:51:07Z",
       "head_sha": "4b28dc13954d5d1f8136f22ac81449cc78c93a55",
-      "update_needed": true,
+      "update_needed": false,
       "update_reason": "The second-Windows-PC decode-median gate remains outstanding. Predecessor startup-cache observations are historical, separate from this elastic LRU implementation; the gateway does not resize native caches.",
       "last_activity": "2026-10-20T22:31:53Z",
       "discussion_records_checked": 5,
       "last_discussion_url": "https://github.com/Niko1221/Strata/pull/1324#issuecomment-6303247430",
-      "publication_status": "draft-prepared-not-posted"
+      "publication_status": "posted-and-readback-verified",
+      "publication_comment_url": "https://github.com/Niko1221/Strata/pull/1324#issuecomment-6376677920",
+      "publication_verified_at": "2026-10-23T23:21:16.759199+00:00",
+      "publication_release": "v0.1.0",
+      "publication_body_sha256": "4dfa23f26083f86cb697d0579c600b8a80d6149500108e2c86305394487f8a2e"
     },
     {
       "repo": "Niko1221/Strata",
@@ -585,12 +601,16 @@
       "relation": "direct-agent-evidence",
       "last_checked": "2026-10-23T22:51:07Z",
       "head_sha": "ee5c40a8310d82ecb3f53479900dba281d82ff81",
-      "update_needed": true,
+      "update_needed": false,
       "update_reason": "The canonical project separates completed processes from caller-verified correctness. Historical predecessor answers/cleanup, source reconstruction and new gateway checks retain separate scopes.",
       "last_activity": "2026-10-23T20:27:40Z",
       "discussion_records_checked": 3,
       "last_discussion_url": "https://github.com/NousResearch/hermes-agent/pull/136266#issuecomment-6374071722",
-      "publication_status": "draft-prepared-not-posted"
+      "publication_status": "posted-and-readback-verified",
+      "publication_comment_url": "https://github.com/NousResearch/hermes-agent/pull/136266#issuecomment-6376678193",
+      "publication_verified_at": "2026-10-23T23:21:16.759199+00:00",
+      "publication_release": "v0.1.0",
+      "publication_body_sha256": "66cc2f10d88b9345ad0857e82eef3a9d667a71b9188c91fe216838713363efd5"
     },
     {
       "repo": "NousResearch/hermes-agent",
@@ -604,12 +624,16 @@
       "relation": "direct-agent-resource-seam",
       "last_checked": "2026-10-23T22:51:07Z",
       "head_sha": "cbc3592df81c26f8c47795bb51e701410b4906cb",
-      "update_needed": true,
+      "update_needed": false,
       "update_reason": "Generic post-approval middleware remains an upstream extension seam. Published overlays omit the old private resource-feedback hooks; neither historical ordinary parent/child calls nor gateway routing qualifies protected-tool dispatch.",
       "last_activity": "2026-10-23T20:27:38Z",
       "discussion_records_checked": 10,
       "last_discussion_url": "https://github.com/NousResearch/hermes-agent/pull/135418#issuecomment-6374071072",
-      "publication_status": "draft-prepared-not-posted"
+      "publication_status": "posted-and-readback-verified",
+      "publication_comment_url": "https://github.com/NousResearch/hermes-agent/pull/135418#issuecomment-6376678528",
+      "publication_verified_at": "2026-10-23T23:21:16.759199+00:00",
+      "publication_release": "v0.1.0",
+      "publication_body_sha256": "7b4e0ef76993131808c5e5ff389466e43b72118047d85b72e798092ffc7a0c35"
     },
     {
       "repo": "NousResearch/hermes-agent",
@@ -623,12 +647,16 @@
       "relation": "direct-agent-sequential",
       "last_checked": "2026-10-23T22:51:07Z",
       "head_sha": "14165dca630b393620b022a9fb528d05f2a6913f",
-      "update_needed": true,
+      "update_needed": false,
       "update_reason": "The canonical gateway and optional host-intent source overlay are separately reproducible. Historical parent/production-child results remain predecessor evidence, not new installed-Hermes or full PR-head qualification.",
       "last_activity": "2026-10-23T20:27:35Z",
       "discussion_records_checked": 5,
       "last_discussion_url": "https://github.com/NousResearch/hermes-agent/pull/127268#issuecomment-6374070464",
-      "publication_status": "draft-prepared-not-posted"
+      "publication_status": "posted-and-readback-verified",
+      "publication_comment_url": "https://github.com/NousResearch/hermes-agent/pull/127268#issuecomment-6376678898",
+      "publication_verified_at": "2026-10-23T23:21:16.759199+00:00",
+      "publication_release": "v0.1.0",
+      "publication_body_sha256": "e81aca2150a498117ecb9f1f47f484e3f26c3da4cbb13981023c30ec2511bb4a"
     },
     {
       "repo": "NousResearch/hermes-agent",
@@ -718,12 +746,16 @@
       "relation": "related-admission-test",
       "last_checked": "2026-10-23T22:51:07Z",
       "head_sha": "32cf918da35333b155af5b912981e05b4156ab33",
-      "update_needed": true,
+      "update_needed": false,
       "update_reason": "Authored known-physical-memory regression. Historical owner capacity observations remain separate from the generic gateway observed-resource floor and from this PR head.",
       "last_activity": "2026-09-29T02:29:52Z",
       "discussion_records_checked": 0,
       "last_discussion_url": null,
-      "publication_status": "draft-prepared-not-posted"
+      "publication_status": "posted-and-readback-verified",
+      "publication_comment_url": "https://github.com/jeremiahritchey/Strata/pull/1#issuecomment-6376679235",
+      "publication_verified_at": "2026-10-23T23:21:16.759199+00:00",
+      "publication_release": "v0.1.0",
+      "publication_body_sha256": "c1ba021e1a13aa40df5ee99d55a867f236d00bc9131e9e533896cd24f1c51099"
     },
     {
       "repo": "Niko1221/Strata",
@@ -839,5 +871,12 @@
       "last_discussion_url": "https://github.com/NousResearch/hermes-agent/pull/137349#issuecomment-6133625474",
       "publication_status": "no-public-update-planned"
     }
-  ]
+  ],
+  "publication": {
+    "repository": "https://github.com/midhatn/adaptive-inference",
+    "release": "https://github.com/midhatn/adaptive-inference/releases/tag/v0.1.0",
+    "verified_at": "2026-10-23T23:21:16.759199+00:00",
+    "related_comments_posted": 8,
+    "bodies": "publication-v0.1.0.json"
+  }
 }
