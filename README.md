@@ -91,6 +91,6 @@ The [evidence ledger](docs/evidence.md) links exact CI and model receipts, retai
 
 Research references and reuse decisions live in [docs/research.md](docs/research.md) and [REFERENCES.bib](REFERENCES.bib). [NOTICE](NOTICE) and `third_party/` preserve source attribution and licenses. [CITATION.cff](CITATION.cff) describes how to cite this project.
 
-[medking82's contribution review](docs/medking82-review.md) records the source and commit history behind reused resource and context mechanisms, including his earlier merged profile-identity fix. See [portable policy setup](docs/portable-policies.md) for the new optional memory gate and context-budget command. These additions are available from the current source checkout; the immutable v0.1.0 release predates them.
+See [portable policy setup](docs/portable-policies.md) for the optional memory gate and context-budget command, with citations beside each reused mechanism. These additions are available from the current source checkout; the immutable v0.1.0 release predates them.
 
 Contributions should start here, pass the common contract tests, and then be offered upstream as narrowly scoped adapters or fixes. See [CONTRIBUTING.md](CONTRIBUTING.md). The goal is useful task completion with feedback and recoverable mistakes; optimizations follow measured need.

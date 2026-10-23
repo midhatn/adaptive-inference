@@ -62,4 +62,4 @@ Shared hardware cannot provide unlimited work with literally zero contention. Th
 
 The next milestone is one reproducible always-on workflow on a supported machine, including foreground interruption, a resource-intensive tool, verified return to inference, and a completed artifact. Broader engine and agent ports should reuse that contract.
 
-[medking82's contribution review](medking82-review.md) identifies resource-observation, identity, context and ownership mechanisms that support this direction. [Research references](research.md), [REFERENCES.bib](../REFERENCES.bib) and [NOTICE](../NOTICE) preserve the sources behind the design and reused code.
+[Research references](research.md), [REFERENCES.bib](../REFERENCES.bib) and [NOTICE](../NOTICE) preserve the sources behind the design and reused code. Attribution belongs with the mechanism that uses it.
