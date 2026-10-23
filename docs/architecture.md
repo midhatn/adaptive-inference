@@ -22,6 +22,10 @@ Queue waits and upstream operations have configurable deadlines. Response/reques
 
 The generic optional resource floor reads physical RAM and, on Windows, commit availability before dispatch. It does not reserve capacity, observe every backend's GPU use, or resize native caches. Existing backend allocation checks remain authoritative.
 
+The optional `adaptive_headroom` mode adds hysteresis: low or unavailable headroom closes new admission immediately; reopening requires advancing fresh samples above the floor plus a recovery margin for a configured duration. A gateway-owned sampler runs during idle and active periods, with another fresh read before dispatch. Replayed samples cannot earn recovery time, and gaps reset it. The sampler is canceled and awaited on cleanup. This is a read-only admission policy; it never interrupts an active owner or reports an applied native allocation. It adapts medking82's pinned [PR #726](https://github.com/Niko1221/Strata/pull/726) observation rules. [Configuration and examples](portable-policies.md).
+
+`plan_context_budget` is an explicit host-side planner based on the safety margin in medking82's [PR #3684](https://github.com/Niko1221/Strata/pull/3684). The caller supplies the effective context and full rendered prompt count. The planner preserves total output, reasoning and answer reservations, reports infeasibility, and calculates a compaction target. It is never an implicit gateway payload transformation. The host must perform compaction, recount, and retain the engine's own admission check.
+
 Pinned Strata overlays preserve richer memory, parking and lease controls. The historical Windows owner applied fresh startup cache planning and owned process cleanup; it is documented as a platform-specific predecessor, not silently claimed by the portable proxy. Native ports require explicit capability adapters and proof of acknowledgement/ownership before exposing equivalent operations.
 
 ## Outcome-based correction

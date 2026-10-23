@@ -7,7 +7,7 @@
     "hermes_authored_or_involved": 7,
     "related_fork_authored": 1,
     "additional_cited_references": 6,
-    "total": 43,
+    "total": 44,
     "comfyui_authored_or_involved": 0,
     "comfyui_search_repositories": [
       "Comfy-Org/ComfyUI",
@@ -19,7 +19,8 @@
       "involves:midhatn -author:midhatn"
     ],
     "method": "GitHub connector search_prs, then get_pr_info and complete fetch_pr_comments discussion timelines for every listed PR",
-    "limitations": "Accessible repository search, not a claim of visibility into inaccessible/private repositories. Closed and ported are not treated as merged; no CI or exact-head rerun is inferred."
+    "limitations": "Accessible repository search, not a claim of visibility into inaccessible/private repositories. Closed and ported are not treated as merged; no CI or exact-head rerun is inferred.",
+    "received_fork_contributions": 1
   },
   "pull_requests": [
     {
@@ -870,6 +871,26 @@
       "discussion_records_checked": 1,
       "last_discussion_url": "https://github.com/NousResearch/hermes-agent/pull/137349#issuecomment-6133625474",
       "publication_status": "no-public-update-planned"
+    },
+    {
+      "repo": "midhatn/Strata",
+      "number": 1,
+      "url": "https://github.com/midhatn/Strata/pull/1",
+      "title": "Fix parking identity across learned expert profile saves",
+      "state": "merged",
+      "draft": false,
+      "author": "medking82",
+      "participation": "received-contribution",
+      "relation": "preserved-profile-identity-fix",
+      "last_checked": "2026-10-23T23:45:52.548100+00:00",
+      "head_sha": "829f7cb6e16eb2e2ef924667f5c288ff4e990adb",
+      "merge_commit_sha": "8689b1eefedcd5eadea1c819bd4554c88c7e238f",
+      "merged_at": "2026-10-11T15:41:28Z",
+      "update_needed": false,
+      "update_reason": "Merged contribution is already retained in the pinned Strata overlay; collaboration invitation posted in the canonical repository.",
+      "discussion_records_checked": 1,
+      "last_discussion_url": "https://github.com/midhatn/Strata/pull/1#issuecomment-6109310453",
+      "collaboration_url": "https://github.com/midhatn/adaptive-inference/issues/1"
     }
   ],
   "publication": {
@@ -878,5 +899,7 @@
     "verified_at": "2026-10-23T23:21:16.759199+00:00",
     "related_comments_posted": 8,
     "bodies": "publication-v0.1.0.json"
-  }
+  },
+  "supplemental_contribution_check": "2026-10-23T23:45:52.548100+00:00",
+  "contributor_inventory": "provenance/medking82-review.json"
 }

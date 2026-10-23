@@ -1,0 +1,50 @@
+{
+  "schema": "adaptive-inference.portable-policies-acceptance.v1",
+  "date": "2026-10-24",
+  "platform": "Windows",
+  "python": "3.11.9",
+  "baseline_commit": "20f5067f63c61943c51c63a64347ff36f32ed631",
+  "software_tests": {
+    "passed": 75,
+    "command": "python -m unittest discover -s tests -v"
+  },
+  "reconstruction_admission_tests": {
+    "passed": 4,
+    "command": "python -m unittest discover -s provenance -p test_*.py -v"
+  },
+  "build": {
+    "wheel": true,
+    "sdist": true,
+    "command": "python -m build"
+  },
+  "upstream_tests_separate": {
+    "passed": 126,
+    "skipped": 2,
+    "inventory": "medking82-review.json"
+  },
+  "scope": "CPU policies, subprocess CLI and loopback HTTP with synthetic headroom and simulated backend; no new model, GPU, installed-agent or foreground-interference acceptance.",
+  "retained_failure": "Independent fault injection found HTTP pool cleanup skipped after an unexpected sampler error; fixed with finally-close and covered by a regression.",
+  "source_sha256": {
+    "src/adaptive_inference/__init__.py": "f7226f37a73cc3c134481927a515f0e69d6a26f81f48796d7410a44508ae52e7",
+    "src/adaptive_inference/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/adaptive_inference/adapters.py": "378ee41c1bdbb16873e31752d704e656a70009862d41b36898d30f57a36dfc58",
+    "src/adaptive_inference/cli.py": "5d794164a43230951a57c18d7b45d04d12f3e8974871648fd09ec04502f448bb",
+    "src/adaptive_inference/config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+    "src/adaptive_inference/context_budget.py": "cd16b57bc105a179e94dbc9e429c02b901bcd8602cfaf04c9cf8776e9d799ccf",
+    "src/adaptive_inference/costs.py": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1",
+    "src/adaptive_inference/demo.py": "5a3b1ff743bee6c45f85df8417bedbc18657f2c59f3e894f1f3298a480b22b93",
+    "src/adaptive_inference/feedback.py": "af2695981c1b1331b80d4660fc57029fe28c540c3600ed270f9acbcc331de60b",
+    "src/adaptive_inference/gateway.py": "9dcc3c4adf9e0506693f1d897c0076524f31f0e5ca8dddd7758ccabe1b815f36",
+    "src/adaptive_inference/resource_policy.py": "53768d4b95b589bb76d1788a9ccceefe60c05b332b1b1f43dece6b04bfec212a",
+    "src/adaptive_inference/resources.py": "a72e376e4dfc6021e61756812f93275af20c28ec1438faf5eb381a491d3db4d9",
+    "src/adaptive_inference/scheduler.py": "149baadc08496329fc2dc426cc4e57bc625f85cfea343925feb03d3bbf567061",
+    "tests/test_adapters.py": "4c86020e8e2812b5c0a02a776ec95768ce5ad7716a098be874009d4f21fe68fb",
+    "tests/test_cli.py": "9eec049b6c80ad8bfe4a33d94433bcf8acb30a4b2b9b999adb7cf101a45e89e5",
+    "tests/test_context_budget.py": "5242798b1c523f9a348d20d7d48819c0052c8ef47d1199f19642ffb6e3ddb60c",
+    "tests/test_core.py": "713380f1f3338bcd5ccc2284c318cbd810f65af82f4c35166ed8ac57362258c0",
+    "tests/test_gateway_regressions.py": "99ce58efd78800e491543f7e6128a24e6a6f35a159b82ec7ebe174623f8b72f3",
+    "tests/test_resource_integration.py": "0f174caa6fe5be9c11658114f45abb7c36922c598c4e5e14f1f3845246f6d85a",
+    "tests/test_resource_policy.py": "7bb50909c986ed959d35cf46ee3efafa0d8f21eb718349e63825d43279cdb9b3"
+  },
+  "hash_encoding": "Git-canonical LF bytes"
+}

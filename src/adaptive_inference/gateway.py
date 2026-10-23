@@ -7,6 +7,8 @@ finishes. An ambiguous timeout/failure blocks further dispatch until restart.
 from __future__ import annotations
 
 from collections import deque
+import asyncio
+from contextlib import suppress
 import hashlib
 import hmac
 import json
@@ -153,24 +155,36 @@ class Gateway:
         self.profile = engine_profile(config.backend_kind)
         self.api_key = env_secret(config.api_key_env)
         self.backend_key = env_secret(config.backend_key_env)
-        self.capacity = capacity if capacity is not None else Capacity(config.min_available_ram_gib)
+        self.capacity = capacity if capacity is not None else Capacity(config.min_available_ram_gib,
+                         adaptive=config.adaptive_headroom, recovery_margin_gib=config.recovery_margin_gib,
+                         recovery_seconds=config.recovery_seconds, max_sample_age_s=config.max_sample_age_s)
         self.scheduler = Scheduler(config, self.capacity)
         self.costs = RequestCostModel()
         self.history = deque(maxlen=128)
         self.instance = uuid.uuid4().hex
         self.client = None
+        self.capacity_task = None
 
     async def startup(self, app):
         self.client = ClientSession(timeout=ClientTimeout(total=self.config.upstream_timeout_s,
                                     connect=10, sock_read=self.config.upstream_read_timeout_s),
                                     auto_decompress=False, trust_env=False)
+        if isinstance(self.capacity, Capacity) and self.capacity.policy is not None:
+            self.capacity_task = asyncio.create_task(self.capacity.monitor(), name="host-headroom-sampler")
 
     async def shutdown(self, app):
         await self.scheduler.close()
 
     async def cleanup(self, app):
-        if self.client is not None:
-            await self.client.close()
+        try:
+            if self.capacity_task is not None:
+                self.capacity_task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await self.capacity_task
+        finally:
+            # A sampler fault must not leak the upstream connection pool.
+            if self.client is not None:
+                await self.client.close()
 
     @web.middleware
     async def authorization(self, request, handler):

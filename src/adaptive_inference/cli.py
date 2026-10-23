@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+from dataclasses import asdict
 import json
 from pathlib import Path
 import sys
@@ -9,6 +10,7 @@ from aiohttp import ClientError, ClientSession, ClientTimeout, web
 from . import __version__
 from .adapters import list_profiles
 from .config import env_secret, load_config
+from .context_budget import plan_context_budget
 from .demo import run_demo
 from .gateway import create_app
 
@@ -46,9 +48,20 @@ def main(argv=None):
         sub.add_parser(name).add_argument("--config", required=True)
     sub.add_parser("profiles")
     sub.add_parser("demo").add_argument("--output", type=Path)
+    budget = sub.add_parser("budget", help="Plan output room from a complete rendered prompt token count")
+    for name in ("context-tokens", "prompt-tokens", "required-output-tokens"):
+        budget.add_argument("--" + name, type=int, required=True)
+    for name in ("reasoning-tokens", "answer-tokens"):
+        budget.add_argument("--" + name, type=int, default=0)
     args = parser.parse_args(argv)
     try:
-        if args.command == "profiles":
+        if args.command == "budget":
+            plan = plan_context_budget(context_tokens=args.context_tokens, prompt_tokens=args.prompt_tokens,
+                        required_output_tokens=args.required_output_tokens,
+                        reasoning_tokens=args.reasoning_tokens, answer_tokens=args.answer_tokens)
+            print(json.dumps(asdict(plan), indent=2))
+            return 0 if plan.status == "ready" else 1
+        elif args.command == "profiles":
             print(json.dumps([{"id": p.id, "name": p.name, "base_url": p.base_url,
                                "endpoints": sorted(p.endpoints), "documentation": p.docs_url} for p in list_profiles()], indent=2))
         elif args.command == "demo":

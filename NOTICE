@@ -8,7 +8,19 @@ Niko1221/Strata, local revision c6b23493b01028a18a9eb685d0bb6435c6976316.
 Strata is Copyright (c) 2026 Niko1221 and the Strata contributors, MIT licensed.
 The original MIT license is retained in third_party/strata/LICENSE.
 
-The Peak EWMA update in that module is adapted from Twitter Finagle,
+src/adaptive_inference/resource_policy.py adapts fresh-observation and recovery
+mechanics from medking82's Strata PR #726, serve/resource_presets.py and
+serve/memory_policy.py at 15a59d4785f492b4df3fb78862373a5383696450.
+src/adaptive_inference/context_budget.py adapts the small-context safety-margin
+arithmetic from medking82's Strata PR #3684, apps/desktop/scripts/harness-budget.mjs
+at f273ef65e8f4548125f3e72833cd61019b82080f. Its regression cases also reference
+apps/host/tests/harness-budget.test.mjs at that revision.
+These sources are MIT licensed, Copyright (c) 2026 Niko1221 and the Strata
+contributors; retain third_party/strata/LICENSE. The portable dispatch gate and
+unchanged-output compaction planner are adaptations, not the upstream native or
+App implementations. See docs/medking82-review.md for contribution lineage.
+
+The Peak EWMA update in src/adaptive_inference/costs.py is adapted from Twitter Finagle,
 revision 9cc08d15216497bb03a1cafda96b7266cfbbcff1, Apache License 2.0.
 Its source attribution, license and notice are in third_party/finagle/.
 

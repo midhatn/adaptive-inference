@@ -11,7 +11,7 @@ from urllib.parse import urlsplit
 
 
 def finite(value, name, low, high):
-    if type(value) not in (int, float) or not math.isfinite(value) or not low <= value <= high:
+    if type(value) not in (int, float) or not low <= value <= high or not math.isfinite(value):
         raise ValueError(f"{name} must be between {low} and {high}")
     return float(value)
 
@@ -57,6 +57,10 @@ class Config:
     upstream_timeout_s: float = 900
     upstream_read_timeout_s: float = 120
     min_available_ram_gib: float = 0
+    adaptive_headroom: bool = False
+    recovery_margin_gib: float = 1
+    recovery_seconds: float = 30
+    max_sample_age_s: float = 5
     max_body_bytes: int = 8 * 1024 * 1024
     max_response_bytes: int = 32 * 1024 * 1024
 
@@ -66,7 +70,8 @@ class Config:
         listen = section(raw.get("listen", {}), {"host", "port", "api_key_env"}, "listen")
         backend = section(raw.get("backend", {}), {"kind", "base_url", "api_key_env", "revision"}, "backend")
         scheduler = section(raw.get("scheduler", {}), {"max_pending", "queue_timeout_s", "normal_boost_s", "max_cost_delay_s"}, "scheduler")
-        resources = section(raw.get("resources", {}), {"min_available_ram_gib"}, "resources")
+        resources = section(raw.get("resources", {}), {"min_available_ram_gib", "adaptive_headroom",
+                            "recovery_margin_gib", "recovery_seconds", "max_sample_age_s"}, "resources")
         limits = section(raw.get("limits", {}), {"upstream_timeout_s", "upstream_read_timeout_s", "max_body_bytes", "max_response_bytes"}, "limits")
         backend_url = backend.get("base_url", cls.backend_url)
         if not isinstance(backend_url, str):
@@ -113,8 +118,14 @@ class Config:
                 raise ValueError(f"Invalid {name}")
         for name, low, high in (("queue_timeout_s", .01, 3600), ("normal_boost_s", 0, 10),
                                 ("max_cost_delay_s", 0, 300), ("upstream_timeout_s", .01, 86400),
-                                ("upstream_read_timeout_s", .01, 3600), ("min_available_ram_gib", 0, 16384)):
+                                ("upstream_read_timeout_s", .01, 3600), ("min_available_ram_gib", 0, 16384),
+                                ("recovery_margin_gib", 0, 16384), ("recovery_seconds", 0, 3600),
+                                ("max_sample_age_s", .1, 60)):
             finite(getattr(self, name), name, low, high)
+        if type(self.adaptive_headroom) is not bool:
+            raise ValueError("adaptive_headroom must be a boolean")
+        if self.adaptive_headroom and self.min_available_ram_gib == 0:
+            raise ValueError("adaptive_headroom requires a positive min_available_ram_gib")
 
 
 def load_config(path):

@@ -2,7 +2,11 @@
 
 ## Objective
 
-Provide one maintainable adaptive control layer that helps users and agents complete their original tasks across model servers. Accept useful corrective iterations. Preserve model quality settings and distinguish a completed task from an unverified assertion of success.
+Make an always-on AI agent practical on the user's everyday computer. The user should be able to browse, game, watch video and work while the agent automatically backs off under contention and resumes when capacity returns. The agent must also make room for its own compilers, other models and video-generation tools, then continue the original objective without manual model-server juggling.
+
+Always on refers to continuity of the agent, controller and task state. A heavy model may need to park or unload. A shared queue and compatible API endpoints are foundations; completion requires a continuous resource coordinator, verified native handoffs and reliable task resume. The [always-on vision](docs/always-on-controller.md) defines the experience, current capability gaps and measurable acceptance criteria.
+
+Accept useful corrective iterations, preserve declared quality settings and distinguish a completed task from an unverified assertion of success. Seek a functioning end-to-end workflow first, then optimize it.
 
 This repository owns shared policy, contracts, reproducible tests, documentation and citations. Engine repositories own native execution capabilities; agent repositories own tools, permissions and application workflows. Upstream changes should reuse the shared contracts rather than create unrelated forks of policy.
 
@@ -29,6 +33,8 @@ Stages 1–4 are the initial publication scope. Stages 5–7 are continuing deve
 - Treat Jev/Laya as optional advisers only after they improve an observed task. Earlier “Maya” references were corrected to Laya; it is not an interchangeable inference server. Keep deterministic policy available.
 
 ## Agent strategy
+
+The next end-to-end milestone combines foreground activity, background inference, a resource-intensive compiler/video/model tool, verified resource return and an independently accepted artifact. Evaluate foreground responsiveness against declared budgets and retain interruption/failure evidence. Native engine breadth follows a working shared contract, rather than replacing this acceptance target with a longer profile list.
 
 - Use the normal endpoint for interactive work and the shared background route for autonomous/background work.
 - Preserve tools, structured outputs, model choices and output allowances. Do not infer user intent from prompt text when host task metadata exists.
