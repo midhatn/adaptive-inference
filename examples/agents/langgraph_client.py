@@ -6,18 +6,23 @@ only when executed; importing it does not construct a client or send a request.
 import os
 
 
-def build_graph(model_id: str, *, background: bool = False, generation_options=None):
+def build_graph(model_id: str, *, background: bool = False, generation_options=None,
+                gateway_base_url="http://127.0.0.1:18100/v1", api_key_env=None):
+    from adaptive_inference.client_routing import gateway_client_options
     from langchain_openai import ChatOpenAI
     from langgraph.graph import END, START, MessagesState, StateGraph
 
     if not model_id or model_id == "YOUR_EXISTING_MODEL_ID":
         raise ValueError("Supply an existing served model ID")
     options = dict(generation_options or {})
-    if set(options) & {"model", "base_url", "api_key", "use_responses_api", "max_retries"}:
+    transport = {"client", "async_client", "http_client", "http_async_client",
+                 "openai_api_base", "openai_api_key"}
+    if set(options) & (transport | {"model", "base_url", "api_key", "use_responses_api", "max_retries"}):
         raise ValueError("Generation options cannot override the selected client route")
-    suffix = "/background/v1" if background else "/v1"
-    llm = ChatOpenAI(model=model_id, base_url="http://127.0.0.1:18100" + suffix,
-                     api_key="local", use_responses_api=False, max_retries=0, **options)
+    route = gateway_client_options(base_url=gateway_base_url,
+                                   background=background, api_key_env=api_key_env)
+    llm = ChatOpenAI(model=model_id, **route,
+                     use_responses_api=False, max_retries=0, **options)
 
     def respond(state: MessagesState):
         return {"messages": [llm.invoke(state["messages"])]}

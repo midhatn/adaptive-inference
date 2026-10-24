@@ -1,0 +1,1 @@
+{"name":"adaptive-existing-client-contracts","private":true,"type":"module","dependencies":{"@cline/llms":"0.0.95","@cline/shared":"0.0.95","@continuedev/openai-adapters":"1.32.0","tsx":"4.20.6","yaml":"2.8.1"}}

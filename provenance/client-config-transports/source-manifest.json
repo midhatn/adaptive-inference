@@ -1,0 +1,662 @@
+{
+  "schema": "adaptive-inference.client-source-closure.v1",
+  "scope": "Unmodified selected upstream source files required by these transport fixtures, not complete applications",
+  "repositories": [
+    {
+      "id": "aider",
+      "repository": "Aider-AI/aider",
+      "revision": "5dc9490bb35f9729ef2c95d00a19ccd30c26339c",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "LICENSE.txt",
+          "git_blob": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+          "bytes": 11358,
+          "kind": "license",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/LICENSE.txt"
+        },
+        {
+          "path": "aider/__init__.py",
+          "git_blob": "847d274439f655473c940adcac2cc653650a417a",
+          "sha256": "2d49cdf776f9392fd7e30ad70cec22e81df1de84c388f840618a087775ebc831",
+          "bytes": 496,
+          "kind": "source",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/__init__.py"
+        },
+        {
+          "path": "aider/dump.py",
+          "git_blob": "2c8bf31c2d80eafc6de73910cbf4e16e362dafd3",
+          "sha256": "fa76969c64dcd3e9407bff775b1053a6e9cf45fccd9542bb439ce05cea6b1df0",
+          "bytes": 653,
+          "kind": "source",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/dump.py"
+        },
+        {
+          "path": "aider/llm.py",
+          "git_blob": "c57c274db095193ed6a64df7b48b868345181ce1",
+          "sha256": "7c609e98fd57f4c070ac37ec4ca189ff5b31fb22b3dc3ca83afc5960e92f19a9",
+          "bytes": 1103,
+          "kind": "source",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/llm.py"
+        },
+        {
+          "path": "aider/models.py",
+          "git_blob": "a6f4559d58f4e0157bab39b3c32fe9f95957d033",
+          "sha256": "37784de662eeafacf17cbc4eb656246aadee20477b8ad43768caf7d373ab6e0d",
+          "bytes": 46342,
+          "kind": "source",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/models.py"
+        },
+        {
+          "path": "aider/openrouter.py",
+          "git_blob": "6517cb1526ad1e302e7ea3c9f958f6cd08a62b7b",
+          "sha256": "75093207e758be3b98b57b64a7821f1510fc8af79c832dacfa81bcd08addc020",
+          "bytes": 4641,
+          "kind": "source",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/openrouter.py"
+        },
+        {
+          "path": "aider/resources/__init__.py",
+          "git_blob": "f7ca4efbe55aef796286c692d5e56ef8d590ba55",
+          "sha256": "d3d9e9999169b63e9747a65e12e7a4a5c2b6b2d79c2848c8e7dcd1d15cf6254f",
+          "bytes": 142,
+          "kind": "source",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/resources/__init__.py"
+        },
+        {
+          "path": "aider/resources/model-settings.yml",
+          "git_blob": "c4d14cd080152fd8ecc588ce01c6afba233b4776",
+          "sha256": "bbf044db3e1609fd58740c96450fedde80eb994792e43fa0dbfe59ff1de7e915",
+          "bytes": 86370,
+          "kind": "source",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/resources/model-settings.yml"
+        },
+        {
+          "path": "aider/sendchat.py",
+          "git_blob": "3f06cbfb9d52661e894bffe135f2830221a0b7fb",
+          "sha256": "1aae40e44da4120d0c3c4ded4caba5850b1eae85c2c2c1ad2c31ff3841c1dbee",
+          "bytes": 1854,
+          "kind": "source",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/sendchat.py"
+        },
+        {
+          "path": "aider/utils.py",
+          "git_blob": "f8d843eec4f2942d476d23497f6915dc358f2596",
+          "sha256": "cf706e83faf72bc29bc54405741246ad96e995db0afefe20f11fc75b59ef8ae7",
+          "bytes": 9151,
+          "kind": "source",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/utils.py"
+        },
+        {
+          "path": "aider/waiting.py",
+          "git_blob": "9c2f72bc777500d71a230a5bfc8f5cfb19138042",
+          "sha256": "e79bb0e8562524d9df09565a39034a8bf7f4b70cc0e717094b7f1faf2abe6a06",
+          "bytes": 7646,
+          "kind": "source",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/waiting.py"
+        }
+      ]
+    },
+    {
+      "id": "continue",
+      "repository": "continuedev/continue",
+      "revision": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "LICENSE",
+          "git_blob": "c25dc1768217ba50d454fcc06290d66886512872",
+          "sha256": "b14a17598cb08c4c7c82c070731126304e0a75d001ed59fb9ea3955a0b561802",
+          "bytes": 11348,
+          "kind": "license",
+          "url": "https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/LICENSE"
+        },
+        {
+          "path": "packages/config-yaml/src/schemas/models.ts",
+          "git_blob": "7c048e8d548d5f4865ee4f0f9d715705c558c31d",
+          "sha256": "5b863c0c97d1ba332ddc3dfd479fe0bb92fe83ca01b3fc2e9bd1a3448ea1b07c",
+          "bytes": 6942,
+          "kind": "source",
+          "url": "https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/packages/config-yaml/src/schemas/models.ts"
+        },
+        {
+          "path": "packages/openai-adapters/src/apis/OpenAI.ts",
+          "git_blob": "d0f8d30ca3a2c1612be359b2b645102bdf21eb1e",
+          "sha256": "a80f263477488f9674b97e6152086922f697ee9af4598200f9806515eedb38e4",
+          "bytes": 8651,
+          "kind": "source",
+          "url": "https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/packages/openai-adapters/src/apis/OpenAI.ts"
+        },
+        {
+          "path": "packages/openai-adapters/src/apis/openaiResponses.ts",
+          "git_blob": "7ba622284510fbc810cecbd6c9d100014a5cfde0",
+          "sha256": "919ae4711667101186e13d68742c5f58217c4c24b19c36b7cae68601be5534b7",
+          "bytes": 21340,
+          "kind": "source",
+          "url": "https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/packages/openai-adapters/src/apis/openaiResponses.ts"
+        },
+        {
+          "path": "packages/openai-adapters/src/util.ts",
+          "git_blob": "a0d352ea0e3d246be76ec22cc08d354c5b00136b",
+          "sha256": "b3b085c781c6a722424b3b8ec83b43eb6bf548744df957d4511ec80c7b624bbd",
+          "bytes": 5639,
+          "kind": "source",
+          "url": "https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/packages/openai-adapters/src/util.ts"
+        }
+      ]
+    },
+    {
+      "id": "cline",
+      "repository": "cline/cline",
+      "revision": "c7db4bfbd2643425e3c185367cb8c8b4bc468c4f",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "LICENSE",
+          "git_blob": "05ae14a377caf4df24e26edde0c4f7b22ef3ef30",
+          "sha256": "f704446a5f1271608805598b557e4288cf8580477ea038c9c3d8b361f693f6b8",
+          "bytes": 11344,
+          "kind": "license",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/LICENSE"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/catalog-cline-recommended.ts",
+          "git_blob": "fa7ae85d37f92850dc3383db0735ecf8d4d25d48",
+          "sha256": "cc635734bd6bd9a0ca954d08cfb910b470c2d286adaa42d9cdde0fac12c19ae9",
+          "bytes": 5973,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/catalog/catalog-cline-recommended.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/catalog-live.ts",
+          "git_blob": "ebfe37236bf8c3ecc25e628dce82a7f84efeda50",
+          "sha256": "fbe6a2e6a55ca565056906b4c38876e1d427c72ce93284043b2a2846237f2537",
+          "bytes": 16212,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/catalog/catalog-live.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/catalog.generated-access.ts",
+          "git_blob": "ffb0f39ba8404c39449ad0427a1992cba25ae93b",
+          "sha256": "2f6aa46afef312774d9335d953662870c17206c80e7732a24087adc9366c74f8",
+          "bytes": 2636,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/catalog/catalog.generated-access.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/catalog.generated.ts",
+          "git_blob": "e8337ff79fb2f6224e91e9ae0a143f43e51250eb",
+          "sha256": "945669593b27de0dd8636dafee80a61e6f1bd44e274dbfea4894ea5e70e71d8a",
+          "bytes": 4747187,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/catalog/catalog.generated.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/cline-recommended.generated.ts",
+          "git_blob": "24e44a9c479a5638009da0b2dc21b09a0f43f63b",
+          "sha256": "73d0c46e4d652cc4b5f31c48b1616a04161844f61d6cbbf4bdf69f288a61ca71",
+          "bytes": 4146,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/catalog/cline-recommended.generated.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/model-filters.ts",
+          "git_blob": "4cb7a001801c661e4b34d6faa0b6ceca3c5d72b2",
+          "sha256": "643080d844bc8a6a540e9764920a5f759359d777c0820c0bac319256721cb0c2",
+          "bytes": 925,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/catalog/model-filters.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/model-id-aliases.ts",
+          "git_blob": "0f82ade242ccf4c224342f80c98c20c2f1d94f87",
+          "sha256": "d6300d9f37b12aa3b687880431a63900e1fa1febfe9263a7cf3579d9db6fa9ae",
+          "bytes": 1134,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/catalog/model-id-aliases.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/model-operation.ts",
+          "git_blob": "9656770c846e3c636bf24f33816a4633f3b260f5",
+          "sha256": "486a10ed220095f92e13806d20cb18babe75433e53cbfb418d8f091135e38e19",
+          "bytes": 2825,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/catalog/model-operation.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/ai-sdk.ts",
+          "git_blob": "1376a9414745620e6af15665b7461668a4bc0f8a",
+          "sha256": "51bcd9812d7b55911b973a98bf1f3e7d4f824ebf39eb379a1fdc8bab9c3b7338",
+          "bytes": 77798,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/ai-sdk.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/async.ts",
+          "git_blob": "5ca5c36437661b8ffc82bf95ba7c24c675d107df",
+          "sha256": "e37517a5abb54362d421853ccbdcf681da23cb5b99f8d82c0e72537dee1450a5",
+          "bytes": 159,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/async.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/builtins-runtime.ts",
+          "git_blob": "4a164c459faeaa21e5fa92efabc4eb4b6082e2e1",
+          "sha256": "6b2f7e6e611b6ea6909c3e66b23db315db6aceacbb8d82affd05a333be7909c8",
+          "bytes": 3198,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/builtins-runtime.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/builtins.ts",
+          "git_blob": "cf5e6ac424c222fd4c6d60c6e4a17dd3edea95c6",
+          "sha256": "079f8b32efbbaad2a05e68c6d8190c07bbd7bc89246924c14f87bd038428d113",
+          "bytes": 45295,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/builtins.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/cline-client-headers.ts",
+          "git_blob": "8c4ff7b707cb4d34015225d87679b2e58ae3489c",
+          "sha256": "ffbbd697af38eeeea179cc18bf7ad657cfce206c96c6de2fb7440efae0a9c3cf",
+          "bytes": 944,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/cline-client-headers.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/error-classification.ts",
+          "git_blob": "32c932536d319885c194d6bfcb1b6e98b73dba5b",
+          "sha256": "f6c9cd463ff9334e713331dced7154e3c4ae953b726a5c8741cba0b0594ee14d",
+          "bytes": 15326,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/error-classification.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/errors.ts",
+          "git_blob": "593630fce188fcc828f41396db32ddac106b3924",
+          "sha256": "8db5541fba664806145357c84b183940f1cd3f4410bffa3ee3fe56958c4e0604",
+          "bytes": 5164,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/errors.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/format.ts",
+          "git_blob": "b07b0266882758a2dc50944bbb93996dd2bedb86",
+          "sha256": "b3eca861bf6ceb9300daf067cb538b3d6fc4db200a5a45e3963017b0ea6f34d1",
+          "bytes": 5291,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/format.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/gateway.ts",
+          "git_blob": "ffc97eb32246ede13207c557eb80662cb9c0e625",
+          "sha256": "d465fc760e2734c855ddcb45eac315b3c269be4284a68cda512c2843188912c9",
+          "bytes": 13008,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/gateway.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/http.ts",
+          "git_blob": "d302e2acdb4c7bbf9f34b6d0b5f10fb9beebd198",
+          "sha256": "c39a1aad2d3741b43e1c1620a83b39f2199567a006038f37d05476a266800424",
+          "bytes": 2898,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/http.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/ids.ts",
+          "git_blob": "ed6ca9c16f240b948164d2f6bf98da8a1ec0f458",
+          "sha256": "7e3f6851a508ed107e278ed9bff9de7c6e894582141d70e19ed83196e1115c7b",
+          "bytes": 2893,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/ids.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/middleware/retry-empty-response.ts",
+          "git_blob": "97e35a69a10e6e1bac0c5e0994bc85d2cf1243a7",
+          "sha256": "e1719e71ab3fc9f8eaeec8aff6f87f63fb842879e0655a86c05b1d50488f97bc",
+          "bytes": 16767,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/middleware/retry-empty-response.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/middleware/split-tool-images.ts",
+          "git_blob": "7aff8d3374c74cbbf5646f22237178f947ef4b55",
+          "sha256": "da2b4fc193acc98e61c5f6da48a592c323dac840877a554d85a197be69764d2f",
+          "bytes": 12153,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/middleware/split-tool-images.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/middleware/stream-part-classification.ts",
+          "git_blob": "680cf24cc7380f57438f480c3061982a137f8317",
+          "sha256": "507f2d2465394994da3f901f6b2bb018fa7aa631ca907775526b8a4793ec3a4b",
+          "bytes": 4396,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/middleware/stream-part-classification.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/model-capabilities.ts",
+          "git_blob": "2108be06e766e15549e33ea1acf3d1612c383c1b",
+          "sha256": "e494a37d01d285d065c7a30578ea9cdb087d0c4bcdf68c69b36f14788476ed6e",
+          "bytes": 2294,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/model-capabilities.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/model-facts.ts",
+          "git_blob": "d0c2717757a16862949ad91e8948001770ceac1b",
+          "sha256": "1d712a029a0837b8df88f614262b2c81338dba195a2f3e92994b0716cf640de3",
+          "bytes": 15312,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/model-facts.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/model-operations.ts",
+          "git_blob": "fc93a7ede94d6103a178eb9f1d37cdb77c1527af",
+          "sha256": "7db4cc619f0cfdb5030a1e521e565317a653a2e612c47f050b5c3ea34ccae45b",
+          "bytes": 10286,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/model-operations.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/model-tools.ts",
+          "git_blob": "fe1aa33db8b74a2edc5419513f168811e8b753d1",
+          "sha256": "ca65d9e470147f33f3a4e19a3f82c2b2a65a5217ed3f76e632fc41cae3764149",
+          "bytes": 2918,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/model-tools.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/openai-codex-models.ts",
+          "git_blob": "5de849383f1f5d886e629a5c53d2e2a66fc19cab",
+          "sha256": "b78e2d8c2c739df12d9d01565d55fd93bd2c12b8356d98d83db61fdad48717a1",
+          "bytes": 3045,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/openai-codex-models.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/provider-ids.generated.ts",
+          "git_blob": "eb309b03d152ad5ee0e51a83281fd2815d880504",
+          "sha256": "2e9ef467f4948c66072f3a366b4ee2d2df241fbf8ac112d7f35351ef62b72c24",
+          "bytes": 3487,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/provider-ids.generated.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/provider-keys.ts",
+          "git_blob": "9a7405d97c64e057d53f3bf52b19a75bff0dc3a8",
+          "sha256": "945d6a6845941fbe16eb3d45567df8538a647828cf07a1e93738440fca78bd02",
+          "bytes": 6301,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/provider-keys.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/provider-request-capture.ts",
+          "git_blob": "75144aed5c70dd9eb1c66bdc0b0d59b6df54717c",
+          "sha256": "5059903ea4ab69de694d04b9df5e8578afeb7e4c61d5c04229b166f1f89cc14d",
+          "bytes": 11718,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/provider-request-capture.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/providers.generated.ts",
+          "git_blob": "d7cfc80eb051e3055342c4bb4c2657966c724006",
+          "sha256": "2a0d27eca6e956242a432190cf783637d003849f4d276ffe609b5290f8db39c6",
+          "bytes": 91923,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/providers.generated.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/registry.ts",
+          "git_blob": "a9989c6159df011928f423adce4467a21f24c705",
+          "sha256": "0e1656b878b6728a8017a2a825df1d322798cc6ec8811db7df7e601bfd7e616f",
+          "bytes": 9590,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/registry.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/request-headers.ts",
+          "git_blob": "75722b681f2ac49014feb50c6b2a6daf67923260",
+          "sha256": "30678aa41508e97f91c5eb4f77a667ab597af873eca19499d41ac72c4f992bf9",
+          "bytes": 5784,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/request-headers.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/response-request-id.ts",
+          "git_blob": "2fbba27818b5d4c51958f9bd013aab9ac6460da0",
+          "sha256": "45a41eb266e3bc389704ba657f6f101f053eaa37e9cbb05ef3aa48e2cf9f9dd1",
+          "bytes": 1475,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/response-request-id.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/anthropic-compatible.ts",
+          "git_blob": "9a097133239d968f70c78533df19a21e250234a4",
+          "sha256": "d3bfc9f6e7985c5eea37f2139068f618b1b89f82934fdcec8dfa96ed4f402bd1",
+          "bytes": 15807,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/anthropic-compatible.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/bedrock-cache-point.ts",
+          "git_blob": "e2a1087e12037bffdf51559fe747b46228446430",
+          "sha256": "4d6d683109b1ca1dfc7ac9515b84745084e4775b6b4f19a39c54246056e898fb",
+          "bytes": 2364,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/bedrock-cache-point.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/generic-compatible.ts",
+          "git_blob": "5041787b032f2579149b264558ad59dd5b440325",
+          "sha256": "b2437abd99916bd435eaa542e02c79bf300c7cfd2d32222177f9df1b2f617519",
+          "bytes": 2088,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/generic-compatible.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/glm-thinking.ts",
+          "git_blob": "9572ac99924f4f350a58cca8ba1fcb569cbd7645",
+          "sha256": "125373b95248ee96eb83aa6823a80a3194e1e23e12d82fd82f618bf5b661c8ad",
+          "bytes": 2832,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/glm-thinking.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/minimax-thinking.ts",
+          "git_blob": "4ef4a02f1a308f746fa4dad36537cd57a5b23388",
+          "sha256": "d797248095013609a250c801a0b2d73c222af7adb120159429fe65c293c176ab",
+          "bytes": 1949,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/minimax-thinking.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/portable-reasoning.ts",
+          "git_blob": "1fc8490f3102dc90f28a10b0429cdd7d25cf8938",
+          "sha256": "db67cc3ac5b231cf766675bbc7a304d9c944a9ec2e27e109db76f0d7e1d53b6a",
+          "bytes": 6739,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/portable-reasoning.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/provider-option-rules.ts",
+          "git_blob": "a68a7574b8b3e9028b1e2efcc1bfd7db945cdbaf",
+          "sha256": "8d5effc87cfc65a7b4999247b425b62d2832b198de0a9389b361f09c9372523e",
+          "bytes": 18592,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/provider-option-rules.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/provider-options-types.ts",
+          "git_blob": "b2c5408e6bc0ddd0baf2d2b71640c612ad945df8",
+          "sha256": "93ad4f55631b7cfbe1085dd69ee42770835b8b3e93de7ad4a8297660297acee4",
+          "bytes": 2028,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/provider-options-types.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/provider-options.ts",
+          "git_blob": "3b655da1aa34b4d0b1acfeb1c19ad73f5a5cb939",
+          "sha256": "b2e635bb766135547075fe1c5ff14aeca359f1acdfa0510e600c2b823e2dbff8",
+          "bytes": 3593,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/provider-options.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/reasoning-codecs.ts",
+          "git_blob": "8f470d119bfb6c1eb55c3fd57d6b5672fccf5843",
+          "sha256": "3bfcce7aaa4ae9976e80e2f5bb3775fec6f649452964081aded5f328d7dbe40f",
+          "bytes": 2110,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/reasoning-codecs.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/reasoning-options.ts",
+          "git_blob": "d7d3711e4da0802cabd16dc5b474b464effad584",
+          "sha256": "2785f6692bccd7a0b1573a271b107b0e404c6e7d51b0383ca9c7a77577829d37",
+          "bytes": 5269,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/reasoning-options.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/utils.ts",
+          "git_blob": "0160269fc85b766691a30e2f5eec8914fce9c7c1",
+          "sha256": "07b096b7935cd53179fc37951a583473f9d41e0416c3ec625e3bfe6a9111cea1",
+          "bytes": 3321,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/routing/utils.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/url.ts",
+          "git_blob": "28fadb13c820102dc7bab157bbc1ffb9d399da77",
+          "sha256": "178f2db5dde5dd9ef95fbbb76312d35d8f0ebe611da671ba79dcd8ff8b8fec42",
+          "bytes": 1694,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/url.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/utils.ts",
+          "git_blob": "4f7de3b0d3d104a00f1d9398b524cb05a7ac55f5",
+          "sha256": "6d3bcb1e37bf6822b66c348f0a14a2eea9e9d07794709e6148c7967bc84baa0e",
+          "bytes": 150,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/utils.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/anthropic.ts",
+          "git_blob": "e3812435eb18c92702e3095b3db61bfcca96abde",
+          "sha256": "a9d3486127d6d9d0033e6e769d0826dd648656484ab709ba30ee4fce42a40c42",
+          "bytes": 1751,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/anthropic.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/bedrock.ts",
+          "git_blob": "78a70ca3b91e5a47236518ef76d90b9c3d3ec5de",
+          "sha256": "6f7009242cd0aec817f53dfbf835c8ae1e3097f457c37eca2ff3ed20c94e8dc0",
+          "bytes": 11335,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/bedrock.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/cline.ts",
+          "git_blob": "6404d084fc6c4c885ef3795ee52e2d3545920086",
+          "sha256": "baba923b6b9299dc3b30db05ba111258f2e91090da91627a4d9f3b7679d5d349",
+          "bytes": 8348,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/cline.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/community.ts",
+          "git_blob": "9fab63893aae8aee0d7367ad0bdaf84f32b3dc42",
+          "sha256": "906f6bcd422d484debb4c3033ebc57855500c88656b2479e1e07d5123dcf3b4a",
+          "bytes": 15530,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/community.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/google.ts",
+          "git_blob": "39c30fe718e81e6c4ae3b2f13c3eecf24765645c",
+          "sha256": "5c70478a56e3dc7775f20e6a60df2cf5b96bfa962b4281ae243c113dd65b920e",
+          "bytes": 1859,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/google.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/minimax-thinking.ts",
+          "git_blob": "30b03a64df7454f754c219e32d5ea245b4f8ef45",
+          "sha256": "cc8506dcb35abea198b1266ec1bf6f359bfeb79fe9703193ef07f84c8aee48d2",
+          "bytes": 2888,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/minimax-thinking.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/mistral.ts",
+          "git_blob": "54d5195a64e0179c3476e5e1886090b576960916",
+          "sha256": "ebe83295916f234605380ca9685cebaf5efe2e2749e287592b361633659139e9",
+          "bytes": 1280,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/mistral.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/ollama.ts",
+          "git_blob": "b79380b913ac160fbc92f0bd89dd223b84d1641e",
+          "sha256": "464288116eccbf831a96ed34c1edc0299da65fccaaa44b33f699c5a2fbc264b8",
+          "bytes": 6308,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/ollama.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/openai-compatible.ts",
+          "git_blob": "c4c54296ac70aac2045c7b68eb6b5972f3f07d17",
+          "sha256": "c9cfe9b6a8e021e94f642b54b9b55595d7544559c8d65a21ad5f8b1f055b37df",
+          "bytes": 10154,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/openai-compatible.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/openai.ts",
+          "git_blob": "a3a2bf2519eafebc156a82cf3212ba7b762d86e4",
+          "sha256": "2305e91dd9b856d05212fc5740d86befde6dd6749ee36a21a049ce7c4570283c",
+          "bytes": 2881,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/openai.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/vertex.ts",
+          "git_blob": "b0f0ab2565bbefa51e8a6d3adecd92ccdd98a75f",
+          "sha256": "f59121916fbc1944e37cd0da7041999efa7aba5195e4283e5598a993e2485f71",
+          "bytes": 3174,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/providers/vendors/vertex.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/services/langfuse-stream-telemetry.ts",
+          "git_blob": "19121f0a77d4ac10605d1f2b1b52a3423226b39d",
+          "sha256": "bd68d483f82edb9774091b9d9fb29101f5376cd0b8fc3a3288e79370b557a45c",
+          "bytes": 4288,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/services/langfuse-stream-telemetry.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/services/langfuse-telemetry.ts",
+          "git_blob": "e15afa78584779fd7ce95467142b049c4ced2fb4",
+          "sha256": "5fef6e88be875488a3880aef86be692afd6a568f0421a5730487cb2b29000b84",
+          "bytes": 16110,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/services/langfuse-telemetry.ts"
+        },
+        {
+          "path": "sdk/packages/llms/src/services/stream-error-telemetry.ts",
+          "git_blob": "9dfa8145fac8d896194b5648969e86e26ceb3068",
+          "sha256": "997e46167518f0b90da338145f81991890b0b229ea056dbd86fd61271e9d6f35",
+          "bytes": 2406,
+          "kind": "source",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/sdk/packages/llms/src/services/stream-error-telemetry.ts"
+        }
+      ]
+    }
+  ]
+}

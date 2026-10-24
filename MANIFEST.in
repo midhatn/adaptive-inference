@@ -3,9 +3,10 @@ include .gitattributes .gitignore
 recursive-include .github *.yml *.yaml *.md
 recursive-include docs *.md
 recursive-include examples *.json *.json5 *.yaml *.yml *.py *.md
-recursive-include integrations *.py *.md *.json *.yaml *.patch *.txt *.bundle *.gz LICENSE NOTICE
-recursive-include provenance *.json *.py
-recursive-include upstream *.json
+recursive-include integrations *.py *.md *.json *.yaml *.yml *.patch *.txt *.bundle *.gz *.ts *.mjs *.lock .gitignore LICENSE NOTICE
+recursive-include provenance *.json *.py *.md *.txt *.lock *.mjs *.ts *.yml *.yaml *.gz .gitignore .gitattributes LICENSE NOTICE
+recursive-include plugins *.py *.md *.json *.yaml *.yml LICENSE NOTICE
+recursive-include upstream *.json *.patch *.md
 recursive-include tests *.py
 recursive-include third_party LICENSE NOTICE .gitattributes *.txt *.md *.json *.py *.mjs *.scala *.rs
 global-exclude __pycache__ *.py[cod] *.log

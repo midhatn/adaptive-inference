@@ -1,0 +1,218 @@
+{
+  "schema": "adaptive-inference.existing-client-transports.v1",
+  "passed": true,
+  "source_mode": "current pinned source bundled with external locked dependencies",
+  "transport": "actual loopback HTTP with fixture responses; no model",
+  "packages": {
+    "@continuedev/openai-adapters": "1.32.0",
+    "@cline/llms": "0.0.95"
+  },
+  "checks": [
+    {
+      "client": "continue",
+      "path": "/v1/chat/completions",
+      "complete": true,
+      "quality_fields_preserved": true
+    },
+    {
+      "client": "continue",
+      "path": "/background/v1/chat/completions",
+      "complete": true,
+      "quality_fields_preserved": true
+    },
+    {
+      "client": "cline",
+      "path": "/v1/chat/completions",
+      "complete": true,
+      "reasoning_budget_tokens": null,
+      "experimental_speed_projection": null,
+      "event_types": [
+        "text-delta",
+        "usage",
+        "finish"
+      ]
+    },
+    {
+      "client": "cline",
+      "path": "/background/v1/chat/completions",
+      "complete": true,
+      "reasoning_budget_tokens": null,
+      "experimental_speed_projection": null,
+      "event_types": [
+        "text-delta",
+        "usage",
+        "finish"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/v1/chat/completions",
+      "authorization": "Bearer [fixture key]",
+      "body": {
+        "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Fixture only."
+          }
+        ],
+        "max_tokens": 10923,
+        "temperature": 0.2,
+        "stream": false,
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_status",
+              "description": "Read fixture status",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        ],
+        "reasoning_effort": "high",
+        "reasoning_budget_tokens": 8192,
+        "experimental_speed_projection": false
+      }
+    },
+    {
+      "path": "/background/v1/chat/completions",
+      "authorization": "Bearer [fixture key]",
+      "body": {
+        "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Fixture only."
+          }
+        ],
+        "max_tokens": 10923,
+        "temperature": 0.2,
+        "stream": true,
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_status",
+              "description": "Read fixture status",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        ],
+        "stream_options": {
+          "include_usage": true
+        },
+        "reasoning_effort": "high",
+        "reasoning_budget_tokens": 8192,
+        "experimental_speed_projection": false
+      }
+    },
+    {
+      "path": "/v1/chat/completions",
+      "authorization": "Bearer [fixture key]",
+      "body": {
+        "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+        "max_tokens": 10923,
+        "temperature": 0.2,
+        "reasoning_effort": "high",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Fixture only."
+          }
+        ],
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_status",
+              "description": "Read fixture status",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        ],
+        "tool_choice": "auto",
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    {
+      "path": "/background/v1/chat/completions",
+      "authorization": "Bearer [fixture key]",
+      "body": {
+        "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+        "max_tokens": 10923,
+        "temperature": 0.2,
+        "reasoning_effort": "high",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Fixture only."
+          }
+        ],
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_status",
+              "description": "Read fixture status",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        ],
+        "tool_choice": "auto",
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    }
+  ],
+  "source_sha256": "abd8a449a0908b98869a073253c86322036e7c057550de3fb1348d9a5515aa0f",
+  "source_revisions": {
+    "continue": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+    "cline": "c7db4bfbd2643425e3c185367cb8c8b4bc468c4f"
+  }
+}

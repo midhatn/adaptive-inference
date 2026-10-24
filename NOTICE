@@ -57,3 +57,18 @@ revisions, file paths and checksums. The Dynamo design reference in that archive
 is Apache-2.0; its code is not part of the executable Python implementation.
 These references preserve attribution and inspectability without requiring the
 original pull-request pages. See the archive's README.md and manifest.json.
+
+Bounded client/schema test inputs are additionally preserved under
+provenance/client-config-transports/sources and
+integrations/openclaw-schema-check/reference. These are original Aider,
+Continue, Cline and OpenClaw sources, not new project implementation.
+Their authorship and original license text remain with those projects; each
+archive records exact source revisions, Git blobs and SHA-256 identities.
+See the adjacent source manifests and original license files. Their dependency
+packages are separately acquired using the included locks, not redistributed
+as part of the portable runtime.
+
+The optional plugins/hermes implementation is original Apache-2.0 project code
+using Hermes's public plugin contracts. Its SOURCE_LOCK records the inspected
+MIT-licensed upstream interfaces and scoped validation; no Hermes runtime code
+is copied into that plugin.

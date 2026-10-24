@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "implementation_license": "Apache-2.0",
+  "contract_origin_license": "MIT",
+  "upstream_code_copied": false,
+  "contract_repository": "https://github.com/NousResearch/hermes-agent",
+  "sources": {
+    "archived": {
+      "revision": "2587d8231fc7e0f3e846acafa46eb5b67cdc70c8",
+      "files": {
+        "hermes_cli/plugins.py": {
+          "sha256": "a0015d88fac3ee3d59bea46cec5afba3ef772909cd188fc7491c42de0fc3c05d",
+          "git_blob": "6edff802e58024f30a3e4ae1646750d314420f1b",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2587d8231fc7e0f3e846acafa46eb5b67cdc70c8/hermes_cli/plugins.py"
+        },
+        "hermes_cli/middleware.py": {
+          "sha256": "66d018ab4de63eb3b5ce7c4712dcfcf1eb3ca32802cdaf19b2cab3523640e21f",
+          "git_blob": "c0940d26bbd4d31fd307aa54f3f8d21e0108f2a6",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2587d8231fc7e0f3e846acafa46eb5b67cdc70c8/hermes_cli/middleware.py"
+        },
+        "hermes_cli/plugins_dispatch.py": {
+          "sha256": "fd1185e23edb80234e3f816a2fbbf990cdab37a3bf5c3d98b38337c7dd50e330",
+          "git_blob": "78c3927fc4fc39d2ae523749238e110504fefe47",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2587d8231fc7e0f3e846acafa46eb5b67cdc70c8/hermes_cli/plugins_dispatch.py"
+        },
+        "hermes_cli/plugin_validate.py": {
+          "sha256": "1b95db8f69f7d057a70e63488f871ca011f084df129fbe6fbb36b554883bd50f",
+          "git_blob": "2f31a9a4b1d66bd0c89a676f7f57f2f541605d33",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2587d8231fc7e0f3e846acafa46eb5b67cdc70c8/hermes_cli/plugin_validate.py"
+        },
+        "hermes_cli/plugin_events.py": {
+          "sha256": "5f172396f6a5b1cbcb45ce1aaf2ccf85546511b01f9ddba7b766b382a0de8305",
+          "git_blob": "29f16c5298f50feca64b38e24505ff76d1c9f3b0",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2587d8231fc7e0f3e846acafa46eb5b67cdc70c8/hermes_cli/plugin_events.py"
+        },
+        "agent/turn_api_request.py": {
+          "sha256": "fae43abf285e6f2b82d1820b7bd62ee10214676a48d6af552b8d62530e59dd15",
+          "git_blob": "1be4db0a6286c81d9024197964902b99e975b089",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2587d8231fc7e0f3e846acafa46eb5b67cdc70c8/agent/turn_api_request.py"
+        },
+        "tools/delegate_tool.py": {
+          "sha256": "e4e77245e48cfb77099854dc5667795b7522bedf6916db64d8feefbcae1e6e94",
+          "git_blob": "ec1c1cf8909c61414dc1621f452e3054d46d4167",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2587d8231fc7e0f3e846acafa46eb5b67cdc70c8/tools/delegate_tool.py"
+        },
+        "tools/delegate_tool_results.py": {
+          "sha256": "bbd8517b4e49d7fa55ffed36fdabf898c2a41292619be4777af55060b19440c5",
+          "git_blob": "67c66fb77370449a633d435d8888a6c67508f904",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2587d8231fc7e0f3e846acafa46eb5b67cdc70c8/tools/delegate_tool_results.py"
+        },
+        "plugin-catalog/README.md": {
+          "sha256": "cda8cd2fbd0d9d2aebff5f8c715551ea940c37571b8ae8b60e7c901f2ce8bb4e",
+          "git_blob": "6e18bd33b2be9e83fd1dbd7a8cb4d6f67f403bc2",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2587d8231fc7e0f3e846acafa46eb5b67cdc70c8/plugin-catalog/README.md"
+        },
+        "LICENSE": {
+          "sha256": "821556e6336796450ab852d375117b48a4887e71d255794fd6318d99982a5ab6",
+          "git_blob": "75410e73319c72cd3e991a501c5455eb78f38375",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2587d8231fc7e0f3e846acafa46eb5b67cdc70c8/LICENSE"
+        }
+      }
+    },
+    "current": {
+      "revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+      "files": {
+        "hermes_cli/plugins.py": {
+          "sha256": "32c2a0a3acd985be4453981e36e26776d6a1c815498f8d0af5f898ad98c8861e",
+          "git_blob": "464b1d9175cbeea6601541441d0fb57f9db1def5",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/hermes_cli/plugins.py"
+        },
+        "hermes_cli/middleware.py": {
+          "sha256": "3745ad211f365554a3c070083dc39d3ff9b6cdc93965f13d8796918433ec2328",
+          "git_blob": "753b6643ab2c6b2d7cfc38d1e65043286ceb0080",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/hermes_cli/middleware.py"
+        },
+        "hermes_cli/plugins_dispatch.py": {
+          "sha256": "a3960ec7a3c4ebfa4053f3019dcb67b73de5df384bfa4c0a8484a7815972833c",
+          "git_blob": "accb9c5ddc1348d731a16654d92f1d8d07ab8abd",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/hermes_cli/plugins_dispatch.py"
+        },
+        "hermes_cli/plugin_validate.py": {
+          "sha256": "11303d7236c79d40876de52204f14337b1b39d994b3f5ed3fa70310ce82906c4",
+          "git_blob": "ea88f7ce2a747b62466c652b39c6499fa4292dbb",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/hermes_cli/plugin_validate.py"
+        },
+        "hermes_cli/plugin_events.py": {
+          "sha256": "5f172396f6a5b1cbcb45ce1aaf2ccf85546511b01f9ddba7b766b382a0de8305",
+          "git_blob": "29f16c5298f50feca64b38e24505ff76d1c9f3b0",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/hermes_cli/plugin_events.py"
+        },
+        "agent/turn_api_request.py": {
+          "sha256": "fae43abf285e6f2b82d1820b7bd62ee10214676a48d6af552b8d62530e59dd15",
+          "git_blob": "1be4db0a6286c81d9024197964902b99e975b089",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/agent/turn_api_request.py"
+        },
+        "tools/delegate_tool.py": {
+          "sha256": "93958916046e5048385a19f4ee57e200253d1e4066c4e9085c90098dd42805cb",
+          "git_blob": "cb5747c7070f2e3d91747938e2da16083038ed5f",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/delegate_tool.py"
+        },
+        "tools/delegate_tool_results.py": {
+          "sha256": "74f03a6ee71ba71fa32d451ab8bf999cab0789dd38b63dd3f5c467e38bb01109",
+          "git_blob": "6f0ffabf3cc6db1cc2367f048d5f1cdf51099f56",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/delegate_tool_results.py"
+        },
+        "plugin-catalog/README.md": {
+          "sha256": "eedce73b855e900a95c9081a20e344fb7a350a3ca81cf465832aae17d10ecef9",
+          "git_blob": "92bdae26ea334bf606936afd9e12527de9489373",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/plugin-catalog/README.md"
+        },
+        "LICENSE": {
+          "sha256": "821556e6336796450ab852d375117b48a4887e71d255794fd6318d99982a5ab6",
+          "git_blob": "75410e73319c72cd3e991a501c5455eb78f38375",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/LICENSE"
+        }
+      }
+    }
+  },
+  "runtime_dependencies": "Python standard library only",
+  "test_environment": {
+    "python": "3.14.7",
+    "openai": "2.24.0"
+  },
+  "evidence": {
+    "current": {
+      "passed": 41,
+      "skipped": 0
+    },
+    "archived": {
+      "passed": 40,
+      "skipped": 1,
+      "skip": "public current_cron_execution absent"
+    },
+    "official_admission": {
+      "checks_passed": 15,
+      "warnings": 0,
+      "dependency_sync_executed": false
+    },
+    "scope": "real SDK with fixtures; no network/model/backend qualification"
+  }
+}

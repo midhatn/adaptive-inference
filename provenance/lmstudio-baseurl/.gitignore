@@ -1,0 +1,6 @@
+node_modules/
+before.ts
+after.ts
+before.mjs
+after.mjs
+*.typecheck.txt

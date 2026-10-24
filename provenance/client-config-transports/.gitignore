@@ -1,0 +1,6 @@
+node_modules/
+.venv/
+js/*-current.mjs
+js/continue-schema.mjs
+__pycache__/
+*.pyc

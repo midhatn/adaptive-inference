@@ -3,8 +3,14 @@
 Adaptive Inference is an OpenAI-compatible gateway in front of an existing
 model server. Choose an engine profile, retain the server's existing model and
 quality configuration, and point the agent's compatible client at the gateway.
-These are configuration routes and small client factories, not native engine
-plugins or replacements for the applications' own model clients.
+These integrations use existing client configuration and public extension hooks.
+The optional Hermes plugin classifies host-known background work; it does not
+replace Hermes's model client or add native engine resource controls.
+
+The [integration contract](integration-contract.md) is the common implementation
+boundary for ports and upstream contributions. Python client factories now
+accept an explicit gateway base URL and credential environment reference, so
+they can use a nondefault port or a configured proxy without changing policy.
 
 The interactive base URL is `http://127.0.0.1:18100/v1`. The background base URL
 is `http://127.0.0.1:18100/background/v1`. Both enter **the same queue and backend**.
@@ -88,10 +94,26 @@ Generation options cannot override the selected base URL, model, credential, or
 transport. If omitted, the upstream client's/server's defaults still apply;
 the factory has not established a quality baseline for that model.
 
+The factories accept `gateway_base_url="http://127.0.0.1:18100/v1"` and an
+optional `api_key_env` variable name. This keeps deployment configuration separate
+from generation settings. Fifteen [installed Python SDK checks](../provenance/python-clients/README.md)
+exercise their actual request serialization over HTTP fixtures. LangChain emits
+the equivalent `max_completion_tokens` name for `max_tokens`; CrewAI makes tool
+schemas strict. These client transformations are separate from gateway behavior.
+
+Additional [preserved client transport checks](../provenance/client-config-transports/README.md)
+exercise Aider, Continue and Cline without requiring an upstream Git checkout.
+Aider and Continue preserve the tested explicit reasoning budget and projection
+setting. Cline's generic compatible path omits the requested reasoning-token
+budget and has no qualified projection-field path; its successful stream is not
+full Strata quality-policy parity. See the [Cline limitation](../integrations/client-recipes/cline.md).
+The [SGLang and Ollama recipes](../integrations/openai-admission/README.md)
+also exercise the released gateway with actual SDK calls and a local fake backend.
+
 | Agent | Delivered setup | What selects background work | Primary reference |
 | --- | --- | --- | --- |
-| Hermes | [`hermes.yaml`](../examples/agents/hermes.yaml): main custom provider plus explicit auxiliary compression/title provider | Auxiliary slots use the background URL; delegated children are not automatically reclassified by this generic config | [Model configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuring-models) |
-| OpenClaw | [`openclaw.json`](../examples/agents/openclaw.json): `models.providers`, `openai-completions`, and a default model | Host explicitly selects the separate `adaptive-background` provider for a worker | [Custom providers](https://docs.openclaw.ai/gateway/config-tools/custom-providers), [minimal custom model entries](https://docs.openclaw.ai/concepts/model-providers/custom-providers) |
+| Hermes | [`hermes.yaml`](../examples/agents/hermes.yaml) plus optional [public-hook plugin](../plugins/hermes/README.md) | Configured auxiliary slots use the background URL; the opt-in plugin identifies delegated sessions, explicit worker profiles and cron executions where the public API exists | [Model configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuring-models) |
+| OpenClaw | [`openclaw.json`](../examples/agents/openclaw.json) plus [configuration composer](../examples/agents/openclaw-config.md) | Existing `agents.defaults.subagents.model` selects the cloned background provider; explicit per-agent/spawn choices and fallbacks retain precedence | [Custom providers](https://docs.openclaw.ai/gateway/config-tools/custom-providers), [minimal custom model entries](https://docs.openclaw.ai/concepts/model-providers/custom-providers) |
 | Aider | [`aider.yml`](../examples/agents/aider.yml), usable with `aider --config PATH` | Change that worker's API base to the background URL | [OpenAI-compatible APIs](https://aider.chat/docs/llms/openai-compat.html) |
 | OpenHands | [`openhands.md`](../examples/agents/openhands.md): custom model and API base in the app settings | Separate worker configured with the background URL | [Local model guide](https://docs.openhands.dev/openhands/usage/llms/local-llms) |
 | Continue | [`continue.yaml`](../examples/agents/continue.yaml): `provider: openai`, `apiBase`, Chat Completions mode | User/host chooses the background model entry | [Provider configuration](https://docs.continue.dev/customize/model-providers/top-level/openai), [config schema](https://docs.continue.dev/reference) |
@@ -121,6 +143,9 @@ not reach the host listener. Configure the network boundary deliberately;
 these examples do not silently bind the gateway to all interfaces.
 
 ## Evidence boundaries
+
+The [integration qualification receipts](integration-evidence.md) separate actual
+SDK and host-schema checks from model and native-resource evidence.
 
 The adapter contract tests cover immutable profiles, preserving full requests
 including nested tools/images, removing only routing metadata, explicit

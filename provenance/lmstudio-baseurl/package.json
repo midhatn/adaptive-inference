@@ -1,0 +1,11 @@
+{
+  "name": "lmstudio-openai-example-validation",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "openai": "7.43.0",
+    "typescript": "7.0.2",
+    "@types/node": "26.6.5"
+  }
+}

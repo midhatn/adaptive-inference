@@ -1,0 +1,337 @@
+{
+  "schema": "adaptive-inference.client-source-pins.v1",
+  "entries": [
+    {
+      "repo": "continue",
+      "revision": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "entry": "packages/openai-adapters/src/apis/OpenAI.ts",
+      "output": "continue-current.mjs",
+      "inputs": [
+        {
+          "path": "packages/openai-adapters/src/util.ts",
+          "sha256": "b3b085c781c6a722424b3b8ec83b43eb6bf548744df957d4511ec80c7b624bbd"
+        },
+        {
+          "path": "packages/openai-adapters/src/apis/openaiResponses.ts",
+          "sha256": "919ae4711667101186e13d68742c5f58217c4c24b19c36b7cae68601be5534b7"
+        },
+        {
+          "path": "packages/openai-adapters/src/apis/OpenAI.ts",
+          "sha256": "a80f263477488f9674b97e6152086922f697ee9af4598200f9806515eedb38e4"
+        }
+      ],
+      "output_sha256": "571508d960fdad19f950364fda184eda4febde810c07249b4fc9c644900f768b"
+    },
+    {
+      "repo": "continue",
+      "revision": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "entry": "packages/config-yaml/src/schemas/models.ts",
+      "output": "continue-schema.mjs",
+      "inputs": [
+        {
+          "dependency_path": "@continuedev/config-yaml/node_modules/zod/v3/helpers/util.js",
+          "sha256": "906ef685e5853d496e293ee8f8a2bb8b1ed2d078a1bcdfedb2dfd61d75b6330c"
+        },
+        {
+          "dependency_path": "@continuedev/config-yaml/node_modules/zod/v3/ZodError.js",
+          "sha256": "f5ac9e86b92e201d41e294d7aa35986a2aa28829e1bcc8ac25f7c8dce0674b99"
+        },
+        {
+          "dependency_path": "@continuedev/config-yaml/node_modules/zod/v3/locales/en.js",
+          "sha256": "51a6dcc5d4bd52a64da127c012c6c963395c1d9a343ad75d4a8eca662fc8b205"
+        },
+        {
+          "dependency_path": "@continuedev/config-yaml/node_modules/zod/v3/errors.js",
+          "sha256": "d40831f478288d76e82bbbcc3b7e95c8513b6e76471f2d49a37c979bc57d492d"
+        },
+        {
+          "dependency_path": "@continuedev/config-yaml/node_modules/zod/v3/helpers/parseUtil.js",
+          "sha256": "b57484013bb360bac2e334d58fcd5f6cbfa63ffcc7d8ff3dbbb3380ca659b956"
+        },
+        {
+          "dependency_path": "@continuedev/config-yaml/node_modules/zod/v3/helpers/typeAliases.js",
+          "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "dependency_path": "@continuedev/config-yaml/node_modules/zod/v3/helpers/errorUtil.js",
+          "sha256": "68589c0cf44c8b4ad19b77418f53caad2cd1dbc8d714f526e1876ebdee4828c5"
+        },
+        {
+          "dependency_path": "@continuedev/config-yaml/node_modules/zod/v3/types.js",
+          "sha256": "9763a2938f0e7f983363ef4bf6530e7583e3f2d54f8a4a6684efad58febc6e8e"
+        },
+        {
+          "dependency_path": "@continuedev/config-yaml/node_modules/zod/v3/external.js",
+          "sha256": "5d26d2e47e2352def36f89a3e8bf8581da22b7f857e07ef3114cd52cf4813445"
+        },
+        {
+          "dependency_path": "@continuedev/config-yaml/node_modules/zod/index.js",
+          "sha256": "6419c4ac0e637ff08463083e31886d10354f74cbcc4e584400b2b837e39ac881"
+        },
+        {
+          "path": "packages/config-yaml/src/schemas/models.ts",
+          "sha256": "5b863c0c97d1ba332ddc3dfd479fe0bb92fe83ca01b3fc2e9bd1a3448ea1b07c"
+        }
+      ],
+      "output_sha256": "e282b53c2cb99491a93da3f208a9128c81e1b5f572c876f2022f147e8f95a7ab"
+    },
+    {
+      "repo": "cline",
+      "revision": "c7db4bfbd2643425e3c185367cb8c8b4bc468c4f",
+      "entry": "sdk/packages/llms/src/providers/gateway.ts",
+      "output": "cline-current.mjs",
+      "inputs": [
+        {
+          "path": "sdk/packages/llms/src/providers/async.ts",
+          "sha256": "e37517a5abb54362d421853ccbdcf681da23cb5b99f8d82c0e72537dee1450a5"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/model-facts.ts",
+          "sha256": "1d712a029a0837b8df88f614262b2c81338dba195a2f3e92994b0716cf640de3"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/model-operations.ts",
+          "sha256": "7db4cc619f0cfdb5030a1e521e565317a653a2e612c47f050b5c3ea34ccae45b"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/catalog.generated.ts",
+          "sha256": "945669593b27de0dd8636dafee80a61e6f1bd44e274dbfea4894ea5e70e71d8a"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/provider-keys.ts",
+          "sha256": "945d6a6845941fbe16eb3d45567df8538a647828cf07a1e93738440fca78bd02"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/request-headers.ts",
+          "sha256": "30678aa41508e97f91c5eb4f77a667ab597af873eca19499d41ac72c4f992bf9"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/cline-client-headers.ts",
+          "sha256": "ffbbd697af38eeeea179cc18bf7ad657cfce206c96c6de2fb7440efae0a9c3cf"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/catalog-cline-recommended.ts",
+          "sha256": "cc635734bd6bd9a0ca954d08cfb910b470c2d286adaa42d9cdde0fac12c19ae9"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/model-operation.ts",
+          "sha256": "486a10ed220095f92e13806d20cb18babe75433e53cbfb418d8f091135e38e19"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/catalog-live.ts",
+          "sha256": "fbe6a2e6a55ca565056906b4c38876e1d427c72ce93284043b2a2846237f2537"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/catalog.generated-access.ts",
+          "sha256": "2f6aa46afef312774d9335d953662870c17206c80e7732a24087adc9366c74f8"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/cline-recommended.generated.ts",
+          "sha256": "73d0c46e4d652cc4b5f31c48b1616a04161844f61d6cbbf4bdf69f288a61ca71"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/model-filters.ts",
+          "sha256": "643080d844bc8a6a540e9764920a5f759359d777c0820c0bac319256721cb0c2"
+        },
+        {
+          "path": "sdk/packages/llms/src/catalog/model-id-aliases.ts",
+          "sha256": "d6300d9f37b12aa3b687880431a63900e1fa1febfe9263a7cf3579d9db6fa9ae"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/errors.ts",
+          "sha256": "8db5541fba664806145357c84b183940f1cd3f4410bffa3ee3fe56958c4e0604"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/provider-ids.generated.ts",
+          "sha256": "2e9ef467f4948c66072f3a366b4ee2d2df241fbf8ac112d7f35351ef62b72c24"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/ids.ts",
+          "sha256": "7e3f6851a508ed107e278ed9bff9de7c6e894582141d70e19ed83196e1115c7b"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/model-capabilities.ts",
+          "sha256": "e494a37d01d285d065c7a30578ea9cdb087d0c4bcdf68c69b36f14788476ed6e"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/openai-codex-models.ts",
+          "sha256": "b78e2d8c2c739df12d9d01565d55fd93bd2c12b8356d98d83db61fdad48717a1"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/providers.generated.ts",
+          "sha256": "2a0d27eca6e956242a432190cf783637d003849f4d276ffe609b5290f8db39c6"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/provider-options-types.ts",
+          "sha256": "93ad4f55631b7cfbe1085dd69ee42770835b8b3e93de7ad4a8297660297acee4"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/utils.ts",
+          "sha256": "07b096b7935cd53179fc37951a583473f9d41e0416c3ec625e3bfe6a9111cea1"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/anthropic-compatible.ts",
+          "sha256": "d3bfc9f6e7985c5eea37f2139068f618b1b89f82934fdcec8dfa96ed4f402bd1"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/bedrock-cache-point.ts",
+          "sha256": "4d6d683109b1ca1dfc7ac9515b84745084e4775b6b4f19a39c54246056e898fb"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/glm-thinking.ts",
+          "sha256": "125373b95248ee96eb83aa6823a80a3194e1e23e12d82fd82f618bf5b661c8ad"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/minimax-thinking.ts",
+          "sha256": "d797248095013609a250c801a0b2d73c222af7adb120159429fe65c293c176ab"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/builtins.ts",
+          "sha256": "079f8b32efbbaad2a05e68c6d8190c07bbd7bc89246924c14f87bd038428d113"
+        },
+        {
+          "path": "sdk/packages/llms/src/services/stream-error-telemetry.ts",
+          "sha256": "997e46167518f0b90da338145f81991890b0b229ea056dbd86fd61271e9d6f35"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/error-classification.ts",
+          "sha256": "f6c9cd463ff9334e713331dced7154e3c4ae953b726a5c8741cba0b0594ee14d"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/format.ts",
+          "sha256": "b3eca861bf6ceb9300daf067cb538b3d6fc4db200a5a45e3963017b0ea6f34d1"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/middleware/stream-part-classification.ts",
+          "sha256": "507f2d2465394994da3f901f6b2bb018fa7aa631ca907775526b8a4793ec3a4b"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/middleware/retry-empty-response.ts",
+          "sha256": "e1719e71ab3fc9f8eaeec8aff6f87f63fb842879e0655a86c05b1d50488f97bc"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/provider-request-capture.ts",
+          "sha256": "5059903ea4ab69de694d04b9df5e8578afeb7e4c61d5c04229b166f1f89cc14d"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/response-request-id.ts",
+          "sha256": "45a41eb266e3bc389704ba657f6f101f053eaa37e9cbb05ef3aa48e2cf9f9dd1"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/portable-reasoning.ts",
+          "sha256": "db67cc3ac5b231cf766675bbc7a304d9c944a9ec2e27e109db76f0d7e1d53b6a"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/generic-compatible.ts",
+          "sha256": "b2437abd99916bd435eaa542e02c79bf300c7cfd2d32222177f9df1b2f617519"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/url.ts",
+          "sha256": "178f2db5dde5dd9ef95fbbb76312d35d8f0ebe611da671ba79dcd8ff8b8fec42"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/utils.ts",
+          "sha256": "6d3bcb1e37bf6822b66c348f0a14a2eea9e9d07794709e6148c7967bc84baa0e"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/reasoning-codecs.ts",
+          "sha256": "3bfcce7aaa4ae9976e80e2f5bb3775fec6f649452964081aded5f328d7dbe40f"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/provider-option-rules.ts",
+          "sha256": "8d5effc87cfc65a7b4999247b425b62d2832b198de0a9389b361f09c9372523e"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/reasoning-options.ts",
+          "sha256": "2785f6692bccd7a0b1573a271b107b0e404c6e7d51b0383ca9c7a77577829d37"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/routing/provider-options.ts",
+          "sha256": "b2e635bb766135547075fe1c5ff14aeca359f1acdfa0510e600c2b823e2dbff8"
+        },
+        {
+          "path": "sdk/packages/llms/src/services/langfuse-stream-telemetry.ts",
+          "sha256": "bd68d483f82edb9774091b9d9fb29101f5376cd0b8fc3a3288e79370b557a45c"
+        },
+        {
+          "path": "sdk/packages/llms/src/services/langfuse-telemetry.ts",
+          "sha256": "5fef6e88be875488a3880aef86be692afd6a568f0421a5730487cb2b29000b84"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/http.ts",
+          "sha256": "c39a1aad2d3741b43e1c1620a83b39f2199567a006038f37d05476a266800424"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/middleware/split-tool-images.ts",
+          "sha256": "da2b4fc193acc98e61c5f6da48a592c323dac840877a554d85a197be69764d2f"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/openai-compatible.ts",
+          "sha256": "c9cfe9b6a8e021e94f642b54b9b55595d7544559c8d65a21ad5f8b1f055b37df"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/cline.ts",
+          "sha256": "baba923b6b9299dc3b30db05ba111258f2e91090da91627a4d9f3b7679d5d349"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/openai.ts",
+          "sha256": "2305e91dd9b856d05212fc5740d86befde6dd6749ee36a21a049ce7c4570283c"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/minimax-thinking.ts",
+          "sha256": "cc8506dcb35abea198b1266ec1bf6f359bfeb79fe9703193ef07f84c8aee48d2"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/anthropic.ts",
+          "sha256": "a9d3486127d6d9d0033e6e769d0826dd648656484ab709ba30ee4fce42a40c42"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/google.ts",
+          "sha256": "5c70478a56e3dc7775f20e6a60df2cf5b96bfa962b4281ae243c113dd65b920e"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/vertex.ts",
+          "sha256": "f59121916fbc1944e37cd0da7041999efa7aba5195e4283e5598a993e2485f71"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/bedrock.ts",
+          "sha256": "6f7009242cd0aec817f53dfbf835c8ae1e3097f457c37eca2ff3ed20c94e8dc0"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/mistral.ts",
+          "sha256": "ebe83295916f234605380ca9685cebaf5efe2e2749e287592b361633659139e9"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/community.ts",
+          "sha256": "906f6bcd422d484debb4c3033ebc57855500c88656b2479e1e07d5123dcf3b4a"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/vendors/ollama.ts",
+          "sha256": "464288116eccbf831a96ed34c1edc0299da65fccaaa44b33f699c5a2fbc264b8"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/ai-sdk.ts",
+          "sha256": "51bcd9812d7b55911b973a98bf1f3e7d4f824ebf39eb379a1fdc8bab9c3b7338"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/builtins-runtime.ts",
+          "sha256": "6b2f7e6e611b6ea6909c3e66b23db315db6aceacbb8d82affd05a333be7909c8"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/model-tools.ts",
+          "sha256": "ca65d9e470147f33f3a4e19a3f82c2b2a65a5217ed3f76e632fc41cae3764149"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/registry.ts",
+          "sha256": "0e1656b878b6728a8017a2a825df1d322798cc6ec8811db7df7e601bfd7e616f"
+        },
+        {
+          "path": "sdk/packages/llms/src/providers/gateway.ts",
+          "sha256": "d465fc760e2734c855ddcb45eac315b3c269be4284a68cda512c2843188912c9"
+        }
+      ],
+      "output_sha256": "5a8d292987909c33cf986db9380ba8413700a7efa1ab24aad27b685f0c7269ed"
+    }
+  ],
+  "dependency_lock_sha256": "b0118f869bcd64014f18994249389cb45fe9355b81b3bcb69ae1654b7685a4ba"
+}

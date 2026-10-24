@@ -1,0 +1,21 @@
+name: adaptive-inference-routing
+version: "0.1.0"
+description: Opt-in background routing for host-known Hermes workers on an existing Adaptive Inference gateway.
+author: midhatn
+license: Apache-2.0
+homepage: https://github.com/midhatn/adaptive-inference
+requires_hermes: ">=0.21.5"
+provides_tools: []
+provides_hooks:
+  - subagent_start
+  - subagent_stop
+  - post_compaction
+provides_middleware:
+  - llm_request
+requires_env: []
+python_dependencies: []
+config_schema:
+  routing:
+    type: dict
+    default: {}
+    description: "Routing options: enabled, gateway_url, background_profile, demote_delegated, demote_cron. Disabled unless enabled is true."

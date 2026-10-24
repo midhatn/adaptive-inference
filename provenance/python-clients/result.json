@@ -1,0 +1,538 @@
+{
+  "schema": "adaptive-inference.python-client-conformance.v1",
+  "passed": true,
+  "versions": {
+    "langgraph": "1.2.16",
+    "langchain-openai": "1.7.2",
+    "crewai": "1.15.29",
+    "autogen-ext": "0.7.5",
+    "openai": "2.54.0"
+  },
+  "rows": [
+    {
+      "client": "langgraph",
+      "background": false,
+      "mode": "text",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "content": "Fixture request, no real model.",
+                "role": "user"
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_completion_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": false,
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "langgraph",
+      "background": true,
+      "mode": "text",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/background/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "content": "Fixture request, no real model.",
+                "role": "user"
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_completion_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": false,
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "langgraph",
+      "background": false,
+      "mode": "stream",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "content": "Fixture request, no real model.",
+                "role": "user"
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_completion_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": true,
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "langgraph",
+      "background": true,
+      "mode": "stream",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/background/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "content": "Fixture request, no real model.",
+                "role": "user"
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_completion_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": true,
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "langgraph",
+      "background": true,
+      "mode": "tools",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/background/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "content": "Fixture request, no real model.",
+                "role": "user"
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_completion_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": false,
+            "temperature": 0.73,
+            "tools": [
+              {
+                "type": "function",
+                "function": {
+                  "name": "inspect_artifact",
+                  "description": "Fixture, never executed",
+                  "parameters": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "strict": true
+                }
+              }
+            ],
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "crewai",
+      "background": false,
+      "mode": "text",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Fixture request, no real model."
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_tokens": 10923,
+            "reasoning_effort": "high",
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "crewai",
+      "background": true,
+      "mode": "text",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/background/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Fixture request, no real model."
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_tokens": 10923,
+            "reasoning_effort": "high",
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "crewai",
+      "background": false,
+      "mode": "stream",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Fixture request, no real model."
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "crewai",
+      "background": true,
+      "mode": "stream",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/background/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Fixture request, no real model."
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "crewai",
+      "background": true,
+      "mode": "tools",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/background/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Fixture request, no real model."
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_tokens": 10923,
+            "reasoning_effort": "high",
+            "temperature": 0.73,
+            "tool_choice": "auto",
+            "tools": [
+              {
+                "type": "function",
+                "function": {
+                  "name": "inspect_artifact",
+                  "description": "Fixture, never executed",
+                  "strict": true,
+                  "parameters": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            ],
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "autogen",
+      "background": false,
+      "mode": "text",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "name": "user",
+                "content": "Fixture request, no real model."
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": false,
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "autogen",
+      "background": true,
+      "mode": "text",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/background/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "name": "user",
+                "content": "Fixture request, no real model."
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": false,
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "autogen",
+      "background": false,
+      "mode": "stream",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "name": "user",
+                "content": "Fixture request, no real model."
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": true,
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "autogen",
+      "background": true,
+      "mode": "stream",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/background/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "name": "user",
+                "content": "Fixture request, no real model."
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": true,
+            "temperature": 0.73,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "client": "autogen",
+      "background": true,
+      "mode": "tools",
+      "output": "fixture accepted",
+      "requests": [
+        {
+          "path": "/team/inference/background/v1/chat/completions",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "messages": [
+              {
+                "role": "user",
+                "name": "user",
+                "content": "Fixture request, no real model."
+              }
+            ],
+            "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+            "max_tokens": 10923,
+            "reasoning_effort": "high",
+            "stream": false,
+            "temperature": 0.73,
+            "tool_choice": "auto",
+            "tools": [
+              {
+                "type": "function",
+                "function": {
+                  "name": "inspect_artifact",
+                  "description": "Fixture, never executed",
+                  "parameters": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "strict": true
+                }
+              }
+            ],
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false,
+            "pcie_frac": 0.37
+          }
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "external_connection_attempts": [],
+  "models_run": false,
+  "known_client_normalizations": {
+    "langchain": "max_tokens is emitted as max_completion_tokens with the same allowance; nonstandard response reasoning fields are not preserved",
+    "crewai": "SDK converts function schemas to strict mode; this suite supplies an already-strict schema and does not claim arbitrary input schemas remain identical"
+  },
+  "scope": "Actual installed SDK clients over loopback HTTP fixtures; no gateway/native model/agent task/reboot qualification. Tools are serialized, not executed.",
+  "source_sha256": {
+    "provenance/python-clients/check_clients.py": "881f91f7b2ce690bcec69d37349ef7b705d3dfc6fa9feb117e81c9ea8e7d8800",
+    "src/adaptive_inference/client_routing.py": "3da3ef038a99e11542944c039b6dbe319bb35a199cf0724462a2f254e0b9bf8a",
+    "examples/agents/langgraph_client.py": "eef868db00cad2279dbe8628610f5f414c872efed74a077e61c10a5a0ff23509",
+    "examples/agents/autogen_client.py": "4a55749315af87f90330dca08e4cc717908f2674934d07bb4f2ccbedf55257c6",
+    "examples/agents/crewai_client.py": "0c50b24b38b221fd4fd2ac10fcc779f0d8b78670cbb17038c4fa4bb461dfe16e"
+  }
+}

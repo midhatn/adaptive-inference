@@ -1,0 +1,57 @@
+{
+  "schema": "adaptive-inference.release-validation.v1",
+  "passed": true,
+  "version": "0.2.0",
+  "prepared_at_utc": "2026-10-24T00:41:31.421465+00:00",
+  "release_commit": "45fe39836193b1fb3dc4fa375d6662410a70ad7b",
+  "artifact_source_commit": "489270dc1e319b32e7450473f9a9845c30cc076f",
+  "identical_source_tree": "dba03a66873813d1067294000fffbd6e3c70bbbd",
+  "ci": {
+    "url": "https://github.com/midhatn/adaptive-inference/actions/runs/40045976827",
+    "conclusion": "success",
+    "portable_tests": 95,
+    "preservation_tests": 16,
+    "platforms": [
+      "Windows",
+      "Linux",
+      "macOS"
+    ],
+    "python_versions": [
+      "3.11",
+      "3.12"
+    ],
+    "complete_linux_offline_restore": true
+  },
+  "distribution_check": {
+    "passed": true,
+    "project_source_files": 135,
+    "wheel_modules": 14,
+    "wheel_license_notice_files": 5,
+    "canonical_git_bytes": true
+  },
+  "artifacts": [
+    {
+      "name": "adaptive_inference-0.2.0-py3-none-any.whl",
+      "bytes": 51293,
+      "sha256": "424833889010632f156356e0248e2bea915ce97b6513a255c749f7841a0983a2"
+    },
+    {
+      "name": "adaptive_inference-0.2.0.tar.gz",
+      "bytes": 148383839,
+      "sha256": "5adc4911eee1e1266f22d9f43dce9ab4304cb9fbf9f31fc7b028d1a765c1d978"
+    },
+    {
+      "name": "source-artifact-validation.json",
+      "bytes": 5975,
+      "sha256": "80a1effe0c60a6dfef354eda87d348b50e43b6d48d4421405047f7e800da3dba"
+    },
+    {
+      "name": "wheel-validation.json",
+      "bytes": 5009,
+      "sha256": "053512b7ae798897cd5d64187b6c179ebc3cc8a5411ee5752c0726061c13eee7"
+    }
+  ],
+  "models_run_for_release": false,
+  "model_validation_constraint": "All actual inference qualification must use the existing IQ3_S model and preserved quality baseline. Software fixture checks are separate.",
+  "scope": "Standalone source and installed portable runtime qualification; not universal native engine or installed agent qualification, physical power-loss certification, or machine-wide resource handoff."
+}

@@ -1,0 +1,106 @@
+{
+  "schema": "adaptive-inference.aider-transport.v1",
+  "passed": true,
+  "source_revision": "5dc9490bb35f9729ef2c95d00a19ccd30c26339c",
+  "client": "actual Aider Model/config registration and LiteLLM/OpenAI transport",
+  "scope": "loopback fixture HTTP; no agent task or model",
+  "versions": {
+    "litellm": "1.82.3",
+    "openai": "2.28.0"
+  },
+  "requests": [
+    {
+      "path": "/v1/chat/completions",
+      "body": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Fixture only."
+          }
+        ],
+        "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+        "max_tokens": 10923,
+        "temperature": 0.2,
+        "tool_choice": {
+          "type": "function",
+          "function": {
+            "name": "read_status"
+          }
+        },
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_status",
+              "description": "Read fixture status",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        ],
+        "reasoning_effort": "high",
+        "reasoning_budget_tokens": 8192,
+        "experimental_speed_projection": false
+      }
+    },
+    {
+      "path": "/background/v1/chat/completions",
+      "body": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Fixture only."
+          }
+        ],
+        "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+        "max_tokens": 10923,
+        "stream": true,
+        "temperature": 0.2,
+        "tool_choice": {
+          "type": "function",
+          "function": {
+            "name": "read_status"
+          }
+        },
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "read_status",
+              "description": "Read fixture status",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        ],
+        "reasoning_effort": "high",
+        "reasoning_budget_tokens": 8192,
+        "experimental_speed_projection": false
+      }
+    }
+  ],
+  "external_socket_attempts": 0,
+  "source_sha256": {
+    "aider/models.py": "37784de662eeafacf17cbc4eb656246aadee20477b8ad43768caf7d373ab6e0d",
+    "aider/llm.py": "7c609e98fd57f4c070ac37ec4ca189ff5b31fb22b3dc3ca83afc5960e92f19a9"
+  },
+  "test_sha256": "c0584069bb00cb6dc910d1cf18e40984be6b1f84ae5e71ca7df100dc34ac4ba1"
+}

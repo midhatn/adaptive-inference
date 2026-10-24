@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Define one agent/engine integration contract for routing, quality preservation, ownership, native capabilities and durable continuation.
+- Generalize Python client recipes to configurable gateway ports, proxy prefixes and credential environment references, retaining background classification and rejecting transport overrides in generation options.
+- Add an opt-in Hermes plugin using public lifecycle/middleware hooks, and an OpenClaw configuration composer that preserves supplied model, authentication and fallback policy.
+- Preserve executable integration recipes, pinned client/schema inputs and scoped compatibility receipts beside their reproduction instructions.
+
 ## 0.2.0 — source preservation and durable task continuation
 
 - Preserve native integration baselines and their pinned native dependency locally, with checksummed source reconstruction that needs no upstream fetch.
