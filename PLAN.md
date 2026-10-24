@@ -49,7 +49,7 @@ interrupted runs will remain identified as such.
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: durable demand published; cold-start and controller components reviewed; persistent-host integration next |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: durable demand and bounded task controls implemented; persistent host and Hermes control integration under review |
 | M3 | Measured coexistence with real desktop applications | M2; observation work can start earlier | Planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |
@@ -149,7 +149,11 @@ including replacement-worker persistence and repeated observation without
 consuming history. Independent review found no blocking component defect;
 host integration and live acceptance remain separate steps. Its observation
 does not grant dispatch or unloading, and demand cancellation does not yet
-cancel the existing runner.
+cancel the existing runner. The [task-control component](docs/task-controls.md)
+now records ordered Pause, Resume and Cancel requests without taking that
+runner's long-held lock. It reuses a separate task record in the same store;
+only the actual owner applies and acknowledges a request at a safe checkpoint.
+The existing launchers and Hermes runner still need the explicit hooks below.
 
 **Next integration sequence:** compose the already reviewed demand and cold-start
 components with the existing native host, then add trusted user controls and
@@ -166,6 +170,16 @@ trusted task owner at a safe boundary, rather than editing a live task behind
 its owner. Cold preparation must retain the existing startup barrier without
 inventing a running owner or release receipt. These are integration requirements;
 component tests alone do not qualify the persistent product.
+
+Review feedback refined this sequence. The first control-status reader could
+mistake concurrent valid acknowledgements for corruption; the corrected read
+order and regression preserve the unsuccessful predecessor. Host composition
+also exposed a soft setup deadline and a completed-timeout cleanup retry bug.
+The successor retains setup work across timeout, fences late startup and joins
+completed failures while preserving their original errors. These lifecycle
+fixes are under component review, not live qualification. Next, connect controls
+at Hermes' actual native-history safe points, then qualify the complete cold
+start, demand, waiting, cancellation and cleanup path with unchanged IQ3_S.
 
 Required work:
 

@@ -356,3 +356,17 @@
   url = {https://docs.aiohttp.org/en/stable/web_advanced.html#graceful-shutdown},
   note = {Inspected 2026-10-24; admission closure, retained task completion and final cleanup ordering inform the existing controller shutdown correction. No source copied or additional dependency introduced}
 }
+
+@misc{sqliteControlTransactions,
+  title = {{SQLite transaction control and atomic commit}},
+  author = {{SQLite authors}},
+  url = {https://www.sqlite.org/lang_transaction.html},
+  note = {Inspected with https://www.sqlite.org/atomiccommit.html on 2026-10-24. Existing TaskStore transactions are reused; control transition and acknowledgement remain separate commits. No SQLite implementation copied or new database introduced}
+}
+
+@misc{temporalControlAcknowledgement,
+  title = {{Temporal Python Workflow message passing}},
+  author = {{Temporal Technologies and contributors}},
+  url = {https://docs.temporal.io/develop/python/workflows/message-passing},
+  note = {Inspected 2026-10-24 for recorded versus completed control requests and explicit update identity. Design adaptation in the bounded local control mailbox only; no Temporal dependency, copied implementation or inherited exactly-once guarantee}
+}

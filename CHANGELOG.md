@@ -9,6 +9,7 @@
 - Reuse the bounded feedback runner for independently rejected completed answers; keep every attempt and unknown-outcome boundary. The accepted hardware run needed no arithmetic correction.
 - Preserve the full validation sources, licensed references, predecessor mechanisms, historical evidence filters and sanitized receipts in this repository. Model assets, native binaries and private histories remain external prerequisites.
 - Add durable task demand using existing task transactions and ownership. Persistent service integration and user controls are the next milestone; a demand observation alone grants neither dispatch nor unloading.
+- Add bounded durable Pause, Resume and Cancel requests through the same task store. Distinguish a saved request from owner acknowledgement, retain ordered requests across worker replacement and refuse unresolved operations. This portable component is not yet wired to the launchers or Hermes runner.
 
 ## 0.3.0 — generalized integrations and IQ3_S agent-task evidence
 

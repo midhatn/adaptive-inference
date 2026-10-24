@@ -1,0 +1,26 @@
+{
+  "schema": "adaptive.control-mailbox-source-lineage.v1",
+  "scope": "Portable component source lineage; no host, model or installed-agent acceptance",
+  "preserved": {
+    "reviewed/control_mailbox.py": "5084d3e0c3283c820680ccc683133f24ee050989caf67842eaee271cc56b798f",
+    "reviewed/test_control_mailbox.py": "4a32e95f35601144503547a6809bcabc1d3640cffe46f02e41ddbcac8ac1f7c1",
+    "predecessor/control_mailbox.py": "21fe0f8149f6dbda73b308d5d0759c607a60bf765cfd3ca5008beafe68ef8d43",
+    "predecessor/test_control_mailbox.py": "c624f7eff651f1807a617fc5b7712c8263256caafbbefe09aa6cddd487777600",
+    "independent/test_review_boundaries.py": "3897fb840ca4e49d20814be642c3776db1a9aea5176dae4aac6eea0bb0501311"
+  },
+  "canonical_dependencies_at_review": {
+    "src/adaptive_inference/task_store.py": "39f4efaa0983fea5202ac1027f12c7638787e7da874e26b678a9a3812b1afacc",
+    "src/adaptive_inference/demand.py": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad"
+  },
+  "promotion": {
+    "runtime": "Module documentation link only; all executable AST nodes unchanged",
+    "tests": "Canonical package import; remove private dependency pins/path injection; combine unchanged 18 producer and 4 independent fixture methods",
+    "private_manifests": "Not published because they contain local paths; exact implementation/test bytes are preserved here"
+  },
+  "license": "Apache-2.0; existing TaskStore MIT-derived transaction attribution retained",
+  "references": [
+    "https://docs.temporal.io/develop/python/workflows/message-passing",
+    "https://www.sqlite.org/lang_transaction.html",
+    "https://www.sqlite.org/atomiccommit.html"
+  ]
+}
