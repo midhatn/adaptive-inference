@@ -17,6 +17,11 @@ The OS lock coordinates local runners that use this API. It does not stop an unr
 
 ## Host integration
 
+Before upgrading an existing store, stop and join all older TaskStore readers and
+workers. The corrected [verification and recovery path](task-store-verification.md)
+requires every concurrent API user to honor the same short operation gate. This
+is separate from task ownership and does not change the stored schema or budgets.
+
 Create a task once using `TaskStore.create(task_id, prompt, max_attempts=..., metadata=...)`. On later starts, load the same task; do not replace its objective or reset its attempts. Store it in a private directory on a local filesystem, for example the ignored `local/` directory. Task content is saved as local plaintext, not automatically redacted or encrypted. Keep the database and its SQLite/lock sidecars together; do not delete lock files while runners may be alive.
 
 Identity metadata must bind the generator/model configuration, validator and workflow versions used by the host. `resume_with_feedback` requires a nonempty identity object exactly matching that metadata. A changed identity requires an explicit host migration or reconciliation, not silent continuation under different settings.

@@ -140,7 +140,24 @@ A bounded two-thread CPU experiment produced 22/32 raw fixture-policy matches, w
 Separate offline compaction work inspected [Hermes #136671](https://github.com/NousResearch/hermes-agent/pull/136671) at `6fc8f700ed9876d4009ec9141d52950cc1a35432`, [#117462](https://github.com/NousResearch/hermes-agent/pull/117462) at `cd3e50f0d67d22a99efead563070b819125365b2`, and [#137349](https://github.com/NousResearch/hermes-agent/pull/137349) at `1ca8ee5f1d29088d7d678871c78323f44f6b0a31`. Their MIT-licensed contributions informed selected tool-result lineage, tool-argument reference harvesting and carrying exact historical references across rewrites. Individual authors and original PRs are retained in the registry.
 
 These were narrow mechanism adaptations in a separate offline prototype, not whole-PR merges or components shipped by the gateway's Hermes overlay. Restored evidence remains quoted data; it cannot authorize a tool, supersede current instructions or bypass secret redaction. Exact-budget overflow refuses rather than truncating references. Saved-response replay and synthetic carry checks do not establish durable natural multi-generation agent continuation, and are not requirements for the gateway's scheduling contract.
-# Shutdown and evidence-accounting follow-up
+## Storage and shutdown follow-ups
+
+### Task-store verification
+
+Concurrent status/control integration led to inspection of SQLite's
+[immutable URI promise](https://www.sqlite.org/uri.html),
+[raw-close lock hazard](https://www.sqlite.org/howtocorrupt.html#posix_advisory_locks_canceled_by_a_separate_thread_doing_close_),
+[rollback algorithm](https://www.sqlite.org/lockingv3.html) and
+[WAL shared-memory rules](https://www.sqlite.org/wal.html). The chosen correction
+reuses the existing stable operation lock, ordinary read transactions and SQLite's
+own recovery. A copied hot journal is checked for the upstream super-journal
+suffix before SQLite may inspect it; possible external references are refused.
+The exact public-domain pager source at `189e44dfecdc7868bb860dfb5d98eab371318c37`
+is preserved in the reference archive. No new database or recovery parser is used.
+See the [implementation and upgrade boundaries](task-store-verification.md).
+This is a correctness correction, not a measured scheduling or throughput gain.
+
+### Shutdown and evidence accounting
 
 The complete-workflow audit exposed two distinct implementation assumptions.
 The foreground wait collector starts before its animation window; checking

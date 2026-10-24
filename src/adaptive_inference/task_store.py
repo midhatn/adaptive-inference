@@ -19,12 +19,15 @@ from __future__ import annotations
 from contextlib import contextmanager
 from dataclasses import dataclass
 import hashlib
+import errno
 import json
 import math
 import os
 from pathlib import Path
 import re
 import sqlite3
+import tempfile
+import time
 import uuid
 
 
@@ -34,6 +37,10 @@ MAX_TASKS = 1000
 MAX_REVISIONS = 256
 APPLICATION_ID = 0x4149544B
 SCHEMA_VERSION = 1
+STORE_GATE_TIMEOUT = 5.0
+STORE_GATE_POLL = 0.01
+MAX_RECOVERY_JOURNAL_BYTES = 2 * MAX_DB_BYTES
+_JOURNAL_MAGIC = b"\xd9\xd5\x05\xf9\x20\xa1\x63\xd7"
 _SCHEMA = {
     "tasks": "CREATE TABLE tasks (task_id TEXT PRIMARY KEY, prompt TEXT NOT NULL, max_attempts INTEGER NOT NULL, metadata TEXT NOT NULL, revision INTEGER NOT NULL, state TEXT NOT NULL, owner_epoch TEXT, inflight TEXT, reconciliation INTEGER NOT NULL)",
     "history": "CREATE TABLE history (task_id TEXT NOT NULL REFERENCES tasks(task_id), revision INTEGER NOT NULL, event TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(task_id, revision))",
@@ -196,10 +203,41 @@ class TaskStore:
         self.path = Path(path).expanduser().resolve()
         if not self.path.parent.is_dir():
             raise ValueError("The task store's private parent directory must exist")
-        init_lock = _FileLock(str(self.path) + ".init.lock")
+        with self._store_gate():
+            self._initialize_locked()
+
+    @contextmanager
+    def _store_gate(self):
+        """Serialize short cooperating operations, never an agent/task lifetime.
+
+        This reuses the stable initialization sidecar. SQLite still performs all
+        database locking, transactions and journal recovery. The gate also makes
+        the rare database+journal recovery copy quiescent among API users.
+        """
+        deadline = time.monotonic() + STORE_GATE_TIMEOUT
+        while True:
+            try:
+                lock = _FileLock(str(self.path) + ".init.lock")
+                break
+            except TaskBusyError as exc:
+                # Only the existing OS lock's contention result is waitable.
+                # Failure to open/create the sidecar is not caught here.
+                cause = exc.__cause__
+                if not isinstance(cause, OSError) or cause.errno not in (errno.EACCES, errno.EAGAIN):
+                    raise
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TaskBusyError("Timed out waiting for a cooperating task-store operation") from exc
+                time.sleep(min(STORE_GATE_POLL, remaining))
+        try:
+            yield
+        finally:
+            lock.close()
+
+    def _initialize_locked(self):
         try:
             if self.path.exists():
-                self._verify_existing()
+                self._verify_existing_locked()
             else:
                 fd = os.open(self.path, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0o600)
                 os.close(fd)
@@ -218,11 +256,9 @@ class TaskStore:
                         db.execute(f"PRAGMA user_version={SCHEMA_VERSION}")
                 finally:
                     db.close()
-                self._verify_existing()
+                self._verify_existing_locked()
         except sqlite3.Error as exc:
             raise InvalidStoreError("Cannot initialize or read task store") from exc
-        finally:
-            init_lock.close()
 
     @staticmethod
     def _verify_schema(db):
@@ -233,43 +269,101 @@ class TaskStore:
         if actual != _SCHEMA:
             raise InvalidStoreError("Task store schema changed")
 
-    def _verify_existing(self):
+    @classmethod
+    def _verify_sqlite(cls, path, *, mode):
+        """One SQLite read snapshot; mode=rw permits SQLite's own hot recovery."""
+        db = sqlite3.connect(path.as_uri() + "?mode=" + mode, uri=True, timeout=5)
+        try:
+            # SQLite WAL section 8: exclusive mode before the first read avoids
+            # shared-memory operations. A readonly WAL file is refused instead
+            # of creating WAL/SHM files before we can reject its layout. This
+            # connection-local setting is compatible with the short store gate.
+            if db.execute("PRAGMA locking_mode=EXCLUSIVE").fetchone()[0] != "exclusive":
+                raise InvalidStoreError("SQLite did not enable exclusive verification locking")
+            db.execute("BEGIN")
+            cls._verify_schema(db)
+            if db.execute("PRAGMA journal_mode").fetchone()[0] != "delete":
+                raise InvalidStoreError("Task store requires DELETE journaling")
+            if db.execute("PRAGMA quick_check").fetchone()[0] != "ok":
+                raise InvalidStoreError("Task store integrity check failed")
+        finally:
+            # Close even after READONLY_ROLLBACK before any raw recovery copy.
+            db.close()
+
+    @staticmethod
+    def _copy_bounded(source, destination, maximum):
+        """Called only with the store gate held and its SQLite handles closed."""
+        total = 0
+        with source.open("rb") as incoming, os.fdopen(
+                os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "wb") as outgoing:
+            while True:
+                block = incoming.read(min(64 * 1024, maximum + 1 - total))
+                if not block:
+                    break
+                total += len(block)
+                if total > maximum:
+                    raise InvalidStoreError("Task store recovery copy exceeds its size bound")
+                outgoing.write(block)
+        return total
+
+    def _recover_journal_locked(self):
+        """Validate a quiescent copied pair, then let SQLite recover the original.
+
+        SQLite URI/locking contracts require no live immutable reads. A copy of
+        just the main file can contain uncommitted schema. Paired copying is safe
+        here only for cooperating API users on the private local filesystem.
+        See SQLite howtocorrupt.html sections 1.2 and 2.2, and version-3.45.1
+        src/pager.c readSuperJournal()/pager_playback()/pager_delsuper().
+        """
+        journal = Path(str(self.path) + "-journal")
+        if (not journal.is_file() or not 8 <= journal.stat().st_size <= MAX_RECOVERY_JOURNAL_BYTES):
+            raise InvalidStoreError("Task store recovery journal is missing or exceeds supported bounds")
+        with tempfile.TemporaryDirectory(dir=self.path.parent, prefix=".adaptive-task-recovery-") as temporary:
+            copied = Path(temporary) / "tasks.sqlite"
+            copied_journal = Path(str(copied) + "-journal")
+            self._copy_bounded(self.path, copied, MAX_DB_BYTES)
+            self._copy_bounded(journal, copied_journal, MAX_RECOVERY_JOURNAL_BYTES)
+            with copied_journal.open("rb") as handle:
+                handle.seek(-8, os.SEEK_END)
+                if handle.read(8) == _JOURNAL_MAGIC:
+                    # In the pinned SQLite source, a possible super-journal
+                    # filename requires this suffix. Reject every match rather
+                    # than parse names/checksums or access an external path.
+                    raise InvalidStoreError("Multi-database recovery journals are unsupported")
+            self._verify_sqlite(copied, mode="rw")
+        # No original file has been changed by us or SQLite before this point.
+        # Preserve this boundary even when copying/validation/cleanup fails.
+        self._verify_sqlite(self.path, mode="rw")
+
+    def _verify_existing_locked(self):
         if not self.path.is_file() or not 100 <= self.path.stat().st_size <= MAX_DB_BYTES:
             raise InvalidStoreError("Invalid or oversized task store file")
-        with self.path.open("rb") as handle:
-            header = handle.read(100)
-            if header[:16] != b"SQLite format 3\0":
-                raise InvalidStoreError("Task store is not a SQLite database")
-            if (int.from_bytes(header[68:72], "big") != APPLICATION_ID
-                    or int.from_bytes(header[60:64], "big") != SCHEMA_VERSION):
-                raise InvalidStoreError("Foreign or unsupported task store header")
+        if any(Path(str(self.path) + suffix).exists() for suffix in ("-wal", "-shm")):
+            raise InvalidStoreError("Task store supports only the single-database DELETE journal layout")
         try:
-            # Our schema never changes after initialization. Check that static
-            # identity without rollback/recovery first: ordinary mode=ro can
-            # reject a recoverable hot journal because recovery needs writes.
-            # Do not inspect task payloads through immutable=1: those pages can
-            # contain uncommitted changes until SQLite rolls the journal back.
-            db = sqlite3.connect(self.path.as_uri() + "?mode=ro&immutable=1", uri=True, timeout=5)
             try:
-                self._verify_schema(db)
-            finally:
-                db.close()
-            # Only the exact identified schema may now recover its own journal.
-            # No persistent PRAGMA or application-level repair is performed.
-            db = sqlite3.connect(self.path.as_uri() + "?mode=rw", uri=True, timeout=5)
-            try:
-                self._verify_schema(db)
-                if db.execute("PRAGMA quick_check").fetchone()[0] != "ok":
-                    raise InvalidStoreError("Task store integrity check failed")
-            finally:
-                db.close()
+                self._verify_sqlite(self.path, mode="ro")
+            except sqlite3.Error as exc:
+                if getattr(exc, "sqlite_errorcode", None) != sqlite3.SQLITE_READONLY_ROLLBACK:
+                    raise
+                self._recover_journal_locked()
         except sqlite3.Error as exc:
-            raise InvalidStoreError("Task store cannot be verified or recovered by SQLite") from exc
+            code = getattr(exc, "sqlite_errorcode", None)
+            name = getattr(exc, "sqlite_errorname", None)
+            raise InvalidStoreError(
+                f"Task store SQLite verification/recovery failed (code={code}, name={name})"
+            ) from exc
 
     @contextmanager
     def _connection(self, *, write=False):
+        with self._store_gate():
+            with self._connection_locked(write=write) as db:
+                yield db
+
+    @contextmanager
+    def _connection_locked(self, *, write=False):
         # Identity checks precede persistent PRAGMA changes on an existing file.
-        self._verify_existing()
+        self._verify_existing_locked()
         db = sqlite3.connect(self.path.as_uri() + ("?mode=rw" if write else "?mode=ro"),
                              uri=True, timeout=5)
         db.row_factory = sqlite3.Row

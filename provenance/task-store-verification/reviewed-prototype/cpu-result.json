@@ -1,0 +1,8 @@
+{
+  "tests": 75,
+  "passed": true,
+  "failures": 0,
+  "errors": 0,
+  "seconds": 8.060171499999342,
+  "scope": "CPU SQLite/OS-lock fixtures only; no original failure-cause or live qualification claim"
+}
