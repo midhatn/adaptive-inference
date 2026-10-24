@@ -94,7 +94,8 @@ does not prove a real wait longer than the previous watchdog.
 Retain the earlier failed queued-provider path and its explanation. The existing
 foreground animation's frame budget remains a bounded UI test, not a game or
 physical input-latency benchmark. Publish the accepted scope through the release
-process below before announcing this milestone in related PRs.
+process below. An upstream PR receives it only when it supports a relevant,
+mergeable change with validation for that target repository.
 
 ### M2 — Make the controller practical to leave running
 
@@ -436,19 +437,45 @@ Every accepted milestone is independently releasable at its actual scope:
    distribution and offline source reconstruction.
 4. Publish the canonical commit/release before referring downstream users to it.
 5. Refresh the [upstream delivery ledger](docs/upstream-delivery.md) and exact PR
-   heads/states. Update every relevant open PR when there is applicable solid
-   evidence; distinguish new canonical work from unchanged upstream code.
-6. Extract the smallest useful adapter or host fix for each project. Preserve
-   maintainers' contribution requirements and merge control. Where an upstream
-   contribution is unavailable, retain a supported canonical adapter when
-   feasible; do not let that delay the core product.
+   heads/states. Identify a specific change that belongs in each proposed target
+   repository. The list of related PRs is an audit inventory, not a broadcast list.
+6. Prepare the smallest mergeable adapter, host fix or scoped documentation
+   change for that repository, and validate that actual PR revision with its
+   applicable tests. Link only the canonical evidence relevant to that change;
+   a canonical result alone does not qualify an unchanged upstream branch.
+   Preserve maintainers' contribution requirements and merge control. Where an
+   upstream contribution is unavailable, retain a supported canonical adapter
+   when feasible; do not let that delay the core product.
 7. Record resulting commits, tests, comment URLs and adoption status. Retire
    an overlay only after upstream replacement passes the same relevant contracts.
 
-Do not use a roadmap update as a successful runtime announcement. Do not reopen
+### Target-specific propagation gate
+
+Propagate a result to an upstream PR only when all four conditions hold:
+
+1. The behavior or fix is relevant to that repository and to the PR's scope.
+2. The PR contains, or is updated with, a concrete change that can be reviewed
+   and merged there. A link back to this repository is supporting context, not
+   the implementation of a missing integration.
+3. Validation covers that exact upstream base/head and the proposed integration.
+   Keep fixture, real-model and native lifecycle results distinct; do not inherit
+   unsupported claims from a different target or from the canonical composition.
+4. The PR explains the target-specific problem, resulting behavior, relevant
+   tests and remaining limitations, with a stable link to its canonical source
+   and supporting evidence.
+
+For example, a Hermes PR should receive a tested Hermes middleware, task-resume
+or request-handling change and its Hermes validation. Strata-only memory results,
+another engine's performance or a general Adaptive Inference milestone do not
+belong in that PR merely because Hermes is listed in the integration matrix.
+Likewise, a documentation-only PR must be validated and described as documentation;
+it does not acquire a native-runtime claim from a linked example.
+
+If there is no applicable mergeable change or its validation is incomplete,
+keep the result in the canonical repository and hold that upstream update.
+Do not send general progress announcements to every related PR. Do not reopen
 closed historical PRs routinely or treat archived/policy-constrained targets as
-promises of an eventual merge. Existing related PRs are maintained as delivery
-channels, while this repository remains the source of truth.
+promises of an eventual merge. Target-specific delivery remains traceable here.
 
 ## How the roadmap changes
 
@@ -483,7 +510,8 @@ The next technical packet remains M1:
 - Choose a fresh qualification directory and a suitable desktop interval.
 - Run the complete foreground, tool, waiting and worker-restart sequence.
 - Inspect artifact, history, source, capacity and cleanup evidence independently.
-- If it passes, publish the scoped canonical result and propagate validation.
+- If it passes, publish the scoped canonical result, then deliver only applicable
+  mergeable upstream changes after their own target-specific validation gate.
 - If it fails, preserve the failure, fix the smallest demonstrated cause and
   revise this plan's next step without claiming the milestone complete.
 

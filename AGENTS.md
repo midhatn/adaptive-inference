@@ -8,3 +8,4 @@
 - Test meaningful changed behavior; a passing mock is not a speed or autonomy claim.
 - Preserve original task intent and explicit acceptance feedback. Correctable attempts are expected.
 - Before upstream publication, verify the exact PR state and describe what is actually in that PR versus this repository.
+- Propagate only a concrete mergeable change relevant to the target repository and PR, with validation of that exact upstream base/head and integration. Link only applicable canonical evidence; do not broadcast general project progress or unrelated engine/agent results to every PR. Hold an update when the target change or its validation is missing.
