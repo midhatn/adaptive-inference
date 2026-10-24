@@ -44,6 +44,8 @@ The verifier checked every resulting tracked file and complete final tree: **4,7
 
 The [reference verifier](../third_party/reference-sources/verify.py) independently checks 13 original source/license/notice files in five groups. The [distribution check](../provenance/check_distribution.py) verifies that complete source archives include the current source, local bundles, manifests and notices, while runtime wheels contain the matching modules/licenses. CI runs these gates alongside the portable tests. No preserved upstream code, model or compiler is executed by the source restoration test.
 
+Testing the built source archive in a deeper Windows directory exposed Git's default path-length limit during index refresh, despite intact source bytes. Restoration and independent verification now explicitly enable Git's long-path support. A real-Git regression restores a path longer than 260 characters and confirms the failure with that option disabled on Windows. The preservation suite now contains 16 checks; the earlier short-path receipt above remains unchanged.
+
 ### Earlier network-assisted reconstruction
 
 On 24 October 2026, the included setup scripts fetched the pinned public GitHub commits into new empty locations and applied their checked overlays. All 88 expected Strata changed files and all 7 Hermes changed files matched SHA-256 hashes of the intended canonical Git content. Expected reconstructed trees and patch hashes are in [provenance/reconstruction.json](../provenance/reconstruction.json).

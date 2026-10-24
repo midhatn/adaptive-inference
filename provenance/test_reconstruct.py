@@ -14,6 +14,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import reconstruct
+from offline_acceptance import OfflineGuard, _check_base, _check_tree
 from preserve_source import preserve
 
 
@@ -123,6 +124,47 @@ class ReconstructionChecks(unittest.TestCase):
         self.assertEqual((dependency / 'source.py').read_bytes(), b'value = 1\n')
         receipt = json.loads((self.output / '.git/adaptive-integration.json').read_text())
         self.assertEqual(receipt['dependencies'][0]['git_tree'], reconstruct.git(dependency, 'write-tree').decode().strip())
+
+    def test_deep_output_preserves_long_file_and_refreshes_index_offline(self):
+        repository = self.root / 'long-upstream'
+        repository.mkdir()
+        reconstruct.git(repository, 'init', '--quiet')
+        relative = 'nested/' + 'a' * 55 + '/' + 'b' * 55 + '/source.txt'
+        source = repository / relative
+        source.parent.mkdir(parents=True)
+        source.write_bytes(b'Canonical source at a long Windows output path.\n')
+        reconstruct.git(repository, 'add', '.')
+        reconstruct.git(repository, '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
+                        'commit', '--quiet', '-m', 'long path fixture')
+        self.revision = reconstruct.git(repository, 'rev-parse', 'HEAD').decode().strip()
+        tree = reconstruct.git(repository, 'rev-parse', 'HEAD^{tree}').decode().strip()
+        preserved = preserve(repository, self.revision, self.url, self.folder / 'source/long-base')
+        self.lock = {'schema': 2, 'upstream_url': self.url, 'base_revision': self.revision,
+            'baseline': {'archive': {**preserved['archive'], 'file': 'source/long-base.bundle'},
+                         'inventory': {**preserved['inventory'], 'file': 'source/long-base.manifest.json'}},
+            'patches': [], 'expected_files': {}, 'expected_tree': tree, 'dependencies': []}
+        parent = self.root
+        while len(str(parent / 'restored' / relative)) <= 300:
+            parent = parent / ('deep-' + 'p' * 40)
+        parent.mkdir(parents=True)
+        self.output = parent / 'restored'
+        materialized = self.output / relative
+        self.assertGreater(len(str(materialized)), 260)
+        with OfflineGuard() as guard:
+            self.run_setup()
+            self.assertEqual(materialized.read_bytes(), source.read_bytes())
+            refresh = guard.command(self.output, 'update-index', '--refresh')
+            self.assertEqual(refresh.returncode, 0, refresh.stderr)
+            _check_base(guard, self.output, self.revision, tree)
+            result = _check_tree(guard, self.output, tree, {relative: reconstruct.digest(source)})
+            self.assertEqual(result['verified_files'], 1)
+            # The failure control is Windows-specific; neither command changes
+            # global or repository configuration or rewrites source content.
+            if os.name == 'nt':
+                disabled = guard.command(self.output, '-c', 'core.longpaths=false', 'update-index', '--refresh')
+                self.assertNotEqual(disabled.returncode, 0)
+                self.assertIn('needs update', disabled.stdout)
+            self.assertEqual(guard.socket_attempts, 0)
 
     def test_verify_only_admits_artifacts_without_process_or_output(self):
         with patch.object(reconstruct.subprocess, 'run') as run, patch.object(reconstruct.subprocess, 'Popen') as popen:
