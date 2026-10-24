@@ -1,0 +1,9 @@
+{
+  "files": {
+    "foreground-series.json": "eb30eb34124f599cb9fb885f6e4b6e4338a7430ad12d4c2145f6984d4f37ba31",
+    "result.json": "4fa0879ade9d24cf25a89675dfaeee46537b47bf914e13d69b22e2f72247c064"
+  },
+  "sanitizer_sha256": "12004621166522cb80682e2bf1e4bc6d19e2ca72aeb585d21ce6408c2a965b33",
+  "schema": "adaptive.public-evidence-files.v1",
+  "source_selection": "explicit nested allowlists"
+}

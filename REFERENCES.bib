@@ -288,6 +288,13 @@
   note = {Inspected MIT source at 1ca8ee5f1d29088d7d678871c78323f44f6b0a31; narrow experimental reuse. Accessed 2026-10-24}
 }
 
+@misc{psutilprocesserrors,
+  title = {{Windows process-handle error classification}},
+  author = {{Giampaolo Rodola and psutil contributors}},
+  url = {https://github.com/giampaolo/psutil/blob/a1e3067965a075c40b79971cfda51501e80da685/psutil/arch/windows/proc_utils.c},
+  note = {BSD-3-Clause; inspected 2026-10-24. Narrow missing-process semantics adapted independently; source and license preserved locally}
+}
+
 @misc{kedadurableactivation,
   title = {{KEDA ScaledObject activation and cooldown executor}},
   author = {{KEDA contributors}},
@@ -307,4 +314,45 @@
   author = {{Kubernetes SIG Scheduling and Kueue contributors}},
   url = {https://github.com/kubernetes-sigs/kueue/blob/1ec0d28ef62b4665a6e3db4ef594a86d0d458df6/site/content/en/v0.20/docs/tasks/manage/setup_wait_for_pods_ready.md},
   note = {Apache-2.0 project; inspected 2026-10-24. Explicit original-arrival versus requeue accounting informed immutable arrival in the durable-demand component; design adaptation only, with no copied implementation, quota reservation or Kueue dependency}
+}
+
+@misc{selfrefine,
+  title = {{Self-Refine: Iterative Refinement with Self-Feedback}},
+  author = {Madaan, Aman and others},
+  url = {https://arxiv.org/abs/2303.17651v2},
+  note = {Design context for bounded feedback and revision; inspected 2026-10-24. The qualification reuses the existing project feedback loop, not upstream implementation}
+}
+
+@misc{intrinsiccorrectionlimits,
+  title = {{Large Language Models Cannot Self-Correct Reasoning Yet}},
+  author = {Huang, Jie and others},
+  url = {https://arxiv.org/abs/2310.01798v2},
+  note = {Inspected 2026-10-24; motivates independent acceptance rather than relying on model confidence}
+}
+
+@misc{amtfv,
+  title = {{AMTFV: Agentic Mathematical Tool-Flow Verification for LLM Self-Correction}},
+  author = {Zou, Rui and Zhu, Yutao and Wei, Mengqi and Wen, Ji-Rong},
+  url = {https://arxiv.org/abs/2607.29549v1},
+  note = {Inspected 2026-10-24; exact verification design reference. No tool-agent machinery or benchmark performance imported}
+}
+
+@misc{llmasverifier,
+  title = {{LLM-as-a-Verifier: A General-Purpose Verification Framework}},
+  author = {Kwok, Jacky and others},
+  url = {https://arxiv.org/abs/2607.05391v2},
+  note = {Inspected 2026-10-24; probabilistic verification considered but not adopted for exact integer acceptance}
+}
+@misc{python311MonotonicClock,
+  title = {{Python 3.11 time: system-wide monotonic clock}},
+  author = {{Python Software Foundation and contributors}},
+  url = {https://docs.python.org/3.11/library/time.html#time.monotonic},
+  note = {Inspected 2026-10-24 for same-boot phase and checkpoint timing in the foreground-wait audit. Official API contract; no source copied and no cross-reboot deadline claim}
+}
+
+@misc{aiohttpGracefulShutdown,
+  title = {{aiohttp 3.14.5 graceful shutdown}},
+  author = {{aiohttp contributors}},
+  url = {https://docs.aiohttp.org/en/stable/web_advanced.html#graceful-shutdown},
+  note = {Inspected 2026-10-24; admission closure, retained task completion and final cleanup ordering inform the existing controller shutdown correction. No source copied or additional dependency introduced}
 }

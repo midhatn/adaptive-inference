@@ -12,6 +12,7 @@ from contextlib import suppress
 import hashlib
 import hmac
 import json
+import re
 import time
 import uuid
 
@@ -45,6 +46,17 @@ def request_class(body, header, default, forced_background=False):
         raise ValueError("Conflicting or invalid scheduling classes")
     selected = classes[0] if classes else default
     return "background" if forced_background or default == "background" else selected
+
+
+def admission_attempt(headers):
+    """Opt-in transport metadata, never generation parameters or backend headers."""
+    modes = headers.getall("X-Adaptive-Admission", [])
+    attempts = headers.getall("X-Adaptive-Attempt-Id", [])
+    if not modes and not attempts:
+        return None
+    if modes != ["immediate"] or len(attempts) != 1 or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", attempts[0]):
+        raise ValueError("Immediate admission requires one X-Adaptive-Admission: immediate and one bounded ASCII X-Adaptive-Attempt-Id")
+    return attempts[0]
 
 
 def cost_key(config, path, body, work_class):
@@ -202,6 +214,17 @@ class Gateway:
     def error(status, code, message):
         return web.json_response({"error": {"type": "adaptive_inference_error", "code": code, "message": message}}, status=status)
 
+    def deferred(self, attempt_id, raw):
+        """Only the scheduler's pre-dispatch refusal may produce this receipt."""
+        body_hash = hashlib.sha256(raw).hexdigest()
+        proof = {"dispatched": False, "gateway_instance": self.instance,
+                 "attempt_id": attempt_id, "body_sha256": body_hash}
+        return web.json_response({"error": {"type": "adaptive_inference_error", "code": "admission_deferred",
+                                 "message": "Request was not dispatched; immediate admission is unavailable"},
+                                  "admission": proof}, status=503, headers={
+            "X-Adaptive-Dispatch": "not-dispatched", "X-Adaptive-Gateway-Instance": self.instance,
+            "X-Adaptive-Attempt-Id": attempt_id, "X-Adaptive-Body-SHA256": body_hash})
+
     def headers(self):
         headers = {"Content-Type": "application/json", "Accept-Encoding": "identity"}
         if self.backend_key:
@@ -236,7 +259,12 @@ class Gateway:
         if request.query:
             return self.error(400, "unsupported_query", "Request parameters belong in the JSON body")
         try:
-            body = parse_json(await request.read())
+            attempt_id = admission_attempt(request.headers)
+            encodings = request.headers.getall("Content-Encoding", [])
+            if attempt_id is not None and encodings and (len(encodings) != 1 or encodings[0].lower() != "identity"):
+                raise ValueError("Immediate admission requires unencoded request bytes")
+            raw = await request.read()
+            body = parse_json(raw)
             if not isinstance(body, dict) or not isinstance(body.get("model"), str) or not body["model"]:
                 raise ValueError("A JSON object with a model name is required")
             work_class = request_class(body, request.headers.get("X-Adaptive-Class"), self.config.default_class,
@@ -248,8 +276,10 @@ class Gateway:
             return self.error(400, "invalid_request", str(exc))
         try:
             ticket = await self.scheduler.acquire(work_class, prediction["estimate_s"],
-                          lambda: request.transport is None or request.transport.is_closing())
+                          lambda: request.transport is None or request.transport.is_closing(), wait=attempt_id is None)
         except AdmissionError as exc:
+            if attempt_id is not None and exc.code == "admission_deferred":
+                return self.deferred(attempt_id, raw)
             return self.error(exc.status, exc.code, str(exc))
         started = time.monotonic()
         request_id = uuid.uuid4().hex

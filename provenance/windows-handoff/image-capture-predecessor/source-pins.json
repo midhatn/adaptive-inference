@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "scope": "Diagnostic successor to the preserved Windows owner; unchanged native/model/quality controls, explicit uncertain-cleanup reporting",
+  "files": {
+    "engine.py": {
+      "original_sha256": "94e59a2434eec5d39306d9208b4b5c00c9371c948b466f3ca87b049cb153e69a",
+      "preserved_sha256": "d0b4174d3b1aff944d749c6094e2953399bf895f31001aa2f8a1180fba18a4f4"
+    },
+    "ownership.py": {
+      "original_sha256": "0016405458e852503882cd68bc379e3b5e6fedc33d913674d78235b78c1c1227",
+      "preserved_sha256": "cc6c5ccde1ce64e0ef27b18f1d04a5db5c3dbaa59e6a06e47abc3a10abcd6dcb"
+    },
+    "owned_job.py": {
+      "original_sha256": "4c62671096e2fc2f559a0a0e1807645df5161022701d210f5ba6c810d7b3439f",
+      "preserved_sha256": "4c62671096e2fc2f559a0a0e1807645df5161022701d210f5ba6c810d7b3439f"
+    },
+    "memory_monitor.py": {
+      "original_sha256": "74bb33ccb7a0f6cdb3da630c12ddeac4f0d0504bd6a70af62255495169f634fd",
+      "preserved_sha256": "74bb33ccb7a0f6cdb3da630c12ddeac4f0d0504bd6a70af62255495169f634fd"
+    },
+    "memory_reader.py": {
+      "original_sha256": "d3c36b74a6040b8c743bb7362275fb7fc6c7a22f8aaed38e94798ab193167e86",
+      "preserved_sha256": "d3c36b74a6040b8c743bb7362275fb7fc6c7a22f8aaed38e94798ab193167e86"
+    }
+  },
+  "native_source_revision": "c6b23493b01028a18a9eb685d0bb6435c6976316",
+  "native_build_source_revision": "a69684f1",
+  "native_binary_qualification_sha256": "744205e4e024b5cbba19e4b560678ffe21e6899e59050929f7af51557f3c6198",
+  "owner_source_license": "Apache-2.0; original project code; upstream imported source retains its own license",
+  "references": [
+    "https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects",
+    "https://docs.nvidia.com/deploy/nvml-api/latest/api/group__nvmlDeviceQueries.html",
+    "https://github.com/giampaolo/psutil/blob/a1e3067965a075c40b79971cfda51501e80da685/psutil/arch/windows/proc_utils.c"
+  ],
+  "changes": [
+    "engine.py reads strata_python from explicit operator PROVENANCE",
+    "Windows errors retain original code and operation/PID/access context",
+    "Primary and cleanup tracebacks remain separate; unconfirmed cleanup never claims release",
+    "Only OpenProcess invalid-PID error87 with independent absence is tolerated; denied and metadata errors propagate"
+  ],
+  "predecessor_helpers": {
+    "engine.py": {
+      "original_sha256": "94e59a2434eec5d39306d9208b4b5c00c9371c948b466f3ca87b049cb153e69a",
+      "preserved_sha256": "5d39241b62c63530a5d56910aa0ab7a7ad5d8a53533a571a4264e2f5b2d1c54f"
+    },
+    "ownership.py": {
+      "original_sha256": "0016405458e852503882cd68bc379e3b5e6fedc33d913674d78235b78c1c1227",
+      "preserved_sha256": "0016405458e852503882cd68bc379e3b5e6fedc33d913674d78235b78c1c1227"
+    },
+    "owned_job.py": {
+      "original_sha256": "4c62671096e2fc2f559a0a0e1807645df5161022701d210f5ba6c810d7b3439f",
+      "preserved_sha256": "4c62671096e2fc2f559a0a0e1807645df5161022701d210f5ba6c810d7b3439f"
+    },
+    "memory_monitor.py": {
+      "original_sha256": "74bb33ccb7a0f6cdb3da630c12ddeac4f0d0504bd6a70af62255495169f634fd",
+      "preserved_sha256": "74bb33ccb7a0f6cdb3da630c12ddeac4f0d0504bd6a70af62255495169f634fd"
+    },
+    "memory_reader.py": {
+      "original_sha256": "d3c36b74a6040b8c743bb7362275fb7fc6c7a22f8aaed38e94798ab193167e86",
+      "preserved_sha256": "d3c36b74a6040b8c743bb7362275fb7fc6c7a22f8aaed38e94798ab193167e86"
+    }
+  }
+}

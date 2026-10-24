@@ -2,6 +2,18 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Complete foreground handoff and Hermes worker restart
+
+The [controlled-11 receipt and reproduction guide](../provenance/windows-handoff/controlled-11/README.md) record one complete accepted workflow on Windows with the existing IQ3_S model, pinned Strata owner and installed Hermes SDK. Both arithmetic tasks passed independent integer checks on their first attempts. Real foreground interaction caused admission closure and verified backend release, a declared NVENC tool produced and decoded 90 frames, and the same model configuration was restored. Hermes preserved its accepted report and native history across a safe worker restart, then finished the original task without repeating the report write.
+
+The two 45-second animation phases had full observed foreground coverage and p95 paint intervals of **17.4944 ms** and **18.6084 ms**, within the predeclared 25-ms budget. This measures GDI paint submission and host-message scheduling, not physical display or input latency. The earlier baseline and uncontrolled runs are historical numerical references with different native/runtime revisions. No causal performance improvement is established.
+
+The final independent export validates the complete ordered transition history, no controller fault, closed admission, no active or pending request, no uncertain completion and confirmed owned-process cleanup. It retains the preceding run's recorded pass as **unaccepted** because that run ended with a controller fault and an incomplete pre-close ledger. Failed startup, missing interaction, wrong arithmetic and queued-provider watchdog outcomes remain identified separately; none contributes missing acceptance evidence to the successful run.
+
+The agent's 780 durable wait observations span **81.375 seconds** during release and restoration following foreground demand. They begin 1.828 seconds after the second animation window ends; none overlaps that visible window. The first handoff independently confirms native release inside the first animation window, 7.375 seconds after its active response completes. The recorded sequence establishes safe waiting and continuation, not 81 seconds of simultaneous visible foreground work.
+
+This establishes one bounded native composition and one same-boot installed-agent restart. It does not qualify a persistent service, physical reboot or power loss, arbitrary tools, games, video playback, other native engines, or real-model correction after a rejected answer. The receipt records actual wait durations; passing this run does not demonstrate waiting longer than the old 180-second watchdog. Model assets are metadata-bound, not fully content-hashed. The [source-bound receipt](../provenance/windows-handoff/controlled-11/result.json) is authoritative for exact fields and limits.
+
 ## Real Hermes file task on IQ3_S
 
 The [sanitized receipt and three task artifacts](../provenance/hermes-iq3-s/README.md) record one accepted Windows task using the existing IQ3_S model, exact Hermes commit `14e1e43a23761b369641208e204365cd6cb9399d`, the canonical optional routing plugin and the released v0.2.0 gateway wheel. The parent read a four-row synthetic CSV and wrote a report. A host-created production child independently read the CSV and report, checked the arithmetic and wrote a verification. Independent acceptance recomputed **4 rows, 17 units and 4,350 cents**, including every per-item total.
@@ -16,7 +28,7 @@ This proves a bounded serial file-tool workflow for this composition. The host c
 
 ## Generalized client and host integrations
 
-Current development passes **110 core software tests**, **17 preservation checks** and **12 task-boundary checks** locally. The source-bound SDK receipts below exercise real installed libraries or pinned original host code with simulated responses; none invokes an inference model.
+The generalized-integration revision passed **110 core software tests**, **17 preservation checks** and **12 task-boundary checks** locally. The current handoff revision separately passes **174 core**, **64 native-owner/host**, **20 harness**, **11 foreground**, **17 preservation** and **12 task-boundary** tests locally. The source-bound SDK receipts below exercise real installed libraries or pinned original host code with simulated responses; none invokes an inference model.
 
 | Check | Evidence and scope |
 | --- | --- |
@@ -111,4 +123,4 @@ The c6b correction collected 225 CPU tests: 224 passed and one POSIX-only test w
 
 ## What is not established
 
-No comparative latency/throughput win, broad task-quality improvement, full tool-lease workflow, visual browser interaction, GPU kernel preemption or general autonomous operation is claimed. Exact reconstruction does not make a fresh native binary bit-identical across toolchains. The upstream branches and this standalone gateway are separate deliverables; review the tested revision and composition for each claim.
+No comparative latency/throughput win, broad task-quality improvement, arbitrary-tool recovery, visual browser interaction, GPU kernel preemption or general autonomous operation is claimed. The bounded native handoff above qualifies only its declared GPU tool and agent task. Exact reconstruction does not make a fresh native binary bit-identical across toolchains. The upstream branches and this standalone gateway are separate deliverables; review the tested revision and composition for each claim.

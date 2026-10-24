@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "tests": 8,
+  "failures": 0,
+  "errors": 0,
+  "elapsed_s": 81.74196610000217,
+  "fixture": true,
+  "model_started": false,
+  "workers": 14,
+  "all_retained_workers_exited": true,
+  "source_sha256": {
+    "admission.py": "72a71a61e56f32f3a6e11f6d36d9bb07e4e2ace0b1d72e919300e1c9a205f420",
+    "recovery.py": "e6cd72a95382463403633035979d9d688c4f97cdf395feca54e580c3ce637322",
+    "run_recovery.py": "6da77e0965961d8a4f58d9250503327b65fc2dee238c69e9135545f0ee73c5a8",
+    "test_recovery.py": "2ae208f56add864840c1eff5daa0e74e98619a56b438df202e1eddc5e17c3c02",
+    "test_admission.py": "596d1f1c3ca1012b5eb924cbd6e58e1f97bfa3105e443d95c0cfc214c9a3d3dc"
+  },
+  "proof_tests": 8,
+  "proof_test_elapsed_s": 1.086,
+  "proof_test_log_sha256": "aae3cd0893f1ce534190e8ef8fe43eada3d79f3f14915628b48baf808fdee385",
+  "restart_log_sha256": "1ef06e5df47b0ab627d513eab94415c5a29f68b37dc45fef3500584abc68b240",
+  "synthetic_wait_seconds": 181.25,
+  "actual_wait_wall_seconds_claimed": false,
+  "private_watchdog_sentinel": true,
+  "same_boot_process_restart_only": true,
+  "sdk_packages": {
+    "openai": "2.24.0",
+    "httpx": "0.28.1"
+  },
+  "scope": "Real installed Hermes middleware/tools/SessionDB plus synthetic provider; no model/network; no OS reboot or resource-handoff qualification"
+}

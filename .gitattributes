@@ -14,3 +14,11 @@ provenance/hermes-iq3-s/verification.json -text whitespace=cr-at-eol
 integrations/hermes/current-source/** -text whitespace=cr-at-eol
 examples/validation/hermes_tool_task/** -text whitespace=cr-at-eol
 examples/validation/hermes_tool_task/owned_job_windows.py whitespace=cr-at-eol,-blank-at-eof
+# Preserve sealed validation source byte identities, including CRLF originals.
+examples/validation/windows_handoff/** -text whitespace=cr-at-eol
+provenance/windows-handoff/** -text whitespace=cr-at-eol
+# Exact upstream/helper bytes include their original final blank line.
+examples/validation/windows_handoff/native/owner_source/memory_reader.py whitespace=cr-at-eol,-blank-at-eof
+examples/validation/windows_handoff/native/owner_source/owned_job.py whitespace=cr-at-eol,-blank-at-eof
+provenance/windows-handoff/arithmetic-feedback-predecessor/native/owner_source/memory_reader.py whitespace=cr-at-eol,-blank-at-eof
+provenance/windows-handoff/arithmetic-feedback-predecessor/native/owner_source/owned_job.py whitespace=cr-at-eol,-blank-at-eof

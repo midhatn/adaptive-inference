@@ -45,6 +45,88 @@ These papers' hardware, workloads, objective functions and reported speedups dif
 - [StarPU](https://starpu.gitlabpages.inria.fr/features.html) demonstrates measured heterogeneous task costs. [Apache TVM MetaSchedule](https://tvm.apache.org/docs/deep_dive/tensor_ir/tutorials/meta_schedule.html) separates bounded tuning search from reuse of measured records. Neither runtime is installed by this project.
 - [MABWiser](https://github.com/fidelity/mabwiser), with its [LinUCB/LinTS API](https://fidelity.github.io/mabwiser/api.html), was considered for shadow/offline selection. It is not a dependency or enabled policy. Any future exploration must be restricted to already feasible, quality-preserving actions.
 
+## Research-first response to startup failure
+
+A fresh Windows qualification on 24 October 2026 failed before generation with
+an access-denied error during native-owner startup. A later cleanup error hid
+the operation that originally failed. A bounded diagnostic using the unchanged
+process tracker and 15 short-lived helper processes did not reproduce it. This
+is a diagnostic gap, not evidence that permissions should be relaxed or that
+the failed process can be assumed to have exited.
+
+The next correction uses established API and runtime behavior rather than a
+new process-management mechanism. Microsoft's [GetLastError contract](https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror)
+requires capturing the error immediately. Python's [exception notes](https://docs.python.org/3.11/library/exceptions.html#BaseException.add_note)
+allow operation and process context to accompany the original traceback.
+Microsoft's [process-handle contract](https://learn.microsoft.com/en-us/windows/win32/procthread/process-handles-and-identifiers)
+and Python's [Popen lifecycle](https://docs.python.org/3.11/library/subprocess.html#subprocess.Popen.poll)
+support retaining the launched process object rather than rediscovering an
+owner by PID alone. These are API/design references; no external implementation
+is copied by the diagnostic change.
+
+The process tracker also adapts psutil's [specific missing-process classification](https://github.com/giampaolo/psutil/blob/a1e3067965a075c40b79971cfda51501e80da685/psutil/arch/windows/proc_utils.c#L84-L108):
+only an `OpenProcess` invalid-parameter error is a missing-PID candidate. The
+local implementation additionally requires independent absence. Access denial
+and failures of metadata or job-membership checks remain errors. The exact
+BSD-3-Clause source and license are retained in the [source archive](../third_party/reference-sources/README.md).
+
+The implementation must retain primary and cleanup errors separately, keep
+unknown cleanup unsuccessful, and bind a failed launch to the attempt identity
+created before readiness. Neither access denial nor an empty listener is a
+normal release receipt. The diagnostic successor subsequently identified
+`QueryFullProcessImageNameW` as the denied operation, after opening the handle
+and reading creation time.
+
+A bounded owned-child experiment then reproduced the exact error-5 window:
+image metadata was unavailable while the retained process handle was still
+nonsignaled, followed about 1.3-1.6 milliseconds later by error 31 and a signaled
+handle. Microsoft's [process termination contract](https://learn.microsoft.com/en-us/windows/win32/procthread/terminating-a-process)
+and [wait outcomes](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject),
+plus CPython's [retained-handle error confirmation](https://github.com/python/cpython/blob/v3.11.9/Lib/multiprocessing/popen_spawn_win32.py),
+inform the correction. These are API/design references; their implementation is
+not copied. The exact historical child's exit state was not recorded at the
+failure, so the experiment establishes the mechanism rather than retrospective
+proof of that child's lifecycle.
+
+On failed image capture, preserve the original error and wait at most 50 ms on
+that exact open handle. Only positive signaling permits skipping the already
+exited capture. A timeout or failed wait retains the failure. Record capture
+exit observations separately from verified job membership and owned-process
+exit totals; they grant no release authority. The 50-ms bound matches the
+existing lifecycle polling interval and is not a measured worst-case guarantee.
+Four real child checks exercised the new handling, including two naturally
+observed error-5 transitions; 64 lifecycle tests and independent review passed.
+The full model/agent workflow still requires its own acceptance.
+
+## Bounded correction after an independently rejected answer
+
+A full handoff attempt produced correct item amounts with an incorrect grand
+total. It remains failed. The successor qualification reuses this repository's
+existing `run_with_feedback` implementation for at most three attempts on each
+of two arithmetic tasks. It keeps the original prompt and rejected outputs,
+gives actionable validator feedback without the expected answers, and retains
+every request and response. Model quality and the exact acceptance result do
+not change. Transport failures or unknown completion outcomes stop rather than
+becoming blind retries.
+
+[Self-Refine](https://arxiv.org/abs/2303.17651v2) provides the feedback/revision
+design context; [intrinsic self-correction limitations](https://arxiv.org/abs/2310.01798v2)
+support keeping acceptance outside model confidence. The more recent
+[AMTFV](https://arxiv.org/abs/2607.29549v1) separates mathematical verification
+from execution. Its tool-agent machinery is unnecessary for this fixed integer
+task, whose exact expected result already exists. [LLM-as-a-Verifier](https://arxiv.org/abs/2607.05391v2)
+was also inspected; probabilistic scoring is not adopted where an exact check
+is available. These are design references, not copied implementations or
+evidence of improvement on the local model. The reused executable loop is the
+existing project module, now included in the qualification's runtime hashes.
+
+Logical task duration includes rejected attempts and waiting. Individual HTTP
+completion times must be retained separately when checking resource release;
+a release can correctly follow a rejected request before a later correction.
+CPU fixtures verify this correction contract, while a real run must separately
+establish task completion. A run requiring no correction cannot demonstrate
+successful real-model self-correction merely because the loop was available.
+
 ## Optional typed-decision advisers
 
 [TypeSafe Jev](https://docs.typesafe.ai/introduction) is a hosted structured-decision service. Its [independent evaluation](https://arxiv.org/abs/2609.37647) is useful background on task-dependent calibration, not evidence for hardware-resource decisions. No Jev service call was used in this project's evaluation.
@@ -58,3 +140,25 @@ A bounded two-thread CPU experiment produced 22/32 raw fixture-policy matches, w
 Separate offline compaction work inspected [Hermes #136671](https://github.com/NousResearch/hermes-agent/pull/136671) at `6fc8f700ed9876d4009ec9141d52950cc1a35432`, [#117462](https://github.com/NousResearch/hermes-agent/pull/117462) at `cd3e50f0d67d22a99efead563070b819125365b2`, and [#137349](https://github.com/NousResearch/hermes-agent/pull/137349) at `1ca8ee5f1d29088d7d678871c78323f44f6b0a31`. Their MIT-licensed contributions informed selected tool-result lineage, tool-argument reference harvesting and carrying exact historical references across rewrites. Individual authors and original PRs are retained in the registry.
 
 These were narrow mechanism adaptations in a separate offline prototype, not whole-PR merges or components shipped by the gateway's Hermes overlay. Restored evidence remains quoted data; it cannot authorize a tool, supersede current instructions or bypass secret redaction. Exact-budget overflow refuses rather than truncating references. Saved-response replay and synthetic carry checks do not establish durable natural multi-generation agent continuation, and are not requirements for the gateway's scheduling contract.
+# Shutdown and evidence-accounting follow-up
+
+The complete-workflow audit exposed two distinct implementation assumptions.
+The foreground wait collector starts before its animation window; checking
+every sample against the later window boundary rejects valid preliminary
+observations. The revised audit retains and validates all observations but
+counts only the post-window-start subset, within the exact worker phase and
+before its verified safe checkpoint. Python 3.11's
+[system-wide monotonic clock contract](https://docs.python.org/3.11/library/time.html#time.monotonic)
+supports this same-boot chronology. It does not support reusing a monotonic
+deadline after a computer reboot, or mixing it with wall-clock timestamps.
+
+Separately, intentional gateway closing was misclassified as unknown completion
+when a native stop finished during shutdown. The existing queue already closes
+new admission and retains active ownership. The correction follows aiohttp's
+[graceful shutdown ordering](https://docs.aiohttp.org/en/stable/web_advanced.html#graceful-shutdown):
+stop admission, wait for retained work, then complete cleanup. A known closing
+flag must not erase active ownership or imply uncertainty by itself; an actual
+uncertain completion remains a fault. The harness must inspect the final
+controller state and record events after close completes. These are design
+references applied to existing repository mechanisms; no external source was
+copied and no new shutdown framework was introduced.

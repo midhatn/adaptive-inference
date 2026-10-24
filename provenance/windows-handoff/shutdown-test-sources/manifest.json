@@ -1,0 +1,21 @@
+{
+  "schema": "adaptive.scoped-test-sources.v1",
+  "scope": "Exact private v6 test/research source and inventory; not runtime inputs or live acceptance",
+  "reviewed_harness_sha256": "0521d7c16570728e7259610f80eedec778e8039ff309323154cc308fae8bd280",
+  "files": {
+    "original-v6-arithmetic-test.py": "0254d7fb998238e7141768547c3c7db7896b9c6788d1db6c0c1c256f22de2a81",
+    "original-v6-shutdown-test.py": "f1f33bd74b317aec7fbd74612a5b2b2adc488ae77c8e515881adc2277e37939d",
+    "private-preparation-inventory.json": "1f79aa194da11ef8940952073e15b11595c7739cd56895fdcf1c957ad9bac689",
+    "SHUTDOWN-DECISION.md": "7bd651d0698483ab7d4a895b33f31d4bf01f87d677cb30a7b716f94df6e33ae7"
+  },
+  "portable_tests": {
+    "test_arithmetic_feedback.py": "c1d45a452f33efca0c4030ea2027ff0fc3907e697b2f3a13933cccfcdb261804",
+    "test_shutdown_receipts.py": "870bfc70658ddda3a8cb53c3b33a6409723c3b0f48f1339b2e652e36df5dea14"
+  },
+  "inventory_file_count": 48,
+  "scope_note": "Only the 19 unchanged portable helper/test/pin files are rechecked as the current helper closure. Historical private configs, review probes and preparation documents are inventory metadata, not copied operator inputs.",
+  "existing_archive_manifests": {
+    "examples/validation/windows_handoff/predecessor-source-manifest.json": "f2fd670309a7003e2916a8000772852cf506fab7cdb70008a44c84396ff797cc",
+    "provenance/windows-handoff/shutdown-predecessor/manifest.json": "1a546f67b2481be8c4609d7b6c635a5968caca5bad003aa9c3a9caba509f51bc"
+  }
+}

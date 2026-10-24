@@ -76,6 +76,17 @@ The preserved Strata resource work is documented separately in the
 [native reproduction guide](legacy-reproduction.md). No generic recipe inherits
 those capabilities merely by using the Strata engine profile.
 
+The portable [automatic handoff controller](automatic-handoff.md) now defines
+the callable native contract and tool-grant boundaries. Its first dedicated
+Windows host composes the existing scheduler, an actual foreground sampler and
+the preserved owner. Porting this layer requires an engine-specific release
+and restoration acknowledgement; changing the API base URL alone is insufficient.
+
+A compatible agent may use [immediate admission](resource-waiting.md) to wait
+outside its provider watchdog. Only a complete matching non-dispatch receipt
+permits reissuing that exact request. Ordinary gateway clients keep the bounded
+queue; a generic timeout or backend error does not authorize a retry.
+
 ## Durable task boundary
 
 The host keeps the original objective, acceptance check, completed outputs and
