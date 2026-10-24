@@ -197,7 +197,7 @@ class SuccessorWaitTests(unittest.TestCase):
 class DiagnosticSuccessorTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory()
-        self.root=Path(self.temp.name)
+        self.root=Path(self.temp.name).resolve(strict=True)
         self.native=self.root/s.CONTROLLED_NATIVE
         (self.native/'owner_source').mkdir(parents=True)
         self.controlled=self.root/s.CONTROLLED_ATTEMPT;self.controlled.mkdir()

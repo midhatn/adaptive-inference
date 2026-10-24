@@ -580,6 +580,10 @@ basis.
 Finish M1 publication with exact source/evidence preservation, fresh distribution
 checks and CI for the submitted revision. Keep the accepted native composition
 separate from any upstream target whose proposed change has not been tested.
+The first publication CI exposed temporary-path spelling mismatches in three
+evidence fixtures on macOS and hosted Windows. Resolve those fixture roots using the existing standard-library path
+operation, retain their originals, and rerun cross-platform CI. The runtime,
+exporter's exact-path checks and accepted hardware evidence stay unchanged.
 
 The active technical packet is M2:
 

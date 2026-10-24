@@ -35,6 +35,12 @@ generic exporter for arbitrary machines or newly generated operator packages.
 New qualification bindings require their own reviewed source selection and
 acceptance; do not weaken or silently replace the historical pins.
 
+The current v5/v6/v7 CPU tests resolve their temporary fixture root before
+serializing its synthetic paths, matching the exporter's existing resolved-path
+contract on every platform. The [original fixture sources and explanation](fixtures-before-path-normalization/README.md)
+are preserved byte-for-byte. This portability correction changes no assertion,
+exporter, runtime source or accepted receipt.
+
 Raw model responses, original prompts, transcripts, window/process identifiers,
 operator paths and live-state files are not included here. Any separately
 published sanitized result must retain its exact input/source hashes and scope.
