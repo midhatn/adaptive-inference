@@ -1,0 +1,434 @@
+From 415785b57c69da5e7ba55fa943e2e4cf6d26f6ef Mon Sep 17 00:00:00 2001
+From: MIDHAT NASHAR <35053211+midhatn@users.noreply.github.com>
+Date: Sat, 24 Oct 2026 04:11:55 +0300
+Subject: [PATCH] docs: demonstrate explicit background admission with existing
+ LLM configuration
+
+Co-authored-by: openhands <openhands@all-hands.dev>
+---
+ .../60_background_admission/README.md         |  89 ++++++++
+ .../60_background_admission/main.py           |  86 ++++++++
+ tests/examples/test_examples.py               |   3 +
+ .../llm/test_background_admission_example.py  | 200 ++++++++++++++++++
+ 4 files changed, 378 insertions(+)
+ create mode 100644 examples/01_standalone_sdk/60_background_admission/README.md
+ create mode 100644 examples/01_standalone_sdk/60_background_admission/main.py
+ create mode 100644 tests/sdk/llm/test_background_admission_example.py
+
+diff --git a/examples/01_standalone_sdk/60_background_admission/README.md b/examples/01_standalone_sdk/60_background_admission/README.md
+new file mode 100644
+index 0000000..673cb73
+--- /dev/null
++++ b/examples/01_standalone_sdk/60_background_admission/README.md
+@@ -0,0 +1,89 @@
++# Explicit Background Admission
++
++Use an existing OpenAI-compatible admission gateway to share one inference
++endpoint between normal work and explicitly designated background workers. The
++example uses the public `LLM` configuration; it adds no SDK provider, scheduler,
++agent-loop change, or model replacement.
++
++[Adaptive Inference v0.2.0](https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0)
++is one gateway with these routes. Its `/v1` endpoint admits normal work;
++`/background/v1` marks requests as background. Both routes use the same queue.
++Start it separately using its [backend configuration guide](https://github.com/midhatn/adaptive-inference/blob/v0.2.0/docs/integrations.md).
++Do not point the gateway back at itself. The gateway is the **client of your
++existing model server**, not the OpenHands agent-server's OpenAI endpoint.
++
++## Run the Example
++
++1. Save your working SDK `LLM` configuration as `llm.json`, without a secret.
++   Retain its model, `api_mode: "chat"`, context/output caps, sampling,
++   `capability_overrides` and any endpoint-specific `litellm_extra_body`.
++   Retain the working provider prefix. For a custom endpoint/model alias, the
++   SDK's existing `litellm_proxy/<served-model>` route forwards provider-neutral
++   options through the OpenAI-compatible transport. An unknown `openai/` alias
++   may instead reject model-specific options in LiteLLM before HTTP dispatch.
++   The helper changes only the destination, gateway credential and retry count.
++2. Set `ADAPTIVE_API_KEY` if the gateway requires a credential. The default
++   `local` placeholder is suitable only for an unauthenticated local gateway.
++   Backend credentials belong in the gateway's configuration, not this profile.
++3. Save SDK messages as `messages.json`, beginning with a system message:
++
++```json
++[
++  {"role": "system", "content": [{"type": "text", "text": "Answer directly."}]},
++  {"role": "user", "content": [{"type": "text", "text": "What is six times seven?"}]}
++]
++```
++
++Run from the repository root:
++
++```sh
++uv run python examples/01_standalone_sdk/60_background_admission/main.py llm.json messages.json
++uv run python examples/01_standalone_sdk/60_background_admission/main.py llm.json messages.json --background
++```
++
++Use `--gateway-root http://127.0.0.1:18100` to select the listener root, without
++`/v1`. The host chooses `--background`; the helper does not classify message
++text. It makes one SDK completion call, prints the response and `EXAMPLE_COST`,
++and disables automatic retries. It does not execute tools or start a server.
++The same returned `LLM` can be passed to your existing `Agent` with its existing
++tools; this example does not configure those tools or change their permissions.
++
++Choose an SDK `timeout` that covers the gateway's queue and execution limits.
++For the gateway defaults, `timeout: 1250` exceeds a 300-second queue deadline
++plus a 900-second execution deadline. The SDK's normal parameter conversion
++still applies: `max_output_tokens` may be serialized as `max_completion_tokens`,
++and capability settings must accurately describe the selected backend.
++
++## Quality and Lifecycle Boundaries
++
++The gateway does not lower the output budget, disable reasoning or choose a
++different model. Preserve a validated profile rather than copying settings from
++an unrelated provider. For example, a Strata endpoint that has already been
++qualified at context 65,536, output cap 10,923 and high reasoning can retain
++those SDK limits and its explicit `litellm_extra_body.reasoning_budget_tokens`
++value of 8,192 plus `experimental_speed_projection: false`. Those extra fields
++are Strata-specific; they are not portable reasoning controls for every engine.
++SDK context limits do not resize the native model's context window.
++
++This gateway admits one active request at a time. That can reduce native batching
++concurrency. Pending requests may be reordered or canceled; a dispatched request
++is not preempted. After a client disconnect the gateway drains the active response.
++An ambiguous backend timeout blocks further dispatch until an operator checks
++the backend and restarts the gateway. Cancellation therefore does not guarantee
++immediate GPU-resource release. Do not replay a request with an uncertain outcome.
++
++The endpoint supports Chat Completions, not Responses or native model-management
++APIs. The example does not establish native cancellation, GPU memory reservation,
++model quality or a throughput gain.
++
++## Validation
++
++```sh
++uv run pytest tests/sdk/llm/test_background_admission_example.py -q
++```
++
++The tests execute the actual SDK against a loopback HTTP fixture. They check both
++routes, preserved generation values, input immutability, one failed POST without
++retry and invalid gateway roots. No model inference is performed. The example
++requires a separately configured gateway and profile, so it is excluded from
++automatic model-backed example runs.
+diff --git a/examples/01_standalone_sdk/60_background_admission/main.py b/examples/01_standalone_sdk/60_background_admission/main.py
+new file mode 100644
+index 0000000..c202f1f
+--- /dev/null
++++ b/examples/01_standalone_sdk/60_background_admission/main.py
+@@ -0,0 +1,86 @@
++"""Send an explicitly classified SDK request through an admission gateway."""
++
++import argparse
++import json
++import os
++from pathlib import Path
++from typing import Any
++from urllib.parse import urlsplit, urlunsplit
++
++from pydantic import SecretStr
++
++from openhands.sdk import LLM, Message
++
++
++def admission_llm(
++    config: dict[str, Any], gateway_root: str, *, background: bool, api_key: str
++) -> LLM:
++    """Retain a working LLM configuration and change its transport destination."""
++    if (
++        not isinstance(gateway_root, str)
++        or not gateway_root
++        or any(c.isspace() or ord(c) < 32 or ord(c) == 127 for c in gateway_root)
++        or "\\" in gateway_root
++    ):
++        raise ValueError("Use a gateway root without whitespace or control characters.")
++    try:
++        url = urlsplit(gateway_root)
++        port = url.port
++    except ValueError as exc:
++        raise ValueError("Invalid gateway root or TCP port.") from exc
++    if (
++        url.scheme not in {"http", "https"}
++        or not url.hostname
++        or "?" in gateway_root
++        or "#" in gateway_root
++        or url.username is not None
++        or url.password is not None
++        or url.netloc.endswith(":")
++        or (port is not None and not 1 <= port <= 65535)
++    ):
++        raise ValueError("Use an HTTP(S) gateway root with a valid host and port.")
++    path = url.path.rstrip("/")
++    if (
++        "%" in url.path
++        or "//" in url.path
++        or any(part in {".", ".."} for part in url.path.split("/"))
++        or path.endswith("/v1")
++    ):
++        raise ValueError("Use an unambiguous gateway root without an API /v1 suffix.")
++    route = "/background/v1" if background else "/v1"
++    return LLM.model_validate(
++        {
++            **config,
++            "base_url": urlunsplit((url.scheme, url.netloc, path + route, "", "")),
++            "api_key": SecretStr(api_key),
++            "num_retries": 0,
++        }
++    )
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("llm_config", type=Path)
++    parser.add_argument("messages", type=Path)
++    parser.add_argument("--gateway-root", default="http://127.0.0.1:18100")
++    parser.add_argument("--background", action="store_true")
++    args = parser.parse_args()
++    llm = admission_llm(
++        json.loads(args.llm_config.read_text(encoding="utf-8")),
++        args.gateway_root,
++        background=args.background,
++        api_key=os.environ.get("ADAPTIVE_API_KEY", "local"),
++    )
++    messages = [
++        Message.model_validate(row)
++        for row in json.loads(args.messages.read_text(encoding="utf-8"))
++    ]
++    if not messages or messages[0].role != "system":
++        raise ValueError("The first message must have role 'system'.")
++    response = llm.completion(messages=messages)
++    print(response.message.model_dump_json())
++    print(f"EXAMPLE_COST: {response.metrics.accumulated_cost}")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/tests/examples/test_examples.py b/tests/examples/test_examples.py
+index 0800d76..da67c13 100644
+--- a/tests/examples/test_examples.py
++++ b/tests/examples/test_examples.py
+@@ -32,6 +32,7 @@ _TARGET_DIRECTORIES = (
+     EXAMPLES_ROOT / "01_standalone_sdk" / "51_agent_hooks",
+     EXAMPLES_ROOT / "01_standalone_sdk" / "57_prompt_hooks",
+     EXAMPLES_ROOT / "01_standalone_sdk" / "58_ask_oracle_tool",
++    EXAMPLES_ROOT / "01_standalone_sdk" / "60_background_admission",
+     EXAMPLES_ROOT / "02_remote_agent_server" / "06_custom_tool",
+     EXAMPLES_ROOT / "05_skills_and_plugins" / "01_loading_agentskills",
+     EXAMPLES_ROOT / "05_skills_and_plugins" / "02_loading_plugins",
+@@ -58,6 +59,8 @@ _EXCLUDED_EXAMPLES = {
+     "examples/01_standalone_sdk/16_llm_security_analyzer.py",
+     "examples/01_standalone_sdk/27_observability_laminar.py",
+     "examples/01_standalone_sdk/35_subscription_login.py",
++    # Requires a separately configured admission gateway and working LLM profile.
++    "examples/01_standalone_sdk/60_background_admission/main.py",
+     # Requires interactive input() which fails in CI with EOFError
+     "examples/02_remote_agent_server/05_vscode_with_docker_sandboxed_server.py",
+     # Requires a Kubernetes cluster with agent-sandbox and the agent-sandbox extra
+diff --git a/tests/sdk/llm/test_background_admission_example.py b/tests/sdk/llm/test_background_admission_example.py
+new file mode 100644
+index 0000000..4c95eb6
+--- /dev/null
++++ b/tests/sdk/llm/test_background_admission_example.py
+@@ -0,0 +1,200 @@
++import json
++import runpy
++from copy import deepcopy
++from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
++from pathlib import Path
++from threading import Thread
++
++import pytest
++
++from openhands.sdk import Message, TextContent
++from openhands.sdk.llm.exceptions import LLMServiceUnavailableError
++
++
++EXAMPLE = (
++    Path(__file__).resolve().parents[3]
++    / "examples/01_standalone_sdk/60_background_admission/main.py"
++)
++admission_llm = runpy.run_path(str(EXAMPLE))["admission_llm"]
++
++
++@pytest.fixture
++def endpoint():
++    requests = []
++    reply_status = [200]
++
++    class Handler(BaseHTTPRequestHandler):
++        def do_GET(self):
++            self.send_json(200, {"object": "list", "data": []})
++
++        def do_POST(self):
++            body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
++            requests.append({"path": self.path, "body": body})
++            if reply_status[0] != 200:
++                self.send_json(503, {"error": {"message": "fixture unavailable"}})
++                return
++            self.send_json(
++                200,
++                {
++                    "id": "fixture-completion",
++                    "object": "chat.completion",
++                    "created": 1,
++                    "model": body["model"],
++                    "choices": [
++                        {
++                            "index": 0,
++                            "message": {"role": "assistant", "content": "42"},
++                            "finish_reason": "stop",
++                        }
++                    ],
++                    "usage": {
++                        "prompt_tokens": 16,
++                        "completion_tokens": 2,
++                        "total_tokens": 18,
++                    },
++                },
++            )
++
++        def send_json(self, status, body):
++            payload = json.dumps(body).encode()
++            self.send_response(status)
++            self.send_header("Content-Type", "application/json")
++            self.send_header("Content-Length", str(len(payload)))
++            self.end_headers()
++            self.wfile.write(payload)
++
++        def log_message(self, format, *args):
++            pass
++
++    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
++    thread = Thread(target=server.serve_forever, daemon=True)
++    thread.start()
++    try:
++        yield f"http://127.0.0.1:{server.server_port}/proxy", requests, reply_status
++    finally:
++        server.shutdown()
++        server.server_close()
++        thread.join(timeout=5)
++        assert not thread.is_alive()
++
++
++@pytest.fixture
++def config():
++    return {
++        "model": "litellm_proxy/fixture-model",
++        "usage_id": "admission-example",
++        "api_mode": "chat",
++        "max_input_tokens": 65536,
++        "max_output_tokens": 10923,
++        "reasoning_effort": "high",
++        "temperature": 0.4,
++        "top_p": 0.9,
++        "timeout": 10,
++        "drop_params": False,
++        "capability_overrides": {
++            "supports_reasoning_effort": True,
++            "supports_sampling_params": True,
++        },
++        "litellm_extra_body": {
++            "reasoning_budget_tokens": 8192,
++            "experimental_speed_projection": False,
++        },
++    }
++
++
++def messages():
++    return [
++        Message(role="system", content=[TextContent(text="Answer directly.")]),
++        Message(role="user", content=[TextContent(text="What is six times seven?")]),
++    ]
++
++
++@pytest.mark.parametrize("background", [False, True])
++def test_example_preserves_request_and_selects_host_route(endpoint, config, background):
++    root, requests, _status = endpoint
++    before = deepcopy(config)
++    llm = admission_llm(config, root + "/", background=background, api_key="fixture")
++    response = llm.completion(messages=messages())
++    assert config == before
++    assert response.message.content == [TextContent(text="42")]
++    assert len(requests) == 1
++    route = "/background/v1" if background else "/v1"
++    assert requests[0]["path"] == "/proxy" + route + "/chat/completions"
++    body = requests[0]["body"]
++    assert body["model"] == "fixture-model"
++    assert body["max_completion_tokens"] == 10923
++    assert body["reasoning_effort"] == "high"
++    assert body["reasoning_budget_tokens"] == 8192
++    assert body["experimental_speed_projection"] is False
++    assert body["temperature"] == 0.4
++    assert body["top_p"] == 0.9
++    assert [row["role"] for row in body["messages"]] == ["system", "user"]
++    assert "adaptive_scheduling" not in body
++
++
++def test_example_does_not_replay_failed_dispatch(endpoint, config):
++    root, requests, status = endpoint
++    status[0] = 503
++    llm = admission_llm(config, root, background=True, api_key="fixture")
++    with pytest.raises(LLMServiceUnavailableError):
++        llm.completion(messages=messages())
++    assert len(requests) == 1
++
++
++def test_example_cli_executes_once(endpoint, config, tmp_path, monkeypatch, capsys):
++    root, requests, _status = endpoint
++    profile = tmp_path / "llm.json"
++    prompt = tmp_path / "messages.json"
++    profile.write_text(json.dumps(config), encoding="utf-8")
++    prompt.write_text(
++        json.dumps([message.model_dump(mode="json") for message in messages()]),
++        encoding="utf-8",
++    )
++    monkeypatch.setenv("ADAPTIVE_API_KEY", "fixture")
++    monkeypatch.setattr(
++        "sys.argv",
++        [
++            str(EXAMPLE),
++            str(profile),
++            str(prompt),
++            "--gateway-root",
++            root,
++            "--background",
++        ],
++    )
++    runpy.run_path(str(EXAMPLE), run_name="__main__")
++    assert len(requests) == 1
++    assert requests[0]["path"] == "/proxy/background/v1/chat/completions"
++    output = capsys.readouterr().out
++    assert '"text":"42"' in output
++    assert "EXAMPLE_COST:" in output
++
++
++@pytest.mark.parametrize(
++    "root",
++    [
++        "file:///tmp/socket",
++        "http://user:password@localhost",
++        "http://x/?q=1",
++        "http://x/?",
++        "http://x/#",
++        " http://x",
++        "http://x/\tproxy",
++        "http://x/\x7fproxy",
++        "http://x\\proxy",
++        "http://x:0",
++        "http://x:65536",
++        "http://x:bad",
++        "http://x:",
++        "http://x/./proxy",
++        "http://x/../proxy",
++        "http://x/%2fproxy",
++        "http://x//proxy",
++        "http://x//",
++        "http://x/v1",
++        "http://x/proxy/background/v1/",
++    ],
++)
++def test_example_rejects_ambiguous_gateway_roots(config, root):
++    with pytest.raises(ValueError, match="gateway root"):
++        admission_llm(config, root, background=False, api_key="fixture")
+-- 
+2.55.0.windows.3
+

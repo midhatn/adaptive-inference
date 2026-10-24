@@ -1,0 +1,4 @@
+Prepared from the OpenHands SDK example contribution and related HTTP fixture patterns.
+OpenHands software-agent-sdk: https://github.com/OpenHands/software-agent-sdk
+Base acd96e6fa424c02432304395b9208f99be24b54d; candidate 415785b57c69da5e7ba55fa943e2e4cf6d26f6ef.
+MIT license included. No SDK runtime source or dependencies are vendored.

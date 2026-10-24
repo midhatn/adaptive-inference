@@ -1,0 +1,109 @@
+From 06ba725d8b9bb42b457302f71dd85204e9760c32 Mon Sep 17 00:00:00 2001
+From: MIDHAT NASHAR <35053211+midhatn@users.noreply.github.com>
+Date: Sat, 24 Oct 2026 03:50:58 +0300
+Subject: [PATCH] fix: deliver coadaptive routing through native request tuning
+
+---
+ serve/server.py                     |  9 ++++-
+ serve/test_coadaptive_route_wire.py | 62 +++++++++++++++++++++++++++++
+ 2 files changed, 69 insertions(+), 2 deletions(-)
+ create mode 100644 serve/test_coadaptive_route_wire.py
+
+diff --git a/serve/server.py b/serve/server.py
+index 31b2c46b..2ce2a24b 100644
+--- a/serve/server.py
++++ b/serve/server.py
+@@ -7086,7 +7086,10 @@ class Service:
+                             self.ensure_loaded()
+                     # Decide after the FIFO wait, using fresh allocator/workload data.
+                     # This does not issue calibration requests on the user's behalf.
+-                    if self.coadaptive.enabled and not par and not emb and (sampling or {}).get("pcie_frac") is None:
++                    request_tune = (sampling or {}).get("strata_tune")
++                    explicit_route = ((sampling or {}).get("pcie_frac") is not None
++                                      or isinstance(request_tune, dict) and request_tune.get("pcie_frac") is not None)
++                    if self.coadaptive.enabled and not par and not emb and not explicit_route:
+                         with self.memory_lock:
+                             native = getattr(self.engine, "native_capacity", None)
+                             if native is not None and native["proc"] is not self.engine.proc:
+@@ -7094,7 +7097,9 @@ class Service:
+                             route = self.coadaptive.choose_route(self.memory_snapshot(), native,
+                                                                  len(ids), max_new, time.time(), sampling)
+                             if self.coadaptive.active:
+-                                sampling = {**(sampling or {}), "pcie_frac": route}
++                                # Native request routing is serialized from strata_tune.
++                                sampling = {**(sampling or {}), "strata_tune": {
++                                    **(request_tune if isinstance(request_tune, dict) else {}), "pcie_frac": route}}
+                     with self.status_lock:
+                         if par:
+                             self.status["queued"] -= 1
+diff --git a/serve/test_coadaptive_route_wire.py b/serve/test_coadaptive_route_wire.py
+new file mode 100644
+index 00000000..7956be59
+--- /dev/null
++++ b/serve/test_coadaptive_route_wire.py
+@@ -0,0 +1,62 @@
++"""Exercise service routing through the actual native sampling serializer."""
++import copy
++import threading
++import unittest
++from unittest import mock
++
++from serve import server
++from serve.coadaptive import CoAdaptive
++
++
++class CoAdaptiveRouteWire(unittest.TestCase):
++    def run_request(self, sampling, *, enabled=True, mode="live"):
++        tok = server.ByteTokenizer()
++        engine = server.MockEngine(tok, "ok")
++        svc = server.Service(engine, tok, None)
++        svc.coadaptive = CoAdaptive({"enabled": enabled, "mode": mode}, pcie_frac=.37)
++        generate = engine.generate
++        wire, effective = [], []
++
++        def capture(ids, max_new, values, cancel, **kwargs):
++            effective.append(copy.deepcopy(values))
++            wire.append(server.StrataEngine.sampling_keys(values))
++            yield from generate(ids, max_new, values, cancel, **kwargs)
++
++        with mock.patch.object(svc.coadaptive, "choose_route", return_value=.65) as choose, \
++                mock.patch.object(engine, "generate", side_effect=capture):
++            list(svc.run([1], False, None, 8, sampling, threading.Event()))
++        self.assertFalse(svc.fifo.locked())
++        return wire, effective, choose
++
++    def test_selected_route_reaches_native_wire_without_changing_other_tuning(self):
++        sampling = {"temperature": .7, "strata_tune": {"spec_min_p": .8, "aux_cpus": True},
++                    "experimental_speed_projection": False, "reasoning_budget_tokens": 1024}
++        before = copy.deepcopy(sampling)
++        wire, effective, choose = self.run_request(sampling)
++        self.assertIn(" pcie_frac=0.65", wire[0])
++        self.assertIn(" spec_min_p=0.8", wire[0])
++        self.assertIn(" aux_cpus=1", wire[0])
++        self.assertEqual(sampling, before)
++        self.assertFalse(effective[0]["experimental_speed_projection"])
++        self.assertEqual(effective[0]["reasoning_budget_tokens"], 1024)
++        choose.assert_called_once()
++
++    def test_explicit_nested_route_including_zero_wins(self):
++        for fraction in (0, .2, 1):
++            with self.subTest(fraction=fraction):
++                wire, effective, choose = self.run_request({"strata_tune": {"pcie_frac": fraction}})
++                self.assertIn(" pcie_frac=" + repr(float(fraction)), wire[0])
++                self.assertEqual(effective[0]["strata_tune"]["pcie_frac"], fraction)
++                choose.assert_not_called()
++
++    def test_disabled_and_shadow_policy_do_not_change_native_route(self):
++        for enabled, mode in ((False, "live"), (True, "shadow")):
++            with self.subTest(enabled=enabled, mode=mode):
++                wire, effective, _ = self.run_request({"strata_tune": {"spec_min_p": .8}},
++                                                      enabled=enabled, mode=mode)
++                self.assertNotIn("pcie_frac=", wire[0])
++                self.assertEqual(effective[0]["strata_tune"], {"spec_min_p": .8})
++
++
++if __name__ == "__main__":
++    unittest.main()
+-- 
+2.55.0.windows.3
+
