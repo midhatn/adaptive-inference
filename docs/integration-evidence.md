@@ -15,6 +15,7 @@ commit containing this document; they are not retrospectively added to v0.2.0.
 | SGLang/Ollama recipes | 6 actual SDK to released gateway to fixture-backend tests passed | Text, SSE, quality/parameter preservation, unsupported controls and no ambiguous retry. [Reproduce](../integrations/openai-admission/README.md) |
 | LM Studio example | Original constructor fails typecheck and selects the wrong default URL; corrected `baseURL` passes | Actual JS SDK with fake fetch and zero network sockets. [Reproduce](../provenance/lmstudio-baseurl/README.md) |
 | CrewAI upstream guide | Four identical localized snippets, two actual HTTP requests and four MDX compilations passed | Full-site validation encounters an unchanged upstream Korean RAG-tool frontmatter error. [Guide/check](../integrations/crewai-guide/README.md) |
+| OpenHands SDK | 24 configuration/HTTP tests plus two released-gateway composition tests passed | Public `LLM` configuration; locked LiteLLM requires the existing `litellm_proxy/` provider for the tested unknown custom alias. [Reproduce](../integrations/openhands/README.md) |
 
 All HTTP/model responses above are fixtures. IQ3_S identifiers and quality fields
 in those requests verify serialization only. They are not new model-quality,

@@ -1,0 +1,81 @@
+{
+  "schema": "adaptive-inference.openhands-admission.v1",
+  "source": {
+    "sdk_repository": "https://github.com/OpenHands/software-agent-sdk",
+    "sdk_base": "acd96e6fa424c02432304395b9208f99be24b54d",
+    "sdk_candidate": "415785b57c69da5e7ba55fa943e2e4cf6d26f6ef",
+    "docs_repository": "https://github.com/OpenHands/docs",
+    "docs_base": "f742b438db2d5a2d316ebea67a18c46b4ab56a48",
+    "docs_candidate": "4ef3237177cd07801856082abbd306f77040a43f"
+  },
+  "environment": {
+    "python": "3.12.9",
+    "sdk": "1.58.1",
+    "litellm": "1.93.0",
+    "gateway": "0.2.0",
+    "httpx": "0.28.1",
+    "pydantic": "2.14.1"
+  },
+  "validation": {
+    "sdk_http_tests": 24,
+    "sdk_http_seconds": 3.33,
+    "sdk_released_gateway_tests": 2,
+    "gateway_seconds": 20.83,
+    "backend": "deterministic loopback HTTP fixture",
+    "precommit": "all applicable hooks passed",
+    "mintlify_validate": "passed",
+    "mintlify_broken_links": "passed",
+    "portable_copy": {
+      "passed": 26,
+      "seconds": 24.09,
+      "sdk_distribution": "PyPI openhands-sdk1.58.1",
+      "litellm": "1.93.0",
+      "gateway": "released0.2.0 wheel",
+      "native_inference": false
+    },
+    "url_cases": "whitespace/control/DEL, backslash, bad or zero port, credentials, query/fragment, dot/encoded/double-slash paths, API suffixes",
+    "sdk_http_source_tests_before_url_hardening": 7,
+    "sdk_http_final_tests": 24
+  },
+  "limits": [
+    "No model inference or performance comparison",
+    "No agent tool workflow qualification",
+    "Source profile must already match backend; helper does not change model or quality settings",
+    "Locked LiteLLM 1.93 rejects reasoning_effort for an unknown openai alias; supported litellm_proxy alias is used explicitly",
+    "SDK HUMAN template section remains untouched; upstream candidates unpublished"
+  ],
+  "files": {
+    "LICENSE": {
+      "sha256": "6129b054edd8cdac1252496d36e6a06848f0fb11e9d2564429ed79674ab4bf32",
+      "bytes": 1100
+    },
+    "main.py": {
+      "sha256": "73034b214e92f9d9906da3272ff11ef9cb24210cd1b12de14bbee4d8e91dce2e",
+      "bytes": 2933
+    },
+    "NOTICE": {
+      "sha256": "856a6918fc50f26fdae9425dd03c48b5f6ff02d15ef6efc777de2a4802766976",
+      "bytes": 343
+    },
+    "README.md": {
+      "sha256": "68a0c68b6909d4c9e03f3f0eee58ef54e54a41cd797f566c73e38adaa362d0ef",
+      "bytes": 5497
+    },
+    "requirements.txt": {
+      "sha256": "6d422b1c33b7a7122ed3d811f4aa94d37d9c08daa7f18f287cad8119a8d5f344",
+      "bytes": 78
+    },
+    "test_example.py": {
+      "sha256": "54b5fca484a269887ec03416816fc01ff2e1a02fe95b7c085d4bf8005f475caa",
+      "bytes": 6655
+    },
+    "test_gateway.py": {
+      "sha256": "1b56275dd301de54f7c32e447642ee458661492c9aecf43b2129fb7343d120f2",
+      "bytes": 2957
+    }
+  },
+  "patches": {
+    "openhands-docs-background-admission.patch": "14d4bc77db458ed8eb1db5e632c140b4974e2256ca7a096e3830b7b7fffee29e",
+    "openhands-sdk-background-admission.patch": "f759d8dfe59900dd528c02e1c84d5ef565c1be597018ddaa00a0011b2017824c"
+  }
+}

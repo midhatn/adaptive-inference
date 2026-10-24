@@ -1,0 +1,42 @@
+From 2c1411b3b12a36ac740a734f345e289faf077c3d Mon Sep 17 00:00:00 2001
+From: MIDHAT NASHAR <35053211+midhatn@users.noreply.github.com>
+Date: Sat, 24 Oct 2026 04:21:38 +0300
+Subject: [PATCH] feat(catalog): add opt-in Adaptive Inference routing plugin
+
+---
+ .../adaptive-inference-routing.yaml           | 26 +++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+ create mode 100644 plugin-catalog/adaptive-inference-routing.yaml
+
+diff --git a/plugin-catalog/adaptive-inference-routing.yaml b/plugin-catalog/adaptive-inference-routing.yaml
+new file mode 100644
+index 0000000000000..4a4ffe5c3e2d0
+--- /dev/null
++++ b/plugin-catalog/adaptive-inference-routing.yaml
+@@ -0,0 +1,26 @@
++name: adaptive-inference-routing
++repo: https://github.com/midhatn/adaptive-inference
++sha: "d6f4e201ba28602189872746922e527c58ed0cbd"
++subdir: plugins/hermes
++title: Adaptive Inference Routing
++description: >-
++  Opt-in background scheduling for host-known delegated sessions, supported cron
++  execution and explicit worker profiles using an existing Adaptive Inference
++  gateway. Interactive and explicitly classified requests retain their routing;
++  model, tools, prompts, output limits and credentials are unchanged.
++  Disclosure: adds only X-Adaptive-Class on an exactly configured chat-completions
++  endpoint. No network calls, file access, processes, telemetry or credential
++  handling in plugin code. Uses a bounded in-memory session index. Cron detection
++  requires the newer public execution-identity capability; auxiliary routing is
++  an explicit provider configuration, not an auxiliary middleware claim.
++maintainer: midhatn
++tier: community
++category: models
++requires_hermes: ">=0.21.5"
++docs_url: https://github.com/midhatn/adaptive-inference/blob/d6f4e201ba28602189872746922e527c58ed0cbd/plugins/hermes/README.md
++version: "0.1.0"
++capabilities:
++  provides_tools: []
++  provides_hooks: [subagent_start, subagent_stop, post_compaction]
++  provides_middleware: [llm_request]
++  requires_env: []

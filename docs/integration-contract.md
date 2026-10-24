@@ -5,10 +5,10 @@ implementation lives here; upstream contributions configure an existing client,
 use a supported host hook, or supply a small native adapter. They do not need to
 copy the scheduling algorithm or depend on a historical PR.
 
-The published baseline is [v0.2.0](https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0).
-It provides the HTTP contract below. The configurable Python routing helper and
-new plugin contributions on the development branch are subsequent work; a
-consumer must pin the commit containing the files it uses.
+The HTTP contract is available in [v0.2.0](https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0).
+Version 0.3.0 adds the configurable Python routing helper, protected generation
+options and public-hook/plugin recipes. Consumers must pin the release or commit
+containing the files they use; a model receipt identifies its own tested composition.
 
 ## Agent-facing HTTP boundary
 

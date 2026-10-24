@@ -521,6 +521,38 @@
       "passed": true
     }
   ],
+  "identity_override_refusals": [
+    {
+      "client": "langgraph",
+      "surface": "body-model",
+      "refused_before_dispatch": true
+    },
+    {
+      "client": "langgraph",
+      "surface": "header-credential",
+      "refused_before_dispatch": true
+    },
+    {
+      "client": "crewai",
+      "surface": "body-model",
+      "refused_before_dispatch": true
+    },
+    {
+      "client": "crewai",
+      "surface": "header-credential",
+      "refused_before_dispatch": true
+    },
+    {
+      "client": "autogen",
+      "surface": "body-model",
+      "refused_before_dispatch": true
+    },
+    {
+      "client": "autogen",
+      "surface": "header-credential",
+      "refused_before_dispatch": true
+    }
+  ],
   "external_connection_attempts": [],
   "models_run": false,
   "known_client_normalizations": {
@@ -529,10 +561,10 @@
   },
   "scope": "Actual installed SDK clients over loopback HTTP fixtures; no gateway/native model/agent task/reboot qualification. Tools are serialized, not executed.",
   "source_sha256": {
-    "provenance/python-clients/check_clients.py": "881f91f7b2ce690bcec69d37349ef7b705d3dfc6fa9feb117e81c9ea8e7d8800",
-    "src/adaptive_inference/client_routing.py": "3da3ef038a99e11542944c039b6dbe319bb35a199cf0724462a2f254e0b9bf8a",
-    "examples/agents/langgraph_client.py": "eef868db00cad2279dbe8628610f5f414c872efed74a077e61c10a5a0ff23509",
-    "examples/agents/autogen_client.py": "4a55749315af87f90330dca08e4cc717908f2674934d07bb4f2ccbedf55257c6",
-    "examples/agents/crewai_client.py": "0c50b24b38b221fd4fd2ac10fcc779f0d8b78670cbb17038c4fa4bb461dfe16e"
+    "provenance/python-clients/check_clients.py": "be3b115a5e1d47bd8c78b177ea61f1b3b8ab0a36ba785c2f7cac587722cdf87c",
+    "src/adaptive_inference/client_routing.py": "d57178cfbd5666e75aef311f1362cf8486f48085c6f4995861b4fbd0cb7e41d1",
+    "examples/agents/langgraph_client.py": "60324afca91e19a90a65cee510b04a3e9728446c014135f81a5c1b157c136699",
+    "examples/agents/autogen_client.py": "4bf1d4a986594b6486f7c3741a6211d0e2568f963cb4a5ec918aa82a55020cf5",
+    "examples/agents/crewai_client.py": "fe1404bb5c860418c629e7bc778097fa35589f8694559dfc0193d6fe7dfa4076"
   }
 }

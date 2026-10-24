@@ -1,0 +1,18 @@
+{
+  "base_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+  "git_tree": "7bdb68806cf9b8aa1f56bed34998d6d4bec90188",
+  "archive_sha256": "1066216e4760337f58351024d62fea988dee87197c5a3c8286d8d33c3e6f891a",
+  "inventory_sha256": "e99df7b05d08ead13757ebcb5f1a358be8528e3e9ea6487aa27a562b2dd1e77e",
+  "verified_files": 20897,
+  "history": "Exact target snapshot; ancestor history omitted. Unchanged blobs are supplied by the pinned baseline bundle.",
+  "schema": 1,
+  "passed": true,
+  "offline": true,
+  "python_network_denied": true,
+  "git_https_denied": true,
+  "exact_target_commit": true,
+  "clean_checkout": true,
+  "baseline_archive_sha256": "bff6c2c380ed710dede9d1e5b4d4c2c6edf3e2dd5fe208b48b80d3f980cb47c5",
+  "source_delta_lock_sha256": "a66a6935fa77c4259fb07ca8d5a9a69098d15ef9d41dac551eb1cf71d20db28b",
+  "scope": "Complete target source snapshot only; no dependency installation or model execution"
+}

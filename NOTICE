@@ -72,3 +72,9 @@ The optional plugins/hermes implementation is original Apache-2.0 project code
 using Hermes's public plugin contracts. Its SOURCE_LOCK records the inspected
 MIT-licensed upstream interfaces and scoped validation; no Hermes runtime code
 is copied into that plugin.
+
+The separate integrations/hermes/current-source supplement preserves exact
+NousResearch/hermes-agent revision 14e1e43a23761b369641208e204365cd6cb9399d
+under its original MIT license. It reuses the historical baseline bundle and
+supplies the changed source objects and complete target inventory. Its original
+license is retained in UPSTREAM-LICENSE.txt and the restored source tree.

@@ -6,7 +6,7 @@ Requires autogen-ext[openai]. The example does not execute an agent or a call.
 
 def build_client(model_id: str, model_info: dict, *, background: bool = False, generation_options=None,
                 gateway_base_url="http://127.0.0.1:18100/v1", api_key_env=None):
-    from adaptive_inference.client_routing import gateway_client_options
+    from adaptive_inference.client_routing import gateway_client_options, generation_options_for_route
     from autogen_ext.models.openai import OpenAIChatCompletionClient
 
     if not model_id or model_id == "YOUR_EXISTING_MODEL_ID":
@@ -14,11 +14,7 @@ def build_client(model_id: str, model_info: dict, *, background: bool = False, g
     required = {"vision", "function_calling", "json_output", "family", "structured_output"}
     if not required <= model_info.keys():
         raise ValueError("Supply the backend's verified AutoGen ModelInfo capabilities")
-    options = dict(generation_options or {})
-    transport = {"client", "async_client", "http_client", "http_async_client",
-                 "openai_api_base", "openai_api_key"}
-    if set(options) & (transport | {"model", "model_info", "api_key", "max_retries", "base_url"}):
-        raise ValueError("Generation options cannot override the selected client route")
+    options = generation_options_for_route(generation_options)
     route = gateway_client_options(base_url=gateway_base_url,
                                    background=background, api_key_env=api_key_env)
     return OpenAIChatCompletionClient(

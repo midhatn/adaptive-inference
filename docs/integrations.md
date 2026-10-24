@@ -100,6 +100,8 @@ from generation settings. Fifteen [installed Python SDK checks](../provenance/py
 exercise their actual request serialization over HTTP fixtures. LangChain emits
 the equivalent `max_completion_tokens` name for `max_tokens`; CrewAI makes tool
 schemas strict. These client transformations are separate from gateway behavior.
+Six additional negative SDK cases refuse nested model/authorization overrides
+before dispatch; explicit generation settings cannot replace the selected client identity.
 
 Additional [preserved client transport checks](../provenance/client-config-transports/README.md)
 exercise Aider, Continue and Cline without requiring an upstream Git checkout.
@@ -115,7 +117,7 @@ also exercise the released gateway with actual SDK calls and a local fake backen
 | Hermes | [`hermes.yaml`](../examples/agents/hermes.yaml) plus optional [public-hook plugin](../plugins/hermes/README.md) | Configured auxiliary slots use the background URL; the opt-in plugin identifies delegated sessions, explicit worker profiles and cron executions where the public API exists | [Model configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuring-models) |
 | OpenClaw | [`openclaw.json`](../examples/agents/openclaw.json) plus [configuration composer](../examples/agents/openclaw-config.md) | Existing `agents.defaults.subagents.model` selects the cloned background provider; explicit per-agent/spawn choices and fallbacks retain precedence | [Custom providers](https://docs.openclaw.ai/gateway/config-tools/custom-providers), [minimal custom model entries](https://docs.openclaw.ai/concepts/model-providers/custom-providers) |
 | Aider | [`aider.yml`](../examples/agents/aider.yml), usable with `aider --config PATH` | Change that worker's API base to the background URL | [OpenAI-compatible APIs](https://aider.chat/docs/llms/openai-compat.html) |
-| OpenHands | [`openhands.md`](../examples/agents/openhands.md): custom model and API base in the app settings | Separate worker configured with the background URL | [Local model guide](https://docs.openhands.dev/openhands/usage/llms/local-llms) |
+| OpenHands | [`openhands.md`](../examples/agents/openhands.md) and [executable SDK example](../integrations/openhands/README.md) using the existing `LLM` configuration | Explicit `background` selection preserves the supplied profile and uses the shared background URL | [Local model guide](https://docs.openhands.dev/openhands/usage/llms/local-llms) |
 | Continue | [`continue.yaml`](../examples/agents/continue.yaml): `provider: openai`, `apiBase`, Chat Completions mode | User/host chooses the background model entry | [Provider configuration](https://docs.continue.dev/customize/model-providers/top-level/openai), [config schema](https://docs.continue.dev/reference) |
 | Cline | [`cline.md`](../examples/agents/cline.md): OpenAI Compatible settings | Dedicated background profile/instance | [Provider settings](https://docs.cline.bot/provider-config/openai-compatible) |
 | Roo Code | [`roo-code.md`](../examples/agents/roo-code.md): OpenAI Compatible settings | Dedicated background profile/instance | [Provider settings and native tool requirement](https://roocodeinc.github.io/Roo-Code/providers/openai-compatible/) |
@@ -129,8 +131,11 @@ slot is the practical opt-in boundary. A single agent pointed at `/v1` stays
 normal unless its caller attaches scheduling metadata. A background path stays
 background even if a caller tries to promote its class.
 
-For Aider and OpenHands, `openai/` is the client provider selector; use the actual
-model ID after that prefix. For other routes, retain the backend's exact ID.
+For Aider, `openai/` is the client provider selector; use the actual served model
+ID after that prefix. OpenHands should retain its working SDK provider prefix;
+the tested custom-alias recipe uses `litellm_proxy/` because the locked LiteLLM
+rejects reasoning options for an unknown `openai/` alias before dispatch. For
+other routes, retain the backend's exact ID.
 AutoGen requires explicit capabilities for an unknown model: supply verified
 `model_info`, including tool and structured-output support. Roo Code requires
 native tool calling, so text-only success is insufficient. LangChain's generic

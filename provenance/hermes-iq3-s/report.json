@@ -1,0 +1,10 @@
+{
+  "rows": 4,
+  "units": 17,
+  "total_cents": 4350,
+  "by_item": {
+    "notebook": 2250,
+    "pen": 1000,
+    "folder": 1100
+  }
+}

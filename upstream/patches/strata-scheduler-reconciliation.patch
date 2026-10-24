@@ -1,0 +1,1981 @@
+diff --git a/docs/ADAPTIVE_STRATA.md b/docs/ADAPTIVE_STRATA.md
+index 7816126b16ce3ab3b71a2945f5a9ca5552590960..3d7771630dea5f763966fc72518acec04d95e445 100644
+--- a/docs/ADAPTIVE_STRATA.md
++++ b/docs/ADAPTIVE_STRATA.md
+@@ -4,6 +4,10 @@ Status: experimental draft, source updated 2026-10-15. Not a released feature or
+ Production configuration is unchanged. The intended objective is correct agentic task completion in less
+ wall-clock time while leaving resources available to foreground applications.
+ 
++The separate [optional inference scheduler](INFERENCE_SCHEDULING.md) adds bounded ordering of waiting
++requests and recent execution-cost feedback. It is off by default and does not preempt active work. Its
++CPU/API validation is separate from the historical controller and native measurements below.
++
+ The source port includes upstream **v0.1.44.1**, commit
+ [`296b59d2f73c8f04a805df29c2fa97655adace78`](https://github.com/Niko1221/Strata/commit/296b59d2f73c8f04a805df29c2fa97655adace78).
+ Its queue heartbeats and CPU-assignment restart metadata are composed with adaptive admission and lease
+diff --git a/docs/INFERENCE_SCHEDULING.md b/docs/INFERENCE_SCHEDULING.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..9a27edfb2f4cca8cfcb3ebe55bfb139f2c84ee80
+--- /dev/null
++++ b/docs/INFERENCE_SCHEDULING.md
+@@ -0,0 +1,57 @@
++# Optional scheduling for waiting requests
++
++This experimental option orders waiting text requests on one non-batched engine. It learns from recent completed execution times and lets clients mark background work. It is off by default. It does not change the model, sampling, context limit, reasoning budget or an active request's ownership.
++
++Add this top-level block to the server configuration to enable it:
++
++```json
++{
++  "inference_scheduling": {
++    "enabled": true,
++    "normal_boost_seconds": 2.0,
++    "max_pending": 128,
++    "max_cost_delay_s": 30.0,
++    "cost_model": {
++      "decay_s": 60.0,
++      "ttl_s": 900.0,
++      "min_samples": 3,
++      "max_groups": 128,
++      "max_samples": 32
++    }
++  }
++}
++```
++
++All fields except `enabled` have the defaults shown. Omit the block or set `enabled` to false to retain ordinary scheduling. The enabled option rejects parallel, batched and replica configurations before starting the engine. Its admission limit is also bounded by the existing queue limit; an excess HTTP request receives the existing queue-full response before streaming begins.
++
++For Chat Completions, Responses and Messages, a client may add:
++
++```json
++"strata_scheduling": {"class": "background"}
++```
++
++The default class is `normal`. Public clients may only choose these two classes. They cannot promote themselves above normal, provide a predicted cost or supply extra scheduling fields. Invalid metadata is rejected before model loading or response streaming. This is declared intent, not a classification inferred from user-agent strings or request content.
++
++## Ordering and ownership
++
++The queue assigns a fixed score when a request arrives: arrival time, plus the background delay if applicable, plus its bounded predicted execution cost. A smaller score runs first. Background delay is between zero and 10 seconds; cost delay is between zero and 300 seconds. Equal scores preserve arrival order. Unknown costs receive the maximum cost delay, so a cold request is not treated as free.
++
++These offsets bound how far a later arrival can overtake an older pending request. They do not bound wall-clock waiting time: active requests and resource admission may take longer. The queue only chooses which waiting inference request next attempts the existing lock. It cannot interrupt an active generation, release another owner's lock or bypass tool leases, memory admission, load/unload or vision preparation. Cancellation and queue deadlines remove pending tickets. Existing request parking remains a separate policy.
++
++## Learning and visibility
++
++The latency estimator adapts Finagle's Peak EWMA update: a slow observation raises the estimate immediately; new faster observations allow gradual recovery. A bounded recent empirical 90th percentile also guards the estimate. This is a heuristic, not a confidence interval or a task-quality score. Idle time never makes a long request look free, and old or sparse observations fall back to unknown cost.
++
++Host-generated groups distinguish the current process generation, effective native sampling and route, request-size buckets, thinking budget and scheduling class. They contain no prompt, response, credential or client identity. Requests with text stop strings are excluded. Replacing the native process starts a new context. A live adaptive route chosen only after waiting cannot borrow the cost of the previous route for its queue score.
++
++Timing starts after queue wait, load, memory admission, route selection and parking preparation. Learning requires the request's own completed native segment, a stop or length finish, and the same process throughout. A failed or cancelled observed execution invalidates its old estimate. Parked/resumed and vision executions are not used as ordinary text latency samples. An observer failure does not prevent inference cleanup.
++
++When enabled, `/v1/status` includes aggregate `inference_scheduling` queue and model counters. Request history includes the declared class, fixed prediction, wait time and whether the execution trained the model. The feature does not enable API prompt logging or persist learned groups. Restarting the service clears them.
++
++## Validation boundary
++
++The isolated candidate passed 47 focused queue, estimator, service and native-wire CPU tests, plus 149 existing adaptive, routing, idle-parking and vision regressions on Windows/Python 3.11.9. Independent local HTTP checks accepted background requests in all three API dialects and verified released reservations, pending tickets and lock ownership. These use fake engines; fixture token rates are not benchmarks.
++
++No real-model responsiveness, throughput or task-quality improvement has been measured for this option. It is not GPU kernel preemption, a general operating-system scheduler or an operating-system memory reservation. The separate public CUDA build does not qualify this newer Python integration.
++
++The adapted estimator code and license are recorded in `third_party/finagle/`. Queue ordering follows the bounded arrival-plus-priority approach studied in NVIDIA Dynamo; its code was not copied. See the source headers for pinned references.
+diff --git a/serve/inference_queue.py b/serve/inference_queue.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..d12d09a8d763e51b77f0257efe1740c438f065c1
+--- /dev/null
++++ b/serve/inference_queue.py
+@@ -0,0 +1,167 @@
++"""Opt-in ordering of waiting inference calls; never owns lifecycle or memory.
++
++Design reference (no source copied): NVIDIA Dynamo, Apache-2.0,
++868de572ad9e10e2effb16bb0cff57f3973ca1e8,
++lib/kv-router/src/scheduling/policy_queue.rs:941-952. Its FCFS policy shifts
++arrival time by a priority offset. Here the operator bounds that offset and
++clients can only demote themselves. There are no strict tiers or preemption.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass
++import heapq
++import itertools
++import math
++import threading
++import time
++
++
++CLASSES = ("normal", "background")
++MAX_BOOST_SECONDS = 10.0
++MAX_PENDING = 4096
++
++
++def scheduling_class(request):
++    """Normal is the default. A public hint can only request background service."""
++    if request is None:
++        return "normal"
++    if not isinstance(request, dict):
++        raise ValueError("inference request must be an object")
++    if "strata_scheduling" not in request:
++        return "normal"
++    metadata = request["strata_scheduling"]
++    if (not isinstance(metadata, dict) or set(metadata) != {"class"}
++            or not isinstance(metadata["class"], str) or metadata["class"] not in CLASSES):
++        raise ValueError("strata_scheduling accepts only class normal or background")
++    return metadata["class"]
++
++
++def _finite(value):
++    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
++
++
++class QueueFull(ValueError):
++    """The configured pending bound is full; no ticket or lock was acquired."""
++
++
++@dataclass(frozen=True, eq=False)
++class Ticket:
++    scheduling_class: str
++    arrived: float
++    sequence: int
++    rank: float
++    predicted_s: float | None = None
++    cost_delay_s: float = 0.0
++
++
++class InferenceQueue:
++    """Bounded waiting tickets sharing the service's existing exclusive lock.
++
++    Admission, tool leases, active work and lock release remain with the service.
++    A ticket stays queued until it actually acquires that lock. This lets a
++    later normal request precede waiting background work while an owner runs.
++    Any request older by more than the class plus cost caps precedes new work;
++    this is an ordering property, not a wall-clock completion guarantee.
++    """
++
++    def __init__(self, *, normal_boost_seconds=2.0, max_pending=128,
++                 max_cost_delay_s=30.0, clock=time.monotonic):
++        if not _finite(normal_boost_seconds) or not 0 <= normal_boost_seconds <= MAX_BOOST_SECONDS:
++            raise ValueError("normal_boost_seconds must be finite and between 0 and 10")
++        if type(max_pending) is not int or not 1 <= max_pending <= MAX_PENDING:
++            raise ValueError("max_pending must be an integer between 1 and 4096")
++        if not _finite(max_cost_delay_s) or not 0 <= max_cost_delay_s <= 300:
++            raise ValueError("max_cost_delay_s must be finite and between 0 and 300")
++        self.normal_boost_seconds = float(normal_boost_seconds)
++        self.max_cost_delay_s = float(max_cost_delay_s)
++        self.max_pending, self.clock = max_pending, clock
++        self._changed = threading.Condition()
++        self._sequence = itertools.count()
++        self._pending = set()
++        self._heap = []
++        self._admitted = self._discarded = self._rejected = 0
++
++    def enqueue(self, scheduling_class="normal", predicted_s=None):
++        if not isinstance(scheduling_class, str) or scheduling_class not in CLASSES:
++            raise ValueError("scheduling class must be normal or background")
++        if predicted_s is not None and (not _finite(predicted_s) or predicted_s < 0):
++            raise ValueError("predicted_s must be None or a finite nonnegative cost")
++        now = self.clock()
++        if not _finite(now):
++            raise ValueError("queue clock must be finite")
++        with self._changed:
++            if len(self._pending) >= self.max_pending:
++                self._rejected += 1
++                raise QueueFull("inference pending queue is full")
++            background_delay = self.normal_boost_seconds if scheduling_class == "background" else 0.0
++            # An unknown/cold context receives no cheap-task scheduling bonus.
++            # Only the host's trained, context-valid estimate belongs here;
++            # request metadata cannot supply a prediction or change these caps.
++            cost_delay = self.max_cost_delay_s if predicted_s is None else min(self.max_cost_delay_s, predicted_s)
++            ticket = Ticket(scheduling_class, now, next(self._sequence),
++                            now + background_delay + cost_delay, predicted_s, cost_delay)
++            self._pending.add(ticket)
++            heapq.heappush(self._heap, (ticket.rank, ticket.sequence, ticket))
++            self._changed.notify_all()
++            return ticket
++
++    def _head(self):
++        while self._heap and self._heap[0][2] not in self._pending:
++            heapq.heappop(self._heap)
++        return self._heap[0][2] if self._heap else None
++
++    def acquire(self, ticket, fifo, timeout, cancel=None):
++        """Try until timeout; false leaves the ticket queued for the next wait.
++
++        A caller must discard its ticket in finally. Existing owners may release
++        fifo without notifying this object, so bounded polling is intentional.
++        A canceled/removed ticket returns false and can never acquire fifo.
++        """
++        if not _finite(timeout) or timeout < 0:
++            raise ValueError("queue wait timeout must be finite and nonnegative")
++        deadline = time.monotonic() + timeout
++        with self._changed:
++            while ticket in self._pending:
++                if cancel is not None and cancel.is_set():
++                    return False
++                if self._head() is ticket and fifo.acquire(blocking=False):
++                    self._pending.remove(ticket)
++                    heapq.heappop(self._heap)
++                    self._admitted += 1
++                    self._changed.notify_all()
++                    return True
++                left = deadline - time.monotonic()
++                if left <= 0:
++                    return False
++                self._changed.wait(min(.05, left))
++            return False
++
++    def discard(self, ticket):
++        """Idempotently remove this exact ticket; never release another owner."""
++        with self._changed:
++            if ticket not in self._pending:
++                return False
++            self._pending.remove(ticket)
++            self._discarded += 1
++            self._head()
++            # Cancellation away from the heap head must not accumulate an
++            # unbounded tombstone history during one long running request.
++            if len(self._heap) > 2 * len(self._pending) + 32:
++                self._heap = [(t.rank, t.sequence, t) for t in self._pending]
++                heapq.heapify(self._heap)
++            self._changed.notify_all()
++            return True
++
++    def snapshot(self):
++        with self._changed:
++            now = self.clock()
++            oldest = min((t.arrived for t in self._pending), default=now)
++            return {"enabled": True, "scope": "waiting_single_owner_inference",
++                    "normal_boost_seconds": self.normal_boost_seconds, "max_pending": self.max_pending,
++                    "max_cost_delay_s": self.max_cost_delay_s,
++                    "maximum_overtake_seconds": self.normal_boost_seconds + self.max_cost_delay_s,
++                    "pending": len(self._pending),
++                    "classes": {name: sum(t.scheduling_class == name for t in self._pending) for name in CLASSES},
++                    "oldest_wait_seconds": max(0.0, now - oldest),
++                    "admitted": self._admitted, "discarded": self._discarded, "rejected": self._rejected,
++                    "preemption": False, "capacity_reservation": False}
+diff --git a/serve/request_costs.py b/serve/request_costs.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..4d3554bba06d269319fcdbdd1dd217a3f7df2af7
+--- /dev/null
++++ b/serve/request_costs.py
+@@ -0,0 +1,136 @@
++"""Small, process-local latency model for the opt-in inference waiting queue.
++
++Peak EWMA follows Finagle's latency-spike update (Apache-2.0, Twitter Inc.):
++https://github.com/twitter/finagle/blob/9cc08d15216497bb03a1cafda96b7266cfbbcff1/
++finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/PeakEwma.scala
++See third_party/finagle/NOTICE and LICENSE.
++
++Unlike a network endpoint probe, an idle inference workload is not assumed to
++become arbitrarily cheap: reads do not decay its estimate toward zero. A new
++measurement permits recovery; stale measurements expire. The empirical p90 is
++a tail guard, NOT a confidence interval or a guaranteed completion deadline.
++
++The host supplies an opaque runtime/request-shape key and measures completed
++execution, excluding queue and admission time. No prompt, response, user name,
++or credential belongs in this model. Learning latency does not certify quality
++or authorize another device, model, precision, context size or resource lease.
++"""
++from __future__ import annotations
++
++from collections import OrderedDict, deque
++from dataclasses import dataclass, field
++import math
++import threading
++
++
++def _finite(value):
++    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
++
++
++@dataclass
++class _Group:
++    rows: deque = field(default_factory=deque)
++    peak: float = 0.0
++    stamp: float = 0.0
++
++
++class RequestCostModel:
++    """Bounded empirical cost feedback. All methods are safe across request threads.
++
++    Keys must change when the actual runtime, sampling, route, request shape or
++    workload class changes. The server intentionally starts cold after restart.
++    Unknown, sparse, expired or invalid observations provide no learned estimate.
++    """
++
++    def __init__(self, decay_s=60, ttl_s=900, min_samples=3, max_groups=128, max_samples=32):
++        if (not _finite(decay_s) or not 0 < decay_s <= 86400
++                or not _finite(ttl_s) or not 0 < ttl_s <= 86400
++                or type(min_samples) is not int or not 3 <= min_samples <= 256
++                or type(max_samples) is not int or not min_samples <= max_samples <= 256
++                or type(max_groups) is not int or not 1 <= max_groups <= 1024):
++            raise ValueError("invalid request cost model limits")
++        self.decay_s, self.ttl_s = float(decay_s), float(ttl_s)
++        self.min_samples, self.max_samples, self.max_groups = min_samples, max_samples, max_groups
++        self._groups = OrderedDict()
++        self._lock = threading.Lock()
++        self._observations = self._rejected = self._evicted = 0
++
++    @staticmethod
++    def _valid_key(key):
++        return isinstance(key, str) and 0 < len(key) <= 128
++
++    def _recent(self, group, now):
++        while group.rows and now - group.rows[0][0] > self.ttl_s:
++            group.rows.popleft()
++        return bool(group.rows)
++
++    def observe(self, key, duration_s, *, now, success=True):
++        """Record one complete execution; never reward fast errors or cancellation.
++
++        A reported failure invalidates that group's estimate. Failed and partial
++        execution times do not represent the time needed to finish the request.
++        """
++        with self._lock:
++            if (not self._valid_key(key) or not _finite(now) or now < 0
++                    or not _finite(duration_s) or not 0 < duration_s <= 86400
++                    or type(success) is not bool):
++                self._rejected += 1
++                return False
++            if not success:
++                self._groups.pop(key, None)
++                self._rejected += 1
++                return False
++            group = self._groups.get(key)
++            if group is not None and now < group.stamp:
++                self._rejected += 1
++                return False
++            if group is None or not self._recent(group, now):
++                group = _Group(peak=float(duration_s), stamp=float(now))
++                self._groups[key] = group
++            else:
++                # Finagle's uneven-time-series Peak EWMA: immediate rise, then
++                # exponential recovery on subsequent successful observations.
++                weight = math.exp(-(now - group.stamp) / self.decay_s)
++                group.peak = (float(duration_s) if duration_s > group.peak else
++                              group.peak * weight + float(duration_s) * (1 - weight))
++                group.stamp = float(now)
++            group.rows.append((float(now), float(duration_s)))
++            while len(group.rows) > self.max_samples:
++                group.rows.popleft()
++            self._groups.move_to_end(key)
++            while len(self._groups) > self.max_groups:
++                self._groups.popitem(last=False)
++                self._evicted += 1
++            self._observations += 1
++            return True
++
++    def predict(self, key, *, now):
++        """Return a recent empirical estimate, or an explicit cold fallback."""
++        missing = {"estimate_s": None, "samples": 0, "reason": "cold",
++                   "peak_s": None, "p90_s": None, "observed_range_s": None}
++        with self._lock:
++            if not self._valid_key(key) or not _finite(now) or now < 0:
++                return {**missing, "reason": "invalid_context"}
++            group = self._groups.get(key)
++            if group is None:
++                return missing
++            if now < group.stamp:
++                return {**missing, "reason": "clock_regressed"}
++            if not self._recent(group, now):
++                del self._groups[key]
++                return {**missing, "reason": "expired"}
++            values = sorted(value for _, value in group.rows)
++            p90 = values[math.ceil(.9 * len(values)) - 1]
++            ready = len(values) >= self.min_samples
++            return {"estimate_s": max(group.peak, p90) if ready else None,
++                    "samples": len(values), "reason": "measured" if ready else "sparse",
++                    "peak_s": group.peak, "p90_s": p90,
++                    "observed_range_s": [values[0], values[-1]]}
++
++    def status(self):
++        with self._lock:
++            return {"kind": "peak_ewma_empirical_p90", "groups": len(self._groups),
++                    "observations": self._observations, "rejected": self._rejected,
++                    "evicted": self._evicted, "max_groups": self.max_groups,
++                    "max_samples": self.max_samples, "minimum_samples": self.min_samples,
++                    "expires_after_s": self.ttl_s, "recovery_decay_s": self.decay_s}
+diff --git a/serve/server.py b/serve/server.py
+index 31b2c46b81fa47294dd3a0e873674c4773a96dcf..d7e5f4f4f0c53a340d468c3baf4d1c57960288e3 100644
+--- a/serve/server.py
++++ b/serve/server.py
+@@ -4107,6 +4107,30 @@ def slot_save_dir(value, base: str | None = None) -> str:
+         raise ValueError(f"slot_save_path {path} is not a directory")
+     return path
+ 
++def inference_scheduling_from_config(config, cfg=None):
++    """Validate an opt-in pending queue before constructing an engine."""
++    if config is None:
++        return None, None
++    allowed = {"enabled", "normal_boost_seconds", "max_pending", "max_cost_delay_s", "cost_model"}
++    if not isinstance(config, dict) or set(config) - allowed or type(config.get("enabled", False)) is not bool:
++        raise ValueError("inference_scheduling accepts enabled and bounded queue/cost settings")
++    if not config.get("enabled", False):
++        return None, None
++    cfg = cfg or {}
++    args = configured_engine_args(cfg)
++    if (cfg.get("parallel") not in (None, False, 0, 1) or cfg.get("replicas")
++            or any(flag in args for flag in ("--batch", "--slots", "--batch-groups"))):
++        raise ValueError("inference_scheduling currently requires one non-batched engine")
++    from serve.inference_queue import InferenceQueue
++    from serve.request_costs import RequestCostModel
++    costs = config.get("cost_model", {})
++    if not isinstance(costs, dict) or set(costs) - {"decay_s", "ttl_s", "min_samples", "max_groups", "max_samples"}:
++        raise ValueError("invalid inference_scheduling cost_model settings")
++    queue = InferenceQueue(**{k: config[k] for k in ("normal_boost_seconds", "max_pending", "max_cost_delay_s")
++                              if k in config})
++    return queue, RequestCostModel(**costs)
++
++
+ class Service:
+     def __init__(self, engine: Engine, tokenizer, template: ChatTemplate, model_name: str = "qwen3.8-flash-next",
+                  vision: Vision | None = None, sampling_defaults: dict | None = None,
+@@ -4158,6 +4182,11 @@ class Service:
+         # while a model is loading or a request is between MCP rounds; the engine's own slots remain unchanged.
+         self.max_queue: int | None = None
+         self.queue_timeout_s: float | None = None
++        self.inference_queue = self.request_costs = None  # opt-in; no model or key construction on the default path
++        self.cost_runtime_lock = None
++        self.cost_runtime_proc = None
++        self.cost_runtime_generation = 0
++        self.cost_observer_errors = 0
+         self.admission_reserved = 0
+         self.admission_rejected = 0
+         self.queue_timeouts = 0
+@@ -4261,9 +4290,70 @@ class Service:
+         return not hasattr(self.engine, "alive") or self.engine.alive()
+ 
+     def admission_limit(self) -> int | None:
+-        if self.max_queue is None:
++        limit = None if self.max_queue is None else max(1, int(getattr(self.engine, "batch", 0) or 0)) + self.max_queue
++        # A lifecycle owner can hold the lock while every HTTP call is pending.
++        # Reserve before SSE against the ticket bound, including the active call.
++        if self.inference_queue is not None:
++            limit = self.inference_queue.max_pending if limit is None else min(limit, self.inference_queue.max_pending)
++        return limit
++
++    def configure_inference_scheduling(self, config, *, prepared=None):
++        queue, costs = prepared if prepared is not None else inference_scheduling_from_config(config)
++        if queue is not None and getattr(self.engine, "batch", 0):
++            raise ValueError("inference_scheduling does not support a batched engine")
++        if self.status.get("busy") or self.status.get("queued") or self.admission_reserved:
++            raise ValueError("inference_scheduling cannot change while requests are admitted")
++        self.inference_queue, self.request_costs = queue, costs
++        self.cost_runtime_lock = threading.Lock() if queue is not None else None
++        self.cost_runtime_proc, self.cost_runtime_generation = None, 0
++
++    def inference_scheduling_status(self):
++        if self.inference_queue is None:
++            return {"enabled": False}
++        return {"enabled": True, "scope": "pending_single_engine_inference", "preemption": False,
++                "queue": self.inference_queue.snapshot(), "cost_model": self.request_costs.status(),
++                "observer_errors": self.cost_observer_errors}
++
++    def _request_cost_key(self, prompt_tokens, max_new, thinking, budget, sampling, scheduling_class):
++        """Opaque runtime and bounded request-shape identity; no prompt or client identity."""
++        proc = getattr(self.engine, "proc", None)
++        if proc is None or self.request_costs is None:
++            return None
++        with self.cost_runtime_lock:
++            if proc is not self.cost_runtime_proc:
++                self.cost_runtime_proc = proc
++                self.cost_runtime_generation += 1
++            generation = self.cost_runtime_generation
++        values = dict(sampling or {})
++        # A seed identifies RNG draws, not a different latency population. Parking
++        # selects a fresh effective seed after queueing, so retaining it here
++        # would separate prediction from observation and prevent reuse forever.
++        # Remove it only from this observer copy; native sampling and replay keep
++        # their exact explicit or generated seed. Quality/route controls remain.
++        values.pop("seed", None)
++        if stop_strings(values):
++            return None  # Different content-sensitive stops are not a reusable latency context.
++        tune = dict(values.get("strata_tune") or {}) if isinstance(values.get("strata_tune"), dict) else {}
++        route = tune.get("pcie_frac")
++        if route is None:
++            route = (getattr(self.engine, "info", {}) or {}).get("pcie_frac")
++        if route is None and self.coadaptive.enabled:
++            route = self.coadaptive.base_fraction
++        if isinstance(route, (int, float)) and not isinstance(route, bool) and math.isfinite(route):
++            tune["pcie_frac"] = float(route)
++        values["strata_tune"] = tune
++        values.pop("strata_img_keys", None)
++        # Only the native scalar controls and fixed quality controls enter the digest.
++        # Stop-string requests are excluded; their text is not retained or inferred.
++        quality = {k: values.get(k) for k in ("experimental_speed_projection", "reasoning_effort",
++                                             "reasoning_budget_tokens", "strata_checkpoint")}
++        identity = [self.instance_id, generation, StrataEngine.sampling_keys(values), quality,
++                    max(0, int(prompt_tokens)).bit_length(), max(0, int(max_new)).bit_length(),
++                    bool(thinking), budget, scheduling_class]
++        try:
++            return hashlib.sha256(json.dumps(identity, sort_keys=True, allow_nan=False).encode()).hexdigest()
++        except (TypeError, ValueError, OverflowError):
+             return None
+-        return max(1, int(getattr(self.engine, "batch", 0) or 0)) + self.max_queue
+ 
+     def _terminal_event_locked(self, request_id: str, event: str, outcome: str | None = None) -> None:
+         """Append one redacted transition while holding status_lock; never include request content."""
+@@ -5821,6 +5911,22 @@ class Service:
+         """Cancellable preparation admission; yields heartbeats while queued."""
+         yield from self._reserve_preparation(cancel)
+         try:
++            # A reserved inference request can tokenize against a ready model
++            # before joining the scheduling queue. Waiting for the raw FIFO here
++            # would serialize HTTP preparation ahead of that queue. This is only
++            # a preparation shortcut: run() and every vision encode still admit
++            # again under FIFO, including after an intervening active park.
++            # Explicit load calls have no outer reservation and keep their gate.
++            if self.inference_queue is not None and getattr(self.request_owner, "depth", 0) > 1:
++                with self.memory_lock, self.status_lock:
++                    if cancel.is_set() or self.shutdown_event.is_set():
++                        raise RequestParkCancelled()
++                    if (self.loaded() and not self._vision_down() and self.idle_parked is None
++                            and not self.memory_loading and self.memory_pending is None
++                            and self.memory_live_pending is None
++                            and self.tool_resume is None and not self.tool_resuming
++                            and self.tool_resident is None and not self.tool_leases.blocked()):
++                        return
+             trace = getattr(self.request_trace, "record", None)
+             waiting = time.perf_counter()
+             beat = 0.0
+@@ -6226,6 +6332,7 @@ class Service:
+             "service": "strata", "model": self.model,
+             "memory_policy": self.memory_status(),
+             "resources": self.resource_status(),
++            **({"inference_scheduling": self.inference_scheduling_status()} if self.inference_queue is not None else {}),
+             "loaded": self.loaded(), "auto_load": hasattr(self.engine, "restart"),
+             "structured_output": {"formats": ["json_object", "json_schema"], "method": "prompt_and_validate",
+                                   "constrained_decoding": False, "stream_buffered": True},
+@@ -7012,6 +7119,24 @@ class Service:
+         rate = collections.deque(maxlen=32) if par else self.rate
+         request_id = uuid.uuid4().hex[:12]
+         setattr(cancel, "_strata_request_id", request_id)
++        ticket = None
++        scheduling_decision = None
++        cost_started = cost_finished = cost_proc = cost_key = None
++        cost_finished_proc = None
++        cost_class = getattr(cancel, "_strata_scheduling_class", "normal")
++        prediction = None
++        if self.inference_queue is not None and not par and not emb:
++            try:
++                tune = (sampling or {}).get("strata_tune")
++                explicit = ((sampling or {}).get("pcie_frac") is not None
++                            or isinstance(tune, dict) and tune.get("pcie_frac") is not None)
++                if self.coadaptive.active and self.coadaptive.routing.profile is not None and not explicit:
++                    prediction = {"estimate_s": None, "samples": 0, "reason": "route_decided_after_queue"}
++                else:
++                    key = self._request_cost_key(len(ids), max_new, thinking, budget, sampling, cost_class)
++                    prediction = self.request_costs.predict(key, now=time.monotonic()) if key is not None else None
++            except Exception:  # a cost observer cannot cancel otherwise valid inference
++                self.cost_observer_errors += 1
+         deadline = time.monotonic() + self.queue_timeout_s if self.queue_timeout_s is not None else None
+         if deadline is not None:
+             setattr(cancel, "_strata_queue_deadline", deadline)
+@@ -7039,6 +7164,15 @@ class Service:
+             # --batch: the engine runs several requests at once (StrataEngine.generate_batched orders them)
+             turn = contextlib.ExitStack()
+             if not par:
++                if self.inference_queue is not None:
++                    ticket = self.inference_queue.enqueue(cost_class, predicted_s=(prediction or {}).get("estimate_s"))
++                    scheduling_decision = {"class": cost_class, "sequence": ticket.sequence,
++                                           "predicted_execution_s": (prediction or {}).get("estimate_s"),
++                                           "prediction_samples": (prediction or {}).get("samples", 0),
++                                           "prediction_reason": (prediction or {}).get("reason", "unsupported_or_unloaded"),
++                                           "trained": False}
++                    with self.status_lock:
++                        self.terminal_requests[request_id]["scheduling"] = scheduling_decision
+                 # #1619: a request waiting for the single turn sends a keep-alive every QUEUE_BEAT_S, so a client with
+                 # a stream idle timeout does not abort a healthy queued request (and its retry read the prompt again);
+                 # a client that left while queued gives its place up instead of taking the turn only to cancel there
+@@ -7049,7 +7183,8 @@ class Service:
+                     left = deadline - time.monotonic() if deadline is not None else QUEUE_BEAT_S
+                     if left <= 0:
+                         raise QueueWaitExpired("the inference queue wait deadline expired; retry later")
+-                    got = self.fifo.acquire(timeout=min(QUEUE_BEAT_S, left))
++                    got = (self.inference_queue.acquire(ticket, self.fifo, min(QUEUE_BEAT_S, left), cancel)
++                           if ticket is not None else self.fifo.acquire(timeout=min(QUEUE_BEAT_S, left)))
+                     if got:
+                         if cancel.is_set():
+                             self.fifo.release()
+@@ -7071,6 +7206,8 @@ class Service:
+                             queued_counted = False
+                             self.terminal_requests[request_id].update(state="admitted", admitted_at=time.time())
+                             self._terminal_event_locked(request_id, "admitted")
++                            if scheduling_decision is not None:
++                                scheduling_decision["queue_s"] = time.perf_counter() - waiting
+                     # issue #27: it died in an earlier request (or was unloaded) - start it again instead of failing
+                     # (parallel requests do not hold the fifo: one of them starts it, the others wait for that).
+                     # #1603: a parallel request stays counted as queued until it is registered as running below -
+@@ -7086,7 +7223,10 @@ class Service:
+                             self.ensure_loaded()
+                     # Decide after the FIFO wait, using fresh allocator/workload data.
+                     # This does not issue calibration requests on the user's behalf.
+-                    if self.coadaptive.enabled and not par and not emb and (sampling or {}).get("pcie_frac") is None:
++                    request_tune = (sampling or {}).get("strata_tune")
++                    explicit_route = ((sampling or {}).get("pcie_frac") is not None
++                                      or isinstance(request_tune, dict) and request_tune.get("pcie_frac") is not None)
++                    if self.coadaptive.enabled and not par and not emb and not explicit_route:
+                         with self.memory_lock:
+                             native = getattr(self.engine, "native_capacity", None)
+                             if native is not None and native["proc"] is not self.engine.proc:
+@@ -7094,7 +7234,10 @@ class Service:
+                             route = self.coadaptive.choose_route(self.memory_snapshot(), native,
+                                                                  len(ids), max_new, time.time(), sampling)
+                             if self.coadaptive.active:
+-                                sampling = {**(sampling or {}), "pcie_frac": route}
++                                # The native protocol reads per-request routing from strata_tune.
++                                # Keep every other explicit tuning field and never mutate caller data.
++                                sampling = {**(sampling or {}), "strata_tune": {
++                                    **(request_tune if isinstance(request_tune, dict) else {}), "pcie_frac": route}}
+                     with self.status_lock:
+                         if par:
+                             self.status["queued"] -= 1
+@@ -7133,6 +7276,13 @@ class Service:
+                     for ev in opening:
+                         yield "event", ev
+                     while True:
++                        if self.request_costs is not None and not par and not emb and cost_started is None:
++                            cost_proc = getattr(self.engine, "proc", None)
++                            try:
++                                cost_key = self._request_cost_key(len(ids), max_new, thinking, budget, sampling, cost_class)
++                            except Exception:
++                                self.cost_observer_errors += 1
++                            cost_started = time.perf_counter()  # after admission/load/route/parking preparation
+                         segment_before = getattr(self.engine, "last", None)
+                         segments_before = len(segments)     # (#879: a pass sent again leaves no segment)
+                         control = None
+@@ -7383,6 +7533,9 @@ class Service:
+                     finish = "disconnect"
+                     raise
+                 finally:
++                    if cost_started is not None:
++                        cost_finished = time.perf_counter()
++                        cost_finished_proc = getattr(self.engine, "proc", None)
+                     with self.memory_lock:
+                         if park_state is not None and self.parking_active is park_state:
+                             self.parking_active = None
+@@ -7409,6 +7562,7 @@ class Service:
+                             seen = prompt_tokens_seen(len(ids), last)   # #471: < len(ids) when cancelled mid-read
+                             self.history.append({
+                                 "id": request_id,
++                                **({"scheduling": scheduling_decision} if scheduling_decision is not None else {}),
+                                 "projection": (sampling or {}).get("experimental_speed_projection") is not False
+                                 if loaded else None,
+                                 "time": started, "duration_s": round(time.time() - started, 1), "finish": finish,
+@@ -7485,6 +7639,22 @@ class Service:
+             finish = "error"
+             raise
+         finally:
++            if ticket is not None:
++                self.inference_queue.discard(ticket)
++            if (cost_key is not None and cost_started is not None and cost_finished is not None
++                    and cost_proc is not None and cost_finished_proc is cost_proc
++                    and getattr(self.engine, "proc", None) is cost_proc
++                    and not (park_state is not None and park_state.get("sequence", 0))):
++                complete = finish in ("stop", "length") and not cancel.is_set() and bool(segments)
++                try:
++                    trained = self.request_costs.observe(cost_key, cost_finished - cost_started,
++                                                         now=time.monotonic(), success=complete)
++                except Exception:  # status/ticket/lease cleanup must still finish
++                    self.cost_observer_errors += 1
++                    trained = False
++                if scheduling_decision is not None:
++                    with self.status_lock:
++                        scheduling_decision.update(trained=trained, execution_s=cost_finished - cost_started)
+             with self.status_lock:
+                 if queued_counted:
+                     self.status["queued"] -= 1
+@@ -8800,6 +8970,10 @@ def make_handler(svc: Service):
+                 req = json.loads(self._body() or b"{}")
+                 if not isinstance(req, dict):
+                     raise ValueError("send a JSON object")
++                if svc.inference_queue is not None and path in ("/v1/chat/completions", "/v1/messages", "/v1/responses"):
++                    from serve.inference_queue import scheduling_class
++                    request_class = scheduling_class(req)  # before load/lease waits can write SSE headers
++                    setattr(self._request_cancel(), "_strata_scheduling_class", request_class)
+                 if path.startswith("/v1/responses/"):        # retrieve/delete/cancel/compact: nothing is stored
+                     self._json(404, responses_error_body("this server keeps no responses (stateless); send the "
+                                                          "whole conversation to POST /v1/responses", code="not_found"))
+@@ -10378,6 +10552,10 @@ def main(argv=None, *, lifecycle_event=None, interrupt_exit_code: int = 0) -> in
+         cfg["replicas"] = a.replicas
+     if a.gpu is not None:
+         cfg["gpu"] = int(a.gpu) if a.gpu.strip().isdigit() else a.gpu
++    try:
++        inference_scheduling = inference_scheduling_from_config(cfg.get("inference_scheduling"), cfg)
++    except (ValueError, TypeError) as e:
++        ap.error(str(e))
+     a.host = a.host or cfg.get("host") or "127.0.0.1"   # issue #26: the run scripts pass no --host, the config can
+     supplied_args = argv if argv is not None else sys.argv[1:]
+     if ("STRATA_API_KEY" in os.environ and not os.environ["STRATA_API_KEY"].strip()) or \
+@@ -10527,6 +10705,8 @@ def main(argv=None, *, lifecycle_event=None, interrupt_exit_code: int = 0) -> in
+     svc.offline = a.offline
+     svc.max_queue = max_queue
+     svc.queue_timeout_s = float(queue_timeout) if queue_timeout is not None else None
++    if inference_scheduling[0] is not None:
++        svc.configure_inference_scheduling(cfg.get("inference_scheduling"), prepared=inference_scheduling)
+     if a.engine == "strata":                            # the model card's sampling when nothing else is said (see MODEL_CARD_SAMPLING)
+         svc.model_arch = cfg.get("arch") or "qwen4exp"
+         requested = cfg.get("parallel")
+diff --git a/serve/test_coadaptive_route_wire.py b/serve/test_coadaptive_route_wire.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..7956be598e1bcd99b68dc718eef111972d8676e8
+--- /dev/null
++++ b/serve/test_coadaptive_route_wire.py
+@@ -0,0 +1,62 @@
++"""Exercise service routing through the actual native sampling serializer."""
++import copy
++import threading
++import unittest
++from unittest import mock
++
++from serve import server
++from serve.coadaptive import CoAdaptive
++
++
++class CoAdaptiveRouteWire(unittest.TestCase):
++    def run_request(self, sampling, *, enabled=True, mode="live"):
++        tok = server.ByteTokenizer()
++        engine = server.MockEngine(tok, "ok")
++        svc = server.Service(engine, tok, None)
++        svc.coadaptive = CoAdaptive({"enabled": enabled, "mode": mode}, pcie_frac=.37)
++        generate = engine.generate
++        wire, effective = [], []
++
++        def capture(ids, max_new, values, cancel, **kwargs):
++            effective.append(copy.deepcopy(values))
++            wire.append(server.StrataEngine.sampling_keys(values))
++            yield from generate(ids, max_new, values, cancel, **kwargs)
++
++        with mock.patch.object(svc.coadaptive, "choose_route", return_value=.65) as choose, \
++                mock.patch.object(engine, "generate", side_effect=capture):
++            list(svc.run([1], False, None, 8, sampling, threading.Event()))
++        self.assertFalse(svc.fifo.locked())
++        return wire, effective, choose
++
++    def test_selected_route_reaches_native_wire_without_changing_other_tuning(self):
++        sampling = {"temperature": .7, "strata_tune": {"spec_min_p": .8, "aux_cpus": True},
++                    "experimental_speed_projection": False, "reasoning_budget_tokens": 1024}
++        before = copy.deepcopy(sampling)
++        wire, effective, choose = self.run_request(sampling)
++        self.assertIn(" pcie_frac=0.65", wire[0])
++        self.assertIn(" spec_min_p=0.8", wire[0])
++        self.assertIn(" aux_cpus=1", wire[0])
++        self.assertEqual(sampling, before)
++        self.assertFalse(effective[0]["experimental_speed_projection"])
++        self.assertEqual(effective[0]["reasoning_budget_tokens"], 1024)
++        choose.assert_called_once()
++
++    def test_explicit_nested_route_including_zero_wins(self):
++        for fraction in (0, .2, 1):
++            with self.subTest(fraction=fraction):
++                wire, effective, choose = self.run_request({"strata_tune": {"pcie_frac": fraction}})
++                self.assertIn(" pcie_frac=" + repr(float(fraction)), wire[0])
++                self.assertEqual(effective[0]["strata_tune"]["pcie_frac"], fraction)
++                choose.assert_not_called()
++
++    def test_disabled_and_shadow_policy_do_not_change_native_route(self):
++        for enabled, mode in ((False, "live"), (True, "shadow")):
++            with self.subTest(enabled=enabled, mode=mode):
++                wire, effective, _ = self.run_request({"strata_tune": {"spec_min_p": .8}},
++                                                      enabled=enabled, mode=mode)
++                self.assertNotIn("pcie_frac=", wire[0])
++                self.assertEqual(effective[0]["strata_tune"], {"spec_min_p": .8})
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/serve/test_inference_queue.py b/serve/test_inference_queue.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..60150cf569d53aaaa6933e2eac4ba125f39b5966
+--- /dev/null
++++ b/serve/test_inference_queue.py
+@@ -0,0 +1,231 @@
++"""CPU-only tests of bounded pending order and actual exclusive-lock ownership."""
++import math
++import threading
++import time
++import unittest
++
++from serve.inference_queue import InferenceQueue, QueueFull, Ticket, scheduling_class
++
++
++class QueueTests(unittest.TestCase):
++    def setUp(self):
++        self.now = 100.0
++        self.queue = InferenceQueue(clock=lambda: self.now)
++        self.fifo = threading.Lock()
++
++    def take(self, ticket):
++        self.assertTrue(self.queue.acquire(ticket, self.fifo, 0))
++        self.assertTrue(self.fifo.locked())
++        self.fifo.release()
++
++    def test_default_and_self_demotion_only(self):
++        self.assertEqual(scheduling_class(None), "normal")
++        self.assertEqual(scheduling_class({}), "normal")
++        self.assertEqual(scheduling_class({"strata_scheduling": {"class": "background"}}), "background")
++        self.assertEqual(scheduling_class({"strata_scheduling": {"class": "normal"}}), "normal")
++        for metadata in ({"class": "interactive"}, {"class": "normal", "priority": 999},
++                         {"class": 1}, {"class": "normal", "trusted": True}, None, "background"):
++            with self.subTest(metadata=metadata), self.assertRaises(ValueError):
++                scheduling_class({"strata_scheduling": metadata})
++
++    def test_fifo_ties_within_class(self):
++        first, second = self.queue.enqueue(), self.queue.enqueue()
++        self.assertFalse(self.queue.acquire(second, self.fifo, 0))
++        self.take(first)
++        self.take(second)
++
++    def test_later_normal_precedes_waiting_background(self):
++        self.fifo.acquire()
++        background = self.queue.enqueue("background")
++        self.assertFalse(self.queue.acquire(background, self.fifo, 0))
++        self.now += .5
++        normal = self.queue.enqueue("normal")
++        self.assertTrue(self.fifo.locked())
++        self.assertEqual(self.queue.snapshot()["pending"], 2)
++        self.fifo.release()
++        self.assertFalse(self.queue.acquire(background, self.fifo, 0))
++        self.take(normal)
++        self.take(background)
++
++    def test_bounded_boost_cannot_starve_older_background(self):
++        background = self.queue.enqueue("background")
++        early = []
++        for i in range(1, 11):
++            self.now = 100 + i / 10
++            early.append(self.queue.enqueue())
++        self.now = 102.001
++        late = self.queue.enqueue()
++        for ticket in early:
++            self.take(ticket)
++        self.assertFalse(self.queue.acquire(late, self.fifo, 0))
++        self.take(background)
++        self.take(late)
++
++    def test_zero_boost_is_global_fifo(self):
++        queue = InferenceQueue(normal_boost_seconds=0, clock=lambda: self.now)
++        first = queue.enqueue("background")
++        second = queue.enqueue("normal")
++        self.assertFalse(queue.acquire(second, self.fifo, 0))
++        self.assertTrue(queue.acquire(first, self.fifo, 0))
++        self.fifo.release()
++        self.assertTrue(queue.acquire(second, self.fifo, 0))
++        self.fifo.release()
++
++    def test_trained_cost_orders_waiting_requests_with_bounded_delay(self):
++        costly = self.queue.enqueue(predicted_s=1000)
++        self.now += .1
++        short = self.queue.enqueue(predicted_s=.5)
++        self.assertEqual(costly.cost_delay_s, 30)
++        self.assertFalse(self.queue.acquire(costly, self.fifo, 0))
++        self.take(short)
++        self.take(costly)
++
++    def test_unknown_cost_has_no_cold_start_bonus(self):
++        unknown = self.queue.enqueue()
++        self.now += .1
++        known = self.queue.enqueue(predicted_s=.2)
++        self.assertEqual(unknown.cost_delay_s, 30)
++        self.assertFalse(self.queue.acquire(unknown, self.fifo, 0))
++        self.take(known)
++        self.take(unknown)
++
++    def test_total_class_and_cost_cap_protects_old_unknown_background(self):
++        old = self.queue.enqueue("background")
++        self.now += 32.001
++        new = self.queue.enqueue("normal", predicted_s=0)
++        self.assertFalse(self.queue.acquire(new, self.fifo, 0))
++        self.take(old)
++        self.take(new)
++
++    def test_cost_delay_disabled_preserves_class_order(self):
++        queue = InferenceQueue(max_cost_delay_s=0, clock=lambda: self.now)
++        first = queue.enqueue(predicted_s=999)
++        self.now += .1
++        second = queue.enqueue(predicted_s=0)
++        self.assertTrue(queue.acquire(first, self.fifo, 0))
++        self.fifo.release()
++        self.assertTrue(queue.acquire(second, self.fifo, 0))
++        self.fifo.release()
++
++    def test_no_arrival_bypasses_older_eligible_ticket(self):
++        first = self.queue.enqueue()
++        self.now += 1
++        arrival = self.queue.enqueue()
++        self.assertFalse(self.queue.acquire(arrival, self.fifo, 0))
++        self.assertFalse(self.fifo.locked())
++        self.take(first)
++        self.take(arrival)
++
++    def test_timeout_retains_ticket_and_owner(self):
++        self.fifo.acquire()
++        ticket = self.queue.enqueue()
++        self.assertFalse(self.queue.acquire(ticket, self.fifo, .01))
++        self.assertTrue(self.fifo.locked())
++        self.assertEqual(self.queue.snapshot()["pending"], 1)
++        self.queue.discard(ticket)
++        self.assertTrue(self.fifo.locked())
++        self.fifo.release()
++
++    def test_cancelled_head_never_acquires_or_blocks_successor(self):
++        first, second = self.queue.enqueue(), self.queue.enqueue()
++        cancel = threading.Event()
++        cancel.set()
++        self.assertFalse(self.queue.acquire(first, self.fifo, 0, cancel))
++        self.assertFalse(self.fifo.locked())
++        self.assertTrue(self.queue.discard(first))
++        self.assertFalse(self.queue.discard(first))
++        self.take(second)
++
++    def test_exact_ticket_identity_and_bounded_capacity(self):
++        queue = InferenceQueue(max_pending=1, clock=lambda: self.now)
++        original = queue.enqueue()
++        forged = Ticket(original.scheduling_class, original.arrived, original.sequence, original.rank)
++        self.assertFalse(queue.discard(forged))
++        self.assertFalse(queue.acquire(forged, self.fifo, 0))
++        with self.assertRaises(QueueFull):
++            queue.enqueue()
++        self.assertEqual(queue.snapshot()["pending"], 1)
++        queue.discard(original)
++        self.assertEqual(queue.snapshot()["pending"], 0)
++
++    def test_cancelled_tail_does_not_accumulate_history(self):
++        anchor = self.queue.enqueue()
++        for _ in range(500):
++            ticket = self.queue.enqueue()
++            self.queue.discard(ticket)
++        self.assertLessEqual(len(self.queue._heap), 34)
++        self.take(anchor)
++
++    def test_actual_thread_waits_for_existing_owner(self):
++        self.fifo.acquire()
++        ticket = self.queue.enqueue()
++        entered, acquired = threading.Event(), threading.Event()
++        errors = []
++
++        def worker():
++            entered.set()
++            try:
++                if self.queue.acquire(ticket, self.fifo, 1):
++                    acquired.set()
++                    self.fifo.release()
++            except BaseException as error:
++                errors.append(error)
++            finally:
++                self.queue.discard(ticket)
++
++        thread = threading.Thread(target=worker)
++        thread.start()
++        self.assertTrue(entered.wait(1))
++        self.assertFalse(acquired.wait(.03))
++        self.assertTrue(self.fifo.locked())
++        self.fifo.release()  # A control owner need not know about the new queue.
++        thread.join(2)
++        self.assertFalse(thread.is_alive())
++        self.assertFalse(errors)
++        self.assertTrue(acquired.is_set())
++        self.assertEqual(self.queue.snapshot()["pending"], 0)
++
++    def test_cancel_interrupts_long_wait_without_unlocking_owner(self):
++        self.fifo.acquire()
++        ticket, cancel = self.queue.enqueue(), threading.Event()
++        finished = threading.Event()
++        result = []
++
++        def worker():
++            try:
++                result.append(self.queue.acquire(ticket, self.fifo, 5, cancel))
++            finally:
++                self.queue.discard(ticket)
++                finished.set()
++
++        thread = threading.Thread(target=worker)
++        thread.start()
++        cancel.set()
++        self.assertTrue(finished.wait(1))
++        thread.join(1)
++        self.assertEqual(result, [False])
++        self.assertTrue(self.fifo.locked())
++        self.fifo.release()
++
++    def test_invalid_bounds_and_classes(self):
++        for boost in (-1, 11, True, math.inf, math.nan):
++            with self.subTest(boost=boost), self.assertRaises(ValueError):
++                InferenceQueue(normal_boost_seconds=boost)
++        for limit in (0, 4097, True, 1.5):
++            with self.subTest(limit=limit), self.assertRaises(ValueError):
++                InferenceQueue(max_pending=limit)
++        for cost in (-1, math.inf, math.nan, True):
++            with self.subTest(cost=cost), self.assertRaises(ValueError):
++                self.queue.enqueue(predicted_s=cost)
++        for cap in (-1, 301, math.inf, math.nan, True):
++            with self.subTest(cap=cap), self.assertRaises(ValueError):
++                InferenceQueue(max_cost_delay_s=cap)
++        with self.assertRaises(ValueError):
++            self.queue.enqueue("interactive")
++        for timeout in (-1, math.inf, math.nan, True):
++            with self.subTest(timeout=timeout), self.assertRaises(ValueError):
++                self.queue.acquire(self.queue.enqueue(), self.fifo, timeout)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/serve/test_inference_scheduling_service.py b/serve/test_inference_scheduling_service.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..5d6b900894350e452a93a5c0ad653bdc67fa1b2f
+--- /dev/null
++++ b/serve/test_inference_scheduling_service.py
+@@ -0,0 +1,253 @@
++"""CPU-only service and HTTP ownership tests; no model or performance claim."""
++import http.client
++import json
++from pathlib import Path
++import threading
++import time
++import unittest
++from unittest import mock
++
++from serve import server
++from serve.frontend import ChatTemplate
++
++
++class TimedEngine(server.MockEngine):
++    def __init__(self, tok):
++        super().__init__(tok, "ok", max_context=65536)
++        self.proc = object()
++        self.dispatched = []
++        self.block = None
++        self.entered, self.release = threading.Event(), threading.Event()
++        self.fail = self.change_process = False
++        self.advance = lambda: None
++
++    def generate(self, ids, max_new, sampling, cancel, embeddings=None):
++        self.dispatched.append(ids[0])
++        if ids[0] == self.block:
++            self.entered.set()
++            if not self.release.wait(3):
++                raise RuntimeError("fixture owner was not released")
++        self.advance()
++        try:
++            yield from super().generate(ids, max_new, sampling, cancel, embeddings)
++        finally:
++            self.last = {"generated": 3, "prompt_ms": 1., "decode_ms": 1., "finish": "stop",
++                         "prompt_read": len(ids), "reused": 0}
++            if self.change_process:
++                self.proc = object()
++            if self.fail:
++                raise RuntimeError("fixture backend failed after DONE")
++
++
++class SchedulingService(unittest.TestCase):
++    def service(self, **config):
++        tok = server.ByteTokenizer()
++        svc = server.Service(TimedEngine(tok), tok,
++                             ChatTemplate(Path(server.ROOT) / "serve/chat_template.jinja"))
++        svc.configure_inference_scheduling({"enabled": True, **config})
++        return svc
++
++    def run_request(self, svc, number=1, *, cancel=None, sampling=None):
++        return list(svc.run([number], False, None, 8, sampling or {}, cancel or threading.Event()))
++
++    def wait_for(self, condition):
++        deadline = time.monotonic()+3
++        while not condition():
++            if time.monotonic() >= deadline:
++                self.fail("fixture transition timed out")
++            time.sleep(.005)
++
++    def test_actual_service_reorders_pending_calls_without_preempting_owner(self):
++        svc = self.service(max_cost_delay_s=0)
++        svc.engine.block = 1
++        errors = []
++        def run(number, kind):
++            cancel = threading.Event(); cancel._strata_scheduling_class = kind
++            try: self.run_request(svc, number, cancel=cancel)
++            except BaseException as exc: errors.append(exc)
++        owner = threading.Thread(target=run, args=(1, "normal"))
++        background = threading.Thread(target=run, args=(2, "background"))
++        normal = threading.Thread(target=run, args=(3, "normal"))
++        owner.start(); self.assertTrue(svc.engine.entered.wait(2))
++        try:
++            background.start(); self.wait_for(lambda: svc.inference_queue.snapshot()["pending"] == 1)
++            normal.start(); self.wait_for(lambda: svc.inference_queue.snapshot()["pending"] == 2)
++            self.assertEqual(svc.engine.dispatched, [1])
++            self.assertTrue(svc.fifo.locked())
++        finally:
++            svc.engine.release.set()
++            for thread in (owner, background, normal):
++                if thread.ident is not None: thread.join(3)
++        self.assertFalse(errors)
++        self.assertEqual(svc.engine.dispatched, [1, 3, 2])
++        self.assertFalse(svc.fifo.locked())
++        self.assertEqual(svc.inference_queue.snapshot()["pending"], 0)
++        self.assertEqual(svc.status["queued"], 0)
++
++    def test_wait_deadline_and_cancellation_keep_external_lock_owner(self):
++        for cancelled in (True, False):
++            with self.subTest(cancelled=cancelled):
++                svc = self.service(); svc.queue_timeout_s = .02
++                cancel = threading.Event()
++                if cancelled: cancel.set()
++                svc.fifo.acquire()
++                try:
++                    if cancelled:
++                        result = self.run_request(svc, cancel=cancel)
++                        self.assertEqual(result[-1][1]["finish"], "cancel")
++                    else:
++                        with self.assertRaises(server.QueueWaitExpired):
++                            self.run_request(svc, cancel=cancel)
++                    self.assertTrue(svc.fifo.locked())
++                finally: svc.fifo.release()
++                self.assertEqual(svc.engine.dispatched, [])
++                self.assertEqual(svc.inference_queue.snapshot()["pending"], 0)
++                self.assertEqual(svc.status["queued"], 0)
++
++    def test_actual_done_feedback_becomes_a_later_queue_prediction(self):
++        svc = self.service()
++        for _ in range(4): self.run_request(svc)
++        rows = list(svc.history)
++        self.assertIsNone(rows[0]["scheduling"]["predicted_execution_s"])
++        self.assertGreater(rows[3]["scheduling"]["predicted_execution_s"], 0)
++        self.assertEqual(rows[3]["scheduling"]["prediction_samples"], 3)
++        self.assertTrue(all(row["scheduling"]["trained"] for row in rows))
++        self.assertEqual(svc.request_costs.status()["observations"], 4)
++
++    def test_load_delay_is_excluded_from_the_learned_execution(self):
++        svc = self.service(); clock = [10.]
++        def admission(cancel):
++            clock[0] += 20
++            yield "ping", None
++        svc.engine.advance = lambda: clock.__setitem__(0, clock[0]+2)
++        with mock.patch.object(svc, "_preparation_admission_enabled", return_value=True), \
++                mock.patch.object(svc, "_admit_loaded", side_effect=admission), \
++                mock.patch("serve.server.time.perf_counter", side_effect=lambda: clock[0]):
++            self.run_request(svc)
++        self.assertEqual(svc.history[-1]["scheduling"]["execution_s"], 2)
++
++    def test_backend_failure_and_changed_process_do_not_train_even_with_done(self):
++        for change in (False, True):
++            with self.subTest(change=change):
++                svc = self.service()
++                svc.engine.change_process, svc.engine.fail = change, not change
++                if change: self.run_request(svc)
++                else:
++                    with self.assertRaisesRegex(RuntimeError, "fixture backend failed"):
++                        self.run_request(svc)
++                self.assertEqual(svc.request_costs.status()["observations"], 0)
++                self.assertFalse(svc.fifo.locked())
++                self.assertFalse(svc.terminal_requests)
++
++    def test_failed_execution_invalidates_an_older_cheap_estimate(self):
++        svc = self.service()
++        for _ in range(3): self.run_request(svc)
++        key = svc._request_cost_key(1,8,False,None,{},"normal")
++        self.assertIsNotNone(svc.request_costs.predict(key,now=time.monotonic())["estimate_s"])
++        svc.engine.fail = True
++        with self.assertRaisesRegex(RuntimeError,"fixture backend failed"):
++            self.run_request(svc)
++        self.assertIsNone(svc.request_costs.predict(key,now=time.monotonic())["estimate_s"])
++        self.assertEqual(svc.request_costs.status()["observations"],3)
++
++    def test_dynamic_route_does_not_rank_using_an_old_route_estimate(self):
++        from serve.coadaptive import CoAdaptive
++        svc = self.service()
++        svc.coadaptive = CoAdaptive({"enabled":True,"mode":"live"},pcie_frac=.37)
++        svc.coadaptive.routing.profile = {"fixture":"selection happens after queue"}
++        with mock.patch.object(svc.coadaptive,"choose_route",return_value=.65), \
++                mock.patch.object(svc.request_costs,"predict",wraps=svc.request_costs.predict) as predict:
++            self.run_request(svc)
++            predict.assert_not_called()
++        self.assertEqual(svc.history[-1]["scheduling"]["prediction_reason"],"route_decided_after_queue")
++
++    def test_actual_tool_lease_barrier_precedes_queue_and_can_cancel(self):
++        from serve.resource_lease import ToolLeases
++        from serve.test_resource_lease import acquire_request, capacity
++        svc = self.service()
++        with mock.patch.dict("os.environ",{"STRATA_RESOURCE_LEASE_TOKEN":"isolated-scheduling-token-"*3}):
++            svc.tool_leases = ToolLeases({"enabled":True},clock=lambda:0)
++        svc.tool_leases.acquire(acquire_request(),capacity(),100)
++        cancel = threading.Event()
++        stream = svc.run([1],False,None,8,{},cancel)
++        self.assertEqual(next(stream),("ping",None))
++        self.assertTrue(svc.tool_leases.blocked())
++        self.assertFalse(svc.fifo.locked())
++        self.assertEqual(svc.inference_queue.snapshot()["pending"],0)
++        self.assertEqual(svc.engine.dispatched,[])
++        cancel.set()
++        with self.assertRaises(server.RequestParkCancelled): next(stream)
++        stream.close()
++        self.assertEqual(svc.preparing_requests,0)
++
++    def test_observer_failure_does_not_strand_valid_request_cleanup(self):
++        svc = self.service()
++        with mock.patch.object(svc.request_costs, "observe", side_effect=RuntimeError("observer")):
++            result = self.run_request(svc)
++        self.assertEqual(result[-1][0], "done")
++        self.assertEqual(svc.cost_observer_errors, 1)
++        self.assertFalse(svc.fifo.locked())
++        self.assertFalse(svc.terminal_requests)
++
++    def test_default_path_does_not_construct_keys_or_cost_model(self):
++        svc = self.service()
++        svc.configure_inference_scheduling(None)
++        with mock.patch.object(svc, "_request_cost_key", side_effect=AssertionError("disabled observer")):
++            self.run_request(svc)
++        self.assertIsNone(svc.request_costs)
++        self.assertNotIn("scheduling", svc.history[-1])
++
++    def test_key_changes_for_runtime_quality_route_shape_and_class(self):
++        svc = self.service()
++        key = lambda **kw: svc._request_cost_key(**dict(prompt_tokens=8, max_new=8, thinking=True,
++            budget=2, sampling={}, scheduling_class="normal", **kw))
++        original = key()
++        for values in ({"sampling": {"temperature": .8}}, {"sampling": {"strata_tune": {"pcie_frac": .2}}},
++                       {"prompt_tokens": 64}, {"max_new": 64}, {"thinking": False},
++                       {"budget": 4}, {"scheduling_class": "background"}):
++            # Merge explicitly so the test itself cannot hide duplicate keyword errors.
++            defaults = dict(prompt_tokens=8,max_new=8,thinking=True,budget=2,sampling={},scheduling_class="normal")
++            defaults.update(values)
++            self.assertNotEqual(original, svc._request_cost_key(**defaults))
++        svc.engine.proc = object()
++        self.assertNotEqual(original, key())
++        self.assertIsNone(svc._request_cost_key(8,8,True,2,{"stop":"private control text"},"normal"))
++
++    def test_admission_is_bounded_before_any_ticket_or_sse(self):
++        svc = self.service(max_pending=2)
++        self.assertTrue(svc.reserve_inference()); self.assertTrue(svc.reserve_inference())
++        self.assertFalse(svc.reserve_inference())
++        self.assertEqual(svc.inference_queue.snapshot()["pending"], 0)
++        svc.release_inference(); svc.release_inference()
++        self.assertEqual(svc.admission_reserved, 0)
++
++    def test_parallel_and_invalid_config_fail_before_engine_start(self):
++        for cfg in ({"parallel":2}, {"replicas":2}, {"args":["--batch","2"]},
++                    {"args":[],"user_args":["--slots","2"]}):
++            with self.subTest(cfg=cfg), self.assertRaises(ValueError):
++                server.inference_scheduling_from_config({"enabled":True},cfg)
++
++    def test_http_metadata_rejects_promotion_before_streaming_and_load(self):
++        svc = self.service()
++        with mock.patch.object(svc, "start_telemetry"):
++            httpd = server.serve(svc, port=0)
++        try:
++            for path, request in (("/v1/chat/completions", {"messages":[{"role":"user","content":"hello"}]}),
++                                  ("/v1/responses", {"input":"hello"}),
++                                  ("/v1/messages", {"messages":[{"role":"user","content":"hello"}],"max_tokens":8})):
++                connection = http.client.HTTPConnection("127.0.0.1", httpd.server_address[1], timeout=3)
++                try:
++                    body = {**request,"stream":True,"strata_scheduling":{"class":"interactive"}}
++                    connection.request("POST",path,json.dumps(body),{"Content-Type":"application/json"})
++                    response = connection.getresponse(); response.read()
++                    self.assertEqual(response.status,400)
++                    self.assertIn("application/json",response.getheader("Content-Type"))
++                finally: connection.close()
++            self.assertEqual(svc.engine.dispatched,[])
++            self.wait_for(lambda: svc.admission_reserved == 0)
++        finally:
++            httpd.shutdown(); httpd.server_close()
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/serve/test_scheduling_parking_feedback.py b/serve/test_scheduling_parking_feedback.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..b1c1a88e78b2e31fc438c5ebfbc898cce0722a78
+--- /dev/null
++++ b/serve/test_scheduling_parking_feedback.py
+@@ -0,0 +1,118 @@
++"""Real HTTP/Service feedback through parking's effective native sampling path.
++
++The backend and hardware footprint are CPU fixtures. HTTP preparation, request
++parking seed selection, cost-key prediction/observation and owner cleanup use
++the production implementations. No parking/replay or model-quality claim.
++"""
++import copy
++import http.client
++import json
++import math
++from pathlib import Path
++import tempfile
++import threading
++import time
++import unittest
++from unittest import mock
++
++from serve import server
++from serve.frontend import ChatTemplate
++from serve.request_parking import RequestParking
++
++
++class ParkingEngine(server.MockEngine):
++    def __init__(self,tok):
++        super().__init__(tok,'ok',max_context=65536)
++        self.proc=object(); self.native_sampling=[]
++
++    def generate(self,ids,max_new,sampling,cancel,embeddings=None,park=None):
++        self.native_sampling.append(copy.deepcopy(sampling))
++        assert park is not None and park.proc is self.proc
++        try: yield from super().generate(ids,max_new,sampling,cancel,embeddings)
++        finally:
++            self.last={'generated':3,'prompt_ms':1.,'decode_ms':1.,'finish':'stop',
++                       'prompt_read':len(ids),'reused':0}
++
++
++class ParkingFeedback(unittest.TestCase):
++    def service(self):
++        tok=server.ByteTokenizer()
++        svc=server.Service(ParkingEngine(tok),tok,
++                           ChatTemplate(Path(server.ROOT)/'serve/chat_template.jinja'))
++        svc.configure_inference_scheduling({'enabled':True,'max_pending':4})
++        svc.idle_parking=server.IdleParking({'enabled':True})
++        svc.request_parking=RequestParking({'enabled':True,'directory':str(Path(tempfile.gettempdir()).resolve())})
++        return svc
++
++    def test_http_equivalent_requests_share_feedback_across_effective_seeds(self):
++        for seed_mode in ('absent','zero','explicit'):
++            with self.subTest(seed_mode=seed_mode):
++                svc=self.service(); request_seeds=[]
++                # Only hardware identity/footprint are fixtures. The actual
++                # effective_sampling method must generate/preserve native seeds.
++                with mock.patch.object(svc,'_parking_identity',return_value={'cpu_fixture':True}), \
++                     mock.patch.object(svc,'_parking_footprint',return_value={}), \
++                     mock.patch.object(svc,'start_telemetry'), \
++                     mock.patch('serve.request_parking.secrets.randbelow',side_effect=range(100,108)):
++                    httpd=server.serve(svc,port=0)
++                    try:
++                        for kind in ('normal','background'):
++                            for repetition in range(4):
++                                body={'messages':[{'role':'user','content':'Calculate 19 times 23.'}],
++                                      'stream':False,'max_tokens':10923,'reasoning_effort':'high',
++                                      'reasoning_budget_tokens':8192,'experimental_speed_projection':False,
++                                      'strata_tune':{'pcie_frac':.37},'strata_scheduling':{'class':kind}}
++                                if seed_mode=='zero': body['seed']=0
++                                elif seed_mode=='explicit': body['seed']=1000+len(request_seeds)
++                                request_seeds.append(body.get('seed'))
++                                original=copy.deepcopy(body)
++                                conn=http.client.HTTPConnection('127.0.0.1',httpd.server_address[1],timeout=3)
++                                try:
++                                    conn.request('POST','/v1/chat/completions',json.dumps(body),{'Content-Type':'application/json'})
++                                    response=conn.getresponse(); reply=json.loads(response.read())
++                                    self.assertEqual(response.status,200,reply)
++                                    self.assertEqual(reply['choices'][0]['finish_reason'],'stop')
++                                finally: conn.close()
++                                self.assertEqual(body,original)
++                                until=time.monotonic()+2
++                                while svc.admission_reserved and time.monotonic()<until: time.sleep(.005)
++                                row=svc.history[-1]['scheduling']
++                                self.assertEqual(row['prediction_samples'],repetition)
++                                self.assertTrue(row['trained'])
++                                if repetition==3:
++                                    self.assertEqual(row['prediction_reason'],'measured')
++                                    self.assertTrue(math.isfinite(row['predicted_execution_s']))
++                                    self.assertGreater(row['predicted_execution_s'],0)
++                        self.assertEqual(svc.request_costs.status()['groups'],2)
++                        self.assertEqual(svc.request_costs.status()['observations'],8)
++                        actual=[row['seed'] for row in svc.engine.native_sampling]
++                        expected=request_seeds if seed_mode=='explicit' else list(range(101,109))
++                        self.assertEqual(actual,expected,'native seeds must remain unchanged by latency grouping')
++                        self.assertEqual(svc.admission_reserved,0)
++                        self.assertFalse(svc.fifo.locked())
++                        self.assertEqual(svc.inference_queue.snapshot()['pending'],0)
++                    finally: httpd.shutdown(); httpd.server_close()
++
++    def test_seed_pooling_changes_only_latency_identity(self):
++        svc=self.service()
++        original={'seed':123,'temperature':1.,'top_p':.95,'top_k':20,
++                  'reasoning_effort':'high','reasoning_budget_tokens':8192,
++                  'experimental_speed_projection':False,'strata_tune':{'pcie_frac':.37}}
++        before=copy.deepcopy(original)
++        key=lambda sampling:svc._request_cost_key(67,10923,True,8192,sampling,'normal')
++        identity=key(original)
++        for seed in (None,0,456):
++            sample=copy.deepcopy(original)
++            if seed is None: sample.pop('seed')
++            else: sample['seed']=seed
++            self.assertEqual(key(sample),identity)
++        self.assertEqual(original,before)
++        self.assertIn('seed=123',server.StrataEngine.sampling_keys(original))
++        self.assertIn('seed=456',server.StrataEngine.sampling_keys({**original,'seed':456}))
++        for change in ({'temperature':.8},{'top_p':.5},{'top_k':10},
++                       {'strata_tune':{'pcie_frac':.65}},{'reasoning_budget_tokens':1024},
++                       {'reasoning_effort':'low'},{'experimental_speed_projection':True}):
++            self.assertNotEqual(key({**original,**change}),identity)
++
++
++if __name__=='__main__': unittest.main()
+diff --git a/serve/test_scheduling_preparation.py b/serve/test_scheduling_preparation.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..265d3d2226a770384a83503eb19b68d7c2515d32
+--- /dev/null
++++ b/serve/test_scheduling_preparation.py
+@@ -0,0 +1,214 @@
++"""Real HTTP requests through scheduler + lifecycle preparation, without models."""
++import http.client
++import json
++from pathlib import Path
++import socket
++import threading
++import time
++import unittest
++from unittest import mock
++
++from serve import server
++from serve.frontend import ChatTemplate
++from serve.server import IdleParking
++from serve.resource_lease import ToolLeases
++
++
++class HoldingEngine(server.MockEngine):
++    def __init__(self, tok):
++        super().__init__(tok, 'ok', max_context=65536)
++        self.proc = object()
++        self.started, self.release = threading.Event(), threading.Event()
++        self.dispatches = []
++
++    def unload(self):
++        raise AssertionError('reserved fixture must not unload')
++
++    def generate(self, ids, max_new, sampling, cancel, embeddings=None):
++        text = self.tok.decode(ids)
++        self.dispatches.append(text)
++        if len(self.dispatches) == 1:
++            self.started.set()
++            if not self.release.wait(4):
++                raise RuntimeError('fixture owner release timed out')
++        yield from super().generate(ids, max_new, sampling, cancel, embeddings)
++        self.last = {'generated': 3, 'prompt_ms': 1., 'decode_ms': 1., 'finish': 'stop',
++                     'prompt_read': len(ids), 'reused': 0}
++
++
++class Call:
++    def __init__(self, port, label, kind=None):
++        self.conn = http.client.HTTPConnection('127.0.0.1', port, timeout=5)
++        req = {'messages': [{'role':'user','content':label}], 'max_tokens':32,
++               'reasoning_effort':'none', 'stream':False}
++        if kind: req['strata_scheduling'] = {'class':kind}
++        self.conn.request('POST','/v1/chat/completions', json.dumps(req), {'Content-Type':'application/json'})
++        self.socket = self.conn.sock
++        self.done, self.result, self.error = threading.Event(), None, None
++        def read():
++            try:
++                response = self.conn.getresponse()
++                self.result = (response.status, json.loads(response.read()))
++            except BaseException as exc: self.error = exc
++            finally: self.done.set(); self.conn.close()
++        self.thread = threading.Thread(target=read); self.thread.start()
++
++    def cancel(self):
++        try: self.socket.shutdown(socket.SHUT_RDWR)
++        except OSError: pass
++        self.conn.close()
++
++
++class PreparationScheduling(unittest.TestCase):
++    def service(self, enabled=True):
++        tok = server.ByteTokenizer()
++        svc = server.Service(HoldingEngine(tok), tok,
++            ChatTemplate(Path(server.ROOT)/'serve/chat_template.jinja'))
++        svc.configure_inference_scheduling({'enabled':enabled,'normal_boost_seconds':10.,
++                                          'max_cost_delay_s':0.,'max_pending':4})
++        svc.idle_parking = IdleParking({'enabled':True})
++        with mock.patch.dict('os.environ',{'STRATA_RESOURCE_LEASE_TOKEN':'isolated-preparation-test-token-'*3}):
++            svc.tool_leases = ToolLeases({'enabled':True})
++        return svc
++
++    def wait(self, predicate, seconds=2):
++        until = time.monotonic()+seconds
++        while not predicate():
++            if time.monotonic() >= until: self.fail('combined HTTP preparation transition timed out')
++            time.sleep(.005)
++
++    def test_real_http_waiters_reach_scheduler_with_idle_admission_and_leases(self):
++        svc = self.service()
++        admitted = []
++        actual_admit = svc._admit_loaded
++        def admit(cancel):
++            self.assertTrue(svc.fifo.locked())
++            admitted.append(threading.get_ident())
++            yield from actual_admit(cancel)
++        patch = mock.patch.object(svc, '_admit_loaded', side_effect=admit)
++        patch.start(); self.addCleanup(patch.stop)
++        with mock.patch.object(svc, 'start_telemetry'):
++            httpd = server.serve(svc, port=0)
++        calls = []
++        try:
++            port = httpd.server_address[1]
++            calls.append(Call(port,'owner'))
++            self.assertTrue(svc.engine.started.wait(2))
++            calls.append(Call(port,'background','background'))
++            self.wait(lambda: svc.inference_queue.snapshot()['pending'] == 1)
++            calls.append(Call(port,'normal','normal'))
++            self.wait(lambda: svc.inference_queue.snapshot()['pending'] == 2)
++            calls.append(Call(port,'cancelled','background'))
++            self.wait(lambda: svc.inference_queue.snapshot()['pending'] == 3)
++            self.assertEqual(svc.preparing_requests, 4)
++            self.assertEqual(svc.admission_reserved, 4)
++            self.assertEqual(len(svc.engine.dispatches), 1)
++            self.assertEqual(svc.unload(), 'busy')
++            calls[-1].cancel()
++            self.wait(lambda: svc.inference_queue.snapshot()['pending'] == 2)
++            self.assertEqual(len(svc.engine.dispatches), 1)
++            self.assertTrue(svc.fifo.locked())
++            svc.engine.release.set()
++            self.wait(lambda: all(c.done.is_set() for c in calls[:3]))
++            for call in calls[:3]:
++                self.assertIsNone(call.error)
++                self.assertEqual(call.result[0], 200)
++            rows = list(svc.history)
++            self.assertEqual([r['scheduling']['class'] for r in rows], ['normal','normal','background'])
++            self.assertEqual(len(svc.engine.dispatches), 3)
++            self.assertEqual(len(admitted), 3, 'each native request must still pass owned admission')
++            self.assertTrue(all('cancelled' not in text for text in svc.engine.dispatches))
++            self.wait(lambda: svc.admission_reserved == 0 and svc.preparing_requests == 0)
++            self.assertFalse(svc.fifo.locked())
++            self.assertEqual(svc.inference_queue.snapshot()['pending'], 0)
++        finally:
++            svc.engine.release.set()
++            for call in calls: call.cancel(); call.thread.join(5)
++            httpd.shutdown(); httpd.server_close()
++
++    def test_disabled_scheduler_and_explicit_load_still_wait_for_fifo(self):
++        for enabled, outer in ((False,True),(True,False)):
++            with self.subTest(enabled=enabled,outer=outer):
++                svc = self.service(enabled)
++                cancel = threading.Event()
++                svc.fifo.acquire()
++                reservation = svc.preparation_reservation() if outer else None
++                if reservation: reservation.__enter__()
++                events = svc.load_events(cancel)
++                try:
++                    self.assertEqual(next(events), ('ping',None))
++                    self.assertTrue(svc.fifo.locked())
++                    self.assertEqual(svc.engine.dispatches, [])
++                    cancel.set()
++                    with self.assertRaises(server.RequestParkCancelled): next(events)
++                finally:
++                    events.close()
++                    if reservation: reservation.__exit__(None,None,None)
++                    self.assertTrue(svc.fifo.locked())
++                    svc.fifo.release()
++                self.assertEqual(svc.preparing_requests, 0)
++
++    def test_pending_lifecycle_or_resource_return_keeps_original_gate(self):
++        for name,value in (('idle_parked',{}), ('memory_loading',True), ('memory_pending',{}), ('memory_live_pending',{}),
++                           ('tool_resume',{}), ('tool_resuming',True), ('tool_resident',{})):
++            with self.subTest(state=name):
++                svc = self.service(); setattr(svc,name,value)
++                cancel = threading.Event(); svc.fifo.acquire()
++                with svc.preparation_reservation():
++                    events = svc.load_events(cancel)
++                    try:
++                        self.assertEqual(next(events), ('ping',None))
++                        self.assertTrue(svc.fifo.locked())
++                        cancel.set()
++                        with self.assertRaises(server.RequestParkCancelled): next(events)
++                    finally: events.close()
++                self.assertEqual(svc.preparing_requests, 0)
++                self.assertEqual(svc.engine.dispatches, [])
++                self.assertTrue(svc.fifo.locked()); svc.fifo.release()
++
++    def test_preparation_snapshot_does_not_authorize_later_generation_or_vision(self):
++        svc = self.service(); cancel = threading.Event()
++        with svc.preparation_reservation():
++            self.assertEqual(list(svc.load_events(cancel)), [])
++            def unavailable(current_cancel):
++                self.assertTrue(svc.fifo.locked())
++                raise server.GpuBusy('resource state changed after preparation')
++                yield
++            with mock.patch.object(svc, '_admit_loaded', side_effect=unavailable) as gate:
++                with self.assertRaises(server.GpuBusy):
++                    list(svc.run([1],False,None,32,{},cancel))
++                with self.assertRaises(server.GpuBusy):
++                    with svc._vision_turn(cancel):
++                        self.fail('unadmitted vision turn entered')
++                self.assertEqual(gate.call_count, 2)
++        self.assertEqual(svc.engine.dispatches, [])
++        self.assertFalse(svc.fifo.locked())
++        self.assertEqual(svc.preparing_requests, 0)
++        self.assertEqual(svc.inference_queue.snapshot()['pending'], 0)
++
++    def test_real_http_new_request_cannot_bypass_an_owned_tool_lease(self):
++        from serve.test_resource_lease import acquire_request, capacity
++        svc = self.service()
++        with mock.patch.dict('os.environ',{'STRATA_RESOURCE_LEASE_TOKEN':'isolated-preparation-test-token-'*3}):
++            svc.tool_leases = ToolLeases({'enabled':True},clock=lambda:0)
++        svc.tool_leases.acquire(acquire_request(),capacity(),100)
++        with mock.patch.object(svc, 'start_telemetry'):
++            httpd = server.serve(svc, port=0)
++        call = None
++        try:
++            call = Call(httpd.server_address[1], 'leased-background','background')
++            self.wait(lambda: svc.admission_reserved == 1)
++            self.assertTrue(svc.tool_leases.blocked())
++            self.assertEqual(svc.inference_queue.snapshot()['pending'], 0)
++            self.assertEqual(svc.engine.dispatches, [])
++            self.assertFalse(svc.fifo.locked())
++            call.cancel()
++            self.wait(lambda: svc.admission_reserved == 0)
++            self.assertTrue(svc.tool_leases.blocked())
++            self.assertEqual(svc.preparing_requests, 0)
++        finally:
++            if call: call.cancel(); call.thread.join(5)
++            httpd.shutdown(); httpd.server_close()
++
++
++if __name__ == '__main__': unittest.main()
+diff --git a/tests/test_request_costs.py b/tests/test_request_costs.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..42aa5219a699e45f922629af71cbfeaab67f6f0d
+--- /dev/null
++++ b/tests/test_request_costs.py
+@@ -0,0 +1,127 @@
++"""Behavioral tests for the queue's bounded latency feedback, without a model."""
++import concurrent.futures
++import math
++import unittest
++
++from serve.request_costs import RequestCostModel
++
++
++class RequestCostTests(unittest.TestCase):
++    def test_cold_and_sparse_do_not_claim_a_cost(self):
++        model = RequestCostModel()
++        self.assertEqual(model.predict("runtime", now=0)["reason"], "cold")
++        for now in (1, 2):
++            self.assertTrue(model.observe("runtime", 10, now=now))
++            self.assertIsNone(model.predict("runtime", now=now)["estimate_s"])
++        model.observe("runtime", 10, now=3)
++        self.assertEqual(model.predict("runtime", now=3)["estimate_s"], 10)
++
++    def test_sudden_slowdown_is_immediate_and_recovery_is_cautious(self):
++        model = RequestCostModel(max_samples=3)
++        for now in range(3):
++            model.observe("r", 10, now=now)
++        model.observe("r", 100, now=3)
++        self.assertEqual(model.predict("r", now=3)["estimate_s"], 100)
++        for now in (4, 5, 6):
++            model.observe("r", 10, now=now)
++        prediction = model.predict("r", now=6)
++        self.assertEqual(prediction["p90_s"], 10)
++        self.assertAlmostEqual(prediction["peak_s"], 10 + 90 * math.exp(-3 / 60))
++        self.assertGreater(prediction["estimate_s"], 95)
++        model.observe("r", 10, now=606)
++        self.assertLess(model.predict("r", now=606)["estimate_s"], 10.01)
++
++    def test_reading_idle_estimate_does_not_make_a_heavy_job_free(self):
++        model = RequestCostModel()
++        for now in range(3):
++            model.observe("r", 90, now=now)
++        for now in range(3, 900):
++            self.assertEqual(model.predict("r", now=now)["estimate_s"], 90)
++
++    def test_expiry_discards_evidence_and_relearning_starts_cold(self):
++        model = RequestCostModel(ttl_s=10)
++        for now in range(3):
++            model.observe("r", 90, now=now)
++        self.assertEqual(model.predict("r", now=13)["reason"], "expired")
++        model.observe("r", 2, now=14)
++        result = model.predict("r", now=14)
++        self.assertEqual(result["samples"], 1)
++        self.assertIsNone(result["estimate_s"])
++        self.assertEqual(result["peak_s"], 2)
++
++    def test_fresh_minimum_is_rechecked_as_old_samples_expire(self):
++        model = RequestCostModel(ttl_s=10)
++        for now in (0, 5, 10):
++            model.observe("r", 20, now=now)
++        self.assertEqual(model.predict("r", now=10)["samples"], 3)
++        result = model.predict("r", now=11)
++        self.assertEqual(result["samples"], 2)
++        self.assertIsNone(result["estimate_s"])
++
++    def test_context_changes_cannot_inherit_old_latency(self):
++        model = RequestCostModel()
++        for now in range(3):
++            model.observe("model-A-route-A-shape-A", 1, now=now)
++        for key in ("model-B-route-A-shape-A", "model-A-route-B-shape-A", "model-A-route-A-shape-B"):
++            self.assertIsNone(model.predict(key, now=3)["estimate_s"])
++
++    def test_fast_failure_is_not_learned_as_a_fast_success(self):
++        model = RequestCostModel()
++        for now in range(3):
++            model.observe("r", 20, now=now)
++        self.assertFalse(model.observe("r", .001, now=3, success=False))
++        self.assertIsNone(model.predict("r", now=3)["estimate_s"])
++        self.assertEqual(model.status()["observations"], 3)
++
++    def test_invalid_values_do_not_poison_valid_measurements(self):
++        model = RequestCostModel()
++        for now in range(3):
++            model.observe("r", 20, now=now)
++        for value in (float("nan"), float("inf"), -1, 0, True, "1", 86401):
++            self.assertFalse(model.observe("r", value, now=3))
++        for stamp in (float("nan"), float("inf"), -1, True):
++            self.assertFalse(model.observe("r", 2, now=stamp))
++            self.assertIsNone(model.predict("r", now=stamp)["estimate_s"])
++        self.assertEqual(model.predict("r", now=3)["estimate_s"], 20)
++
++    def test_clock_regression_does_not_rewrite_history(self):
++        model = RequestCostModel()
++        for now in (4, 5, 6):
++            model.observe("r", 20, now=now)
++        self.assertFalse(model.observe("r", 1, now=5))
++        self.assertEqual(model.predict("r", now=5)["reason"], "clock_regressed")
++        self.assertEqual(model.predict("r", now=6)["estimate_s"], 20)
++
++    def test_storage_is_bounded_and_evicted_groups_restart_cold(self):
++        model = RequestCostModel(max_groups=2, max_samples=3)
++        for now in range(20):
++            model.observe("a", now + 1, now=now)
++        self.assertEqual(model.predict("a", now=20)["samples"], 3)
++        model.observe("b", 2, now=20)
++        model.observe("c", 3, now=21)
++        self.assertEqual(model.status()["groups"], 2)
++        self.assertEqual(model.status()["evicted"], 1)
++        self.assertEqual(model.predict("a", now=21)["reason"], "cold")
++
++    def test_status_does_not_expose_opaque_context_keys(self):
++        model = RequestCostModel()
++        model.observe("private-context-identity", 2, now=0)
++        self.assertNotIn("private-context-identity", repr(model.status()))
++
++    def test_simultaneous_request_threads_preserve_sample_counts(self):
++        model = RequestCostModel(max_samples=256)
++        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
++            results = list(pool.map(lambda _: model.observe("r", 2, now=1), range(100)))
++        self.assertTrue(all(results))
++        self.assertEqual(model.predict("r", now=1)["samples"], 100)
++        self.assertEqual(model.status()["observations"], 100)
++
++    def test_bad_configuration_is_refused(self):
++        for args in ({"decay_s": 0}, {"ttl_s": float("nan")}, {"min_samples": 2},
++                     {"max_groups": 0}, {"max_samples": 2}, {"max_samples": 257}):
++            with self.subTest(args=args), self.assertRaises(ValueError):
++                RequestCostModel(**args)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/third_party/finagle/LICENSE b/third_party/finagle/LICENSE
+new file mode 100644
+index 0000000000000000000000000000000000000000..d645695673349e3947e8e5ae42332d0ac3164cd7
+--- /dev/null
++++ b/third_party/finagle/LICENSE
+@@ -0,0 +1,202 @@
++
++                                 Apache License
++                           Version 2.0, January 2004
++                        http://www.apache.org/licenses/
++
++   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
++
++   1. Definitions.
++
++      "License" shall mean the terms and conditions for use, reproduction,
++      and distribution as defined by Sections 1 through 9 of this document.
++
++      "Licensor" shall mean the copyright owner or entity authorized by
++      the copyright owner that is granting the License.
++
++      "Legal Entity" shall mean the union of the acting entity and all
++      other entities that control, are controlled by, or are under common
++      control with that entity. For the purposes of this definition,
++      "control" means (i) the power, direct or indirect, to cause the
++      direction or management of such entity, whether by contract or
++      otherwise, or (ii) ownership of fifty percent (50%) or more of the
++      outstanding shares, or (iii) beneficial ownership of such entity.
++
++      "You" (or "Your") shall mean an individual or Legal Entity
++      exercising permissions granted by this License.
++
++      "Source" form shall mean the preferred form for making modifications,
++      including but not limited to software source code, documentation
++      source, and configuration files.
++
++      "Object" form shall mean any form resulting from mechanical
++      transformation or translation of a Source form, including but
++      not limited to compiled object code, generated documentation,
++      and conversions to other media types.
++
++      "Work" shall mean the work of authorship, whether in Source or
++      Object form, made available under the License, as indicated by a
++      copyright notice that is included in or attached to the work
++      (an example is provided in the Appendix below).
++
++      "Derivative Works" shall mean any work, whether in Source or Object
++      form, that is based on (or derived from) the Work and for which the
++      editorial revisions, annotations, elaborations, or other modifications
++      represent, as a whole, an original work of authorship. For the purposes
++      of this License, Derivative Works shall not include works that remain
++      separable from, or merely link (or bind by name) to the interfaces of,
++      the Work and Derivative Works thereof.
++
++      "Contribution" shall mean any work of authorship, including
++      the original version of the Work and any modifications or additions
++      to that Work or Derivative Works thereof, that is intentionally
++      submitted to Licensor for inclusion in the Work by the copyright owner
++      or by an individual or Legal Entity authorized to submit on behalf of
++      the copyright owner. For the purposes of this definition, "submitted"
++      means any form of electronic, verbal, or written communication sent
++      to the Licensor or its representatives, including but not limited to
++      communication on electronic mailing lists, source code control systems,
++      and issue tracking systems that are managed by, or on behalf of, the
++      Licensor for the purpose of discussing and improving the Work, but
++      excluding communication that is conspicuously marked or otherwise
++      designated in writing by the copyright owner as "Not a Contribution."
++
++      "Contributor" shall mean Licensor and any individual or Legal Entity
++      on behalf of whom a Contribution has been received by Licensor and
++      subsequently incorporated within the Work.
++
++   2. Grant of Copyright License. Subject to the terms and conditions of
++      this License, each Contributor hereby grants to You a perpetual,
++      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
++      copyright license to reproduce, prepare Derivative Works of,
++      publicly display, publicly perform, sublicense, and distribute the
++      Work and such Derivative Works in Source or Object form.
++
++   3. Grant of Patent License. Subject to the terms and conditions of
++      this License, each Contributor hereby grants to You a perpetual,
++      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
++      (except as stated in this section) patent license to make, have made,
++      use, offer to sell, sell, import, and otherwise transfer the Work,
++      where such license applies only to those patent claims licensable
++      by such Contributor that are necessarily infringed by their
++      Contribution(s) alone or by combination of their Contribution(s)
++      with the Work to which such Contribution(s) was submitted. If You
++      institute patent litigation against any entity (including a
++      cross-claim or counterclaim in a lawsuit) alleging that the Work
++      or a Contribution incorporated within the Work constitutes direct
++      or contributory patent infringement, then any patent licenses
++      granted to You under this License for that Work shall terminate
++      as of the date such litigation is filed.
++
++   4. Redistribution. You may reproduce and distribute copies of the
++      Work or Derivative Works thereof in any medium, with or without
++      modifications, and in Source or Object form, provided that You
++      meet the following conditions:
++
++      (a) You must give any other recipients of the Work or
++          Derivative Works a copy of this License; and
++
++      (b) You must cause any modified files to carry prominent notices
++          stating that You changed the files; and
++
++      (c) You must retain, in the Source form of any Derivative Works
++          that You distribute, all copyright, patent, trademark, and
++          attribution notices from the Source form of the Work,
++          excluding those notices that do not pertain to any part of
++          the Derivative Works; and
++
++      (d) If the Work includes a "NOTICE" text file as part of its
++          distribution, then any Derivative Works that You distribute must
++          include a readable copy of the attribution notices contained
++          within such NOTICE file, excluding those notices that do not
++          pertain to any part of the Derivative Works, in at least one
++          of the following places: within a NOTICE text file distributed
++          as part of the Derivative Works; within the Source form or
++          documentation, if provided along with the Derivative Works; or,
++          within a display generated by the Derivative Works, if and
++          wherever such third-party notices normally appear. The contents
++          of the NOTICE file are for informational purposes only and
++          do not modify the License. You may add Your own attribution
++          notices within Derivative Works that You distribute, alongside
++          or as an addendum to the NOTICE text from the Work, provided
++          that such additional attribution notices cannot be construed
++          as modifying the License.
++
++      You may add Your own copyright statement to Your modifications and
++      may provide additional or different license terms and conditions
++      for use, reproduction, or distribution of Your modifications, or
++      for any such Derivative Works as a whole, provided Your use,
++      reproduction, and distribution of the Work otherwise complies with
++      the conditions stated in this License.
++
++   5. Submission of Contributions. Unless You explicitly state otherwise,
++      any Contribution intentionally submitted for inclusion in the Work
++      by You to the Licensor shall be under the terms and conditions of
++      this License, without any additional terms or conditions.
++      Notwithstanding the above, nothing herein shall supersede or modify
++      the terms of any separate license agreement you may have executed
++      with Licensor regarding such Contributions.
++
++   6. Trademarks. This License does not grant permission to use the trade
++      names, trademarks, service marks, or product names of the Licensor,
++      except as required for reasonable and customary use in describing the
++      origin of the Work and reproducing the content of the NOTICE file.
++
++   7. Disclaimer of Warranty. Unless required by applicable law or
++      agreed to in writing, Licensor provides the Work (and each
++      Contributor provides its Contributions) on an "AS IS" BASIS,
++      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
++      implied, including, without limitation, any warranties or conditions
++      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
++      PARTICULAR PURPOSE. You are solely responsible for determining the
++      appropriateness of using or redistributing the Work and assume any
++      risks associated with Your exercise of permissions under this License.
++
++   8. Limitation of Liability. In no event and under no legal theory,
++      whether in tort (including negligence), contract, or otherwise,
++      unless required by applicable law (such as deliberate and grossly
++      negligent acts) or agreed to in writing, shall any Contributor be
++      liable to You for damages, including any direct, indirect, special,
++      incidental, or consequential damages of any character arising as a
++      result of this License or out of the use or inability to use the
++      Work (including but not limited to damages for loss of goodwill,
++      work stoppage, computer failure or malfunction, or any and all
++      other commercial damages or losses), even if such Contributor
++      has been advised of the possibility of such damages.
++
++   9. Accepting Warranty or Additional Liability. While redistributing
++      the Work or Derivative Works thereof, You may choose to offer,
++      and charge a fee for, acceptance of support, warranty, indemnity,
++      or other liability obligations and/or rights consistent with this
++      License. However, in accepting such obligations, You may act only
++      on Your own behalf and on Your sole responsibility, not on behalf
++      of any other Contributor, and only if You agree to indemnify,
++      defend, and hold each Contributor harmless for any liability
++      incurred by, or claims asserted against, such Contributor by reason
++      of your accepting any such warranty or additional liability.
++
++   END OF TERMS AND CONDITIONS
++
++   APPENDIX: How to apply the Apache License to your work.
++
++      To apply the Apache License to your work, attach the following
++      boilerplate notice, with the fields enclosed by brackets "[]"
++      replaced with your own identifying information. (Don't include
++      the brackets!)  The text should be enclosed in the appropriate
++      comment syntax for the file format. We also recommend that a
++      file or class name and description of purpose be included on the
++      same "printed page" as the copyright notice for easier
++      identification within third-party archives.
++
++   Copyright [yyyy] [name of copyright owner]
++
++   Licensed under the Apache License, Version 2.0 (the "License");
++   you may not use this file except in compliance with the License.
++   You may obtain a copy of the License at
++
++       http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing, software
++   distributed under the License is distributed on an "AS IS" BASIS,
++   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++   See the License for the specific language governing permissions and
++   limitations under the License.
+diff --git a/third_party/finagle/NOTICE b/third_party/finagle/NOTICE
+new file mode 100644
+index 0000000000000000000000000000000000000000..78ba89956097acc232c199a73c2ede080d6f7ffd
+--- /dev/null
++++ b/third_party/finagle/NOTICE
+@@ -0,0 +1,12 @@
++The Peak EWMA update in serve/request_costs.py is adapted from Twitter Finagle.
++Copyright 2017 Twitter Inc. Licensed under the Apache License, Version 2.0.
++
++Source revision: 9cc08d15216497bb03a1cafda96b7266cfbbcff1
++Source file: finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/PeakEwma.scala
++https://github.com/twitter/finagle
++
++Changes: a Python implementation of the spike-sensitive update is used for
++completed inference executions. It is bounded by request-context groups, a
++recent empirical p90, expiry, sample counts, and explicit cold fallback. It
++does not decay estimates to zero on reads or implement Finagle's endpoint
++selection, pending-request accounting, or network retry behavior.

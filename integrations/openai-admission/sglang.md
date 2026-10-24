@@ -2,7 +2,7 @@
 
 ## Share admission with background workers
 
-SGLang keeps its native batching and priority scheduler. For a single-user deployment that intentionally admits only one request at a time, an external queue can instead share that admission slot between interactive work and background workers. This reduces available batching concurrency; use SGLang's [native scheduling settings](/docs/advanced_features/server_arguments) when you need concurrent native scheduling.
+SGLang keeps its native batching and priority scheduler. For a single-user deployment that intentionally admits only one request at a time, an external queue can instead share that admission slot between interactive work and background workers. This reduces available batching concurrency; use SGLang's [native scheduling settings](https://github.com/sgl-project/sglang/blob/79e5c4bb9b438db8f06333f0bf9759221cee1ef3/docs/docs/advanced_features/server_arguments.mdx) when you need concurrent native scheduling.
 
 [Adaptive Inference v0.2.0](https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0)
 is one optional external gateway. Install that release in a separate Python 3.11+

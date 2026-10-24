@@ -5,9 +5,54 @@ translate generation options, grant priority, or control native resources.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
+from copy import deepcopy
 from urllib.parse import urlsplit, urlunsplit
 
 from .config import env_secret
+
+
+def generation_options_for_route(value, *, reserved=()):
+    """Copy generation settings without SDK identity or transport overrides.
+
+    SDKs merge ``extra_body`` over the selected model and custom headers over
+    bearer authentication. Validate those actual merge surfaces as well as
+    LangChain's ``model_kwargs`` envelope; do not scan arbitrary tool schemas
+    or provider-specific nested data for similarly named fields.
+    """
+    protected = {
+        "model", "model_name", "model_id", "model_info", "base_url", "api_key",
+        "openai_api_base", "openai_api_key", "client", "async_client",
+        "root_client", "root_async_client", "http_client", "http_async_client",
+        "max_retries", "default_query", "extra_query", *reserved,
+    }
+    protected_headers = {
+        "authorization", "proxy-authorization", "api-key", "x-api-key",
+        "host", "x-adaptive-class",
+    }
+
+    def validate(options, *, body=False):
+        if not isinstance(options, Mapping) or any(not isinstance(k, str) for k in options):
+            raise ValueError("Generation options and SDK envelopes must be mappings with string keys")
+        if set(options) & protected:
+            raise ValueError("Generation options cannot override the selected client route or identity")
+        if body:
+            return
+        for name in ("default_headers", "extra_headers"):
+            if name in options and options[name] is not None:
+                headers = options[name]
+                if (not isinstance(headers, Mapping)
+                        or any(not isinstance(k, str) or k.strip().lower() in protected_headers
+                               for k in headers)):
+                    raise ValueError("Generation headers cannot override the selected client route or identity")
+        for name in ("model_kwargs", "extra_body"):
+            if name in options and options[name] is not None:
+                validate(options[name], body=name == "extra_body")
+
+    if value is None:
+        return {}
+    validate(value)
+    return deepcopy(dict(value))
 
 
 def gateway_client_options(*, base_url: str = "http://127.0.0.1:18100/v1",

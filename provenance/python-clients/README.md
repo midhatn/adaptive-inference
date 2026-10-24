@@ -23,6 +23,8 @@ Choose a new output filename. The script refuses to overwrite a previous
 receipt. Without `--output` it prints the receipt. It tests fifteen actual
 client requests: normal/background text, normal/background SSE, and a
 background request carrying an explicit strict function schema for each SDK.
+It also refuses six nested model/authorization overrides before any HTTP
+dispatch. Those negative cases are separate from the fifteen successful requests.
 It checks the nested API base path, separate gateway credential, model,
 10,923-token output allowance, high reasoning, 8,192 reasoning-token request,
 disabled speed projection, 0.37 PCIe fraction and sampling value. The tool is
