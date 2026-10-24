@@ -1,0 +1,313 @@
+{
+  "schema": "adaptive-inference.hermes-iq3-s-task.v1",
+  "date": "2026-10-24",
+  "passed": true,
+  "models_run": true,
+  "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+  "quality": {
+    "max_tokens": 10923,
+    "reasoning_effort": "high",
+    "reasoning_budget_tokens": 8192,
+    "experimental_speed_projection": false,
+    "strata_tune": {
+      "pcie_frac": 0.37
+    }
+  },
+  "scope": "One serial, host-created production parent/child Hermes file-tool workflow through the released gateway; no model substitution",
+  "source": {
+    "original_runner_sha256": "474dd6863a617947d0ddc960ca4ce31b70429a1b3cf2acc9aee16e17e6db9602",
+    "original_audit_hook_sha256": "a2ad947f7e4add7759813158e6d779f2854e106312220b29faddef5e26de30d6",
+    "runner_publication": "Private paths were parameterized after this real run; the published runner has its own separate fixture receipt",
+    "canonical_plugin_commit": "d6f4e201ba28602189872746922e527c58ed0cbd",
+    "plugin_sha256": "2a65d81edb39bb13623081ae761ab9bd086d43e6db3717bcc9b9bc3c1fbc05aa",
+    "hermes_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "gateway_release": "v0.2.0",
+    "wheel_sha256": "424833889010632f156356e0248e2bea915ce97b6513a255c749f7841a0983a2",
+    "installed_wheel_modules_verified": 14,
+    "strata_composition": "c6b23493b01028a18a9eb685d0bb6435c6976316 plus the preserved token-default ACL correction",
+    "native_sha256": "744205e4e024b5cbba19e4b560678ffe21e6899e59050929f7af51557f3c6198",
+    "engine_manifest_sha256": "19a85d390981380b3ceeb021a885b25f415110174cedfb3dcdc0552cd0ab052b",
+    "source_files_verified": 21633,
+    "model_assets_checked": 14,
+    "model_asset_content_hashed": false
+  },
+  "context": {
+    "parent": {
+      "context_length": 65536,
+      "threshold": 0.8,
+      "threshold_tokens": 46421,
+      "reserved_output": 10923,
+      "max_tokens": 10923
+    },
+    "child": {
+      "context_length": 65536,
+      "threshold": 0.8,
+      "threshold_tokens": 46421,
+      "reserved_output": 10923,
+      "max_tokens": 10923
+    }
+  },
+  "task": {
+    "input": "orders.csv",
+    "parent_output": "report.json",
+    "independent_child_output": "verification.json",
+    "expected": {
+      "rows": 4,
+      "units": 17,
+      "total_cents": 4350,
+      "by_item": {
+        "notebook": 2250,
+        "pen": 1000,
+        "folder": 1100
+      }
+    },
+    "accepted_artifacts": {
+      "orders.csv": {
+        "sha256": "bebd316cb7278f7e3ad7ddea7d4ad1975512b4664847a81cea8269d7617b9940",
+        "bytes": 78
+      },
+      "report.json": {
+        "sha256": "bbc5c118d7cc3963a9d71eedf35d86a9baa61c11b7f5cd66b496aeef01ce2a2a",
+        "bytes": 132
+      },
+      "verification.json": {
+        "sha256": "1a4cf61ada872b7e682e31971db1f4f749ac206aa50c1f7466813af47f45d18c",
+        "bytes": 74
+      }
+    },
+    "native_file_tool_calls": 5
+  },
+  "requests": [
+    {
+      "phase": "parent",
+      "class": "normal",
+      "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+      "quality": {
+        "max_tokens": 10923,
+        "reasoning_effort": "high",
+        "reasoning_budget_tokens": 8192,
+        "experimental_speed_projection": false,
+        "strata_tune": {
+          "pcie_frac": 0.37
+        }
+      },
+      "body_sha256": "64a667711885904a158dd82ac3106268abe338af3728161fcf49abc768571b39",
+      "messages_sha256": "162d0a683c87a060417d9f6ffafc8972abeeb1fb939a7b4d6faee487a0d59d79",
+      "tools_sha256": "8e9cc7c82a1e6cbaba235819a2c54c5d49f0dd4e9ed3fbfb81bf1b25ce6d6281",
+      "gateway_request_id": "2ebc9210ba424b0f8447f07a4c3a3867",
+      "finish_reason": "tool_calls",
+      "started_at": 1792804759.8225121,
+      "finished_at": 1792804808.818659,
+      "usage": {
+        "prompt_tokens": 4200,
+        "completion_tokens": 56,
+        "total_tokens": 4256,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "phase": "parent",
+      "class": "normal",
+      "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+      "quality": {
+        "max_tokens": 10923,
+        "reasoning_effort": "high",
+        "reasoning_budget_tokens": 8192,
+        "experimental_speed_projection": false,
+        "strata_tune": {
+          "pcie_frac": 0.37
+        }
+      },
+      "body_sha256": "a05718477443845f7bed3e5721b7e53195b29399ee2cbc23bc90c8b19d4c6560",
+      "messages_sha256": "8d7a30cbf88e85c39485a624875503b6b82efcd5ccf278447d9127952018c12e",
+      "tools_sha256": "8e9cc7c82a1e6cbaba235819a2c54c5d49f0dd4e9ed3fbfb81bf1b25ce6d6281",
+      "gateway_request_id": "f35c1a38b6154b0a8d0936b6fbe52945",
+      "finish_reason": "tool_calls",
+      "started_at": 1792804810.26018,
+      "finished_at": 1792804826.99776,
+      "usage": {
+        "prompt_tokens": 4366,
+        "completion_tokens": 177,
+        "total_tokens": 4543,
+        "prompt_tokens_details": {
+          "cached_tokens": 4255
+        }
+      }
+    },
+    {
+      "phase": "parent",
+      "class": "normal",
+      "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+      "quality": {
+        "max_tokens": 10923,
+        "reasoning_effort": "high",
+        "reasoning_budget_tokens": 8192,
+        "experimental_speed_projection": false,
+        "strata_tune": {
+          "pcie_frac": 0.37
+        }
+      },
+      "body_sha256": "b96b438c35b03519936e3e7a1be1b8654fed3c4a43baed43f4800e3f0b2b86ce",
+      "messages_sha256": "63f8ceb4b8901277629997b2036ee0ce03250a3c02e8ee03184f3580c9c9246a",
+      "tools_sha256": "8e9cc7c82a1e6cbaba235819a2c54c5d49f0dd4e9ed3fbfb81bf1b25ce6d6281",
+      "gateway_request_id": "5b13f5643ee04932a30766841e698d81",
+      "finish_reason": "stop",
+      "started_at": 1792804828.1395724,
+      "finished_at": 1792804841.574133,
+      "usage": {
+        "prompt_tokens": 4666,
+        "completion_tokens": 123,
+        "total_tokens": 4789,
+        "prompt_tokens_details": {
+          "cached_tokens": 4361
+        }
+      }
+    },
+    {
+      "phase": "child",
+      "class": "background",
+      "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+      "quality": {
+        "max_tokens": 10923,
+        "reasoning_effort": "high",
+        "reasoning_budget_tokens": 8192,
+        "experimental_speed_projection": false,
+        "strata_tune": {
+          "pcie_frac": 0.37
+        }
+      },
+      "body_sha256": "60978d99014038f372393014d68c9b1e646bdfdce677e1f402bb954e6d1bb106",
+      "messages_sha256": "cacb04b1ea2106ba51f02bb0f962b1860278c5827c5a6052e34373d412dfb148",
+      "tools_sha256": "8e9cc7c82a1e6cbaba235819a2c54c5d49f0dd4e9ed3fbfb81bf1b25ce6d6281",
+      "gateway_request_id": "79d75cab87954c7cbc1b2453ed977851",
+      "finish_reason": "tool_calls",
+      "started_at": 1792804841.6298707,
+      "finished_at": 1792804895.735448,
+      "usage": {
+        "prompt_tokens": 4216,
+        "completion_tokens": 148,
+        "total_tokens": 4364,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "phase": "child",
+      "class": "background",
+      "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+      "quality": {
+        "max_tokens": 10923,
+        "reasoning_effort": "high",
+        "reasoning_budget_tokens": 8192,
+        "experimental_speed_projection": false,
+        "strata_tune": {
+          "pcie_frac": 0.37
+        }
+      },
+      "body_sha256": "c99ac75d01ec0d4fe223775f28bcd1f8377501bfaea3d12b3c85cb350e2935c7",
+      "messages_sha256": "3ad67a2614b839c5e0dd6a48b2a34e30e3406b37b55e1bad0f2486f49d42f7a9",
+      "tools_sha256": "8e9cc7c82a1e6cbaba235819a2c54c5d49f0dd4e9ed3fbfb81bf1b25ce6d6281",
+      "gateway_request_id": "ffbef551ec914613865ffded98ce1329",
+      "finish_reason": "tool_calls",
+      "started_at": 1792804896.4639714,
+      "finished_at": 1792804923.2137356,
+      "usage": {
+        "prompt_tokens": 4621,
+        "completion_tokens": 315,
+        "total_tokens": 4936,
+        "prompt_tokens_details": {
+          "cached_tokens": 4363
+        }
+      }
+    },
+    {
+      "phase": "child",
+      "class": "background",
+      "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+      "quality": {
+        "max_tokens": 10923,
+        "reasoning_effort": "high",
+        "reasoning_budget_tokens": 8192,
+        "experimental_speed_projection": false,
+        "strata_tune": {
+          "pcie_frac": 0.37
+        }
+      },
+      "body_sha256": "0b2817b5b18730900cfa79ea1151f5aa1a4679c7ece52fd1ce72ff0459d64e8c",
+      "messages_sha256": "4e1456b90e5d21d9d2d9e2d995811dca26a23e1400bf4844cf9f3f2c7c4f8cd3",
+      "tools_sha256": "8e9cc7c82a1e6cbaba235819a2c54c5d49f0dd4e9ed3fbfb81bf1b25ce6d6281",
+      "gateway_request_id": "bad1e9c36f744fd4837ffc444e479157",
+      "finish_reason": "stop",
+      "started_at": 1792804924.363911,
+      "finished_at": 1792804963.042279,
+      "usage": {
+        "prompt_tokens": 5058,
+        "completion_tokens": 425,
+        "total_tokens": 5483,
+        "prompt_tokens_details": {
+          "cached_tokens": 4616
+        }
+      }
+    }
+  ],
+  "gateway": {
+    "version": "0.2.0",
+    "instance": "5931392cff5b4315ae8c6a71d0bbfd61",
+    "scheduler": {
+      "active": false,
+      "pending": 0,
+      "normal_pending": 0,
+      "background_pending": 0,
+      "completed": 6,
+      "cancelled": 0,
+      "rejected": 0,
+      "backend_completion_uncertain": false,
+      "closing": false,
+      "maximum_ordering_offset_s": 40,
+      "preemption": false,
+      "resource_reservation": false
+    },
+    "timing_observations": 6
+  },
+  "cleanup": {
+    "agent_owned_children_empty": true,
+    "gateway_cleanup_completed": true,
+    "backend_cleanup_confirmed": true,
+    "backend_running": false,
+    "backend_exit_code": 0,
+    "retained_processes": 7,
+    "confirmed_process_exits": 7,
+    "active_processes": 0
+  },
+  "timing": {
+    "agent_workflow_seconds": 208.6270670890808,
+    "gateway_task_and_cleanup_seconds": 212.75786709785461,
+    "performance_comparison": false
+  },
+  "headroom_observation": {
+    "samples": 2337,
+    "latest": {
+      "vram_free_mib": 7948.0,
+      "ram_free_gib": 44.796485900878906,
+      "commit_free_gib": 73.92340850830078
+    },
+    "minimum": {
+      "vram_free_mib": 1103.28515625,
+      "ram_free_gib": 10.869636535644531,
+      "commit_free_gib": 32.60174560546875
+    },
+    "error": null,
+    "scope": "100 ms sampled driver/host capacity; not continuous residency proof"
+  },
+  "limits": [
+    "Host explicitly created the production child; no claim that the parent autonomously chose delegation",
+    "Serial routing only; no concurrent foreground-load or native resource-lease test",
+    "No video workload, active GPU preemption, OS restart or automatic agent startup qualification",
+    "Artifact correctness is bounded to this four-row synthetic task",
+    "Model assets checked by size and modification time, not full weight hashing"
+  ],
+  "privacy": "Full messages, model reasoning, prompts from other tasks, credentials, personal paths and process records are excluded"
+}

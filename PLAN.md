@@ -24,6 +24,8 @@ This repository owns shared policy, contracts, reproducible tests, documentation
 
 Stages 1–4 are the initial publication scope. Stages 5–7 are continuing development, not prerequisites for using the generic gateway. The live compatibility/evidence tables record completed checks; this plan does not itself certify a milestone.
 
+The 0.3.0 delivery extends stages 2–4 with a common integration contract, preserving client factories, an optional Hermes public-hook plugin, an OpenClaw configuration composer, actual SDK transport fixtures and [public upstream proposals](docs/upstream-delivery.md). One bounded stage-5 workflow has passed on the existing IQ3_S model: Hermes produced a file artifact and a production child independently verified it, with full quality settings and confirmed cleanup. The [receipt](provenance/hermes-iq3-s/README.md) does not claim the concurrent foreground/tool-resource milestone below. Further native breadth is conditional on each target's hardware, supported model format and contribution requirements.
+
 ## Engine strategy
 
 - Share scheduling, bounded timing feedback, configuration validation and observability across all OpenAI-compatible servers.

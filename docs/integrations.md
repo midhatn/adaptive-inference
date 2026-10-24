@@ -100,6 +100,8 @@ from generation settings. Fifteen [installed Python SDK checks](../provenance/py
 exercise their actual request serialization over HTTP fixtures. LangChain emits
 the equivalent `max_completion_tokens` name for `max_tokens`; CrewAI makes tool
 schemas strict. These client transformations are separate from gateway behavior.
+Six additional negative SDK cases refuse nested model/authorization overrides
+before dispatch; explicit generation settings cannot replace the selected client identity.
 
 Additional [preserved client transport checks](../provenance/client-config-transports/README.md)
 exercise Aider, Continue and Cline without requiring an upstream Git checkout.
@@ -129,8 +131,11 @@ slot is the practical opt-in boundary. A single agent pointed at `/v1` stays
 normal unless its caller attaches scheduling metadata. A background path stays
 background even if a caller tries to promote its class.
 
-For Aider and OpenHands, `openai/` is the client provider selector; use the actual
-model ID after that prefix. For other routes, retain the backend's exact ID.
+For Aider, `openai/` is the client provider selector; use the actual served model
+ID after that prefix. OpenHands should retain its working SDK provider prefix;
+the tested custom-alias recipe uses `litellm_proxy/` because the locked LiteLLM
+rejects reasoning options for an unknown `openai/` alias before dispatch. For
+other routes, retain the backend's exact ID.
 AutoGen requires explicit capabilities for an unknown model: supply verified
 `model_info`, including tool and structured-output support. Roo Code requires
 native tool calling, so text-only success is insufficient. LangChain's generic

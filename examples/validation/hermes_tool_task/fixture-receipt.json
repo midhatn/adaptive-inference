@@ -1,0 +1,45 @@
+{
+  "schema": "adaptive-inference.hermes-tool-task-fixture.v1",
+  "date": "2026-10-24",
+  "passed": true,
+  "fixture": true,
+  "model_run": false,
+  "source_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+  "interpreter": "Python 3.14.7",
+  "boundary_tests": 12,
+  "actual_sdk_requests": 6,
+  "actual_tool_hook_events": 10,
+  "native_file_operations": 5,
+  "parent_context": {
+    "context_length": 65536,
+    "threshold": 0.8,
+    "threshold_tokens": 46421,
+    "reserved_output": 10923,
+    "max_tokens": 10923
+  },
+  "child_context": {
+    "context_length": 65536,
+    "threshold": 0.8,
+    "threshold_tokens": 46421,
+    "reserved_output": 10923,
+    "max_tokens": 10923
+  },
+  "artifacts": {
+    "orders.csv": "bebd316cb7278f7e3ad7ddea7d4ad1975512b4664847a81cea8269d7617b9940",
+    "report.json": "37dd9565f5b19fa8d546f3a899956067ed777832a1baea5baf34222b89ecfe8b",
+    "verification.json": "88f26fcf9ffc91ad78d10d3d0debd6a4b1bc440384d7eb6faa9410a43c488ec5"
+  },
+  "worker_exit": 0,
+  "timeout": false,
+  "owned_children_empty": true,
+  "elapsed_s": 9.332353353500366,
+  "stderr_bytes": 0,
+  "gateway_port_fixture": 18222,
+  "scope": "Parameterized runner fixture only; synthetic responses through actual SDK and native file tools. Original real-model evidence remains separate.",
+  "source_sha256": {
+    "run_task.py": "15c104e2316d0e6c5b4e8f9581877d39e0b61c7c041e9f63d1183f1e18076eb7",
+    "audit_plugin.py": "78aca2b2b184a0637a134e87fbd9b6e6bf420589842c88cad8048f42f6f7a4ba",
+    "owned_job_windows.py": "90b59dbdae226419fc9680c961c21dfa9e061df08512a7a8089d6f6d11b2ccc4",
+    "test_boundary.py": "ff3546d36819337a390f00b072abc09b15208dd0decd9a8439962452f1d64945"
+  }
+}

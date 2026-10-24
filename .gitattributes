@@ -1,10 +1,15 @@
 * text=auto eol=lf
 # Source overlays are hashed byte-for-byte by the reconstruction scripts.
-*.patch -text
+*.patch -text -whitespace
 *.bundle -text
 *.gz -text
 # Receipt-hashed fixture exports retain the exact bytes exercised locally.
-integrations/openai-admission/** -text
-integrations/openhands/** -text
+integrations/openai-admission/** -text whitespace=cr-at-eol
+integrations/openhands/** -text whitespace=cr-at-eol
 integrations/openclaw-schema-check/reference/** -text
 provenance/lmstudio-baseurl/fixtures/** -text
+provenance/hermes-iq3-s/*.csv -text whitespace=cr-at-eol
+provenance/hermes-iq3-s/report.json -text whitespace=cr-at-eol
+provenance/hermes-iq3-s/verification.json -text whitespace=cr-at-eol
+integrations/hermes/current-source/** -text whitespace=cr-at-eol
+examples/validation/hermes_tool_task/** -text whitespace=cr-at-eol

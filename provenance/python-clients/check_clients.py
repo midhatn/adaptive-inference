@@ -69,6 +69,7 @@ def main():
     options={'max_tokens':10923, 'temperature':0.73, 'reasoning_effort':'high',
              'extra_body':{'reasoning_budget_tokens':8192,'experimental_speed_projection':False,'pcie_frac':0.37}}
     rows=[]
+    refusals=[]
     try:
         for name in ('langgraph','crewai','autogen'):
             for background, mode in ((False,'text'),(True,'text'),(False,'stream'),(True,'stream'),(True,'tools')):
@@ -124,10 +125,24 @@ def main():
                 except Exception as exc:
                     row.update(passed=False,error=type(exc).__name__+': '+str(exc),requests=seen[before:])
                 rows.append(row)
+        for name in ('langgraph', 'crewai', 'autogen'):
+            module=load(name)
+            for surface, conflicting in (
+                    ('body-model', {'extra_body': {'model': 'not-the-selected-model'}}),
+                    ('header-credential', {'default_headers': {'Authorization': 'Bearer wrong-fixture-key'}})):
+                before=len(seen)
+                passed=False
+                try:
+                    factory=getattr(module, {'langgraph':'build_graph','crewai':'build_llm','autogen':'build_client'}[name])
+                    args_info=[{'vision':False,'function_calling':True,'json_output':False,'family':'unknown','structured_output':False}] if name=='autogen' else []
+                    factory(MODEL,*args_info,gateway_base_url=base,api_key_env='ADAPTIVE_CONFORMANCE_KEY',generation_options=conflicting)
+                except ValueError:
+                    passed=len(seen)==before
+                refusals.append({'client':name,'surface':surface,'refused_before_dispatch':passed})
     finally:
         server.shutdown(); server.server_close(); thread.join(5)
         socket.socket.connect = original_connect
-    result={'schema':'adaptive-inference.python-client-conformance.v1','passed':all(r['passed'] for r in rows) and not blocked,'versions':{p:version(p) for p in ('langgraph','langchain-openai','crewai','autogen-ext','openai')},'rows':rows,'external_connection_attempts':blocked,'models_run':False}
+    result={'schema':'adaptive-inference.python-client-conformance.v1','passed':all(r['passed'] for r in rows) and all(r['refused_before_dispatch'] for r in refusals) and not blocked,'versions':{p:version(p) for p in ('langgraph','langchain-openai','crewai','autogen-ext','openai')},'rows':rows,'identity_override_refusals':refusals,'external_connection_attempts':blocked,'models_run':False}
     result['known_client_normalizations']={'langchain':'max_tokens is emitted as max_completion_tokens with the same allowance; nonstandard response reasoning fields are not preserved','crewai':'SDK converts function schemas to strict mode; this suite supplies an already-strict schema and does not claim arbitrary input schemas remain identical'}
     result['scope']='Actual installed SDK clients over loopback HTTP fixtures; no gateway/native model/agent task/reboot qualification. Tools are serialized, not executed.'
     result['source_sha256']={p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__),ROOT/'src/adaptive_inference/client_routing.py',*[ROOT/'examples/agents'/f'{n}_client.py' for n in ('langgraph','autogen','crewai')]]}

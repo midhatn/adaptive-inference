@@ -29,7 +29,7 @@ any upstream requirement still outstanding. The optional [Hermes plugin](plugins
 and [OpenClaw configuration composer](examples/agents/openclaw-config.md) use public
 host interfaces to classify background work while preserving model settings.
 
-The standalone [v0.2.0 release](https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0) includes the complete source archive, installable runtime, checksums and validation receipts. New integrations follow the shared [agent/engine contract](docs/integration-contract.md).
+The standalone [releases](https://github.com/midhatn/adaptive-inference/releases) include the complete source archive, installable runtime, checksums and validation receipts. Version 0.3.0 adds the generalized integrations and current Hermes source supplement. Integrations follow the shared [agent/engine contract](docs/integration-contract.md).
 
 ## Start in five minutes
 
@@ -67,7 +67,7 @@ python third_party/reference-sources/verify.py
 python provenance/offline_acceptance.py --output ../adaptive-source-proof-01
 ```
 
-The second command requires Git and a new output directory. It restores and verifies source only. Bundled baselines occupy about 146 MB; model weights and compiler/Python prerequisites remain separate. See the [native source guide](docs/legacy-reproduction.md) for individual integration commands and build instructions.
+The second command requires Git and a new output directory. It restores and verifies source only. The original bundled baselines occupy about 146 MB. Current development also includes a 48 MB source delta for the exact newer Hermes SDK used by the plugin and real task; its [separate offline restoration command](integrations/hermes/current-source/README.md) reconstructs all 20,897 tracked files. Model weights and compiler/Python prerequisites remain separate. See the [native source guide](docs/legacy-reproduction.md) for individual integration commands and build instructions.
 
 ## What works
 
@@ -105,7 +105,11 @@ Generic profiles do not resize a backend's cache, move KV state or preempt nativ
 
 ## Evidence and lineage
 
-The current durable-task foundation passed **95 software tests** across Windows, Linux and macOS on Python 3.11 and 3.12. Its runnable demonstration kills and restarts real worker processes, retains the original task and corrective feedback, and refuses automatic replay of an uncertain external action. These use deterministic generation/tool fixtures; installed-agent boot recovery remains future integration work.
+The latest real task used **our IQ3_S model through Hermes and Strata**, with the released gateway and optional routing plugin. The parent read a synthetic orders file and wrote its totals; a host-created production child independently checked them and wrote a verification artifact. All **six model requests and five native file operations** succeeded, retaining the 65,536 context, 10,923 output allowance and high/8,192 reasoning settings. The correct result was 17 units and 4,350 cents. Gateway history matched every request, and the separately owned services shut down cleanly. The [sanitized task receipt and artifacts](provenance/hermes-iq3-s/README.md) and [reproduction runner](examples/validation/hermes_tool_task/README.md) state the exact composition and limits.
+
+Version 0.3.0 adds general client routing and protected identity settings. The local suite passes **110 core tests, 17 source-preservation checks and 12 task-boundary checks**. Installed SDK fixtures and native host-schema checks are recorded separately in the [integration evidence](docs/evidence.md#generalized-client-and-host-integrations). These fixtures run no inference model. The real task used the released v0.2.0 gateway with the newer optional plugin; its exact composition is recorded separately from this release's portable software checks.
+
+The v0.2.0 durable-task foundation passed **95 software tests** across Windows, Linux and macOS on Python 3.11 and 3.12. Its runnable demonstration kills and restarts real worker processes, retains the original task and corrective feedback, and refuses automatic replay of an uncertain external action. These use deterministic generation/tool fixtures; installed-agent boot recovery remains future integration work.
 
 The earlier portable-gateway release also passed a fresh wheel installation and eight real Strata model requests. Both request classes engaged learned timing feedback, all eight integer answers matched exactly, and the separately operated backend shut down cleanly. This is functional evidence for that exact composition, not a speed claim or qualification of every listed application.
 

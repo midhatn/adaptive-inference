@@ -1,6 +1,36 @@
 # Evidence and limits
 
-Three different things are tracked here: the new generic gateway, reconstruction of optional upstream integrations, and historical local model runs. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
+This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
+
+## Real Hermes file task on IQ3_S
+
+The [sanitized receipt and three task artifacts](../provenance/hermes-iq3-s/README.md) record one accepted Windows task using the existing IQ3_S model, exact Hermes commit `14e1e43a23761b369641208e204365cd6cb9399d`, the canonical optional routing plugin and the released v0.2.0 gateway wheel. The parent read a four-row synthetic CSV and wrote a report. A host-created production child independently read the CSV and report, checked the arithmetic and wrote a verification. Independent acceptance recomputed **4 rows, 17 units and 4,350 cents**, including every per-item total.
+
+All **six actual model requests** (three normal, three background) and **five native file operations** completed successfully. Public hooks supplied child classification; the prompt and harness did not inject a class. Both agents retained context 65,536, output allowance/reserve 10,923, high reasoning with 8,192 reasoning tokens, disabled speed projection and the declared PCIe fraction 0.37. Actual serialized requests and gateway history matched. Both phases stopped naturally. The task took 208.627 seconds; this is one observed duration, not a comparative performance result.
+
+The task's owned child-process job was empty. The gateway ended with six completed requests, no active/pending work and no uncertain completion, then closed cleanly. The separate backend owner confirmed all seven retained process identities exited, with server exit code zero; both listening ports were absent afterward. Sampled minimum physical RAM was 10.870 GiB, commit headroom 32.602 GiB and VRAM 1,103.285 MiB. Sampling does not establish a continuous guarantee. Native source and model metadata were checked; the model weights were not fully content-hashed.
+
+The [parameterized Windows reproduction runner](../examples/validation/hermes_tool_task/README.md) is a subsequent refactor. Its separate receipt covers twelve CPU boundary tests and six synthetic responses through the actual pinned Hermes SDK, including five native file operations. It has not been rerun against a model after parameterization. The original real receipt remains bound to the original runner hashes. No alternative inference model was used. Logs, assistant reasoning and private host records are excluded from the public export.
+
+This proves a bounded serial file-tool workflow for this composition. The host chose the child, so it is not autonomous-delegation evidence. It does not establish foreground/game responsiveness, resource-lease handoff, idle-model reload, operating-system reboot recovery or every matrix target's native behavior.
+
+## Generalized client and host integrations
+
+Current development passes **110 core software tests**, **17 preservation checks** and **12 task-boundary checks** locally. The source-bound SDK receipts below exercise real installed libraries or pinned original host code with simulated responses; none invokes an inference model.
+
+| Check | Evidence and scope |
+| --- | --- |
+| LangGraph, CrewAI and retained AutoGen | [15 successful HTTP requests plus 6 refused overrides](../provenance/python-clients/README.md): normal/background text, streaming and strict tool-schema transport; selected model and separate gateway credentials preserved |
+| Hermes public-hook plugin | [Pinned SDK tests](../integrations/hermes-plugin-tests/README.md): 41 current-SDK tests; 40 older-SDK passes and one explicitly unavailable cron-hook skip; separate admission checks |
+| OpenClaw configuration | [Composer and exact host schema](../examples/agents/openclaw-config.md): supplied model, credential and fallback settings retained; schema evidence is not a full application run |
+| Aider, Continue and Cline | [Preserved client transports](../provenance/client-config-transports/README.md): 2 Aider and 4 current plus 4 published JavaScript transport cases; Cline's missing reasoning-budget forwarding remains an explicit limitation |
+| OpenHands | [26 configuration/transport cases](../integrations/openhands/README.md), including two actual released-gateway compositions with a fake backend; use the documented `litellm_proxy/` selector to preserve the declared request options |
+| SGLang and Ollama | [6 client/gateway fixture cases](../integrations/openai-admission/README.md): executable shared admission guides, request/stream preservation and clear native-server limits |
+| LM Studio | [SDK constructor regression](../provenance/lmstudio-baseurl/README.md): `baseUrl` fails type checking and leaves the default remote URL; `baseURL` selects the intended local endpoint, with no socket connections |
+
+Independent review reproduced a real defect in the three Python factories: nested `extra_body.model` and authorization headers could override the selected identity. The shared option validator now refuses those before constructing/sending a client request, while preserving ordinary generation options, tool schemas and tracing. The six negative SDK checks attempted zero dispatches; all fifteen normal SDK cases still passed. Source hashes identify the corrected factories and validator.
+
+The [upstream delivery ledger](upstream-delivery.md) records published proposal heads and outstanding contribution requirements. A submitted PR is not an accepted integration. Fixture coverage is not native qualification of SGLang, vLLM, Ollama, Apple hardware or any other unexecuted backend.
 
 ## Portable gateway release acceptance
 
@@ -45,6 +75,8 @@ The verifier checked every resulting tracked file and complete final tree: **4,7
 The [reference verifier](../third_party/reference-sources/verify.py) independently checks 13 original source/license/notice files in five groups. The [distribution check](../provenance/check_distribution.py) verifies that complete source archives include the current source, local bundles, manifests and notices, while runtime wheels contain the matching modules/licenses. CI runs these gates alongside the portable tests. No preserved upstream code, model or compiler is executed by the source restoration test.
 
 Testing the built source archive in a deeper Windows directory exposed Git's default path-length limit during index refresh, despite intact source bytes. Restoration and independent verification now explicitly enable Git's long-path support. A real-Git regression restores a path longer than 260 characters and confirms the failure with that option disabled on Windows. The preservation suite now contains 16 checks; the earlier short-path receipt above remains unchanged.
+
+Current development adds a seventeenth preservation check for exact receipt-bound fixture bytes, and a separate [current Hermes snapshot](../integrations/hermes/current-source/README.md). That snapshot restores all **20,897 tracked files** at the plugin/task SDK revision from the preserved baseline plus a checked 47,850,166-byte delta. Windows restoration passed with exact commit/tree identity and a clean checkout, while network-denial positive controls, existing-output refusal and missing-baseline refusal passed. It is separate from the original 25,177-file restoration and does not replace that baseline. CI also runs this additional restoration with network access denied.
 
 ### Earlier network-assisted reconstruction
 

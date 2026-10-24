@@ -1,11 +1,15 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 — generalized integrations and IQ3_S agent-task evidence
 
 - Define one agent/engine integration contract for routing, quality preservation, ownership, native capabilities and durable continuation.
 - Generalize Python client recipes to configurable gateway ports, proxy prefixes and credential environment references, retaining background classification and rejecting transport overrides in generation options.
 - Add an opt-in Hermes plugin using public lifecycle/middleware hooks, and an OpenClaw configuration composer that preserves supplied model, authentication and fallback policy.
 - Preserve executable integration recipes, pinned client/schema inputs and scoped compatibility receipts beside their reproduction instructions.
+- Refuse nested generation options that replace a selected model, transport or gateway credential. Fifteen real SDK HTTP fixtures and six rejected-override checks cover the three Python client factories.
+- Publish upstream delivery receipts and narrowly scoped contributions across eleven matrix targets, recording the remaining archive, maintainer and human-contribution requirements.
+- Complete one real IQ3_S Hermes parent/production-child file task through the released gateway: six model requests, five native file operations, independently checked artifacts and verified cleanup. Include a parameterized reproduction runner with separate fixture qualification.
+- Preserve the exact current Hermes source used in that task as a checked local delta: 20,897 tracked files restore without network access, reusing the existing baseline archive.
 
 ## 0.2.0 — source preservation and durable task continuation
 

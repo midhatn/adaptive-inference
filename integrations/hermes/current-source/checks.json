@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "passed": true,
+  "existing_output_refused": true,
+  "existing_license_unchanged": true,
+  "missing_baseline_refused_before_output": true,
+  "restore_helper_sha256": "d246216b3489e66cef126defe8684d411436f47dfe69d4bcf36ed25f463c08a4",
+  "receipt_scope": "Negative admission checks plus final commit/cleanliness gates under optimized Python; full restoration is recorded separately",
+  "optimized_identity_gates_passed": true,
+  "optimized_python": 1,
+  "optimized_gate_cases": 3
+}

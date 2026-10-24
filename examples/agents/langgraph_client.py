@@ -8,17 +8,13 @@ import os
 
 def build_graph(model_id: str, *, background: bool = False, generation_options=None,
                 gateway_base_url="http://127.0.0.1:18100/v1", api_key_env=None):
-    from adaptive_inference.client_routing import gateway_client_options
+    from adaptive_inference.client_routing import gateway_client_options, generation_options_for_route
     from langchain_openai import ChatOpenAI
     from langgraph.graph import END, START, MessagesState, StateGraph
 
     if not model_id or model_id == "YOUR_EXISTING_MODEL_ID":
         raise ValueError("Supply an existing served model ID")
-    options = dict(generation_options or {})
-    transport = {"client", "async_client", "http_client", "http_async_client",
-                 "openai_api_base", "openai_api_key"}
-    if set(options) & (transport | {"model", "base_url", "api_key", "use_responses_api", "max_retries"}):
-        raise ValueError("Generation options cannot override the selected client route")
+    options = generation_options_for_route(generation_options, reserved={"use_responses_api"})
     route = gateway_client_options(base_url=gateway_base_url,
                                    background=background, api_key_env=api_key_env)
     llm = ChatOpenAI(model=model_id, **route,
