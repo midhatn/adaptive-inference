@@ -1,17 +1,34 @@
-# Accepted M1 runtime preservation
+# Persistent-controller source preservation
 
-`m1-runtime/src/adaptive_inference/` preserves all 17 Python modules from accepted
-M1 publication head `124b8ef2430a67e69e0e177f014a6fdc393c16a2`, together with its
-original handoff tests. Its full native/foreground/Hermes validation sources remain
-under `examples/validation/windows_handoff/` and accepted evidence under
-`provenance/windows-handoff/controlled-11/`.
+`m1-runtime/src/adaptive_inference/` preserves every Python module from accepted
+M1 publication head `124b8ef2430a67e69e0e177f014a6fdc393c16a2`. Its original
+handoff tests are also retained. The complete M1 native/foreground/Hermes and
+qualification sources remain under `examples/validation/windows_handoff/`;
+the accepted evidence remains under `provenance/windows-handoff/controlled-11/`.
 
-These files retain the accepted source identity while the current runtime evolves.
-For historical reproduction, use this preserved package on the Python import path
-with the unchanged M1 examples and their documented dependencies. Confirm imported
-module paths and receipt hashes before qualification. Current TaskStore software
-tests do not requalify the historical real-model run under changed runtime bytes.
+These files keep the accepted runtime available inside a standalone source
+archive while current runtime development continues. For exact historical
+reproduction, use this preserved package on the Python import path with those
+unchanged M1 examples and their documented dependencies. Confirm imported module
+paths and the receipt's runtime hashes before any real qualification. Using the
+new optional-demand runtime does not reproduce the old source identity, even
+when compatibility fixtures pass.
 
-`m1-source-manifest.json` records every preserved file. Existing repository and
-third-party licenses and notices apply. No models, binaries or private histories
-are included.
+`reviewed-controller/` preserves the exact demand-aware controller and private
+component-test input reviewed before promotion. The initial demand promotion
+changed only a comment relative to that controller. Current runtime additionally
+includes the separately [reviewed timing callback](reviewed-timing/README.md).
+The 23 portable demand test methods are
+unchanged; their imports use the canonical package and current existing handoff
+fixture module, whose 34 tests run separately under normal discovery. The
+historical archived test layout is retained as evidence, not an installed entry
+point.
+
+`m1-source-manifest.json` separately records the 17 accepted M1 modules and
+original handoff tests. `source-lineage.json` records component promotion inputs.
+The current TaskStore correction also does not requalify the historical
+real-model run under changed runtime bytes.
+It is a component source record, not native, installed-agent or full M2
+acceptance. The repository's existing Apache-2.0 and attributed MIT/Apache
+notices remain applicable. No model files, private histories or binaries are
+included here.

@@ -161,9 +161,10 @@ independent raw header reads were unsupported patterns, although the specific
 Windows failure's cause remains unproved. The
 [storage correction](docs/task-store-verification.md) reuses the existing stable
 lock for short operations and SQLite's recovery implementation. Its Windows
-component passed 75 supplied tests and four independent probes. Complete the
-cross-platform checks, then compose one exact corrected store in the host and
-every worker before rerunning pause/restart qualification. Stop and join older
+component passed 75 supplied tests and four independent probes. The focused
+canonical correction subsequently passed all 14 CI checks across Windows, Linux
+and macOS with Python 3.11/3.12 and offline source reconstruction. Compose one
+exact corrected store in the host and every worker. Stop and join older
 readers before upgrading; never mix the old and new access protocols. Preserve
 failed runs and the accepted M1 source identity. Model quality and acceptance
 requirements remain unchanged.
@@ -173,6 +174,12 @@ components with the existing native host, then add trusted user controls and
 qualify the persistent composition. Research the exact preserved startup cache
 planner before adding load feasibility; its RAM/commit estimate does not prove
 GPU fit or reserve resources. A missing measurement must remain unknown.
+
+The optional [controller component](docs/persistent-controller.md) now supplies
+cold parked initialization, demand-driven restoration and idle release. Its
+compatibility tests preserve the default bounded host path. The complete M1
+runtime is archived inside the repository before changing the current runtime;
+passing compatibility tests does not change the older result's source identity.
 
 Component review also found an admission constraint: a prepared operation can
 make demand ineligible while a queued request waits for an unloaded model. The
@@ -190,9 +197,68 @@ order and regression preserve the unsuccessful predecessor. Host composition
 also exposed a soft setup deadline and a completed-timeout cleanup retry bug.
 The successor retains setup work across timeout, fences late startup and joins
 completed failures while preserving their original errors. These lifecycle
-fixes are under component review, not live qualification. Next, connect controls
-at Hermes' actual native-history safe points, then qualify the complete cold
-start, demand, waiting, cancellation and cleanup path with unchanged IQ3_S.
+fixes passed component review; the installed-agent controls are connected at
+Hermes' actual native-history safe points in the development composition. Its
+complete cold-start, demand, waiting and cleanup path still needs successful
+live qualification with unchanged IQ3_S.
+
+The installed-agent bridge review exposed two further requirements. Saved
+completion candidates need exact fields and types before resumed acceptance;
+truthy malformed data must not become a successful task. Bootstrap must consume
+already-recorded controls before creating waiting demand, otherwise a cancelled
+task can briefly request a native load. Both original failures are retained in
+development evidence. A controlled safe checkpoint will qualify pause, worker
+replacement and resume without stopping an uncertain operation.
+
+The first two live cases were deliberately separate from the full UI gate.
+The pre-cancelled development case completed across two worker owners without
+provider calls, tool effects or a native launch. A separate complete-task attempt
+remained parked while the actual foreground ChatGPT process used sustained CPU,
+then failed its existing 240-second readiness bound with clean shutdown and no
+model launch. That is useful protection evidence but not a completed task.
+
+**Next priority from that result:** finish and qualify the trusted own-window
+control interface before another complete-task attempt. It must authenticate its
+task/session, retain process/window ownership and distinguish the user's request
+from unrelated foreground activity. Do not whitelist ChatGPT, force focus to
+manufacture idle conditions, raise thresholds or extend the failed run's timers
+to obtain a pass. Research measured coexistence for M3 separately. Keep the
+failed attempt and use a new source-bound case for any changed composition.
+Every case retains its original deadline, prompt, arrival and attempt accounting;
+worker exits precede host cleanup. These bounded cases do not establish indefinite
+service lifetime, arbitrary tools or a reboot.
+
+Independent composition tests completed both simulated cases, then exposed a
+watchdog defect: a failed diagnostic write could prevent the emergency exit.
+The corrected runner now makes termination independent of reporting, stays armed
+through final teardown and refuses a truncated event ledger. Both the corrected
+runner and its successor composition passed independent CPU review. These are
+qualification-harness fixes; passing simulated cases cannot replace the separate
+native/IQ3_S acceptance gate.
+
+Control-interface review also reproduced two defects before integration: a
+historical Resume request could revive intent after a later Pause, and cancellation
+before a connection handler's first instruction could abandon its stream. Reuse
+the existing durable mailbox as command authority and retain accepted connection
+cleanup independently of handler execution. Preserve both failures and qualify
+the actual mailbox adapter before trusting fake-runtime component results.
+
+For the first UI, use the existing local launch/control and standard window
+facilities. Bind explicit intent to the project's exact owned window and one
+authenticated runner/task. Remove only its own recent-input block; keep CPU,
+memory, observation and native-ownership checks. Do not exempt a whole browser.
+Fresh window/session verification is separate from task-lifetime intent, so a
+long valid request does not silently lose priority to an unrelated short timer.
+Closing the interface preserves the task and host. The implementation and live
+window-switch/reopen checks remain required before claiming this experience.
+
+Timing review also found that a static backend revision can retain speed
+estimates across a replacement owner's different cache configuration. Reuse
+the existing learner with a runtime context established before admission.
+Capture the actual execution's learner after admission; an old completion must
+not train the replacement. Preserve existing queued arrival/rank accounting
+and distinguish its arrival prediction from the eventual execution context.
+This is runtime bookkeeping, not a new statistical scheduling algorithm.
 
 Required work:
 

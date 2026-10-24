@@ -8,6 +8,11 @@ middleware and native conversation store. These are separate adapters around
 shared contracts; other engines do not inherit native capabilities from HTTP
 compatibility.
 
+An optional [durable-demand mode](persistent-controller.md) adds cold parked
+initialization, demand-driven restoration and idle release. Its component
+tests do not extend the accepted M1 hardware result to a persistent host. The
+exact M1 runtime is [preserved](../provenance/persistent-desktop/README.md).
+
 ## What the controller does
 
 ```mermaid

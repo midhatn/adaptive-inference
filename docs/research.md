@@ -142,6 +142,19 @@ Separate offline compaction work inspected [Hermes #136671](https://github.com/N
 These were narrow mechanism adaptations in a separate offline prototype, not whole-PR merges or components shipped by the gateway's Hermes overlay. Restored evidence remains quoted data; it cannot authorize a tool, supersede current instructions or bypass secret redaction. Exact-budget overflow refuses rather than truncating references. Saved-response replay and synthetic carry checks do not establish durable natural multi-generation agent continuation, and are not requirements for the gateway's scheduling contract.
 ## Storage and shutdown follow-ups
 
+### Runtime identity and timing feedback
+
+The optional timing mode adapts the endpoint-bound metric lifecycle in the
+preserved [Finagle Peak EWMA source](../third_party/reference-sources/finagle/9cc08d15216497bb03a1cafda96b7266cfbbcff1/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/PeakEwma.scala).
+A verified replacement owner receives a fresh existing learner; each dispatched
+request retains that learner through completion. This prevents delayed work from
+training a later runtime while preserving queued arrival and ordering metadata.
+The arithmetic, sample minimum, expiry and empirical p90 are unchanged.
+[aiohttp lifecycle guidance](https://docs.aiohttp.org/en/stable/web_advanced.html#background-tasks)
+supports activating on the owning event loop after startup. This reuses an
+existing lifecycle pattern, not a new statistical algorithm or speed claim.
+See the [runtime timing contract](runtime-timing.md) and its component evidence.
+
 ### Task-store verification
 
 Concurrent status/control integration led to inspection of SQLite's

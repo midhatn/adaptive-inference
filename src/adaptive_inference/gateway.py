@@ -9,6 +9,7 @@ from __future__ import annotations
 from collections import deque
 import asyncio
 from contextlib import suppress
+from dataclasses import dataclass
 import hashlib
 import hmac
 import json
@@ -160,9 +161,22 @@ class StreamCompletion:
         return self.done and bool(expected) and self.seen == self.finished == expected and not self.invalid
 
 
+class RuntimeTimingError(RuntimeError):
+    """A trusted-host timing binding failed; never a retry/non-dispatch receipt."""
+
+
+@dataclass(frozen=True)
+class RuntimeTimingContext:
+    generation: int
+    owner_digest: bytes
+    learner: RequestCostModel
+
+
 class Gateway:
-    def __init__(self, config, capacity=None):
+    def __init__(self, config, capacity=None, *, runtime_timing=False):
         config.validate()
+        if type(runtime_timing) is not bool:
+            raise ValueError("runtime_timing must be a boolean")
         self.config = config
         self.profile = engine_profile(config.backend_kind)
         self.api_key = env_secret(config.api_key_env)
@@ -172,17 +186,99 @@ class Gateway:
                          recovery_seconds=config.recovery_seconds, max_sample_age_s=config.max_sample_age_s)
         self.scheduler = Scheduler(config, self.capacity)
         self.costs = RequestCostModel()
+        self.runtime_timing = runtime_timing
+        self._runtime_context = None
+        self._runtime_loop = None
+        self._runtime_error = None
         self.history = deque(maxlen=128)
         self.instance = uuid.uuid4().hex
         self.client = None
         self.capacity_task = None
 
     async def startup(self, app):
+        if self.runtime_timing:
+            self._runtime_loop = asyncio.get_running_loop()
         self.client = ClientSession(timeout=ClientTimeout(total=self.config.upstream_timeout_s,
                                     connect=10, sock_read=self.config.upstream_read_timeout_s),
                                     auto_decompress=False, trust_env=False)
         if isinstance(self.capacity, Capacity) and self.capacity.policy is not None:
             self.capacity_task = asyncio.create_task(self.capacity.monitor(), name="host-headroom-sampler")
+
+    def _runtime_fail(self, code):
+        # Bounded reason codes only: never export native identities or paths.
+        if self._runtime_error is None:
+            self._runtime_error = code
+        raise RuntimeTimingError(code)
+
+    def activate_runtime(self, identity):
+        """Trusted synchronous pre-ready hook, on this gateway's owning loop.
+
+        The host verifies identity and retains native ownership. This method
+        partitions timing only; it never clears scheduler or native ownership.
+        """
+        if not self.runtime_timing:
+            raise RuntimeTimingError("runtime_timing_disabled")
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+        if self._runtime_loop is None or loop is not self._runtime_loop:
+            # A foreign thread/loop must not mutate this loop's state.
+            raise RuntimeTimingError("runtime_wrong_loop")
+        if self._runtime_error is not None:
+            raise RuntimeTimingError(self._runtime_error)
+        owner = identity.get("owner_id") if type(identity) is dict else None
+        if (type(owner) is not str or not 1 <= len(owner) <= 1024
+                or identity.get("ready") is not True or identity.get("loaded") is not True):
+            self._runtime_fail("runtime_identity_invalid")
+        if self.scheduler.active is not None:
+            self._runtime_fail("runtime_dispatch_active")
+        if self.scheduler.uncertain or self.scheduler.closing:
+            self._runtime_fail("runtime_scheduler_unavailable")
+        if self.capacity():
+            self._runtime_fail("runtime_admission_open")
+        try:
+            digest = hashlib.sha256(owner.encode("utf-8")).digest()
+        except UnicodeError:
+            self._runtime_fail("runtime_identity_invalid")
+        current = self._runtime_context
+        if current is not None and hmac.compare_digest(current.owner_digest, digest):
+            return
+        previous = self.costs
+        learner = RequestCostModel(decay_s=previous.decay_s, ttl_s=previous.ttl_s,
+                                   min_samples=previous.min_samples,
+                                   max_samples=previous.max_samples, max_groups=previous.max_groups)
+        self._runtime_context = RuntimeTimingContext(
+            1 if current is None else current.generation + 1, digest, learner)
+        self.costs = learner
+
+    def _runtime_availability(self):
+        if self._runtime_error is not None or self.scheduler.uncertain:
+            return "runtime_unknown"
+        if self._runtime_context is None:
+            return "runtime_unbound"
+        if self.scheduler.closing or not self.capacity():
+            return "runtime_unavailable"
+        return "available"
+
+    def _prediction(self, key):
+        if not self.runtime_timing:
+            return self.costs.predict(key, now=time.monotonic()), None
+        reason = self._runtime_availability()
+        context = self._runtime_context
+        generation = context.generation if context is not None else None
+        if reason != "available":
+            return {"estimate_s": None, "samples": 0, "reason": reason,
+                    "peak_s": None, "p90_s": None, "observed_range_s": None}, generation
+        return context.learner.predict(key, now=time.monotonic()), generation
+
+    def _execution_context(self):
+        if not self.runtime_timing:
+            return self.costs, None
+        context = self._runtime_context
+        if context is None or self._runtime_error is not None or self.scheduler.uncertain:
+            self._runtime_fail("runtime_execution_unbound")
+        return context.learner, context.generation
 
     async def shutdown(self, app):
         await self.scheduler.close()
@@ -232,11 +328,17 @@ class Gateway:
         return headers
 
     async def status(self, request):
-        return web.json_response({"service": "adaptive-inference", "version": __version__,
+        result = {"service": "adaptive-inference", "version": __version__,
                                   "instance": self.instance, "backend": self.config.backend_kind,
                                   "scheduler": self.scheduler.status(), "cost_model": self.costs.status(),
                                   "resources": self.capacity.status() if hasattr(self.capacity, "status") else {},
-                                  "history": list(self.history) if request.path == "/metrics" else []})
+                                  "history": list(self.history) if request.path == "/metrics" else []}
+        if self.runtime_timing:
+            context = self._runtime_context
+            result["runtime_timing"] = {"generation": context.generation if context else None,
+                "availability": self._runtime_availability(), "fault": self._runtime_error,
+                "cost_model_scope": "current_verified_runtime"}
+        return web.json_response(result)
 
     async def models(self, request):
         try:
@@ -271,7 +373,7 @@ class Gateway:
                                        request.path.startswith("/background/"))
             outgoing = prepare_request(self.config.backend_kind, body)
             key = cost_key(self.config, endpoint, outgoing, work_class)
-            prediction = self.costs.predict(key, now=time.monotonic())
+            prediction, prediction_generation = self._prediction(key)
         except (ValueError, TypeError, UnicodeError) as exc:
             return self.error(400, "invalid_request", str(exc))
         try:
@@ -285,7 +387,12 @@ class Gateway:
         request_id = uuid.uuid4().hex
         status, uncertain, trained, client_gone = 502, False, False, False
         result = None
+        execution_generation = None
         try:
+            # Capture immediately after admission, before the first upstream
+            # await. Completion belongs to this learner even if a later host
+            # context is installed. Queued requests retain no learner reference.
+            learner, execution_generation = self._execution_context()
             async with self.client.post(self.config.backend_url + endpoint, json=outgoing,
                                         headers=self.headers(), allow_redirects=False) as response:
                 status = response.status
@@ -332,33 +439,42 @@ class Gateway:
                     result = web.Response(body=raw, status=status, headers=headers)
                     client_gone = request.transport is None or request.transport.is_closing()
                 success = 200 <= status < 300 and complete and not client_gone
-                trained = self.costs.observe(key, max(1e-9, time.monotonic() - started),
+                trained = learner.observe(key, max(1e-9, time.monotonic() - started),
                                              now=time.monotonic(), success=success)
                 return result
+        except RuntimeTimingError:
+            status = 503
+            return self.error(503, "runtime_timing_unavailable", "Trusted runtime timing binding requires reconciliation")
         except ClientConnectorError:
             # Connection was never established: no backend dispatch to drain.
-            self.costs.observe(key, max(1e-9, time.monotonic() - started), now=time.monotonic(), success=False)
+            learner.observe(key, max(1e-9, time.monotonic() - started), now=time.monotonic(), success=False)
             return self.error(502, "backend_unavailable", "Cannot connect to the configured backend")
         except (ClientError, TimeoutError, ValueError):
             uncertain = True
-            self.costs.observe(key, max(1e-9, time.monotonic() - started), now=time.monotonic(), success=False)
+            learner.observe(key, max(1e-9, time.monotonic() - started), now=time.monotonic(), success=False)
             if result is not None and result.prepared:
                 request.transport.close() if request.transport is not None else None
                 return result
             return self.error(502, "backend_completion_uncertain", "Upstream response did not complete; check backend and restart gateway before more work")
         finally:
-            self.history.append({"request_id": request_id, "sequence": ticket.sequence, "class": work_class,
+            row = {"request_id": request_id, "sequence": ticket.sequence, "class": work_class,
                                  "status": status, "prediction": prediction, "execution_s": time.monotonic() - started,
                                  "queue_s": started - ticket.arrival, "trained": trained,
-                                 "client_disconnected": client_gone, "backend_completion_uncertain": uncertain})
+                                 "client_disconnected": client_gone, "backend_completion_uncertain": uncertain}
+            if self.runtime_timing:
+                row.update(prediction_runtime_generation=prediction_generation,
+                           execution_runtime_generation=execution_generation,
+                           prediction_matches_execution_runtime=(execution_generation is not None
+                               and prediction_generation == execution_generation))
+            self.history.append(row)
             await self.scheduler.release(ticket, uncertain=uncertain)
 
 
 GATEWAY = web.AppKey("gateway", Gateway)
 
 
-def create_app(config: Config, *, capacity=None):
-    gateway = Gateway(config, capacity)
+def create_app(config: Config, *, capacity=None, runtime_timing=False):
+    gateway = Gateway(config, capacity, runtime_timing=runtime_timing)
     app = web.Application(client_max_size=config.max_body_bytes, middlewares=[gateway.authorization])
     app[GATEWAY] = gateway
     app.on_startup.append(gateway.startup)
