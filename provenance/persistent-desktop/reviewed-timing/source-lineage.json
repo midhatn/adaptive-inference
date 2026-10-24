@@ -1,0 +1,19 @@
+{
+  "schema": "adaptive.runtime-timing-lineage.v1",
+  "scope": "Reviewed CPU component; no native or installed-agent qualification",
+  "reviewed_manifest_sha256": "a6a76b8c4bf1d417bf536b1bde58538db70dc328626efca8cec12101e1747c6d",
+  "review_sha256": "c6495c415be841ee259670705df1d66b3843af1fb13c7e58247f3492b148699f",
+  "preserved": {
+    "gateway.py": "b2009a8a776bcea4dfc3bedac5296c930ae2211bb8e29d7ccdf76a227fefdef8",
+    "handoff.py": "a636e23c02626049d94ebc95e219b2a27118386b7e8dbaa669b32ba9389cb359",
+    "test_runtime_timing.py": "6ed1c64c4f06d7a6a26117669fff53001b4c1f79c2952e3703dce87dcb38fdee",
+    "test_review.py": "e194b2a088130d3fc60e318eff9ed9d3730ce854d929a77c043a4477dbebe3c6"
+  },
+  "promotion": "Gateway bytes unchanged; controller comment only; fixture methods unchanged with canonical imports and no duplicate inherited tests",
+  "runtime": {
+    "src/adaptive_inference/gateway.py": "b2009a8a776bcea4dfc3bedac5296c930ae2211bb8e29d7ccdf76a227fefdef8",
+    "src/adaptive_inference/handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+    "tests/test_runtime_timing.py": "8f995d57600b530198020d7fbe6b4f55064e77bf9ff49f49f842ce7d4358802f",
+    "tests/test_runtime_timing_review.py": "77ff919951906d8ee6b3883bc52e7e00e744295847a45c57192515187f79c964"
+  }
+}

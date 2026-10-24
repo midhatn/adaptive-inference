@@ -1,0 +1,32 @@
+{
+  "schema": "adaptive.persistent-controller-lineage.v1",
+  "scope": "M2 component sources; not live persistent-host acceptance",
+  "m1_commit": "124b8ef2430a67e69e0e177f014a6fdc393c16a2",
+  "preserved": {
+    "m1-runtime/src/adaptive_inference/adapters.py": "378ee41c1bdbb16873e31752d704e656a70009862d41b36898d30f57a36dfc58",
+    "m1-runtime/src/adaptive_inference/cli.py": "5d794164a43230951a57c18d7b45d04d12f3e8974871648fd09ec04502f448bb",
+    "m1-runtime/src/adaptive_inference/client_routing.py": "d57178cfbd5666e75aef311f1362cf8486f48085c6f4995861b4fbd0cb7e41d1",
+    "m1-runtime/src/adaptive_inference/config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+    "m1-runtime/src/adaptive_inference/context_budget.py": "cd16b57bc105a179e94dbc9e429c02b901bcd8602cfaf04c9cf8776e9d799ccf",
+    "m1-runtime/src/adaptive_inference/costs.py": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1",
+    "m1-runtime/src/adaptive_inference/demand.py": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+    "m1-runtime/src/adaptive_inference/demo.py": "5a3b1ff743bee6c45f85df8417bedbc18657f2c59f3e894f1f3298a480b22b93",
+    "m1-runtime/src/adaptive_inference/feedback.py": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+    "m1-runtime/src/adaptive_inference/gateway.py": "261f92078e7691bc8e51cd1d67dd370cb2bfcfb008c0c2c7df44ddfbedc0a8f0",
+    "m1-runtime/src/adaptive_inference/handoff.py": "5b11f25a62d27c2b7f78776a9c05a2c15c0712def9fbad52dddd319232d0ed23",
+    "m1-runtime/src/adaptive_inference/resources.py": "a72e376e4dfc6021e61756812f93275af20c28ec1438faf5eb381a491d3db4d9",
+    "m1-runtime/src/adaptive_inference/resource_policy.py": "53768d4b95b589bb76d1788a9ccceefe60c05b332b1b1f43dece6b04bfec212a",
+    "m1-runtime/src/adaptive_inference/scheduler.py": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f",
+    "m1-runtime/src/adaptive_inference/task_store.py": "39f4efaa0983fea5202ac1027f12c7638787e7da874e26b678a9a3812b1afacc",
+    "m1-runtime/src/adaptive_inference/__init__.py": "5d4569a00e03c044ec5d9ad0b19a5a58c67c27c2f0cb51d94e4e968eb4d8d023",
+    "m1-runtime/src/adaptive_inference/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "m1-runtime/test_handoff.py": "db9725043a720b29e3af4b809c3af4d92bba540febea94515de52d5505c7d8f7",
+    "reviewed-controller/handoff.py": "c0e3a8f416a8392573a64d6062d3f11d3611844986f33ba177bd89163f6be65c",
+    "reviewed-controller/test_controller_compat.py": "0b31bc13931a5575fcac3a5e5c60e13d18386391896ba9786ebf203ffd6257da"
+  },
+  "controller_promotion": "Initial demand promotion was comment-only; current controller additionally includes the optional verified timing callback, recorded in reviewed-timing/source-lineage.json",
+  "test_promotion": "23 fixture methods unchanged; canonical imports and existing legacy test module; default suite separately runs its 34 tests",
+  "runtime_sha256": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+  "tests_sha256": "2045eb00fe4e12761bed32a040ed28231cd35f38b4e81ffeee2ef3981d98288c",
+  "demand_promotion_runtime_sha256": "141eeaa18ee498743f6df3f87556b86e4ddff4661a71a0e5d5b71b411de80d6d"
+}

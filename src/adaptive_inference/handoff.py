@@ -11,6 +11,7 @@ import asyncio
 from collections import deque
 from copy import deepcopy
 from dataclasses import dataclass, field
+import inspect
 import math
 import time
 import uuid
@@ -158,7 +159,13 @@ class HandoffController:
     Neither a timeout nor an exception authorizes a different actor to restart
     the backend or replay a tool; both latch a closed fault state.
     """
-    def __init__(self, adapter, policy=None, *, clock=time.monotonic):
+    def __init__(self, adapter, policy=None, *, clock=time.monotonic,
+                 demand=None, idle_grace_s=30, demand_max_age_s=1,
+                 restore_requirements=None, on_verified_owner=None):
+        if on_verified_owner is not None and (not callable(on_verified_owner)
+                or inspect.iscoroutinefunction(on_verified_owner)):
+            raise TypeError("Verified-owner callback must be synchronous")
+        self.on_verified_owner = on_verified_owner
         self.adapter, self.policy, self.clock = adapter, policy or ForegroundPolicy(), clock
         self.scheduler = None
         self.identity = None
@@ -167,6 +174,95 @@ class HandoffController:
         self.tool = None
         self.events = deque(maxlen=256)
         self.lock = asyncio.Lock()
+        # Optional durable-demand composition. Default admission and handoff stay
+        # unchanged. A trusted registry is read-only here; only its actual
+        # OwnedTask can checkpoint pause/cancel intent at a safe point.
+        if demand is not None:
+            from adaptive_inference.demand import DemandRegistry
+            if type(demand) is not DemandRegistry:
+                raise TypeError("Demand must be the trusted durable registry")
+            if not isinstance(restore_requirements, ToolRequirements):
+                raise ValueError("Demand mode needs explicit model headroom floors")
+        if (not number(idle_grace_s) or idle_grace_s > 3600
+                or not number(demand_max_age_s, minimum=.001) or demand_max_age_s > 60):
+            raise ValueError("Demand observation and idle grace need bounded durations")
+        self.demand = demand
+        self.idle_grace_s, self.demand_max_age_s = idle_grace_s, demand_max_age_s
+        self.restore_requirements = restore_requirements
+        self._demand_rows = ()
+        self._demand_stamp = None
+        self._demand_valid = False
+        self._demand_revisions = {}
+        self._demand_lock = asyncio.Lock()
+        self._idle_since = None
+        self._previous_owner_id = None
+
+    async def refresh_demand(self):
+        """Trusted host polling, independent of step/start and HTTP tickets.
+
+        Age starts before the read, not after it. No externally supplied
+        observation can be injected. Reads never claim ownership or acknowledge
+        a cancellation request. A failed/slow/reversed read earns no permission.
+        """
+        if self.demand is None:
+            raise RuntimeError("Demand mode is not configured")
+        async with self._demand_lock:
+            now = self.clock()
+            if self._demand_state() != "absent":
+                self._idle_since = None
+            self._demand_stamp = None
+            self._demand_valid = False
+            try:
+                rows = await asyncio.to_thread(self.demand.observations)
+                keys = set(self.demand._registered)
+                valid = len(rows) == len(keys) and {r.registration_id for r in rows} == keys
+                for row in rows:
+                    previous = self._demand_revisions.get(row.registration_id)
+                    if (type(row.revision) is not int or row.revision < 0
+                            or previous is not None and row.revision < previous):
+                        valid = False
+                    elif row.reason != "unavailable_or_invalid_checkpoint":
+                        self._demand_revisions[row.registration_id] = row.revision
+                self._demand_rows = tuple(rows)
+                self._demand_stamp = now
+                self._demand_valid = valid
+            except Exception:
+                self._demand_rows = ()
+            if self._demand_state() != "absent":
+                self._idle_since = None
+            return self._demand_state()
+
+    def _demand_state(self):
+        if self.demand is None:
+            return "disabled"
+        if (not self._demand_valid or not number(self._demand_stamp)
+                or not number(self.clock())
+                or not 0 <= self.clock() - self._demand_stamp <= self.demand_max_age_s):
+            return "unknown"
+        absent = {"no_demand", "demand_paused", "demand_cancelled",
+                  "demand_fulfilled", "task_terminal"}
+        reasons = {row.reason for row in self._demand_rows}
+        if not reasons <= absent | {"safe_task_demand", "operation_inflight"}:
+            return "unknown"
+        if any(row.eligible is True and row.reason == "safe_task_demand"
+               for row in self._demand_rows):
+            return "eligible"
+        if "operation_inflight" in reasons:
+            return "busy"
+        return "absent" if reasons <= absent else "unknown"
+
+    def _idle_release_requested(self):
+        # Ineligible is not absent. Even durable cancellation cannot preempt an
+        # active dispatch, discard a pending ticket, or reconcile an operation.
+        if (self.demand is None or self._demand_state() != "absent"
+                or self.scheduler.active is not None or self.scheduler.pending
+                or self.tool is not None):
+            self._idle_since = None
+            return False
+        now = self.clock()
+        if self._idle_since is None or now < self._idle_since:
+            self._idle_since = now
+        return now - self._idle_since >= self.idle_grace_s
 
     def bind_scheduler(self, scheduler):
         if self.scheduler is not None or scheduler.capacity is not self:
@@ -199,20 +295,57 @@ class HandoffController:
                 and bool(identity["owner_id"]) and identity.get("ready") is True
                 and identity.get("loaded") is True)
 
-    async def initialize(self):
+    def _activate_verified_owner(self):
+        if self.on_verified_owner is None:
+            return
+        try:
+            result = self.on_verified_owner(deepcopy(self.identity))
+            if result is not None:
+                if inspect.iscoroutine(result):
+                    result.close()
+                raise TypeError("Verified-owner callback must return None synchronously")
+        except BaseException:
+            self._fail("runtime_timing_activation_failed")
+            raise
+
+    async def initialize(self, *, parked=False):
         async with self.lock:
             if self.state != "uninitialized" or self.scheduler is None:
                 raise RuntimeError("Controller initialization requires its bound scheduler")
             try:
+                if parked:
+                    if self.demand is None:
+                        raise RuntimeError("Cold parking requires explicit demand mode")
+                    proof = await self.adapter.prepare_parked()
+                    if (not isinstance(proof, dict) or proof.get("state") != "parked"
+                            or any(proof.get(k) is not False for k in
+                                   ("running", "ready", "loaded", "native_launch_attempted"))
+                            or any(proof.get(k) is not True for k in
+                                   ("startup_barrier_held", "owner_lock_observed_idle",
+                                    "backend_port_free", "containing_job_empty"))
+                            or proof.get("owner_id") is not None
+                            or "release" not in proof or proof["release"] is not None):
+                        raise RuntimeError("Cold parked ownership was not verified")
+                    previous = proof.get("previous_owner_id")
+                    if previous is not None and (type(previous) is not str or not previous):
+                        raise RuntimeError("Invalid prior owner identity")
+                    self._previous_owner_id = previous
+                    if not self._gateway_open():
+                        return
+                    self.events.append({"at": self.clock(), "cold_parked": deepcopy(proof)})
+                    self._state("parked")
+                    return
                 identity = await self.adapter.status()
                 if not self._ready(identity):
                     raise RuntimeError("An explicitly owned ready backend is required")
                 self.identity = deepcopy(identity)
                 if not self._gateway_open():
                     return
+                self._activate_verified_owner()
                 self._state("ready")
             except BaseException:
-                self._fail("initial_owner_unverified")
+                if self.fault != "runtime_timing_activation_failed":
+                    self._fail("initial_owner_unverified")
                 raise
 
     def observe(self, sample):
@@ -248,9 +381,18 @@ class HandoffController:
             if not self.policy.fresh(self.clock()) and self.tool is not None:
                 self.tool.interruption.set()
             try:
-                release = self.policy.yield_requested or self.tool is not None
-                if release and self.state == "ready":
+                release = (self.policy.yield_requested or self.tool is not None
+                           or self._idle_release_requested())
+                if release and self.state in ("ready", "awaiting_demand"):
                     self._state("draining")
+                if self.state == "awaiting_demand":
+                    demand_state = self._demand_state()
+                    if (demand_state in ("eligible", "busy") and self.policy.allowed
+                            and self.policy.fresh(self.clock())):
+                        self._state("ready")
+                    elif (demand_state == "absent" and self.scheduler.active is None
+                          and not self.scheduler.pending):
+                        self._state("draining")
                 if self.state == "draining":
                     if self.scheduler.active is not None:
                         return
@@ -290,18 +432,45 @@ class HandoffController:
                                             "capacity": deepcopy(capacity)})
                     return
                 if self.state == "parked" and self.policy.allowed and self.policy.fresh(self.clock()):
-                    old_owner = self.identity["owner_id"]
+                    if self.demand is not None:
+                        if self._demand_state() != "eligible" or self.scheduler.active is not None:
+                            return
+                        capacity = await self.adapter.fresh_capacity()
+                        await self.refresh_demand()
+                        if (not self._gateway_open() or self.tool is not None
+                                or self.scheduler.active is not None
+                                or self._demand_state() != "eligible"
+                                or not self.policy.allowed or not self.policy.fresh(self.clock())
+                                or not self._capacity_fits(capacity, self.restore_requirements)):
+                            return
+                    old_owner = self.identity["owner_id"] if self.identity else self._previous_owner_id
                     self._state("restoring")
+                    if self.demand is not None:
+                        self.events.append({"at": self.clock(), "restore_requested": True})
                     identity = await self.adapter.start()
                     if not self._ready(identity) or identity["owner_id"] == old_owner:
                         raise RuntimeError("Fresh owner readiness was not verified")
                     self.identity = deepcopy(identity)
+                    if self.demand is not None:
+                        await self.refresh_demand()
                     if not self._gateway_open():
                         return
-                    self._state("ready")
+                    self._activate_verified_owner()
+                    if (self.demand is not None
+                            and (self._demand_state() not in ("eligible", "busy")
+                                 or not self.policy.allowed or not self.policy.fresh(self.clock())
+                                 or self.tool is not None)):
+                        # Keep the exact returned owner. Unknown state holds
+                        # admission; it does not prove release authority. Fresh
+                        # operation_inflight is allowed to dispatch its already
+                        # prepared request without demanding eligibility again.
+                        self._state("awaiting_demand")
+                    else:
+                        self._state("ready")
                     # A sample arriving during startup still closes the callable gate.
             except BaseException as exc:
-                self._fail(type(exc).__name__ + ":native_transition_unconfirmed")
+                if self.fault != "runtime_timing_activation_failed":
+                    self._fail(type(exc).__name__ + ":native_transition_unconfirmed")
                 raise
 
     async def acquire_tool(self, requirements, *, timeout_s=120):
@@ -347,7 +516,15 @@ class HandoffController:
         self.tool = None
 
     def status(self):
-        return {"handoff_state": self.state, "admission_allowed": self(), "fault": self.fault,
+        result = {"handoff_state": self.state, "admission_allowed": self(), "fault": self.fault,
                 "foreground_reason": self.policy.reason, "tool_owner": self.tool.token if self.tool else None,
                 "tool_interruption_requested": self.tool.interruption.is_set() if self.tool else False,
                 "scope": "cooperating owned backend and tools; no active inference preemption or OS reservation"}
+        if self.demand is not None:
+            result["demand"] = {"classification": self._demand_state(),
+                "idle_grace_s": self.idle_grace_s,
+                "intents": [{"registration_id": row.registration_id, "revision": row.revision,
+                             "state": row.state, "reason": row.reason}
+                            for row in self._demand_rows],
+                "scope": "observed durable intent; no cancellation request acknowledgement"}
+        return result

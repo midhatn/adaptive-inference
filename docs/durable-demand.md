@@ -3,8 +3,9 @@
 This component records whether an explicitly registered task still
 needs inference. It uses the existing Adaptive Inference `TaskStore` and
 `OwnedTask`, including their transaction, revision, process-ownership and
-interrupted-operation checks. It creates no second database. It is not yet
-wired to a persistent controller, native startup or the existing task runner.
+interrupted-operation checks. It creates no second database. The optional
+[demand-aware controller](persistent-controller.md) can now observe it; native
+persistent-host integration and the existing task runner remain separate work.
 The component tests do not complete M2 or qualify M1 foreground handoff.
 
 ## Why a separate demand record is useful

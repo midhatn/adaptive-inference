@@ -10,6 +10,8 @@
 - Preserve the full validation sources, licensed references, predecessor mechanisms, historical evidence filters and sanitized receipts in this repository. Model assets, native binaries and private histories remain external prerequisites.
 - Add durable task demand using existing task transactions and ownership. Persistent service integration and user controls are the next milestone; a demand observation alone grants neither dispatch nor unloading.
 - Add bounded durable Pause, Resume and Cancel requests through the same task store. Distinguish a saved request from owner acknowledgement, retain ordered requests across worker replacement and refuse unresolved operations. This portable component is not yet wired to the launchers or Hermes runner.
+- Add optional demand-aware handoff: verified cold initialization, restoration without an HTTP queue ticket, and idle release only after confirmed safe absence. Keep dispatch and uncertain ownership independent of demand eligibility. Preserve the full accepted M1 runtime alongside current component development; persistent host/UI acceptance remains separate.
+- Add opt-in timing history for each verified native owner, reusing the existing learner. Capture the executing runtime's learner after admission, preserve queued arrival/rank accounting and label prediction versus execution generations. Native host wiring and live validation remain separate from the component tests.
 
 ## 0.3.0 — generalized integrations and IQ3_S agent-task evidence
 

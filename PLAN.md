@@ -161,6 +161,12 @@ qualify the persistent composition. Research the exact preserved startup cache
 planner before adding load feasibility; its RAM/commit estimate does not prove
 GPU fit or reserve resources. A missing measurement must remain unknown.
 
+The optional [controller component](docs/persistent-controller.md) now supplies
+cold parked initialization, demand-driven restoration and idle release. Its
+compatibility tests preserve the default bounded host path. The complete M1
+runtime is archived inside the repository before changing the current runtime;
+passing compatibility tests does not change the older result's source identity.
+
 Component review also found an admission constraint: a prepared operation can
 make demand ineligible while a queued request waits for an unloaded model. The
 host must enforce immediate admission and resolve only a proven non-dispatch
@@ -180,6 +186,64 @@ completed failures while preserving their original errors. These lifecycle
 fixes are under component review, not live qualification. Next, connect controls
 at Hermes' actual native-history safe points, then qualify the complete cold
 start, demand, waiting, cancellation and cleanup path with unchanged IQ3_S.
+
+The installed-agent bridge review exposed two further requirements. Saved
+completion candidates need exact fields and types before resumed acceptance;
+truthy malformed data must not become a successful task. Bootstrap must consume
+already-recorded controls before creating waiting demand, otherwise a cancelled
+task can briefly request a native load. Both original failures are retained in
+development evidence. A controlled safe checkpoint will qualify pause, worker
+replacement and resume without stopping an uncertain operation.
+
+The next live qualification is deliberately separate from the full UI gate:
+one fresh cold-host/report task with pause/resume and safe worker replacement,
+followed by a separate pre-cancelled task that must dispatch no work or request
+a native launch. Every case retains its original deadline, prompt, arrival and
+attempt accounting. Worker exits precede final host cleanup. These bounded
+cases do not alone demonstrate indefinite service lifetime or arbitrary tools.
+
+Independent composition tests completed both simulated cases, then exposed a
+watchdog defect: a failed diagnostic write could prevent the emergency exit.
+Keep that unsuccessful runner and make termination independent of reporting
+before real-model execution. Final event evidence must also identify truncation
+instead of treating a bounded history buffer as a complete run ledger. These
+are qualification-harness fixes; passing simulated cases cannot replace the
+separate native/IQ3_S acceptance gate.
+
+A later simulated run also hit an intermittent TaskStore verification error.
+The first bounded concurrent-reader/writer reproduction did not repeat it;
+retain the failure and collect its original SQLite cause before attributing it.
+Review nevertheless identified two unsupported live-file access patterns in
+the verifier: SQLite immutable mode on a changing database, and raw header
+reads that can interfere with POSIX locks. Research the standard SQLite
+locking/recovery path before correcting them. Preserve foreign-store refusal,
+the existing hot-journal recovery test, ownership and task accounting. This
+storage investigation now precedes the real M2 run.
+
+The selected correction reuses the existing short per-store coordination lock
+and normal SQLite read transactions. A specific hot-journal recovery need gets
+a bounded private copy checked by SQLite before the original is recovered;
+unsupported multi-database journals are refused. This is a private prototype
+until concurrency, process-death recovery, unchanged foreign files and failure
+cleanup pass independent review. The original intermittent Windows failure
+still has no proven cause; correcting documented misuse is not that proof.
+
+For the first UI, use the existing local launch/control and standard window
+facilities. Bind explicit intent to the project's exact owned window and one
+authenticated runner/task. Remove only its own recent-input block; keep CPU,
+memory, observation and native-ownership checks. Do not exempt a whole browser.
+Fresh window/session verification is separate from task-lifetime intent, so a
+long valid request does not silently lose priority to an unrelated short timer.
+Closing the interface preserves the task and host. The implementation and live
+window-switch/reopen checks remain required before claiming this experience.
+
+Timing review also found that a static backend revision can retain speed
+estimates across a replacement owner's different cache configuration. Reuse
+the existing learner with a runtime context established before admission.
+Capture the actual execution's learner after admission; an old completion must
+not train the replacement. Preserve existing queued arrival/rank accounting
+and distinguish its arrival prediction from the eventual execution context.
+This is runtime bookkeeping, not a new statistical scheduling algorithm.
 
 Required work:
 
