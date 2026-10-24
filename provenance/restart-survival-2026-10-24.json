@@ -1,0 +1,80 @@
+{
+  "passed": true,
+  "scope": "real process termination and restart; deterministic callbacks",
+  "physical_power_loss_tested": false,
+  "model_used": false,
+  "external_effect_exactly_once_claim": false,
+  "safe_checkpoint": {
+    "passed": true,
+    "killed_worker_exit_code": 1,
+    "saved_revision": 5,
+    "concurrent_owner_blocked": true,
+    "original_prompt_retained": true,
+    "original_prompt_sha256": "3e50abd2a7907012100eee52094a51acd158a5906c84703daad5bd6c2f892061",
+    "feedback_retained": true,
+    "attempts": 2,
+    "artifact_sha256": "b238ceea41ae4595e776444dde5b37614ce3d5dc778ca55634e0aaa7fecce946",
+    "artifact_total": 42,
+    "completed_resume_replayed_callbacks": false
+  },
+  "interrupted_effect": {
+    "passed": true,
+    "killed_worker_exit_code": 1,
+    "resume_attempts": 2,
+    "requires_reconciliation": true,
+    "external_deliveries": 1,
+    "automatic_replay": false,
+    "original_prompt_retained": true
+  },
+  "workers": [
+    {
+      "mode": "safe-pause",
+      "exit_code": 1
+    },
+    {
+      "mode": "lock-probe",
+      "exit_code": 0
+    },
+    {
+      "mode": "safe-resume",
+      "exit_code": 0
+    },
+    {
+      "mode": "completed-resume",
+      "exit_code": 0
+    },
+    {
+      "mode": "effect-pause",
+      "exit_code": 1
+    },
+    {
+      "mode": "effect-resume",
+      "exit_code": 0
+    },
+    {
+      "mode": "effect-resume",
+      "exit_code": 0
+    }
+  ],
+  "all_owned_workers_exited": true,
+  "schema": "adaptive-inference.restart-survival.v1",
+  "date": "2026-10-24",
+  "platform": "Windows",
+  "python": "3.11.9",
+  "baseline_commit": "6dc2061238646c8771c779db543e83c1f3e71ca9",
+  "software_tests_passed": 95,
+  "reconstruction_checks_passed": 4,
+  "build": {
+    "wheel": true,
+    "sdist": true
+  },
+  "hash_encoding": "canonical LF source bytes",
+  "source_sha256": {
+    "src/adaptive_inference/task_store.py": "39f4efaa0983fea5202ac1027f12c7638787e7da874e26b678a9a3812b1afacc",
+    "src/adaptive_inference/feedback.py": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+    "tests/test_task_store.py": "7a59289ee59254befa36201ca70dc9074bcadde859ea7a3056c42b5fa966c06e",
+    "tests/test_persistent_feedback.py": "8bf8520dd4a564d2a172e52aa732c27f7e87931d7c230fc311bf99a400cdcf45",
+    "tests/test_restart_demo.py": "0f78c045ad1bdcb9729d2e7cc17acb6bd94f00f0e6cbb5d76b535557ca4aecc4",
+    "examples/validation/restart_survival.py": "81e1287438ae575a69d20ec248c3402144f15c12e9d7c0315a415454de1ad52b"
+  }
+}

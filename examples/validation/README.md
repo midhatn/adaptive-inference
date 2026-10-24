@@ -1,4 +1,16 @@
-# Optional real-backend acceptance
+# Validation examples
+
+## Process restart and task survival
+
+No model, GPU or external service is needed:
+
+```text
+python examples/validation/restart_survival.py --output local/restart-proof-01
+```
+
+Use a new output directory. The example starts and terminates its own worker processes, preserves the original task and rejected feedback, resumes to produce a verified JSON artifact, and checks that an interrupted external-effect fixture is not replayed. It retains results/artifacts and verifies all owned workers exit. It does not restart the computer or establish physical power-loss survival. See [task survival](../../docs/task-survival.md) for the host integration contract.
+
+## Optional real-backend acceptance
 
 Start your own backend before this check. The script starts a temporary loopback
 gateway, sends exactly eight serial arithmetic requests, checks the actual

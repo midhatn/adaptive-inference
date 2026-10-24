@@ -13,6 +13,8 @@ The same coordination should happen inside the agent's workflow. If it needs to 
 
 **Always on means continuity of the agent and its work.** Its largest model does not have to remain fully loaded at every moment. Tasks, progress and tool results should survive resource changes, while the user's foreground experience takes priority. Resource transitions should be automatic, observable and recoverable.
 
+That continuity must also survive closing the application or restarting the computer. On returning, the agent should recover its original objective and saved progress, verify any interrupted action, and continue without losing completed work or blindly repeating a tool action. The first [durable task and process-restart foundation](docs/task-survival.md) is implemented; full agent/startup integration remains part of the goal.
+
 This is the long-term goal across engines such as Strata and llama.cpp, and agents such as Hermes and OpenClaw. Shared hardware has limits; the project aims to minimize interference through measured adaptation, rather than promise unlimited simultaneous work. See the [always-on vision and acceptance criteria](docs/always-on-controller.md).
 
 **Current status:** the working foundation queues user and agent requests, learns from completed execution times, and supplies feedback to applications that can check and correct their results. It runs in front of an existing OpenAI-compatible model server. Optional policies handle host-memory admission and explicit context planning; pinned Strata/Hermes integrations preserve earlier native resource work. The complete machine-wide, automatically resumable controller remains in development. Model weights, generation settings, tools and outputs remain under the application and backend's control.
@@ -58,6 +60,7 @@ See [reproduction instructions](docs/reproducing.md), [engine and agent setup](d
 | Conservative admission | Optional observed RAM/Windows-commit floor and sustained-recovery policy, bounded queue/response/time limits |
 | Explicit context planning | Preserve the host's output ceiling; report whether prompt compaction is needed and give an exact target under the selected margin policy |
 | Outcome-based correction | `run_with_feedback`: retain the original prompt, use caller-provided acceptance feedback, stop on success or attempt limit |
+| Durable task continuation | SQLite checkpoints, one cooperating local owner, saved output/feedback and explicit reconciliation of interrupted actions; reproducible process-restart demo |
 | Existing native integration | Pinned Strata memory/parking/lease patches and Hermes intent-tagging patches, with reconstruction verification |
 
 Engine profiles cover **Strata, llama.cpp, vLLM, SGLang, Ollama, LM Studio, MLX-LM and TGI**. Client recipes cover **Hermes, OpenClaw, Aider, OpenHands, Continue, Cline, Roo Code, LangGraph, AutoGen and CrewAI**. The [compatibility matrix](docs/integrations.md) distinguishes protocol contracts, documented configuration and actual application/native evidence. A profile is not a native GPU-memory plugin.
