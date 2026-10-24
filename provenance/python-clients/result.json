@@ -530,7 +530,7 @@
   "scope": "Actual installed SDK clients over loopback HTTP fixtures; no gateway/native model/agent task/reboot qualification. Tools are serialized, not executed.",
   "source_sha256": {
     "provenance/python-clients/check_clients.py": "881f91f7b2ce690bcec69d37349ef7b705d3dfc6fa9feb117e81c9ea8e7d8800",
-    "src/adaptive_inference/client_routing.py": "3da3ef038a99e11542944c039b6dbe319bb35a199cf0724462a2f254e0b9bf8a",
+    "src/adaptive_inference/client_routing.py": "954d02356344bf0e05cea0cbfcf6a55587088aea3ae78f1e363396670ccf8c9d",
     "examples/agents/langgraph_client.py": "eef868db00cad2279dbe8628610f5f414c872efed74a077e61c10a5a0ff23509",
     "examples/agents/autogen_client.py": "4a55749315af87f90330dca08e4cc717908f2674934d07bb4f2ccbedf55257c6",
     "examples/agents/crewai_client.py": "0c50b24b38b221fd4fd2ac10fcc779f0d8b78670cbb17038c4fa4bb461dfe16e"

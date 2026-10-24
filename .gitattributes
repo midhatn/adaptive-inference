@@ -3,3 +3,8 @@
 *.patch -text
 *.bundle -text
 *.gz -text
+# Receipt-hashed fixture exports retain the exact bytes exercised locally.
+integrations/openai-admission/** -text
+integrations/openhands/** -text
+integrations/openclaw-schema-check/reference/** -text
+provenance/lmstudio-baseurl/fixtures/** -text

@@ -73,8 +73,8 @@
       "bytes": 31
     },
     "sglang.md": {
-      "sha256": "7f30679719ea766584b604d33fd7dce0aaaedd9783bf50c67739fc53d4071d2a",
-      "bytes": 4882
+      "sha256": "017ad60924c9c8409ec24f5a8926111ab76287a32d1b7231177bb1a18cf544ec",
+      "bytes": 4974
     },
     "test_recipes.py": {
       "sha256": "8b9f36aa5d6ec9f498c9a7d16cdcf8f3bf1c89a02c82feba2bc292043a4fdcd4",
@@ -86,5 +86,8 @@
     "seconds": 2.515,
     "gateway": "installed v0.2.0 wheel",
     "source": "exact new lines from the reviewed upstream patches"
-  }
+  },
+  "portable_notes": [
+    "The SGLang native-scheduling link is an absolute pinned upstream source link in this standalone copy."
+  ]
 }
