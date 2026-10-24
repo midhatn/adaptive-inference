@@ -13,3 +13,4 @@ provenance/hermes-iq3-s/report.json -text whitespace=cr-at-eol
 provenance/hermes-iq3-s/verification.json -text whitespace=cr-at-eol
 integrations/hermes/current-source/** -text whitespace=cr-at-eol
 examples/validation/hermes_tool_task/** -text whitespace=cr-at-eol
+examples/validation/hermes_tool_task/owned_job_windows.py whitespace=cr-at-eol,-blank-at-eof
