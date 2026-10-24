@@ -1,0 +1,101 @@
+{
+  "schema": "adaptive-inference.offline-reconstruction.v1",
+  "passed": true,
+  "scope": "offline source restoration and complete tree/file identity checks",
+  "models_run": false,
+  "native_build_run": false,
+  "environment": {
+    "system": "Windows",
+    "python": "3.11.9"
+  },
+  "source_sha256": {
+    "provenance/offline_acceptance.py": "cfa86901b9bebb4699a68a3fb8316b63fbc394111e4bee9a777259088fb0f8ad",
+    "provenance/reconstruct.py": "2ba01f07824a5d74256ef06c143b83c65c49d36b968d4fa22b12a7772594397a",
+    "integrations/strata/setup.py": "02f52ed25759da6084e12ab87795d82cfc626ce3cc04d56f4c97115394a48867",
+    "integrations/strata/source-lock.json": "5e59f952a4e06c8c2b8b51f7b5a970828207e4c72462ff6684a4cdd280381d8f",
+    "integrations/hermes/setup.py": "44d04f6cb05bd9f699bcb6a6e9992c0ca2875dd5db16d62e644bd817a78b6167",
+    "integrations/hermes/source-lock.json": "88b19883c1c8516456d6287bf769320198dd2b9041ea32752b1e6612afd436bc"
+  },
+  "integrations": {
+    "strata": {
+      "git_tree": "f2d6e86a0d49aaae47308904a1d5d9ea46e3b9a8",
+      "verified_files": 4785,
+      "base_revision": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
+      "base_tree": "ead28543fa3f3d02fb595754c3c0603a10b3580c",
+      "baseline_archive_sha256": "fe6d15c97c948d416e26607e8afc7535e0d6a0c3e3600ffb4d78165cc92becfb",
+      "baseline_inventory_sha256": "14d2944a8ec6db12d28d5610e436d558a6b852fce1326e15da1623e05b6ebd82",
+      "source_lock_sha256": "5e59f952a4e06c8c2b8b51f7b5a970828207e4c72462ff6684a4cdd280381d8f",
+      "patches": [
+        {
+          "file": "patches/0001-adaptive-runtime.patch",
+          "sha256": "dbc7e01100ccdeda88ff0f685e0f9b017994f52b16b57abf50ea8a74cae9a9cf"
+        },
+        {
+          "file": "patches/0002-windows-token-default-process-rights.patch",
+          "sha256": "8caccd2484f61d1f4dc96b082ad17fea8a1336d0543f150b64c0cdb3d6248299"
+        }
+      ],
+      "dependencies": [
+        {
+          "git_tree": "d255198f04f9b8349f1dff24501d513f83cbfeda",
+          "verified_files": 3608,
+          "name": "llama_cpp",
+          "base_revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+          "archive_sha256": "0a9df50910788290ef1805c89c24b197f7c40aa8bfa69c2e0739bc22c9e30ff8",
+          "inventory_sha256": "b5e6ec97c73aaa96bf5fcf9319ffeae5f3bf47db232decd1ae596dbb900cc40b"
+        }
+      ]
+    },
+    "hermes": {
+      "git_tree": "516c9e3a951d5ba5894c5933fda3b833209e5c47",
+      "verified_files": 16784,
+      "base_revision": "2587d8231fc7e0f3e846acafa46eb5b67cdc70c8",
+      "base_tree": "96709ceff89337cd0a28718ab8c0679ba6085f54",
+      "baseline_archive_sha256": "bff6c2c380ed710dede9d1e5b4d4c2c6edf3e2dd5fe208b48b80d3f980cb47c5",
+      "baseline_inventory_sha256": "5545a9f3a119e7e9c22c37df687d63d3f11759a4b56527fa0b7afc654fefd42d",
+      "source_lock_sha256": "88b19883c1c8516456d6287bf769320198dd2b9041ea32752b1e6612afd436bc",
+      "patches": [
+        {
+          "file": "patches/0001-host-request-intent.patch",
+          "sha256": "0cdf502d66aa23676b596fad75087be2df4ec591f21ed02661019035e8b2df81"
+        }
+      ],
+      "dependencies": []
+    }
+  },
+  "guard": {
+    "scope": "Python socket and Git transport denial; not an OS firewall",
+    "denied_protocols": [
+      "file",
+      "http",
+      "https",
+      "ssh",
+      "git",
+      "ext",
+      "ftp",
+      "ftps"
+    ],
+    "default_protocol_policy": "never",
+    "positive_control": {
+      "passed": true,
+      "exit_code": 128,
+      "reason": "https_transport_disabled_before_network"
+    },
+    "git_command_counts": {
+      "apply": 6,
+      "bundle": 6,
+      "cat-file": 9,
+      "diff": 6,
+      "init": 3,
+      "ls-files": 3,
+      "ls-remote": 1,
+      "ls-tree": 3,
+      "read-tree": 3,
+      "rev-parse": 6,
+      "update-index": 3,
+      "update-ref": 3,
+      "write-tree": 8
+    },
+    "python_socket_attempts": 0
+  }
+}

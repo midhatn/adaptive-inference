@@ -1,5 +1,35 @@
 {
   "base_revision": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
+  "baseline": {
+    "archive": {
+      "bytes": 29850871,
+      "file": "source/strata-7ddc17a3.bundle",
+      "sha256": "fe6d15c97c948d416e26607e8afc7535e0d6a0c3e3600ffb4d78165cc92becfb"
+    },
+    "inventory": {
+      "file": "source/strata-7ddc17a3.manifest.json",
+      "sha256": "14d2944a8ec6db12d28d5610e436d558a6b852fce1326e15da1623e05b6ebd82"
+    }
+  },
+  "dependencies": [
+    {
+      "base_revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "baseline": {
+        "archive": {
+          "bytes": 35061860,
+          "file": "source/llama-cpp-3cf03257.bundle",
+          "sha256": "0a9df50910788290ef1805c89c24b197f7c40aa8bfa69c2e0739bc22c9e30ff8"
+        },
+        "inventory": {
+          "file": "source/llama-cpp-3cf03257.manifest.json",
+          "sha256": "b5e6ec97c73aaa96bf5fcf9319ffeae5f3bf47db232decd1ae596dbb900cc40b"
+        }
+      },
+      "name": "llama_cpp",
+      "output_directory": "_adaptive_dependencies/llama.cpp",
+      "upstream_url": "https://github.com/ggml-org/llama.cpp.git"
+    }
+  ],
   "excluded_reference_changes": [
     ".github/workflows/ci.yml",
     "bench/results/2026-10-05-live-memory-integration/README.md",
@@ -136,6 +166,7 @@
     "tools/test_live_prefill_options.py": "84c2157326982c454b006fd3a1656fa5aad3e5d190b09830798aec03eacfe62d",
     "tools/test_resource_controls.cjs": "f5177ba7716bdb39e6176c0eb98216c1f69390a73e60eab59ea9a9cecc8eeb0a"
   },
+  "expected_tree": "f2d6e86a0d49aaae47308904a1d5d9ea46e3b9a8",
   "file_hash_scope": "canonical Git blob bytes with LF checkout; local Windows checkout line endings may differ",
   "local_reference_revision": "c6b23493b01028a18a9eb685d0bb6435c6976316",
   "patches": [
@@ -148,7 +179,7 @@
       "sha256": "8caccd2484f61d1f4dc96b082ad17fea8a1336d0543f150b64c0cdb3d6248299"
     }
   ],
-  "schema": 1,
+  "schema": 2,
   "scope": "selected runtime/build/tests and attribution; not a complete historical branch archive",
   "upstream_url": "https://github.com/Niko1221/Strata.git"
 }

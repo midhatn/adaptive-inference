@@ -8,7 +8,9 @@ From the repository root, with Python and Git installed:
 python integrations/hermes/setup.py --output ../hermes-intent-source
 ```
 
-The parent must exist and output must be new. Setup hash-checks the patch, fetches the fixed public revision, runs `git apply --check`, applies it and verifies all seven expected file hashes. It neither installs dependencies nor launches an agent. Global Git config/hooks are disabled. Existing destinations are refused without modification; failed new output is retained. Expected reconstructed tree: `516c9e3a951d5ba5894c5933fda3b833209e5c47`.
+The parent must exist and output must be new. Setup verifies the locally included Git bundle and complete 16,781-file baseline inventory, restores the exact commit without network access, checks/applies the patch and verifies all seven changed-file hashes and the complete final tree. It neither installs dependencies nor launches an agent. Global Git config/hooks and Git network transports are disabled. Existing destinations are refused without modification; failed new output is retained. Expected reconstructed tree: `516c9e3a951d5ba5894c5933fda3b833209e5c47`.
+
+Use `python integrations/hermes/setup.py --verify-only` to check the local inputs without creating an output. The source bundle and inventory live under [source](source); [source-lock.json](source-lock.json) binds their hashes. The original PR and repository are citations, not reconstruction dependencies. The bundled commit is a complete source snapshot with no parent history, LFS dependency or submodules.
 
 Follow the pinned upstream package-manager instructions in that checkout for a separate Hermes environment. Its supported runtime at this revision is Python3.14; the older-Python declaration exists for updater compatibility. Then run:
 

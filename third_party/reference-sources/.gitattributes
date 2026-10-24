@@ -1,0 +1,4 @@
+# Preserve original Git blobs, including upstream CRLF bytes.
+finagle/** -text
+strata/** -text
+dynamo/** -text

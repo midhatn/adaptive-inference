@@ -8,6 +8,8 @@ Rank is arrival time plus a bounded background offset plus a bounded estimated e
 
 The cost model reuses the tested Strata module: Peak EWMA responds immediately to slow measurements, while empirical p90 supplies a conservative tail heuristic. Three recent observations are required. State is bounded to128 groups and32 observations per group, expires after900 seconds and starts cold after restart. Failures invalidate the affected group. This is not statistical confidence or an answer-quality score.
 
+For a successful duration `d`, previous peak estimate `p` and elapsed observation time `dt`, the update uses `w = exp(-dt / 60)`. If `d > p`, the new peak is `d`; otherwise it is `p*w + d*(1-w)`. The prediction is the larger of this peak and the retained observations' nearest-rank p90. Reads do not decay the estimate. The implementation and exact cold/expiry rules are in [costs.py](../src/adaptive_inference/costs.py); the formula's original credit is retained even when its external page is unavailable.
+
 Cost identity separates backend kind/address/operator revision, endpoint, workload class, payload-size bucket and non-content controls. Random seeds are pooled without changing outgoing generation seeds. Byte buckets approximate workload shape; they are not tokenizer measurements. Restart the gateway when changing model weights, backend runtime or hardware under the same name, or change `backend.revision` and restart. The generic HTTP protocol does not expose a trustworthy native-process identity for every server.
 
 ## Transport and ownership
@@ -31,6 +33,12 @@ Pinned Strata overlays preserve richer memory, parking and lease controls. The h
 ## Outcome-based correction
 
 `run_with_feedback` holds the original user prompt, calls an application-provided generator, and passes the result to an explicit validator. A rejection adds feedback for a bounded corrective attempt. Only the validator can accept the result; attempt exhaustion remains failure. The helper neither executes tools nor retries external side effects. Applications should validate real artifacts and retain their own action authorization.
+
+## Durable task state
+
+The [task store](../src/adaptive_inference/task_store.py) and [resumable runner](../src/adaptive_inference/feedback.py) are separate from transient HTTP queue state. Each task retains its original prompt, host identity, attempt budget, messages, outputs and feedback. One cooperating local runner holds the OS task lock. SQLite transactions check the expected revision and owner epoch before committing a transition and its history entry.
+
+The runner commits operation intent before calling generation or validation, commits generated text before validating it, and commits a verdict before another attempt. After process death, committed safe boundaries can resume; an unfinished operation requires explicit reconciliation. A host may explicitly retry pure text generation while retaining its consumed attempt. The store cannot determine the outcome of an arbitrary external action, so an uncertain effect is never automatically replayed. Accepted and exhausted tasks return their saved result without callbacks. See the complete [task survival contract](task-survival.md) and runnable process-restart example.
 
 ## Citations
 

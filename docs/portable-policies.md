@@ -1,6 +1,6 @@
 # Portable resource and context policies
 
-These additions adapt the observation/recovery rules from medking82's [Strata #726](https://github.com/Niko1221/Strata/pull/726) and context-margin arithmetic from [#3684](https://github.com/Niko1221/Strata/pull/3684). They apply independently of the selected compatible engine or agent. They are development additions after v0.1.0; use a checkout containing them. Exact source pins and MIT attribution are retained in [NOTICE](../NOTICE) and [REFERENCES.bib](../REFERENCES.bib).
+These policies adapt the observation/recovery rules from medking82's [Strata #726](https://github.com/Niko1221/Strata/pull/726) and context-margin arithmetic from [#3684](https://github.com/Niko1221/Strata/pull/3684). They apply independently of the selected compatible engine or agent and are included in v0.2.0. Exact originals are available in the [local source index](../third_party/reference-sources/README.md); source pins and MIT attribution remain in [NOTICE](../NOTICE) and [REFERENCES.bib](../REFERENCES.bib).
 
 ## Recover from host memory pressure
 

@@ -7,9 +7,9 @@ authors:
     given-names: Midhat
 repository-code: https://github.com/midhatn/adaptive-inference
 url: https://github.com/midhatn/adaptive-inference
-version: 0.1.0
+version: 0.2.0
 date-released: 2026-10-24
 license:
   - Apache-2.0
   - MIT
-abstract: "A portable scheduling and execution-feedback layer for inference engines and agent applications, with pinned upstream integration overlays."
+abstract: "Adaptive resource coordination and durable task continuation for always-on AI agents, with preserved source integrations and reproducible contracts."

@@ -1,4 +1,4 @@
-The Peak EWMA update in serve/request_costs.py is adapted from Twitter Finagle.
+The Peak EWMA update in src/adaptive_inference/costs.py is adapted from Twitter Finagle.
 Copyright 2017 Twitter Inc. Licensed under the Apache License, Version 2.0.
 
 Source revision: 9cc08d15216497bb03a1cafda96b7266cfbbcff1

@@ -19,7 +19,9 @@ This is the long-term goal across engines such as Strata and llama.cpp, and agen
 
 **Current status:** the working foundation queues user and agent requests, learns from completed execution times, and supplies feedback to applications that can check and correct their results. It runs in front of an existing OpenAI-compatible model server. Optional policies handle host-memory admission and explicit context planning; pinned Strata/Hermes integrations preserve earlier native resource work. The complete machine-wide, automatically resumable controller remains in development. Model weights, generation settings, tools and outputs remain under the application and backend's control.
 
-This repository is the **canonical source for new development**. Earlier Strata and Hermes work is retained as pinned, reconstructable integration patches. Upstream PRs remain focused consumers of this project, with their own review and merge decisions.
+This repository is the **canonical source of truth** for the implementation, contracts, documentation, tests and evidence. The portable package works independently of Strata or Hermes. Optional native integrations preserve pinned source baselines, patches and licenses locally; reproducing their source does not depend on an old PR or upstream repository remaining available. See the [source preservation contract](docs/source-of-truth.md).
+
+Upstream PRs are delivery and discussion records. New shared development happens here, then focused adapters and fixes can be offered to engine and agent projects.
 
 ## Start in five minutes
 
@@ -48,7 +50,16 @@ adaptive-inference serve --config examples/engines/llamacpp.json
 
 Point a compatible client at `http://127.0.0.1:18100/v1`. For background agent work, use `http://127.0.0.1:18100/background/v1`. Both routes share the same queue and backend. Use a model name actually returned by that backend's `/v1/models`; examples deliberately do not select or download a model for you.
 
-See [reproduction instructions](docs/reproducing.md), [engine and agent setup](docs/integrations.md), and the [development plan](PLAN.md).
+See [reproduction instructions](docs/reproducing.md), [engine and agent setup](docs/integrations.md), and the [development plan](PLAN.md). For a complete preserved copy, use a Git clone or the full source distribution; the runtime wheel contains the installable portable package.
+
+To verify the preserved references and reconstruct both optional integrations without network access:
+
+```text
+python third_party/reference-sources/verify.py
+python provenance/offline_acceptance.py --output ../adaptive-source-proof-01
+```
+
+The second command requires Git and a new output directory. It restores and verifies source only. Bundled baselines occupy about 146 MB; model weights and compiler/Python prerequisites remain separate. See the [native source guide](docs/legacy-reproduction.md) for individual integration commands and build instructions.
 
 ## What works
 
@@ -86,7 +97,9 @@ Generic profiles do not resize a backend's cache, move KV state or preempt nativ
 
 ## Evidence and lineage
 
-The portable gateway passed 45 software tests plus four reconstruction checks across six CI jobs (Windows, Linux and macOS; Python 3.11 and 3.12), a fresh wheel installation, and eight real Strata model requests. Both request classes engaged learned timing feedback, all eight integer answers matched exactly, and the separately operated backend shut down cleanly. This is functional evidence for that composition, not a speed claim or qualification of every listed application.
+The current durable-task foundation passed **95 software tests** across Windows, Linux and macOS on Python 3.11 and 3.12. Its runnable demonstration kills and restarts real worker processes, retains the original task and corrective feedback, and refuses automatic replay of an uncertain external action. These use deterministic generation/tool fixtures; installed-agent boot recovery remains future integration work.
+
+The earlier portable-gateway release also passed a fresh wheel installation and eight real Strata model requests. Both request classes engaged learned timing feedback, all eight integer answers matched exactly, and the separately operated backend shut down cleanly. This is functional evidence for that exact composition, not a speed claim or qualification of every listed application.
 
 The [evidence ledger](docs/evidence.md) links exact CI and model receipts, retains the failed idle-reload attempt, and separates predecessor results from the new gateway. The [upstream PR index](docs/upstream-prs.md) records earlier work, including closed and superseded PRs.
 
@@ -94,6 +107,6 @@ The [evidence ledger](docs/evidence.md) links exact CI and model receipts, retai
 
 Research references and reuse decisions live in [docs/research.md](docs/research.md) and [REFERENCES.bib](REFERENCES.bib). [NOTICE](NOTICE) and `third_party/` preserve source attribution and licenses. [CITATION.cff](CITATION.cff) describes how to cite this project.
 
-See [portable policy setup](docs/portable-policies.md) for the optional memory gate and context-budget command, with citations beside each reused mechanism. These additions are available from the current source checkout; the immutable v0.1.0 release predates them.
+See [portable policy setup](docs/portable-policies.md) for the optional memory gate and context-budget command, and [task survival](docs/task-survival.md) for durable continuation. Citations remain beside each reused mechanism, with licensed source references preserved locally. The [changelog](CHANGELOG.md) distinguishes release contents and acceptance boundaries.
 
 Contributions should start here, pass the common contract tests, and then be offered upstream as narrowly scoped adapters or fixes. See [CONTRIBUTING.md](CONTRIBUTING.md). The goal is useful task completion with feedback and recoverable mistakes; optimizations follow measured need.
