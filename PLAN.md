@@ -155,6 +155,19 @@ runner's long-held lock. It reuses a separate task record in the same store;
 only the actual owner applies and acknowledges a request at a safe checkpoint.
 The existing launchers and Hermes runner still need the explicit hooks below.
 
+**Plan adjustment from integration review:** an intermittent store-verification
+error prompted inspection of SQLite's actual contracts. Live immutable reads and
+independent raw header reads were unsupported patterns, although the specific
+Windows failure's cause remains unproved. The
+[storage correction](docs/task-store-verification.md) reuses the existing stable
+lock for short operations and SQLite's recovery implementation. Its Windows
+component passed 75 supplied tests and four independent probes. Complete the
+cross-platform checks, then compose one exact corrected store in the host and
+every worker before rerunning pause/restart qualification. Stop and join older
+readers before upgrading; never mix the old and new access protocols. Preserve
+failed runs and the accepted M1 source identity. Model quality and acceptance
+requirements remain unchanged.
+
 **Next integration sequence:** compose the already reviewed demand and cold-start
 components with the existing native host, then add trusted user controls and
 qualify the persistent composition. Research the exact preserved startup cache

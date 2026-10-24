@@ -24,7 +24,10 @@ fixture module, whose 34 tests run separately under normal discovery. The
 historical archived test layout is retained as evidence, not an installed entry
 point.
 
-`source-lineage.json` hashes every archived file and records promotion details.
+`m1-source-manifest.json` separately records the 17 accepted M1 modules and
+original handoff tests. `source-lineage.json` records component promotion inputs.
+The current TaskStore correction also does not requalify the historical
+real-model run under changed runtime bytes.
 It is a component source record, not native, installed-agent or full M2
 acceptance. The repository's existing Apache-2.0 and attributed MIT/Apache
 notices remain applicable. No model files, private histories or binaries are

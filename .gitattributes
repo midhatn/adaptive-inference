@@ -24,3 +24,10 @@ examples/validation/windows_handoff/native/owner_source/memory_reader.py whitesp
 examples/validation/windows_handoff/native/owner_source/owned_job.py whitespace=cr-at-eol,-blank-at-eof
 provenance/windows-handoff/arithmetic-feedback-predecessor/native/owner_source/memory_reader.py whitespace=cr-at-eol,-blank-at-eof
 provenance/windows-handoff/arithmetic-feedback-predecessor/native/owner_source/owned_job.py whitespace=cr-at-eol,-blank-at-eof
+
+# Retain exact reviewed and historical source bytes.
+provenance/task-store-verification/** -text whitespace=cr-at-eol
+provenance/persistent-desktop/m1-runtime/** -text whitespace=cr-at-eol
+third_party/reference-sources/sqlite/** -text
+# Unmodified upstream pager contains its original trailing spaces.
+third_party/reference-sources/sqlite/189e44dfecdc7868bb860dfb5d98eab371318c37/src/pager.c -whitespace

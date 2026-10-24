@@ -1,0 +1,137 @@
+{
+  "sqlite": "3.45.1",
+  "rows": [
+    {
+      "case": "normal",
+      "initial": [
+        "normal.sqlite"
+      ],
+      "trace": [
+        {
+          "sql": "BEGIN",
+          "result": [],
+          "files": [
+            "normal.sqlite"
+          ]
+        },
+        {
+          "sql": "PRAGMA application_id",
+          "result": [
+            [
+              0
+            ]
+          ],
+          "files": [
+            "normal.sqlite",
+            "normal.sqlite-shm",
+            "normal.sqlite-wal"
+          ]
+        }
+      ],
+      "final": [
+        "normal.sqlite",
+        "normal.sqlite-shm",
+        "normal.sqlite-wal"
+      ],
+      "main_bytes_unchanged": true
+    },
+    {
+      "case": "journal-query-first",
+      "initial": [
+        "journal-query-first.sqlite"
+      ],
+      "trace": [
+        {
+          "sql": "PRAGMA journal_mode",
+          "result": [
+            [
+              "wal"
+            ]
+          ],
+          "files": [
+            "journal-query-first.sqlite",
+            "journal-query-first.sqlite-shm",
+            "journal-query-first.sqlite-wal"
+          ]
+        }
+      ],
+      "final": [
+        "journal-query-first.sqlite",
+        "journal-query-first.sqlite-shm",
+        "journal-query-first.sqlite-wal"
+      ],
+      "main_bytes_unchanged": true
+    },
+    {
+      "case": "exclusive-first",
+      "initial": [
+        "exclusive-first.sqlite"
+      ],
+      "trace": [
+        {
+          "sql": "PRAGMA locking_mode=EXCLUSIVE",
+          "result": [
+            [
+              "exclusive"
+            ]
+          ],
+          "files": [
+            "exclusive-first.sqlite"
+          ]
+        },
+        {
+          "sql": "BEGIN",
+          "result": [],
+          "files": [
+            "exclusive-first.sqlite"
+          ]
+        },
+        {
+          "sql": "PRAGMA application_id",
+          "error": "disk I/O error",
+          "code": 3850,
+          "name": "SQLITE_IOERR_LOCK",
+          "files": [
+            "exclusive-first.sqlite"
+          ]
+        }
+      ],
+      "final": [
+        "exclusive-first.sqlite"
+      ],
+      "main_bytes_unchanged": true
+    },
+    {
+      "case": "exclusive-journal",
+      "initial": [
+        "exclusive-journal.sqlite"
+      ],
+      "trace": [
+        {
+          "sql": "PRAGMA locking_mode=EXCLUSIVE",
+          "result": [
+            [
+              "exclusive"
+            ]
+          ],
+          "files": [
+            "exclusive-journal.sqlite"
+          ]
+        },
+        {
+          "sql": "PRAGMA journal_mode",
+          "error": "disk I/O error",
+          "code": 3850,
+          "name": "SQLITE_IOERR_LOCK",
+          "files": [
+            "exclusive-journal.sqlite"
+          ]
+        }
+      ],
+      "final": [
+        "exclusive-journal.sqlite"
+      ],
+      "main_bytes_unchanged": true
+    }
+  ]
+}
