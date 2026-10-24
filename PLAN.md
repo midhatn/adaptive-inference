@@ -25,6 +25,18 @@ evidence and citations. See the [always-on vision](docs/always-on-controller.md)
 [integration contract](docs/integration-contract.md) and
 [source-preservation contract](docs/source-of-truth.md).
 
+## Research-first execution rule
+
+Before designing a solution to each new issue, search current primary research,
+official documentation and relevant GitHub implementations, issues and PRs.
+Reuse or adapt a suitable existing mechanism before inventing one. Record the
+sources, inspected revisions, applicability, licensing and why any new work is
+still needed. Prior findings may be reused after checking their relevance and
+revision. Use failures, measurements and review feedback to update this plan
+when they change the best next step, then follow the revised plan. Keep failed
+evidence and acceptance standards intact; revising the plan cannot turn a failed
+run into a pass.
+
 ## Starting point
 
 This snapshot distinguishes released work, development work and future goals.
@@ -101,6 +113,13 @@ mergeable change with validation for that target repository.
 
 **User result:** start it once, see what it is doing, and let it wait and resume
 without manually managing model servers.
+
+**Component status:** [durable inference demand](docs/durable-demand.md) records
+trusted task-lifetime demand in the existing task checkpoint. Its CPU tests cover
+waiting across worker replacement, pause/cancellation, stale-owner rejection and
+observation without polling writes. This component is not yet connected to the
+persistent controller, model restoration or native cancellation; M2 remains
+incomplete and its integration still follows M1 acceptance.
 
 Build a persistent service mode from the tested contracts. Keep bounded test
 mode available; a qualification's finite process lifetime must not accidentally

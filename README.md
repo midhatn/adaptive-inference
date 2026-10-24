@@ -21,6 +21,10 @@ This is the long-term goal across engines such as Strata and llama.cpp, and agen
 
 This repository is the **canonical source of truth** for the implementation, contracts, documentation, tests and evidence. The portable package works independently of Strata or Hermes. Optional native integrations preserve pinned source baselines, patches and licenses locally; reproducing their source does not depend on an old PR or upstream repository remaining available. See the [source preservation contract](docs/source-of-truth.md).
 
+The [durable inference-demand component](docs/durable-demand.md) is in development:
+it preserves trusted task demand across worker replacement, but is not yet wired
+to a persistent controller, automatic model restoration or native cancellation.
+
 Upstream PRs are delivery and discussion records. New shared development happens here, then focused adapters and fixes can be offered to engine and agent projects.
 
 The [integration delivery plan](docs/upstream-delivery.md) tracks all eight engine

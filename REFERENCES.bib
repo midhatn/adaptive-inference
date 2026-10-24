@@ -287,3 +287,24 @@
   url = {https://github.com/NousResearch/hermes-agent/pull/137349},
   note = {Inspected MIT source at 1ca8ee5f1d29088d7d678871c78323f44f6b0a31; narrow experimental reuse. Accessed 2026-10-24}
 }
+
+@misc{kedadurableactivation,
+  title = {{KEDA ScaledObject activation and cooldown executor}},
+  author = {{KEDA contributors}},
+  url = {https://github.com/kedacore/keda/blob/6016dc90a3fbca1c8cecbad37e50bd93f0badd7f/pkg/scaling/executor/scale_scaledobjects.go},
+  note = {Apache-2.0 project; inspected with the version 2.21 ScaledObject specification on 2026-10-24. Demand versus inactivity informed the durable-demand component; design adaptation only, with no copied implementation or Kubernetes dependency}
+}
+
+@misc{temporalpythoncontrol,
+  title = {{Temporal Python SDK durable workflow control and query semantics}},
+  author = {{Temporal Technologies and contributors}},
+  url = {https://github.com/temporalio/sdk-python/blob/df8caecda503be16cdf54b136fcd1d40811df2dd/README.md},
+  note = {MIT SDK; inspected with the official Python workflow message-passing documentation on 2026-10-24. Durable control versus observation and cancellation intent informed the durable-demand component; design adaptation only, with no copied implementation or Temporal dependency}
+}
+
+@misc{kueuearrivalaccounting,
+  title = {{Kueue workload readiness and requeue timestamp accounting}},
+  author = {{Kubernetes SIG Scheduling and Kueue contributors}},
+  url = {https://github.com/kubernetes-sigs/kueue/blob/1ec0d28ef62b4665a6e3db4ef594a86d0d458df6/site/content/en/v0.20/docs/tasks/manage/setup_wait_for_pods_ready.md},
+  note = {Apache-2.0 project; inspected 2026-10-24. Explicit original-arrival versus requeue accounting informed immutable arrival in the durable-demand component; design adaptation only, with no copied implementation, quota reservation or Kueue dependency}
+}
