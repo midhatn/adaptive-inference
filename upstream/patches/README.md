@@ -17,3 +17,11 @@ The other patches correspond to scoped documentation, catalog or reproduced
 client fixes. Their executable checks and retained source inputs are linked from
 `docs/integration-evidence.md`. Native-model or application qualification must
 refer to a separate exact runtime receipt.
+
+`hermes-routing-catalog.patch` preserves the 26-line catalog entry published at
+Hermes PR #143827, commit `2c1411b3b12a36ac740a734f345e289faf077c3d`.
+`openclaw-provider-example.patch` preserves the 46-line documentation addition
+published at OpenClaw PR #182080, commit `f64d74b04b90dd123c5a1bf7cf36de7543a74309`.
+Both retain public commit authorship; their original hosts are MIT-licensed.
+The executable plugin, configuration composer, licenses and their exact host
+interface fixtures live in the canonical paths linked by the delivery ledger.
