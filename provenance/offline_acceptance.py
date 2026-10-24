@@ -102,7 +102,7 @@ class OfflineGuard:
         env = {key: value for key, value in os.environ.items() if not key.upper().startswith("GIT_")}
         env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
                    GIT_TERMINAL_PROMPT="0", LANG="C", LC_ALL="C")
-        return subprocess.run([str(self.git), "-C", str(folder), *arguments], env=env,
+        return subprocess.run([str(self.git), "-c", "core.longpaths=true", "-C", str(folder), *arguments], env=env,
                               text=True, encoding="utf-8", capture_output=True, timeout=600)
 
     def positive_control(self, folder):

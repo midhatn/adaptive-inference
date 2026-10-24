@@ -9,7 +9,7 @@
 - Add optional sustained-headroom admission and explicit context planning without reducing the caller's output allowance.
 - Make the always-on agent goal, current contracts, preservation rules and development plan explicit. Keep source credit beside actual reuse.
 
-The durable foundation passed 95 software tests on Windows, Linux and macOS with Python 3.11 and 3.12. Source preservation adds 15 checks and a complete offline restoration of 25,177 resulting files, including the overlays. Exact source-preservation validation is recorded in the evidence ledger. Process tests use deterministic callbacks. This release does not claim automatic startup of installed agents, physical power-loss certification, complete machine-wide resource handoff or native qualification of all engine profiles.
+The durable foundation passed 95 software tests on Windows, Linux and macOS with Python 3.11 and 3.12. Source preservation adds 16 checks and a complete offline restoration of 25,177 resulting files, including the overlays. Exact source-preservation validation is recorded in the evidence ledger. Process tests use deterministic callbacks. This release does not claim automatic startup of installed agents, physical power-loss certification, complete machine-wide resource handoff or native qualification of all engine profiles.
 
 ## 0.1.0 — portable gateway foundation
 

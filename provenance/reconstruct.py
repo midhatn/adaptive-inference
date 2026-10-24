@@ -14,6 +14,7 @@ MAX_ARCHIVE = 95 * 1024 * 1024
 MAX_INVENTORY = 32 * 1024 * 1024
 MAX_SOURCE = 2 * 1024 * 1024 * 1024
 GIT_OPTIONS = ['-c', 'protocol.allow=never', '-c', 'core.autocrlf=false',
+               '-c', 'core.longpaths=true',
                '-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=' + os.devnull,
                '-c', 'core.attributesFile=' + os.devnull,
                '-c', 'core.filemode=' + ('false' if os.name == 'nt' else 'true')]
