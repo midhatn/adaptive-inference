@@ -143,8 +143,10 @@ class ReconstructionChecks(unittest.TestCase):
             'baseline': {'archive': {**preserved['archive'], 'file': 'source/long-base.bundle'},
                          'inventory': {**preserved['inventory'], 'file': 'source/long-base.manifest.json'}},
             'patches': [], 'expected_files': {}, 'expected_tree': tree, 'dependencies': []}
-        parent = self.root / ('deep-' + 'p' * 95)
-        parent.mkdir()
+        parent = self.root
+        while len(str(parent / 'restored' / relative)) <= 300:
+            parent = parent / ('deep-' + 'p' * 40)
+        parent.mkdir(parents=True)
         self.output = parent / 'restored'
         materialized = self.output / relative
         self.assertGreater(len(str(materialized)), 260)
