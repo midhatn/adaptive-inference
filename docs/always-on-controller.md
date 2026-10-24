@@ -22,6 +22,8 @@ A model unload does not itself preserve warm KV state. A backend may support a r
 
 The service also needs graceful recovery from a tool failure, unavailable model, canceled task or interrupted resource transition. It must not repeat a completed external action merely because inference resumed. Error correction should use the original objective and explicit outcome checks.
 
+Closing the application or rebooting the computer must preserve the same continuity. Durable task state is separate from whether a window stays open or a model stays loaded. The implemented [task-survival foundation](task-survival.md) restores committed progress across process restarts and records interrupted operations for reconciliation. Wiring this into an installed agent's startup and tool execution remains an integration step; no physical reboot or power-cut qualification is claimed by its software tests.
+
 ## Example experience
 
 1. Start Hermes with a model served by Strata and give it a task. Adaptive Inference begins background work using the available capacity.
@@ -40,7 +42,7 @@ This sequence is a target scenario, not a report of a completed end-to-end test.
 | Observe pressure and recover conservatively | Optional host RAM/Windows-commit gate; fresh-sample recovery policy | Continuous CPU/GPU/VRAM contention signals and measured foreground responsiveness on the supported platform |
 | Release inference resources | Richer mechanisms retained in the pinned Strata integration | Exact native adapter acknowledgements, fresh capacity checks and failure handling across a complete workflow |
 | Coordinate protected tools | Earlier lease and host-middleware work provides integration points | Compiler and video/model tools acquire, release and reconcile ownership reliably, including failures and user activity changes |
-| Preserve and resume the agent task | Explicit feedback helper retains the original task through bounded corrections | Durable task checkpoints, identity-bound resume and no duplicate external effects across unload/reload or process restart |
+| Preserve and resume the agent task | Durable SQLite checkpoints, identity-bound feedback continuation, OS owner lock and interrupted-operation reconciliation; real process-restart artifact checks | Installed-agent startup/boot integration, native unload/reload transitions, and tool-specific reconciliation or idempotency |
 | Support multiple engines and agents | Eight engine API profiles and ten client recipes | Native/resource and task-continuation adapters with their own acceptance evidence; API compatibility alone is insufficient |
 
 The current memory sampler observes the host; it does not resize GPU caches or implement the full controller. [Evidence](evidence.md), [integration scope](integrations.md) and the [development plan](../PLAN.md) retain those distinctions.

@@ -26,6 +26,14 @@ New checks exercise fresh/replayed/stale/invalid observations, pressure and reco
 
 Source review also ran the pinned upstream policy and context-budget fixtures for the reused mechanisms. Source extraction setup failures were resolved by restoring exact dependency bytes. These checks do not qualify installed Strata companions, a real compiler/video handoff or the complete [always-on goal](always-on-controller.md).
 
+## Durable task continuation
+
+The durable task store and resumable feedback runner passed **95 software tests in total**, plus the existing four reconstruction checks, on Windows/Python 3.11.9. Wheel and source distributions built successfully. Twenty of the software tests cover task-store ownership, checkpoint transitions, the persistent feedback runner and its process-restart demonstration.
+
+The [sanitized restart receipt](../provenance/restart-survival-2026-10-24.json) binds the tested source hashes to a real process-termination exercise. A new worker retained the original task and rejected feedback, produced the accepted inventory total of 42 on the second attempt, and reopening the completed task invoked no callbacks. A competing live owner was refused. A separate worker died after one external delivery but before its acknowledgment; two fresh resumes stopped for reconciliation and did not repeat the delivery. All seven workers exited. Separate tests recovered an uncommitted SQLite rollback journal without accepting its interrupted changes.
+
+The generation and tool callbacks are deterministic fixtures. This is process/disk-state evidence, not an installed-agent, operating-system reboot, physical power-loss or distributed exactly-once guarantee. The [host integration contract](task-survival.md) explains the remaining startup, identity and reconciliation work.
+
 ## Fresh source reconstruction
 
 On 24 October 2026, the included setup scripts fetched the pinned public GitHub commits into new empty locations and applied their checked overlays. All 88 expected Strata changed files and all 7 Hermes changed files matched SHA-256 hashes of the intended canonical Git content. Expected reconstructed trees and patch hashes are in [provenance/reconstruction.json](../provenance/reconstruction.json).

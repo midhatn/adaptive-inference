@@ -36,6 +36,8 @@ Stages 1–4 are the initial publication scope. Stages 5–7 are continuing deve
 
 The next end-to-end milestone combines foreground activity, background inference, a resource-intensive compiler/video/model tool, verified resource return and an independently accepted artifact. Evaluate foreground responsiveness against declared budgets and retain interruption/failure evidence. Native engine breadth follows a working shared contract, rather than replacing this acceptance target with a longer profile list.
 
+Restart survival is a core requirement. The [durable checkpoint foundation](docs/task-survival.md) now preserves committed task progress and prevents automatic replay of ambiguous interrupted operations. Next, connect it to an installed agent's startup, model lifecycle and tool-specific reconciliation, then qualify closing/reopening the application and restarting the supported computer. An open tray window or a saved conversation alone does not satisfy task continuation.
+
 - Use the normal endpoint for interactive work and the shared background route for autonomous/background work.
 - Preserve tools, structured outputs, model choices and output allowances. Do not infer user intent from prompt text when host task metadata exists.
 - Provide an optional feedback helper with an application-supplied validator. The helper cannot authorize tools or guarantee its validator is correct.
