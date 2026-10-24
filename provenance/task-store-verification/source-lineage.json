@@ -1,0 +1,145 @@
+{
+  "schema": "adaptive.task-store-verification-lineage.v1",
+  "source_base": "d0a3a0b1c1e419a753e047e3eccdfd54f473ac74",
+  "prototype_manifest_sha256": "01927eae19849357f4c1148a970c3fe8c44354b9eb3e8eb2f7464078a8bdcc7c",
+  "runtime_sha256": "b9978bb70844aecc8c2d1846ae5bc12abab38abb3d2782909def654a86255ee9",
+  "new_tests_sha256": "32dad1d4f1f80596fb32c1705015e19c8bd34c1bccf2108733294beebe546f14",
+  "review_tests_sha256": "7a697104bb2fa8c5546bb6aea48852d7682e28214c2653b94de0fe9c78bda087",
+  "promotion": "Runtime and 17 tests byte-exact. Four independent test methods AST-identical; fixture module import and explicit setUp/hashes avoid inherited duplicate cases.",
+  "independent_review_sha256": "9f69bb552a29c30c9deb56c4aa63bcb3a6ffde53d8330dc423969656b822d707",
+  "scope": "Windows CPU storage component; no original failure-cause or real-agent qualification claim",
+  "files": {
+    "independent/test_review.py": {
+      "sha256": "af04e02fa31006c4a0edfe7ca1ca80b97db3b397996550683d4daaeb3da55e83",
+      "bytes": 4367
+    },
+    "reviewed-prototype/cpu-result.json": {
+      "sha256": "eb7ca9c5ccb9a92f459cd5a253edc1d7d90454b19c1861efcb486428f6939b80",
+      "bytes": 208
+    },
+    "reviewed-prototype/LICENSE": {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    "reviewed-prototype/pre-cpu-01/result.json": {
+      "sha256": "4479eb3c0fa701bfb1120ac87bd61d29f63bc3db391445e7f3425fba55b40271",
+      "bytes": 209
+    },
+    "reviewed-prototype/pre-cpu-01/task_store.py": {
+      "sha256": "bbe3acae60cfaa8072ff297bcf04be4547cb96f5c0ea036cad26a631b096ad82",
+      "bytes": 28855
+    },
+    "reviewed-prototype/pre-cpu-01/test_task_store_verification.py": {
+      "sha256": "23fc3c154400a1f7523bc0fe120b974932de2e89328e033fe22eb0079a10ad05",
+      "bytes": 17440
+    },
+    "reviewed-prototype/predecessor/src/adaptive_inference/__init__.py": {
+      "sha256": "5d4569a00e03c044ec5d9ad0b19a5a58c67c27c2f0cb51d94e4e968eb4d8d023",
+      "bytes": 100
+    },
+    "reviewed-prototype/predecessor/src/adaptive_inference/control_mailbox.py": {
+      "sha256": "271ace2fe98ee33406028ef8a0bdd7a815aab0aea8ab821913e7e449b8e9cadf",
+      "bytes": 12353
+    },
+    "reviewed-prototype/predecessor/src/adaptive_inference/demand.py": {
+      "sha256": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+      "bytes": 9713
+    },
+    "reviewed-prototype/predecessor/src/adaptive_inference/feedback.py": {
+      "sha256": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+      "bytes": 7826
+    },
+    "reviewed-prototype/predecessor/src/adaptive_inference/task_store.py": {
+      "sha256": "39f4efaa0983fea5202ac1027f12c7638787e7da874e26b678a9a3812b1afacc",
+      "bytes": 25026
+    },
+    "reviewed-prototype/predecessor/tests/test_control_mailbox.py": {
+      "sha256": "e6352613bd631883d618a27537b21869122ef686e60295e86f4143cbb7fce920",
+      "bytes": 23202
+    },
+    "reviewed-prototype/predecessor/tests/test_demand.py": {
+      "sha256": "e88377d7239fdf29c046515c2b395bd89ac83306483f3d3f7a0f01792f888872",
+      "bytes": 16083
+    },
+    "reviewed-prototype/predecessor/tests/test_persistent_feedback.py": {
+      "sha256": "8bf8520dd4a564d2a172e52aa732c27f7e87931d7c230fc311bf99a400cdcf45",
+      "bytes": 6894
+    },
+    "reviewed-prototype/predecessor/tests/test_task_store.py": {
+      "sha256": "7a59289ee59254befa36201ca70dc9074bcadde859ea7a3056c42b5fa966c06e",
+      "bytes": 17387
+    },
+    "reviewed-prototype/README.md": {
+      "sha256": "0c300a37ef1b72642b01060746f4b36b3a25879d59ce9753451ff78210aba28f",
+      "bytes": 7838
+    },
+    "reviewed-prototype/research-design.md": {
+      "sha256": "c66164308b14586d49c46777b5fe56c060653525b51a3c93ecb6412e7f78780c",
+      "bytes": 11078
+    },
+    "reviewed-prototype/run_cpu_tests.py": {
+      "sha256": "740df3762510256307a60708316f22d06f806c036d3c80646a9d68c141550df8",
+      "bytes": 969
+    },
+    "reviewed-prototype/source-manifest.json": {
+      "sha256": "01927eae19849357f4c1148a970c3fe8c44354b9eb3e8eb2f7464078a8bdcc7c",
+      "bytes": 5045
+    },
+    "reviewed-prototype/src/adaptive_inference/__init__.py": {
+      "sha256": "5d4569a00e03c044ec5d9ad0b19a5a58c67c27c2f0cb51d94e4e968eb4d8d023",
+      "bytes": 100
+    },
+    "reviewed-prototype/src/adaptive_inference/control_mailbox.py": {
+      "sha256": "271ace2fe98ee33406028ef8a0bdd7a815aab0aea8ab821913e7e449b8e9cadf",
+      "bytes": 12353
+    },
+    "reviewed-prototype/src/adaptive_inference/demand.py": {
+      "sha256": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+      "bytes": 9713
+    },
+    "reviewed-prototype/src/adaptive_inference/feedback.py": {
+      "sha256": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+      "bytes": 7826
+    },
+    "reviewed-prototype/src/adaptive_inference/task_store.py": {
+      "sha256": "b9978bb70844aecc8c2d1846ae5bc12abab38abb3d2782909def654a86255ee9",
+      "bytes": 29614
+    },
+    "reviewed-prototype/tests/test_control_mailbox.py": {
+      "sha256": "e6352613bd631883d618a27537b21869122ef686e60295e86f4143cbb7fce920",
+      "bytes": 23202
+    },
+    "reviewed-prototype/tests/test_demand.py": {
+      "sha256": "e88377d7239fdf29c046515c2b395bd89ac83306483f3d3f7a0f01792f888872",
+      "bytes": 16083
+    },
+    "reviewed-prototype/tests/test_persistent_feedback.py": {
+      "sha256": "8bf8520dd4a564d2a172e52aa732c27f7e87931d7c230fc311bf99a400cdcf45",
+      "bytes": 6894
+    },
+    "reviewed-prototype/tests/test_source_preservation.py": {
+      "sha256": "7e26978e24d737784d350de900bdbbe72a3d5605ad0db19115ea251888f863b2",
+      "bytes": 3683
+    },
+    "reviewed-prototype/tests/test_task_store.py": {
+      "sha256": "7a59289ee59254befa36201ca70dc9074bcadde859ea7a3056c42b5fa966c06e",
+      "bytes": 17387
+    },
+    "reviewed-prototype/tests/test_task_store_verification.py": {
+      "sha256": "32dad1d4f1f80596fb32c1705015e19c8bd34c1bccf2108733294beebe546f14",
+      "bytes": 18966
+    },
+    "reviewed-prototype/third_party/strata/LICENSE": {
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "bytes": 1093
+    },
+    "reviewed-prototype/wal_readonly_probe.py": {
+      "sha256": "e4f9e581961a066679de60b80e78d7c7a06ff76aa74aeffd47eee7c5c34143bf",
+      "bytes": 2330
+    },
+    "reviewed-prototype/wal_readonly_probe_result.json": {
+      "sha256": "d72244a8f23b70dba4cb6ba952595024cd4220ed833732b05644a3478e50ee9b",
+      "bytes": 2993
+    }
+  }
+}

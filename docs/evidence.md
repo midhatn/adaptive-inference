@@ -2,6 +2,22 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Task-store verification correction
+
+The [verification correction](task-store-verification.md) passed **217 core
+software tests** on Windows/Python 3.11 in 23.991 seconds. This includes 17 new
+SQLite/OS-lock regressions and four independent probes, each discovered once.
+Independent review of the frozen component repeated its 75-test suite and all
+four additional probes; runtime promotion is byte-exact. The
+[source record](../provenance/task-store-verification/README.md) preserves its
+earlier fixture failures and exact predecessors. The original unexplained
+composed Windows failure is not attributed to this correction without proof.
+
+These results cover storage behavior and existing portable contracts. They do
+not qualify the new store inside a live persistent Hermes/controller workflow.
+Linux/macOS validation is separately recorded by exact-head CI. Older readers
+must be stopped and joined before upgrade; mixed-version access is unsupported.
+
 ## Complete foreground handoff and Hermes worker restart
 
 The [controlled-11 receipt and reproduction guide](../provenance/windows-handoff/controlled-11/README.md) record one complete accepted workflow on Windows with the existing IQ3_S model, pinned Strata owner and installed Hermes SDK. Both arithmetic tasks passed independent integer checks on their first attempts. Real foreground interaction caused admission closure and verified backend release, a declared NVENC tool produced and decoded 90 frames, and the same model configuration was restored. Hermes preserved its accepted report and native history across a safe worker restart, then finished the original task without repeating the report write.

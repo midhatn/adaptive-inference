@@ -2,6 +2,7 @@
 
 ## Unreleased — foreground handoff and installed-agent continuation
 
+- Correct task-store verification to use SQLite locking and a short cooperating-operation gate. Validate interrupted rollback recovery on a private copied pair before touching the original; refuse foreign schemas, possible external super-journals and WAL layouts. Stop and join all older TaskStore readers/workers before upgrading. Preserve the accepted historical runtime and the reviewed source/tests locally.
 - Add a portable handoff controller and optional Windows native host. Close admission on observed foreground activity, drain active inference, verify owned-process release, admit a declared tool against fresh capacity, and restore the unchanged model configuration.
 - Add immediate admission with explicit non-dispatch receipts. The pinned Hermes adapter waits outside provider execution, preserves native history and accepted tool effects, and resumes a task in a replacement worker.
 - Accept one complete IQ3_S workflow after independent terminal review: two checked arithmetic tasks, two real foreground animation phases, a verified 90-frame GPU encode, an installed-Hermes worker restart and clean final ownership. Preserve earlier failed attempts and their source revisions. This is not operating-system reboot, gaming, video-playback or long-duration qualification.

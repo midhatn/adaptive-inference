@@ -96,3 +96,10 @@ The implementation is independent; the unmodified proc_utils.c reference and
 BSD-3-Clause license are preserved under third_party/reference-sources/psutil.
 Original copyright: Jay Loden, Dave Daeschler, Giampaolo Rodola and contributors.
 Access-denied errors are not treated as process-exit evidence.
+
+TaskStore verification follows SQLite's documented locking, read-only recovery
+and WAL contracts. A conservative super-journal suffix refusal uses the existing
+format described in SQLite 3.45.1 pager.c at
+189e44dfecdc7868bb860dfb5d98eab371318c37. That public-domain source and its original
+LICENSE.md are preserved in third_party/reference-sources/sqlite/. SQLite itself
+performs recovery; no copied pager implementation is part of the Python runtime.

@@ -364,6 +364,13 @@
   note = {Inspected with https://www.sqlite.org/atomiccommit.html on 2026-10-24. Existing TaskStore transactions are reused; control transition and acknowledgement remain separate commits. No SQLite implementation copied or new database introduced}
 }
 
+@misc{sqliteTaskVerification,
+  title = {{SQLite locking, URI, WAL and rollback recovery contracts}},
+  author = {{SQLite authors}},
+  url = {https://www.sqlite.org/lockingv3.html},
+  note = {Inspected 2026-10-24 with uri.html, howtocorrupt.html, wal.html and rescode.html. Exact SQLite 3.45.1 pager.c at Git mirror revision 189e44dfecdc7868bb860dfb5d98eab371318c37 is preserved locally with its public-domain notice. Standard SQLite recovery and the existing store lock are reused; the format suffix is a conservative refusal guard, not a recovery parser}
+}
+
 @misc{temporalControlAcknowledgement,
   title = {{Temporal Python Workflow message passing}},
   author = {{Temporal Technologies and contributors}},

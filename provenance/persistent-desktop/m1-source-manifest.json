@@ -1,0 +1,77 @@
+{
+  "source_commit": "124b8ef2430a67e69e0e177f014a6fdc393c16a2",
+  "files": {
+    "m1-runtime/src/adaptive_inference/__init__.py": {
+      "sha256": "5d4569a00e03c044ec5d9ad0b19a5a58c67c27c2f0cb51d94e4e968eb4d8d023",
+      "bytes": 100
+    },
+    "m1-runtime/src/adaptive_inference/__main__.py": {
+      "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "bytes": 48
+    },
+    "m1-runtime/src/adaptive_inference/adapters.py": {
+      "sha256": "378ee41c1bdbb16873e31752d704e656a70009862d41b36898d30f57a36dfc58",
+      "bytes": 4576
+    },
+    "m1-runtime/src/adaptive_inference/cli.py": {
+      "sha256": "5d794164a43230951a57c18d7b45d04d12f3e8974871648fd09ec04502f448bb",
+      "bytes": 4416
+    },
+    "m1-runtime/src/adaptive_inference/client_routing.py": {
+      "sha256": "d57178cfbd5666e75aef311f1362cf8486f48085c6f4995861b4fbd0cb7e41d1",
+      "bytes": 4619
+    },
+    "m1-runtime/src/adaptive_inference/config.py": {
+      "sha256": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+      "bytes": 7084
+    },
+    "m1-runtime/src/adaptive_inference/context_budget.py": {
+      "sha256": "cd16b57bc105a179e94dbc9e429c02b901bcd8602cfaf04c9cf8776e9d799ccf",
+      "bytes": 4788
+    },
+    "m1-runtime/src/adaptive_inference/costs.py": {
+      "sha256": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1",
+      "bytes": 6474
+    },
+    "m1-runtime/src/adaptive_inference/demand.py": {
+      "sha256": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+      "bytes": 9713
+    },
+    "m1-runtime/src/adaptive_inference/demo.py": {
+      "sha256": "5a3b1ff743bee6c45f85df8417bedbc18657f2c59f3e894f1f3298a480b22b93",
+      "bytes": 7471
+    },
+    "m1-runtime/src/adaptive_inference/feedback.py": {
+      "sha256": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+      "bytes": 7826
+    },
+    "m1-runtime/src/adaptive_inference/gateway.py": {
+      "sha256": "261f92078e7691bc8e51cd1d67dd370cb2bfcfb008c0c2c7df44ddfbedc0a8f0",
+      "bytes": 19151
+    },
+    "m1-runtime/src/adaptive_inference/handoff.py": {
+      "sha256": "5b11f25a62d27c2b7f78776a9c05a2c15c0712def9fbad52dddd319232d0ed23",
+      "bytes": 17598
+    },
+    "m1-runtime/src/adaptive_inference/resource_policy.py": {
+      "sha256": "53768d4b95b589bb76d1788a9ccceefe60c05b332b1b1f43dece6b04bfec212a",
+      "bytes": 5658
+    },
+    "m1-runtime/src/adaptive_inference/resources.py": {
+      "sha256": "a72e376e4dfc6021e61756812f93275af20c28ec1438faf5eb381a491d3db4d9",
+      "bytes": 2960
+    },
+    "m1-runtime/src/adaptive_inference/scheduler.py": {
+      "sha256": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f",
+      "bytes": 5092
+    },
+    "m1-runtime/src/adaptive_inference/task_store.py": {
+      "sha256": "39f4efaa0983fea5202ac1027f12c7638787e7da874e26b678a9a3812b1afacc",
+      "bytes": 25026
+    },
+    "m1-runtime/test_handoff.py": {
+      "sha256": "db9725043a720b29e3af4b809c3af4d92bba540febea94515de52d5505c7d8f7",
+      "bytes": 28981
+    }
+  }
+}

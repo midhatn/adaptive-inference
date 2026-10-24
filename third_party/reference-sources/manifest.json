@@ -75,6 +75,18 @@
       ],
       "description": "OpenProcess ERROR_INVALID_PARAMETER is a missing-process candidate; access-denied and other API errors remain errors. The local tracker also requires independent PID absence and never fabricates retained exit evidence.",
       "archive_prefix": "psutil/a1e3067965a075c40b79971cfda51501e80da685"
+    },
+    {
+      "id": "sqlite",
+      "repository": "sqlite/sqlite",
+      "revision": "189e44dfecdc7868bb860dfb5d98eab371318c37",
+      "license": "blessing",
+      "reuse_kind": "documented locking and recovery contracts; conservative format refusal",
+      "used_by": [
+        "src/adaptive_inference/task_store.py"
+      ],
+      "description": "SQLite 3.45.1 pager reference for readonly rollback and necessary super-journal suffix; SQLite performs recovery. No pager implementation is executed from this archive.",
+      "archive_prefix": "sqlite/189e44dfecdc7868bb860dfb5d98eab371318c37"
     }
   ],
   "files": [
@@ -285,6 +297,34 @@
       "bytes": 1548,
       "license_spdx": "BSD-3-Clause",
       "license_path": "psutil/a1e3067965a075c40b79971cfda51501e80da685/LICENSE",
+      "kind": "license",
+      "modifications": "none"
+    },
+    {
+      "path": "sqlite/189e44dfecdc7868bb860dfb5d98eab371318c37/src/pager.c",
+      "source_repository": "sqlite/sqlite",
+      "source_revision": "189e44dfecdc7868bb860dfb5d98eab371318c37",
+      "source_path": "src/pager.c",
+      "source_url": "https://github.com/sqlite/sqlite/blob/189e44dfecdc7868bb860dfb5d98eab371318c37/src/pager.c",
+      "git_blob_sha1": "37588f0b259e90ddfc2d874eb3c4785876a2d79d",
+      "sha256": "8b371bfcd459dc73415cb0d92232bf2962ad5fda0fdf4ea762d54e2247e7e474",
+      "bytes": 301475,
+      "license_spdx": "blessing",
+      "license_path": "sqlite/189e44dfecdc7868bb860dfb5d98eab371318c37/LICENSE.md",
+      "kind": "unmodified_reference_source",
+      "modifications": "none"
+    },
+    {
+      "path": "sqlite/189e44dfecdc7868bb860dfb5d98eab371318c37/LICENSE.md",
+      "source_repository": "sqlite/sqlite",
+      "source_revision": "189e44dfecdc7868bb860dfb5d98eab371318c37",
+      "source_path": "LICENSE.md",
+      "source_url": "https://github.com/sqlite/sqlite/blob/189e44dfecdc7868bb860dfb5d98eab371318c37/LICENSE.md",
+      "git_blob_sha1": "f68a6c175f0b72086c313a9dbd9f2ec8d87525dd",
+      "sha256": "9c6479123f32a1ed50d9a0af203dfe8972e65035b0cdeef436b5f8d0924517fe",
+      "bytes": 263,
+      "license_spdx": "blessing",
+      "license_path": "sqlite/189e44dfecdc7868bb860dfb5d98eab371318c37/LICENSE.md",
       "kind": "license",
       "modifications": "none"
     }
