@@ -38,7 +38,16 @@ This fragment assumes the task was created and the host defined its callbacks. `
 
 For a real external action, a host acquires `store.claim(...)`, commits `begin_operation("effect", ...)` **before** dispatch, then calls `complete_operation(...)` with the observed result. If the owner dies between those points, the next owner must inspect the actual tool/job/artifact and use `reconcile_operation(...)` with explicit evidence. A tool's idempotency key or existing job identifier can help resolve the outcome. An ambiguous action remains blocked until the host can decide truthfully; it is not automatically repeated.
 
-This is a library integration. The generic HTTP gateway does not secretly persist private conversations or execute/resume agent tools. Existing Hermes/OpenClaw installations need an adapter to invoke these checkpoints and reconcile their tools. Automatic OS login/startup, a real computer reboot, native KV restore and the complete foreground/inference/video handoff remain separate acceptance work.
+This is a library integration. The generic HTTP gateway does not secretly persist private conversations or execute/resume agent tools. Existing installations need an adapter to invoke these checkpoints and reconcile their tools. The pinned Hermes adapter below has one accepted [foreground/tool handoff and worker-restart workflow](../provenance/windows-handoff/controlled-11/README.md). Automatic OS login/startup, a real computer reboot, native KV restore and other agents remain separate acceptance work.
+
+The optional [installed-Hermes adapter](../examples/validation/windows_handoff/hermes/README.md)
+now implements those boundaries for a bounded native file task. It retains the
+original objective and native conversation, verifies tool receipts before the
+next model request, and resumes from the same SessionDB/TaskStore after process
+termination. Changed artifacts and uncertain cross-database effects refuse
+until explicit reconciliation. Its [automatic-handoff composition](automatic-handoff.md)
+has separate software and hardware acceptance receipts. This does not install
+OS startup hooks or extend the file-task receipt contract to arbitrary tools.
 
 ## Storage bounds
 

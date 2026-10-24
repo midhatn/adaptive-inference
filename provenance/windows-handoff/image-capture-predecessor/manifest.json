@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "scope": "Unchanged diagnostic predecessor that localized QueryFullProcessImageNameW failure; no raw user receipts",
+  "sha256": {
+    "ownership.py": "cc6c5ccde1ce64e0ef27b18f1d04a5db5c3dbaa59e6a06e47abc3a10abcd6dcb",
+    "source-pins.json": "4d416c6125536ab4a0c63f2c56965dc8395bdff07e3dfdd414bbc073d3799982"
+  }
+}

@@ -8,5 +8,5 @@ recursive-include provenance *.json *.py *.md *.txt *.csv *.lock *.mjs *.ts *.ym
 recursive-include plugins *.py *.md *.json *.yaml *.yml LICENSE NOTICE
 recursive-include upstream *.json *.patch *.md
 recursive-include tests *.py
-recursive-include third_party LICENSE NOTICE .gitattributes *.txt *.md *.json *.py *.mjs *.scala *.rs
+recursive-include third_party LICENSE NOTICE .gitattributes *.txt *.md *.json *.py *.mjs *.scala *.rs *.c
 global-exclude __pycache__ *.py[cod] *.log

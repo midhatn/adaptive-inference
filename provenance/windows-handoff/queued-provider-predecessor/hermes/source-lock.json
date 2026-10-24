@@ -1,0 +1,25 @@
+{
+  "schema": "adaptive.hermes-recovery-source.v1",
+  "sdk_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+  "sdk_source_sha256": {
+    "run_agent.py": "8c215df03f32493f72992db0c0ccaddb811436f9025451e3f1e8f535dc9cda5d",
+    "hermes_cli/middleware.py": "3745ad211f365554a3c070083dc39d3ff9b6cdc93965f13d8796918433ec2328",
+    "hermes_state.py": "e507ebd78b870364fd2fced94212592380cd26d0d39eec67547ed9bc233ebb98",
+    "hermes_state_messages.py": "b3c5ad76a6d1a63c2800a0eca0c36240ad3098999a248568e46a7c3649cf9136",
+    "hermes_state_compression.py": "b41cb7af654c38db96b91d8bb39ea0736ab25fe638c81d100d28e663a0a34798",
+    "agent/turn_tool_round.py": "1ccd3574528597f5c3a5589729849f8a10e422f0d970af3bb03b1fbd277f1f29",
+    "agent/turn_facade_lease.py": "67c0aa57a489f3b587697c9217422a67d88620ff0afaed1e6838e0e15a461885",
+    "agent/turn_api_call.py": "809f38471e58b20d68911c73b39945c3b2b4f1e9de1c8be7d451ac3f91774be1",
+    "agent/session_persistence.py": "b1a0a29ad4089c77dd6c7ee7551c92d4b103ccd2ecdd1e05fd8f9af5bc11b119",
+    "LICENSE": "e29dfaf6905a8d396a58ea4bd84ad27057756bbd9599b5bec0971ae34d2a2118"
+  },
+  "canonical_source_sha256": {
+    "src/adaptive_inference/task_store.py": "39f4efaa0983fea5202ac1027f12c7638787e7da874e26b678a9a3812b1afacc",
+    "src/adaptive_inference/feedback.py": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+    "examples/validation/hermes_tool_task/run_task.py": "15c104e2316d0e6c5b4e8f9581877d39e0b61c7c041e9f63d1183f1e18076eb7"
+  },
+  "license": "Apache-2.0 original integration; Hermes MIT interfaces consumed without copied source",
+  "test_receipt": "fixture-receipt.json",
+  "test_receipt_sha256": "adc43c6dfb50b3aadf5e66e9c2ce35d8a62579aa0e0f41ed9a4ed3d12903cef2",
+  "scope": "Actual SDK + synthetic provider + process restart; no actual model or resource handoff performed by this lane"
+}

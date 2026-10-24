@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — foreground handoff and installed-agent continuation
+
+- Add a portable handoff controller and optional Windows native host. Close admission on observed foreground activity, drain active inference, verify owned-process release, admit a declared tool against fresh capacity, and restore the unchanged model configuration.
+- Add immediate admission with explicit non-dispatch receipts. The pinned Hermes adapter waits outside provider execution, preserves native history and accepted tool effects, and resumes a task in a replacement worker.
+- Accept one complete IQ3_S workflow after independent terminal review: two checked arithmetic tasks, two real foreground animation phases, a verified 90-frame GPU encode, an installed-Hermes worker restart and clean final ownership. Preserve earlier failed attempts and their source revisions. This is not operating-system reboot, gaming, video-playback or long-duration qualification.
+- Handle an observed Windows process-teardown metadata race through the same retained handle, and distinguish intentional gateway shutdown from uncertain request completion. Preserve the original errors and reject unverified live processes or terminal uncertainty.
+- Reuse the bounded feedback runner for independently rejected completed answers; keep every attempt and unknown-outcome boundary. The accepted hardware run needed no arithmetic correction.
+- Preserve the full validation sources, licensed references, predecessor mechanisms, historical evidence filters and sanitized receipts in this repository. Model assets, native binaries and private histories remain external prerequisites.
+- Add durable task demand using existing task transactions and ownership. Persistent service integration and user controls are the next milestone; a demand observation alone grants neither dispatch nor unloading.
+
 ## 0.3.0 — generalized integrations and IQ3_S agent-task evidence
 
 - Define one agent/engine integration contract for routing, quality preservation, ownership, native capabilities and durable continuation.

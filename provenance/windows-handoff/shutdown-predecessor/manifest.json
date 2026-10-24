@@ -1,0 +1,10 @@
+{
+  "schema": "adaptive.source-predecessor.v1",
+  "scope": "Exact source preceding orderly-shutdown correction; controlled-10 remains unaccepted",
+  "files": {
+    "handoff.py": "a6fa8da1a408eacf151971aa4b488fcc1ca515cb84b9a63451dc14ecdfd44a72",
+    "test_handoff.py": "ed2f3962ef88cab83a4263027151e23a9662b91a01b05732c580fa95e5eb9563",
+    "run_validation.py": "2f5315dcf53831509493e7f451e187a4ab748072f42992e9997aa17b17f8118e",
+    "test_arithmetic_feedback.py": "3ed0d372d572c47c4b382a2ab72e4fa4ce9f2bd4201d75a134bbb52477d3ba28"
+  }
+}

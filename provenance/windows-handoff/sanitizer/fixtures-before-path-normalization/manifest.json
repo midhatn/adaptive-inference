@@ -1,0 +1,8 @@
+{
+  "scope": "Exact original CPU fixture sources before canonical temporary-path setup; exporter/runtime/receipts unchanged",
+  "files": {
+    "test_sanitize_milestone_v5.py": "fc9a4ca92885f0af4cfd7fdca100ae31191ade6189cd91a9404f1337344b1907",
+    "test_sanitize_milestone_v6.py": "e3a01e9d27d4ddc6993c517785222ad5c35b1ddaf88dbb1ae2e351c66d36f2c0",
+    "test_sanitize_milestone_v7.py": "599090a7766c1744f57124032a85bf20d58972d62998a030292bed90dc829823"
+  }
+}

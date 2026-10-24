@@ -3,6 +3,17 @@ Copyright 2026 Midhat Nashar and contributors
 
 Original project code is provided under Apache License 2.0.
 
+src/adaptive_inference/handoff.py and the Windows foreground, lifecycle and
+Hermes recovery examples are original Apache-2.0 project implementations.
+The foreground recovery dwell follows the existing HeadroomPolicy contract;
+its actually reused Strata/medking82 lineage remains attributed below.
+The Windows owner helper sources are preserved with original and portable
+hashes in examples/validation/windows_handoff/native/owner_source/source-pins.json.
+The public Microsoft Win32 and NVIDIA NVML API references are recorded beside
+their implementations. Imported Strata code retains its upstream MIT notices.
+The new Hermes recovery adapter consumes the pinned public SDK and preserves
+native history; it copies no Hermes runtime implementation into the adapter.
+
 src/adaptive_inference/costs.py is derived from serve/request_costs.py in
 Niko1221/Strata, local revision c6b23493b01028a18a9eb685d0bb6435c6976316.
 Strata is Copyright (c) 2026 Niko1221 and the Strata contributors, MIT licensed.
@@ -78,3 +89,10 @@ NousResearch/hermes-agent revision 14e1e43a23761b369641208e204365cd6cb9399d
 under its original MIT license. It reuses the historical baseline bundle and
 supplies the changed source objects and complete target inventory. Its original
 license is retained in UPSTREAM-LICENSE.txt and the restored source tree.
+
+The Windows owner process tracker adapts the narrow missing-process error
+classification from psutil at a1e3067965a075c40b79971cfda51501e80da685.
+The implementation is independent; the unmodified proc_utils.c reference and
+BSD-3-Clause license are preserved under third_party/reference-sources/psutil.
+Original copyright: Jay Loden, Dave Daeschler, Giampaolo Rodola and contributors.
+Access-denied errors are not treated as process-exit evidence.

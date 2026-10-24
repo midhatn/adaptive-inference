@@ -25,18 +25,6 @@ evidence and citations. See the [always-on vision](docs/always-on-controller.md)
 [integration contract](docs/integration-contract.md) and
 [source-preservation contract](docs/source-of-truth.md).
 
-## Research-first execution rule
-
-Before designing a solution to each new issue, search current primary research,
-official documentation and relevant GitHub implementations, issues and PRs.
-Reuse or adapt a suitable existing mechanism before inventing one. Record the
-sources, inspected revisions, applicability, licensing and why any new work is
-still needed. Prior findings may be reused after checking their relevance and
-revision. Use failures, measurements and review feedback to update this plan
-when they change the best next step, then follow the revised plan. Keep failed
-evidence and acceptance standards intact; revising the plan cannot turn a failed
-run into a pass.
-
 ## Starting point
 
 This snapshot distinguishes released work, development work and future goals.
@@ -46,8 +34,8 @@ A roadmap entry is not a qualification receipt.
 | --- | --- |
 | Released foundation | Version 0.3.0 includes the portable gateway, normal/background queue, measured execution-cost feedback, durable task foundation, source preservation and scoped integration recipes. |
 | Real task evidence | A recorded IQ3_S Hermes parent/child file workflow completed with independently checked artifacts. It does not establish foreground handoff or reboot recovery. |
-| Native foreground and tool work | Development has a Windows controller and owned backend adapter. A bounded run demonstrated resource release, a checked GPU video encode and restoration, but its overall agent-recovery phase failed. |
-| Resource-aware agent waiting | The failure exposed a private stale-provider watchdog during intentional waiting. The corrected immediate-admission and Hermes recovery integration passes software and installed-SDK fixtures; the complete corrected real-model workflow is not yet accepted. |
+| Native foreground and tool work | One complete source-bound Windows/IQ3_S workflow is accepted: real foreground interaction, verified release, checked GPU encode, restoration and clean shutdown. |
+| Resource-aware agent waiting | Immediate admission and the pinned Hermes recovery adapter completed the same accepted workflow, with durable waiting following foreground interruption and one same-boot worker restart. |
 | Desktop protection observation | A later qualification withheld model startup while a foreground game was active. That observation is not a gaming-performance benchmark or a completed qualification. |
 | Full always-on experience | Persistent everyday operation, broad foreground coverage, physical reboot recovery and native qualification of other engines remain development work. |
 
@@ -60,8 +48,8 @@ interrupted runs will remain identified as such.
 
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
-| M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | In progress; live acceptance pending |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 | Planned |
+| M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: durable demand published; cold-start and controller components reviewed; persistent-host integration next |
 | M3 | Measured coexistence with real desktop applications | M2; observation work can start earlier | Planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |
@@ -79,10 +67,42 @@ not displace a reproducible working reference system.
 **User result:** an agent finishes a useful task after foreground interruption,
 resource handoff and a worker restart, without losing completed work.
 
-Use the current reference composition: Windows, the explicitly owned Strata
-backend, Hermes and the existing IQ3_S model at the unchanged quality baseline.
-Run the corrected implementation in a new output directory during an appropriate
-desktop test interval. Do not force test windows over active user work.
+**Accepted, 24 October 2026:** [controlled-11](provenance/windows-handoff/controlled-11/README.md)
+passed the complete source-bound terminal audit after two arithmetic tasks,
+two real foreground animation phases, a verified 90-frame GPU encode and a
+same-boot installed-Hermes worker restart. Both arithmetic tasks passed on the
+first attempt. The recorded durable wait spanned 81.375 seconds during release
+and restoration following foreground demand; it began after the second visible
+window ended. This does not demonstrate a wait longer than the former
+180-second watchdog or waiting throughout a visible 81-second workload.
+
+Failures changed implementation and procedure while the acceptance gate stayed
+fixed. The [retained outcomes](provenance/windows-handoff/controlled-11/result.json)
+and preserved predecessor sources record:
+
+- A queued provider hit its private stale-provider watchdog during deliberate
+  deferral. The adapter now uses public immediate admission and authentic
+  non-dispatch receipts, keeping safe waiting outside provider execution.
+- A Windows metadata query raced with process teardown. A bounded wait on the
+  same retained handle can confirm exit; access denial alone cannot excuse a
+  live process. Unknown startup outcomes still require reconciliation.
+- Window activation without ordinary input did not establish user activity.
+  Qualification now verifies the actual input-age observation.
+- An arithmetic answer had correct item totals but a wrong grand total. The
+  harness reuses bounded feedback with unchanged independent checks and saves
+  every attempt; the unsuccessful run remains failed.
+- A later run completed its tasks but failed final shutdown auditing. Intentional
+  closure is now distinguished from uncertain completion, the harness captures
+  the final transition ledger after close, and both scheduler and controller
+  must be clean. The earlier recorded pass remains explicitly unaccepted.
+- The wait collector starts before the visible window. The exporter validates
+  all observations against their worker phase and reports the exact subset,
+  revisions and duration instead of assuming every wait occurs on screen.
+
+The accepted scope uses Windows, the explicitly owned Strata backend, installed
+Hermes and the existing IQ3_S at the unchanged quality baseline. Its complete
+source and sanitized evidence live here; private logs and model assets do not.
+The following gate remains required for any new composition or changed run:
 
 The acceptance workflow must:
 
@@ -114,16 +134,38 @@ mergeable change with validation for that target repository.
 **User result:** start it once, see what it is doing, and let it wait and resume
 without manually managing model servers.
 
-**Component status:** [durable inference demand](docs/durable-demand.md) records
-trusted task-lifetime demand in the existing task checkpoint. Its CPU tests cover
-waiting across worker replacement, pause/cancellation, stale-owner rejection and
-observation without polling writes. This component is not yet connected to the
-persistent controller, model restoration or native cancellation; M2 remains
-incomplete and its integration still follows M1 acceptance.
-
 Build a persistent service mode from the tested contracts. Keep bounded test
 mode available; a qualification's finite process lifetime must not accidentally
 become the product's definition of always on.
+
+The first component reuses the existing TaskStore transactions and
+ownership for durable inference demand; it introduces no second database.
+Demand must exist independently of queued HTTP tickets because immediate
+admission deliberately leaves no ticket when deferred. KEDA activation/cooldown
+and Temporal durable waiting are inspected design references; only mechanisms
+actually adopted will be credited as implementation lineage. The
+[durable demand component](docs/durable-demand.md) passes 15 component tests,
+including replacement-worker persistence and repeated observation without
+consuming history. Independent review found no blocking component defect;
+host integration and live acceptance remain separate steps. Its observation
+does not grant dispatch or unloading, and demand cancellation does not yet
+cancel the existing runner.
+
+**Next integration sequence:** compose the already reviewed demand and cold-start
+components with the existing native host, then add trusted user controls and
+qualify the persistent composition. Research the exact preserved startup cache
+planner before adding load feasibility; its RAM/commit estimate does not prove
+GPU fit or reserve resources. A missing measurement must remain unknown.
+
+Component review also found an admission constraint: a prepared operation can
+make demand ineligible while a queued request waits for an unloaded model. The
+host must enforce immediate admission and resolve only a proven non-dispatch
+before returning to durable waiting. Unknown provider outcomes cannot be
+reclassified as safe waiting. Pause/cancel requests must be acknowledged by the
+trusted task owner at a safe boundary, rather than editing a live task behind
+its owner. Cold preparation must retain the existing startup barrier without
+inventing a running owner or release receipt. These are integration requirements;
+component tests alone do not qualify the persistent product.
 
 Required work:
 
@@ -395,6 +437,12 @@ baseline silently.
 
 ## Rules that apply to every milestone
 
+- **Research before invention:** before solving each new problem, search current
+  primary research, GitHub implementations/issues/PRs and official documentation
+  for existing solutions. Reuse or adapt a suitable mechanism first. Record what
+  was inspected, its revision/date, applicability and licensing; explain the gap
+  before adding original work. Recheck relevant prior findings rather than
+  repeating completed research or replacing a validated design for novelty.
 - **Current model constraint:** all new actual inference qualification uses the
   user's existing IQ3_S model at the established quality baseline. Do not replace
   it with another model or quantization to make a port pass. A backend or
@@ -515,6 +563,12 @@ rather than rewriting an earlier result. Reprioritize a functional blocker
 ahead of optimization, and defer an optional feature that adds complexity
 without measurable value.
 
+The implementation loop is **observe the issue → search existing solutions →
+adapt the smallest suitable approach → validate → update the plan from the
+evidence → continue**. Review feedback participates in the same loop. A failed
+approach changes the next experiment, not the original user objective or the
+standard required to claim success.
+
 These milestones are an order of work, not calendar commitments. Estimate the
 next small delivery after its dependencies and environment are known; update
 that estimate when evidence changes. Do not publish a completion date or
@@ -523,17 +577,33 @@ basis.
 
 ## Next execution packet
 
-The next technical packet remains M1:
+Finish M1 publication with exact source/evidence preservation, fresh distribution
+checks and CI for the submitted revision. Keep the accepted native composition
+separate from any upstream target whose proposed change has not been tested.
+The first publication CI exposed temporary-path spelling mismatches in three
+evidence fixtures on macOS and hosted Windows. Resolve those fixture roots using the existing standard-library path
+operation, retain their originals, and rerun cross-platform CI. The runtime,
+exporter's exact-path checks and accepted hardware evidence stay unchanged.
 
-- Recheck the frozen corrected source, model/quality settings and prepared task.
-- Choose a fresh qualification directory and a suitable desktop interval.
-- Run the complete foreground, tool, waiting and worker-restart sequence.
-- Inspect artifact, history, source, capacity and cleanup evidence independently.
-- If it passes, publish the scoped canonical result, then deliver only applicable
-  mergeable upstream changes after their own target-specific validation gate.
-- If it fails, preserve the failure, fix the smallest demonstrated cause and
-  revise this plan's next step without claiming the milestone complete.
+The active technical packet is M2:
 
-M2 demand/intent, persistence and user-interface design can proceed alongside
-that qualification. The first release is useful before every later milestone
-is finished; each release must say clearly which experience it has established.
+- Compose reviewed durable demand, cold parked ownership and the existing
+  controller into one explicit persistent-host mode. Retain bounded M1 mode.
+- Reuse the actual native startup cache planner and original observations.
+  Distinguish low capacity, unknown data and unresolved startup; a cache proposal
+  is neither full GPU feasibility nor a reservation.
+- Add trusted pause/resume/cancel delivery with durable acknowledgement at safe
+  owner checkpoints. Keep waiting outside active provider requests and retain
+  the original task across interface or worker replacement.
+- Start with one qualified profile and cooperating worker. Reuse the existing
+  lifecycle/watchdog mechanisms, make service stop distinct from interface
+  close, and bound storage without discarding unfinished work.
+- Provide understandable status and explicit user AI-task intent, then test
+  cold idle, demand arrival, repeated busy/quiet activity, pause/resume/cancel,
+  active-request boundaries, interrupted startup and orderly shutdown.
+- Independently review the composed host before a fresh IQ3_S qualification.
+  Record failures, revise this packet from evidence and keep quality unchanged.
+
+M3/M4 desktop and tool qualification follows the persistent composition; physical
+restart recovery remains M5. The first release can be useful before every later
+milestone is finished, with its established experience stated precisely.

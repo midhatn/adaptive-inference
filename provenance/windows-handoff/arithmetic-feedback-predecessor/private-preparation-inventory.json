@@ -1,0 +1,106 @@
+[
+  {
+    "path": "run_validation.py",
+    "predecessor_sha256": "06ea4166ab9d4f50f8a633da6025a005a979d2d3c70a9832f2ea55b601eb6510"
+  },
+  {
+    "path": "foreground/activity.py",
+    "predecessor_sha256": "3c050a620bb5d58938a62b0fbfb44f8f143f5ea466ec1259db502a0cbf49e6ec"
+  },
+  {
+    "path": "foreground/compare_runs.py",
+    "predecessor_sha256": "76b15053e2a44861556916724e5cbb6a08ad2cb757e81aeef77c632699c04958"
+  },
+  {
+    "path": "foreground/foreground_window.py",
+    "predecessor_sha256": "e9f79c0e20883bfef9ded909260516ed3fd0c1e2d620cc181b0c0e1b354bd093"
+  },
+  {
+    "path": "foreground/HANDOFF-REVIEW.md",
+    "predecessor_sha256": "072adc9ef512c2501262b0675be56863adc96ee5ea1d4147b92db0fa2031e452"
+  },
+  {
+    "path": "foreground/metrics.py",
+    "predecessor_sha256": "a0d0e4f7537ed977b57bd460a886960bd2572567e9f4d29d01976e1b0d669a13"
+  },
+  {
+    "path": "foreground/quiet_window.py",
+    "predecessor_sha256": "c1b9c21a3f1f754f1fb95bde848fdbd796bce9d1018afebc7d568bf76f259a84"
+  },
+  {
+    "path": "foreground/README.md",
+    "predecessor_sha256": "d5e25d3da1861072474febc52dadf09451c42f24ed837d925c5e888599495624"
+  },
+  {
+    "path": "foreground/RESEARCH.md",
+    "predecessor_sha256": "eab295f33421061663b8c305f8025711e50ba5fcb8a3450922e6a7f6604a7f22"
+  },
+  {
+    "path": "foreground/review_handoff_races_after.py",
+    "predecessor_sha256": "969715e48f3a6515a4694a048350be98f449a57f306e37e8fac52e9039604a65"
+  },
+  {
+    "path": "foreground/review_handoff_races.py",
+    "predecessor_sha256": "11299c0afa3bb29c88089f535251cd798e7445bc4528c9edae6f5c0d6e7ed6ec"
+  },
+  {
+    "path": "foreground/test_foreground.py",
+    "predecessor_sha256": "baa9bff0e97f014b8aaf292351b78edab8897c1e21a9a4cfa11a7549536515c8"
+  },
+  {
+    "path": "native/native_owner_adapter.py",
+    "predecessor_sha256": "b1b75cbf4632b657573aef54bc4c4ca671a5e9aaa75c02d0d3c3022dd97a6b2a"
+  },
+  {
+    "path": "native/prepare_handoff_owner.py",
+    "predecessor_sha256": "b1db6d01dc79348c56f9723f18e78064f7f5bd3a7488b39c51313960319c0640"
+  },
+  {
+    "path": "native/README.md",
+    "predecessor_sha256": "b993eaefba2df96f83cae68b89f96266611623a635e977880b2f1db86ed49af1"
+  },
+  {
+    "path": "native/test_native_owner_adapter.py",
+    "predecessor_sha256": "0be3daa9300d9574c6638402c0f154be289ef13de9eab23c6618a2903469989d"
+  },
+  {
+    "path": "native/test_owner_failure.py",
+    "predecessor_sha256": "1f264e8787fb78d897c831828673888db94e7734d887968accd148e80cebf565"
+  },
+  {
+    "path": "native/test_prepare_handoff_owner.py",
+    "predecessor_sha256": "4453fddef864362bb5ff0d0be280e8cbc5754e2c1c5ef18ef2c2df404b97adde"
+  },
+  {
+    "path": "native/test_windows_host.py",
+    "predecessor_sha256": "da3aaecf3ad0fbbf8ded8b83dd38ae79fbafcfbcfa27da9a442552c9d347795a"
+  },
+  {
+    "path": "native/windows_host.py",
+    "predecessor_sha256": "7f364433903d29656429f8afcb70ba55e4b85e40e327a8135e4543f95028c6a2"
+  },
+  {
+    "path": "native/owner_source/engine.py",
+    "predecessor_sha256": "d0b4174d3b1aff944d749c6094e2953399bf895f31001aa2f8a1180fba18a4f4"
+  },
+  {
+    "path": "native/owner_source/memory_monitor.py",
+    "predecessor_sha256": "74bb33ccb7a0f6cdb3da630c12ddeac4f0d0504bd6a70af62255495169f634fd"
+  },
+  {
+    "path": "native/owner_source/memory_reader.py",
+    "predecessor_sha256": "d3c36b74a6040b8c743bb7362275fb7fc6c7a22f8aaed38e94798ab193167e86"
+  },
+  {
+    "path": "native/owner_source/owned_job.py",
+    "predecessor_sha256": "4c62671096e2fc2f559a0a0e1807645df5161022701d210f5ba6c810d7b3439f"
+  },
+  {
+    "path": "native/owner_source/ownership.py",
+    "predecessor_sha256": "f419391c84d5d123328b8c3b454253f060e4d5d59db89fedd43fbd2313960b14"
+  },
+  {
+    "path": "native/owner_source/source-pins.json",
+    "predecessor_sha256": "19f871c8b6ca05becec6f9a76758eac94d9aa38f29951af1e20753bdd7ee7aca"
+  }
+]

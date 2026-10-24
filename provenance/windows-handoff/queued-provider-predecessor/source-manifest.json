@@ -1,0 +1,64 @@
+{
+  "schema": "adaptive.failed-source-preservation.v1",
+  "source_files": {
+    "run_validation.py": {
+      "sha256": "89c43d3939a80ecb2aaa99bdadee937aabd91ac59f301f6bee9c4999560064c7",
+      "bytes": 23733
+    },
+    "hermes/recovery.py": {
+      "sha256": "5374582b5885f6fdb4c70068cec5ef1092daeb27f9a3dc35fb24760d8f6ec2c3",
+      "bytes": 16123
+    },
+    "hermes/run_recovery.py": {
+      "sha256": "69ed38244603b770afdc8a06b345e5e297d1896fec9a9a962188dc583db30252",
+      "bytes": 14178
+    },
+    "hermes/test_recovery.py": {
+      "sha256": "06f5d50e1c29e79ffe9b5781ad2f309af3978f60925a38395ab102bb810c6a42",
+      "bytes": 11776
+    },
+    "hermes/source-lock.json": {
+      "sha256": "faecdfc15cfba7379aef16dcd6fdb013135afe4c6fdd2df010a1de4644a55e60",
+      "bytes": 1855
+    },
+    "runtime/gateway.py": {
+      "sha256": "9dcc3c4adf9e0506693f1d897c0076524f31f0e5ca8dddd7758ccabe1b815f36",
+      "bytes": 17255
+    },
+    "runtime/scheduler.py": {
+      "sha256": "149baadc08496329fc2dc426cc4e57bc625f85cfea343925feb03d3bbf567061",
+      "bytes": 4386
+    }
+  },
+  "scope": "Byte-exact failed controlled-03 harness, agent consumers and prior gateway/scheduler; remaining unchanged source dependencies are hash-bound. Not accepted real-agent recovery or an installed runtime/model archive.",
+  "failure_class": "Hermes provider stale watchdog during ordinary queued HTTP admission",
+  "accepted_real_recovery": false,
+  "sdk_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+  "scan": {
+    "personal_absolute_paths": false,
+    "credential_patterns": false,
+    "literal_api_key": "local-no-key placeholder only",
+    "raw_private_logs_databases_configs_or_transcripts_copied": false,
+    "synthetic_task_literals_preserved_in_source": true
+  },
+  "predecessor_core_revision": "ed261587234ec9938f680acc460bfdef26ceb419",
+  "predecessor_core_byte_exact": true,
+  "shared_source_dependencies": {
+    "src/adaptive_inference/handoff.py": "a6fa8da1a408eacf151971aa4b488fcc1ca515cb84b9a63451dc14ecdfd44a72",
+    "src/adaptive_inference/config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+    "src/adaptive_inference/costs.py": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1",
+    "src/adaptive_inference/task_store.py": "39f4efaa0983fea5202ac1027f12c7638787e7da874e26b678a9a3812b1afacc",
+    "examples/validation/windows_handoff/foreground/activity.py": "3c050a620bb5d58938a62b0fbfb44f8f143f5ea466ec1259db502a0cbf49e6ec",
+    "examples/validation/windows_handoff/foreground/metrics.py": "a0d0e4f7537ed977b57bd460a886960bd2572567e9f4d29d01976e1b0d669a13",
+    "examples/validation/windows_handoff/foreground/foreground_window.py": "e9f79c0e20883bfef9ded909260516ed3fd0c1e2d620cc181b0c0e1b354bd093",
+    "examples/validation/windows_handoff/foreground/quiet_window.py": "c1b9c21a3f1f754f1fb95bde848fdbd796bce9d1018afebc7d568bf76f259a84",
+    "examples/validation/windows_handoff/native/windows_host.py": "6556ad57ce35a2e877c8cf6d689b7f7321baf83850fdc5cecfe3875eeedb3973",
+    "examples/validation/windows_handoff/native/native_owner_adapter.py": "83e20bbc6504a0e85bd88895358881d6da30c3c7ac079692c2900022535cd9c7",
+    "examples/validation/windows_handoff/native/owner_source/engine.py": "5d39241b62c63530a5d56910aa0ab7a7ad5d8a53533a571a4264e2f5b2d1c54f",
+    "examples/validation/windows_handoff/native/owner_source/owned_job.py": "4c62671096e2fc2f559a0a0e1807645df5161022701d210f5ba6c810d7b3439f",
+    "examples/validation/windows_handoff/native/owner_source/ownership.py": "0016405458e852503882cd68bc379e3b5e6fedc33d913674d78235b78c1c1227",
+    "examples/validation/windows_handoff/native/owner_source/memory_reader.py": "d3c36b74a6040b8c743bb7362275fb7fc6c7a22f8aaed38e94798ab193167e86",
+    "examples/validation/windows_handoff/native/owner_source/memory_monitor.py": "74bb33ccb7a0f6cdb3da630c12ddeac4f0d0504bd6a70af62255495169f634fd",
+    "examples/validation/windows_handoff/native/owner_source/source-pins.json": "1b18c52749e10a109328440aaed3914fe55c3cdcd1d6fb8473839eafa8af39a2"
+  }
+}

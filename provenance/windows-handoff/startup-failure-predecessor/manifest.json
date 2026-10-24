@@ -1,0 +1,12 @@
+{
+  "schema": "adaptive.startup-failure-source.v1",
+  "observed": "2026-10-24",
+  "files": {
+    "native_owner_adapter.py": "83e20bbc6504a0e85bd88895358881d6da30c3c7ac079692c2900022535cd9c7",
+    "windows_host.py": "6556ad57ce35a2e877c8cf6d689b7f7321baf83850fdc5cecfe3875eeedb3973",
+    "engine.py": "5d39241b62c63530a5d56910aa0ab7a7ad5d8a53533a571a4264e2f5b2d1c54f",
+    "ownership.py": "0016405458e852503882cd68bc379e3b5e6fedc33d913674d78235b78c1c1227",
+    "source-pins.json": "1b18c52749e10a109328440aaed3914fe55c3cdcd1d6fb8473839eafa8af39a2"
+  },
+  "scope": "Exact pre-diagnostic source from a failed startup, not qualification evidence; no model assets or private run state"
+}

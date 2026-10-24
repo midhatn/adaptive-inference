@@ -2,3 +2,4 @@
 finagle/** -text
 strata/** -text
 dynamo/** -text
+psutil/** -text

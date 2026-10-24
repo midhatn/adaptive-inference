@@ -24,6 +24,12 @@ The service also needs graceful recovery from a tool failure, unavailable model,
 
 Closing the application or rebooting the computer must preserve the same continuity. Durable task state is separate from whether a window stays open or a model stays loaded. The implemented [task-survival foundation](task-survival.md) restores committed progress across process restarts and records interrupted operations for reconciliation. Wiring this into an installed agent's startup and tool execution remains an integration step; no physical reboot or power-cut qualification is claimed by its software tests.
 
+The first bounded [automatic-handoff implementation](automatic-handoff.md) now
+composes the portable queue, actual Windows foreground observations, verified
+owner release/restoration and an installed-Hermes file-task recovery adapter.
+The durable file-task adapter fills part of the integration step above; general
+agent startup, arbitrary tools and operating-system reboot qualification remain.
+
 ## Example experience
 
 1. Start Hermes with a model served by Strata and give it a task. Adaptive Inference begins background work using the available capacity.
@@ -38,14 +44,14 @@ This sequence is a target scenario, not a report of a completed end-to-end test.
 
 | Capability | Present position | Required next proof |
 | --- | --- | --- |
-| Shared user/agent scheduling | Working portable HTTP queue and timing feedback | Useful artifact-producing agent tasks under changing foreground demand |
-| Observe pressure and recover conservatively | Optional host RAM/Windows-commit gate; fresh-sample recovery policy | Continuous CPU/GPU/VRAM contention signals and measured foreground responsiveness on the supported platform |
-| Release inference resources | Richer mechanisms retained in the pinned Strata integration | Exact native adapter acknowledgements, fresh capacity checks and failure handling across a complete workflow |
-| Coordinate protected tools | Earlier lease and host-middleware work provides integration points | Compiler and video/model tools acquire, release and reconcile ownership reliably, including failures and user activity changes |
-| Preserve and resume the agent task | Durable SQLite checkpoints, identity-bound feedback continuation, OS owner lock and interrupted-operation reconciliation; real process-restart artifact checks | Installed-agent startup/boot integration, native unload/reload transitions, and tool-specific reconciliation or idempotency |
+| Shared user/agent scheduling | Portable HTTP queue and timing feedback; one checked Hermes file task across foreground interruption and a worker restart | Persistent demand, explicit user intent and practical pause/resume/cancel controls |
+| Observe pressure and recover conservatively | Real Windows foreground identity/CPU/input-age observations; two accepted bounded animation phases | Relevant renderer/helper and GPU contention signals; separate browser, game and video-playback qualification |
+| Release inference resources | Accepted exact-owner release, fresh capacity and unchanged-quality restoration in one Windows IQ3_S workflow | Demand-driven cold startup, failure recovery and long-running integration |
+| Coordinate protected tools | One accepted 90-frame NVENC handoff with independently decoded output and owned-process cleanup | Agent-selected compiler and model tools, with their own effect reconciliation and interruption tests |
+| Preserve and resume the agent task | Durable SQLite checkpoints and one installed-Hermes worker restart retaining the accepted report and native history | Persistent host/application restart, sleep/wake, computer reboot and additional tool effect contracts |
 | Support multiple engines and agents | Eight engine API profiles and ten client recipes | Native/resource and task-continuation adapters with their own acceptance evidence; API compatibility alone is insufficient |
 
-The current memory sampler observes the host; it does not resize GPU caches or implement the full controller. [Evidence](evidence.md), [integration scope](integrations.md) and the [development plan](../PLAN.md) retain those distinctions.
+The [accepted bounded result](../provenance/windows-handoff/controlled-11/README.md) uses explicit native ownership; an ordinary memory sample alone cannot authorize a resource transition. [Evidence](evidence.md), [integration scope](integrations.md) and the [development plan](../PLAN.md) distinguish this composition from portable API support and future everyday operation.
 
 ## Acceptance: useful coexistence and completed work
 
@@ -62,6 +68,6 @@ Shared hardware cannot provide unlimited work with literally zero contention. Th
 
 ## Contribution direction
 
-The next milestone is one reproducible always-on workflow on a supported machine, including foreground interruption, a resource-intensive tool, verified return to inference, and a completed artifact. Broader engine and agent ports should reuse that contract.
+The next milestone turns the accepted bounded workflow into a practical persistent host: durable demand while the model is unloaded, trusted user controls, observable waiting and cleanup across lifecycle changes. Broader engine and agent ports should reuse the qualified contracts and supply their own relevant validation.
 
 [Research references](research.md), [REFERENCES.bib](../REFERENCES.bib) and [NOTICE](../NOTICE) preserve the sources behind the design and reused code. Attribution belongs with the mechanism that uses it.

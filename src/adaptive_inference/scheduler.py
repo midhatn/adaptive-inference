@@ -35,8 +35,11 @@ class Scheduler:
         self.uncertain = False
         self.closing = False
         self.completed = self.cancelled = self.rejected = 0
+        self.deferred = 0
 
-    async def acquire(self, request_class, predicted_s, disconnected=lambda: False):
+    async def acquire(self, request_class, predicted_s, disconnected=lambda: False, *, wait=True):
+        if type(wait) is not bool:
+            raise ValueError("wait must be a boolean")
         now = time.monotonic()
         cost = self.config.max_cost_delay_s if predicted_s is None else min(predicted_s, self.config.max_cost_delay_s)
         ticket = Ticket(next(self.sequence), request_class, now,
@@ -46,6 +49,9 @@ class Scheduler:
             if self.closing or self.uncertain:
                 raise AdmissionError("backend_unavailable", "Gateway is stopping or backend completion is uncertain; check backend and restart gateway")
             if len(self.pending) >= self.config.max_pending:
+                if not wait:
+                    self.deferred += 1
+                    raise AdmissionError("admission_deferred", "Request was not dispatched; immediate admission is unavailable")
                 self.rejected += 1
                 raise AdmissionError("queue_full", "Pending queue is full", 429)
             self.pending[ticket.sequence] = ticket
@@ -56,20 +62,25 @@ class Scheduler:
                     if self.closing or self.uncertain:
                         raise AdmissionError("backend_unavailable", "Backend completion is uncertain or gateway is stopping")
                     left = deadline - time.monotonic()
-                    if left <= 0:
+                    if wait and left <= 0:
                         raise AdmissionError("queue_timeout", "Queue or capacity wait expired", 504)
                     head = min(self.pending.values(), key=lambda value: (value.rank, value.sequence))
                     if self.active is None and head is ticket and self.capacity():
                         del self.pending[ticket.sequence]
                         self.active = ticket
                         return ticket
+                    if not wait:
+                        raise AdmissionError("admission_deferred", "Request was not dispatched; immediate admission is unavailable")
                     try:
                         await asyncio.wait_for(self.condition.wait(), min(left, .1))
                     except TimeoutError:
                         pass
-            except BaseException:
+            except BaseException as exc:
                 self.pending.pop(ticket.sequence, None)
-                self.cancelled += 1
+                if isinstance(exc, AdmissionError) and exc.code == "admission_deferred":
+                    self.deferred += 1
+                else:
+                    self.cancelled += 1
                 self.condition.notify_all()
                 raise
 
@@ -92,6 +103,7 @@ class Scheduler:
                 "normal_pending": sum(t.request_class == "normal" for t in self.pending.values()),
                 "background_pending": sum(t.request_class == "background" for t in self.pending.values()),
                 "completed": self.completed, "cancelled": self.cancelled, "rejected": self.rejected,
+                "deferred": self.deferred,
                 "backend_completion_uncertain": self.uncertain, "closing": self.closing,
                 "maximum_ordering_offset_s": self.config.normal_boost_s + self.config.max_cost_delay_s,
                 "preemption": False, "resource_reservation": False}

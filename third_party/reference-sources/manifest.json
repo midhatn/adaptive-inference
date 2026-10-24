@@ -63,6 +63,18 @@
       ],
       "description": "Bounded arrival-offset scheduling reference. This archival Rust file is not compiled, imported or a runtime dependency; the portable queue is independently implemented.",
       "archive_prefix": "dynamo/868de572ad9e10e2effb16bb0cff57f3973ca1e8"
+    },
+    {
+      "id": "psutil",
+      "repository": "giampaolo/psutil",
+      "revision": "a1e3067965a075c40b79971cfda51501e80da685",
+      "license": "BSD-3-Clause",
+      "reuse_kind": "adapted missing-process error classification; no implementation copied",
+      "used_by": [
+        "examples/validation/windows_handoff/native/owner_source/ownership.py"
+      ],
+      "description": "OpenProcess ERROR_INVALID_PARAMETER is a missing-process candidate; access-denied and other API errors remain errors. The local tracker also requires independent PID absence and never fabricates retained exit evidence.",
+      "archive_prefix": "psutil/a1e3067965a075c40b79971cfda51501e80da685"
     }
   ],
   "files": [
@@ -245,6 +257,34 @@
       "bytes": 11904,
       "license_spdx": "Apache-2.0",
       "license_path": "dynamo/868de572ad9e10e2effb16bb0cff57f3973ca1e8/LICENSE",
+      "kind": "license",
+      "modifications": "none"
+    },
+    {
+      "path": "psutil/a1e3067965a075c40b79971cfda51501e80da685/psutil/arch/windows/proc_utils.c",
+      "source_repository": "giampaolo/psutil",
+      "source_revision": "a1e3067965a075c40b79971cfda51501e80da685",
+      "source_path": "psutil/arch/windows/proc_utils.c",
+      "source_url": "https://github.com/giampaolo/psutil/blob/a1e3067965a075c40b79971cfda51501e80da685/psutil/arch/windows/proc_utils.c",
+      "git_blob_sha1": "321e9d2d73250325bffb7e4a7e7fce563005f978",
+      "sha256": "a3ef9282e9636ee82d03be95e55061f5ca730163196f1b45c6c414aaf89771f4",
+      "bytes": 7369,
+      "license_spdx": "BSD-3-Clause",
+      "license_path": "psutil/a1e3067965a075c40b79971cfda51501e80da685/LICENSE",
+      "kind": "unmodified_reference_source",
+      "modifications": "none"
+    },
+    {
+      "path": "psutil/a1e3067965a075c40b79971cfda51501e80da685/LICENSE",
+      "source_repository": "giampaolo/psutil",
+      "source_revision": "a1e3067965a075c40b79971cfda51501e80da685",
+      "source_path": "LICENSE",
+      "source_url": "https://github.com/giampaolo/psutil/blob/a1e3067965a075c40b79971cfda51501e80da685/LICENSE",
+      "git_blob_sha1": "cff5eb74e1badd1c5237ed2654b349530179ad1d",
+      "sha256": "b89c063b3786e28e0c0a38f1931db61fed35e69dd2a2966fbecffee0f46c8d10",
+      "bytes": 1548,
+      "license_spdx": "BSD-3-Clause",
+      "license_path": "psutil/a1e3067965a075c40b79971cfda51501e80da685/LICENSE",
       "kind": "license",
       "modifications": "none"
     }

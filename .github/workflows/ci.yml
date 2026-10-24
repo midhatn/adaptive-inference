@@ -29,6 +29,11 @@ jobs:
       - run: python -m unittest discover -s provenance -p "test_*.py" -v
       - run: python -m pip install httpx==0.28.1
       - run: python examples/validation/hermes_tool_task/test_boundary.py
+      - run: python -m unittest discover -s examples/validation/windows_handoff/foreground -v
+      - run: python -m unittest discover -s examples/validation/windows_handoff/native -v
+      - run: python -m unittest discover -s examples/validation/windows_handoff -p test_arithmetic_feedback.py -v
+      - run: python -m unittest discover -s examples/validation/windows_handoff -p test_shutdown_receipts.py -v
+      - run: python -m unittest discover -s provenance/windows-handoff/sanitizer -p "test_*.py" -v
       - run: python third_party/reference-sources/verify.py
       - run: python provenance/client-config-transports/verify-sources.py
       - run: python integrations/strata/setup.py --verify-only

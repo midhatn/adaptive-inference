@@ -1,0 +1,242 @@
+[
+  {
+    "path": "ARITHMETIC-FEEDBACK-DECISION.md",
+    "origin": "successor-v5/ARITHMETIC-FEEDBACK-DECISION.md",
+    "predecessor_sha256": "3040ab484f5c8f94a25bd5738d3d00f40ca3da2dfb68840c38c46aefc4307c40"
+  },
+  {
+    "path": "foreground/activity.py",
+    "origin": "successor-v5/foreground/activity.py",
+    "predecessor_sha256": "3c050a620bb5d58938a62b0fbfb44f8f143f5ea466ec1259db502a0cbf49e6ec"
+  },
+  {
+    "path": "foreground/compare_runs.py",
+    "origin": "successor-v5/foreground/compare_runs.py",
+    "predecessor_sha256": "76b15053e2a44861556916724e5cbb6a08ad2cb757e81aeef77c632699c04958"
+  },
+  {
+    "path": "foreground/foreground_window.py",
+    "origin": "successor-v5/foreground/foreground_window.py",
+    "predecessor_sha256": "e9f79c0e20883bfef9ded909260516ed3fd0c1e2d620cc181b0c0e1b354bd093"
+  },
+  {
+    "path": "foreground/HANDOFF-REVIEW.md",
+    "origin": "successor-v5/foreground/HANDOFF-REVIEW.md",
+    "predecessor_sha256": "072adc9ef512c2501262b0675be56863adc96ee5ea1d4147b92db0fa2031e452"
+  },
+  {
+    "path": "foreground/metrics.py",
+    "origin": "successor-v5/foreground/metrics.py",
+    "predecessor_sha256": "a0d0e4f7537ed977b57bd460a886960bd2572567e9f4d29d01976e1b0d669a13"
+  },
+  {
+    "path": "foreground/quiet_window.py",
+    "origin": "successor-v5/foreground/quiet_window.py",
+    "predecessor_sha256": "c1b9c21a3f1f754f1fb95bde848fdbd796bce9d1018afebc7d568bf76f259a84"
+  },
+  {
+    "path": "foreground/README.md",
+    "origin": "successor-v5/foreground/README.md",
+    "predecessor_sha256": "d5e25d3da1861072474febc52dadf09451c42f24ed837d925c5e888599495624"
+  },
+  {
+    "path": "foreground/RESEARCH.md",
+    "origin": "successor-v5/foreground/RESEARCH.md",
+    "predecessor_sha256": "eab295f33421061663b8c305f8025711e50ba5fcb8a3450922e6a7f6604a7f22"
+  },
+  {
+    "path": "foreground/review_handoff_races.py",
+    "origin": "successor-v5/foreground/review_handoff_races.py",
+    "predecessor_sha256": "11299c0afa3bb29c88089f535251cd798e7445bc4528c9edae6f5c0d6e7ed6ec"
+  },
+  {
+    "path": "foreground/review_handoff_races_after.py",
+    "origin": "successor-v5/foreground/review_handoff_races_after.py",
+    "predecessor_sha256": "969715e48f3a6515a4694a048350be98f449a57f306e37e8fac52e9039604a65"
+  },
+  {
+    "path": "foreground/test_foreground.py",
+    "origin": "successor-v5/foreground/test_foreground.py",
+    "predecessor_sha256": "baa9bff0e97f014b8aaf292351b78edab8897c1e21a9a4cfa11a7549536515c8"
+  },
+  {
+    "path": "native/handoff-package.private.json",
+    "origin": "successor-v5/native/handoff-package.private.json",
+    "predecessor_sha256": "2aadfd538bb59fa0701005ae7410f86c5f27340cd5ac0900733ec481d6f4bf54"
+  },
+  {
+    "path": "native/native_owner_adapter.py",
+    "origin": "successor-v5/native/native_owner_adapter.py",
+    "predecessor_sha256": "b1b75cbf4632b657573aef54bc4c4ca671a5e9aaa75c02d0d3c3022dd97a6b2a"
+  },
+  {
+    "path": "native/owner_source/engine.py",
+    "origin": "successor-v5/native/owner_source/engine.py",
+    "predecessor_sha256": "d0b4174d3b1aff944d749c6094e2953399bf895f31001aa2f8a1180fba18a4f4"
+  },
+  {
+    "path": "native/owner_source/memory_monitor.py",
+    "origin": "successor-v5/native/owner_source/memory_monitor.py",
+    "predecessor_sha256": "74bb33ccb7a0f6cdb3da630c12ddeac4f0d0504bd6a70af62255495169f634fd"
+  },
+  {
+    "path": "native/owner_source/memory_reader.py",
+    "origin": "successor-v5/native/owner_source/memory_reader.py",
+    "predecessor_sha256": "d3c36b74a6040b8c743bb7362275fb7fc6c7a22f8aaed38e94798ab193167e86"
+  },
+  {
+    "path": "native/owner_source/owned_job.py",
+    "origin": "successor-v5/native/owner_source/owned_job.py",
+    "predecessor_sha256": "4c62671096e2fc2f559a0a0e1807645df5161022701d210f5ba6c810d7b3439f"
+  },
+  {
+    "path": "native/owner_source/ownership.py",
+    "origin": "successor-v5/native/owner_source/ownership.py",
+    "predecessor_sha256": "f419391c84d5d123328b8c3b454253f060e4d5d59db89fedd43fbd2313960b14"
+  },
+  {
+    "path": "native/owner_source/source-pins.json",
+    "origin": "successor-v5/native/owner_source/source-pins.json",
+    "predecessor_sha256": "19f871c8b6ca05becec6f9a76758eac94d9aa38f29951af1e20753bdd7ee7aca"
+  },
+  {
+    "path": "native/prepare_handoff_owner.py",
+    "origin": "successor-v5/native/prepare_handoff_owner.py",
+    "predecessor_sha256": "b1db6d01dc79348c56f9723f18e78064f7f5bd3a7488b39c51313960319c0640"
+  },
+  {
+    "path": "native/README.md",
+    "origin": "successor-v5/native/README.md",
+    "predecessor_sha256": "b993eaefba2df96f83cae68b89f96266611623a635e977880b2f1db86ed49af1"
+  },
+  {
+    "path": "native/test_native_owner_adapter.py",
+    "origin": "successor-v5/native/test_native_owner_adapter.py",
+    "predecessor_sha256": "0be3daa9300d9574c6638402c0f154be289ef13de9eab23c6618a2903469989d"
+  },
+  {
+    "path": "native/test_owner_failure.py",
+    "origin": "successor-v5/native/test_owner_failure.py",
+    "predecessor_sha256": "1f264e8787fb78d897c831828673888db94e7734d887968accd148e80cebf565"
+  },
+  {
+    "path": "native/test_prepare_handoff_owner.py",
+    "origin": "successor-v5/native/test_prepare_handoff_owner.py",
+    "predecessor_sha256": "4453fddef864362bb5ff0d0be280e8cbc5754e2c1c5ef18ef2c2df404b97adde"
+  },
+  {
+    "path": "native/test_windows_host.py",
+    "origin": "successor-v5/native/test_windows_host.py",
+    "predecessor_sha256": "da3aaecf3ad0fbbf8ded8b83dd38ae79fbafcfbcfa27da9a442552c9d347795a"
+  },
+  {
+    "path": "native/windows_host.py",
+    "origin": "successor-v5/native/windows_host.py",
+    "predecessor_sha256": "7f364433903d29656429f8afcb70ba55e4b85e40e327a8135e4543f95028c6a2"
+  },
+  {
+    "path": "predecessor-source-manifest.json",
+    "origin": "successor-v5/predecessor-source-manifest.json",
+    "predecessor_sha256": "4afb9ca9d94913a4c67a28e7c1c25b58c4fb0aea82f332726de15f940562325b"
+  },
+  {
+    "path": "run_validation.py",
+    "origin": "successor-v5/run_validation.py",
+    "predecessor_sha256": "2f5315dcf53831509493e7f451e187a4ab748072f42992e9997aa17b17f8118e"
+  },
+  {
+    "path": "test_arithmetic_feedback.py",
+    "origin": "successor-v5/test_arithmetic_feedback.py",
+    "predecessor_sha256": "3ed0d372d572c47c4b382a2ab72e4fa4ce9f2bd4201d75a134bbb52477d3ba28"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/__init__.py",
+    "origin": "canonical/src/adaptive_inference/__init__.py",
+    "predecessor_sha256": "5d4569a00e03c044ec5d9ad0b19a5a58c67c27c2f0cb51d94e4e968eb4d8d023"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/__main__.py",
+    "origin": "canonical/src/adaptive_inference/__main__.py",
+    "predecessor_sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/adapters.py",
+    "origin": "canonical/src/adaptive_inference/adapters.py",
+    "predecessor_sha256": "378ee41c1bdbb16873e31752d704e656a70009862d41b36898d30f57a36dfc58"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/cli.py",
+    "origin": "canonical/src/adaptive_inference/cli.py",
+    "predecessor_sha256": "5d794164a43230951a57c18d7b45d04d12f3e8974871648fd09ec04502f448bb"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/client_routing.py",
+    "origin": "canonical/src/adaptive_inference/client_routing.py",
+    "predecessor_sha256": "d57178cfbd5666e75aef311f1362cf8486f48085c6f4995861b4fbd0cb7e41d1"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/config.py",
+    "origin": "canonical/src/adaptive_inference/config.py",
+    "predecessor_sha256": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/context_budget.py",
+    "origin": "canonical/src/adaptive_inference/context_budget.py",
+    "predecessor_sha256": "cd16b57bc105a179e94dbc9e429c02b901bcd8602cfaf04c9cf8776e9d799ccf"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/costs.py",
+    "origin": "canonical/src/adaptive_inference/costs.py",
+    "predecessor_sha256": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/demand.py",
+    "origin": "canonical/src/adaptive_inference/demand.py",
+    "predecessor_sha256": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/demo.py",
+    "origin": "canonical/src/adaptive_inference/demo.py",
+    "predecessor_sha256": "5a3b1ff743bee6c45f85df8417bedbc18657f2c59f3e894f1f3298a480b22b93"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/feedback.py",
+    "origin": "canonical/src/adaptive_inference/feedback.py",
+    "predecessor_sha256": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/gateway.py",
+    "origin": "canonical/src/adaptive_inference/gateway.py",
+    "predecessor_sha256": "261f92078e7691bc8e51cd1d67dd370cb2bfcfb008c0c2c7df44ddfbedc0a8f0"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/handoff.py",
+    "origin": "canonical/src/adaptive_inference/handoff.py",
+    "predecessor_sha256": "a6fa8da1a408eacf151971aa4b488fcc1ca515cb84b9a63451dc14ecdfd44a72"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/resource_policy.py",
+    "origin": "canonical/src/adaptive_inference/resource_policy.py",
+    "predecessor_sha256": "53768d4b95b589bb76d1788a9ccceefe60c05b332b1b1f43dece6b04bfec212a"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/resources.py",
+    "origin": "canonical/src/adaptive_inference/resources.py",
+    "predecessor_sha256": "a72e376e4dfc6021e61756812f93275af20c28ec1438faf5eb381a491d3db4d9"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/scheduler.py",
+    "origin": "canonical/src/adaptive_inference/scheduler.py",
+    "predecessor_sha256": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f"
+  },
+  {
+    "path": "runtime/src/adaptive_inference/task_store.py",
+    "origin": "canonical/src/adaptive_inference/task_store.py",
+    "predecessor_sha256": "39f4efaa0983fea5202ac1027f12c7638787e7da874e26b678a9a3812b1afacc"
+  },
+  {
+    "path": "runtime/test_handoff.py",
+    "origin": "canonical/tests/test_handoff.py",
+    "predecessor_sha256": "ed2f3962ef88cab83a4263027151e23a9662b91a01b05732c580fa95e5eb9563"
+  }
+]

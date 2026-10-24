@@ -18,6 +18,15 @@ Strata originals retain the MIT license and the copyright of Niko1221 and the St
 
 ## Offline verification
 
+The Windows handoff owner additionally adapts psutil's narrow missing-process
+classification from [proc_utils.c](psutil/a1e3067965a075c40b79971cfda51501e80da685/psutil/arch/windows/proc_utils.c),
+revision `a1e3067965a075c40b79971cfda51501e80da685`, under its retained
+[BSD-3-Clause license](psutil/a1e3067965a075c40b79971cfda51501e80da685/LICENSE).
+The independently implemented tracker permits only an `OpenProcess` error 87
+with independently confirmed PID absence; access denial and other observation
+errors remain failures. No C implementation is compiled or copied into the
+runtime, and no process exit count is fabricated for a vanished unretained PID.
+
 From the repository or source-distribution root, run:
 
 `python third_party/reference-sources/verify.py`
