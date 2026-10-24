@@ -1,3 +1,5 @@
 * text=auto eol=lf
 # Source overlays are hashed byte-for-byte by the reconstruction scripts.
 *.patch -text
+*.bundle -text
+*.gz -text

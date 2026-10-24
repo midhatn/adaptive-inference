@@ -16,7 +16,7 @@ This repository owns shared policy, contracts, reproducible tests, documentation
 | --- | --- | --- |
 | 1. Publish a reproducible core | Installable Python gateway, bounded queue, timing model, feedback helper, local HTTP demo, CI and provenance | Fresh environment install; protocol tests and demo pass; no private machine dependencies |
 | 2. Broad protocol integrations | Eight engine profiles and ten agent configuration/SDK recipes | Each profile passes applicable endpoint/metadata/quality contracts; recipes cite official configuration sources |
-| 3. Preserve working native work | Pinned Strata and Hermes bases, hashed overlays, clean reconstruction scripts and evidence ledger | A fresh public clone reconstructs every shipped changed file; no binaries, credentials or model weights bundled |
+| 3. Preserve working native work | Locally archived Strata/Hermes bases and native dependency, hashed overlays, offline reconstruction scripts and evidence ledger | A complete clone/source distribution reconstructs every shipped integration source without external PRs; existing public support/test assets retained, no private artifacts or full inference model bundled |
 | 4. Establish the upstream relationship | Link all relevant historical PRs in the main repo and post scoped updates to relevant authored/contribution threads | Exact posted URLs and bodies are recorded; closed PRs retain truthful status; maintainers retain merge control |
 | 5. Exercise useful real agent tasks | A bounded artifact-producing task with an independent acceptance check, feedback and repair attempts | Original requested artifact passes the check; failure/attempt exhaustion is returned honestly; no tool effects replayed by the gateway |
 | 6. Add native capability adapters | Explicit status, cancel/drain acknowledgement, memory/cache controls and optional resource leases | Each backend verifies its own capacity and process/operation identities; unsupported capabilities remain unavailable |
@@ -46,7 +46,7 @@ Restart survival is a core requirement. The [durable checkpoint foundation](docs
 
 ## Reproduction and release policy
 
-Every release includes source, dependency pins, CI, a runnable no-model demo, example configurations, a versioned compatibility matrix, citations and an evidence ledger. Hardware-dependent checks name exact source/model/runtime/platform and retain failures. Model weights remain separately acquired under their own terms.
+Every release includes source, dependency pins, CI, a runnable no-model demo, example configurations, a versioned compatibility matrix, citations and an evidence ledger. The complete source distribution also preserves required integration baselines, overlays and licensed reference sources; the runtime wheel stays focused on the portable package. The [preservation contract](docs/source-of-truth.md) defines these boundaries. Hardware-dependent checks name exact source/model/runtime/platform and retain failures. Model weights remain separately acquired under their own terms.
 
 Default CI covers Windows, Linux and macOS on supported Python versions. Native backends require distinct jobs or published operator receipts. An API fixture passing does not turn into an installed-agent or native-performance claim.
 

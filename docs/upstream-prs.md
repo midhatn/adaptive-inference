@@ -1,6 +1,8 @@
 # Upstream PR registry
 
-This project is a downstream integration, with source identity and validation kept separate from each upstream PR. The live inventory was checked at **2026-10-23T22:51:07Z** (24 October 2026 in the reviewer's local date). It includes **29 Strata**, **7 Hermes**, **1 related fork** authored/involved PRs and **6 explicitly cited source/successor PRs**, including closed work. Current metadata and complete conversation/review timelines were read for all 43 entries through the GitHub connector.
+This is a historical delivery and provenance index for the canonical Adaptive Inference repository. Source, contracts, reproduction instructions and evidence live here; no upstream PR is required to understand or reconstruct the shipped implementation. See the [source preservation contract](source-of-truth.md).
+
+The inventory was checked at **2026-10-23T22:51:07Z** (24 October 2026 in the reviewer's local date). It includes **29 Strata**, **7 Hermes**, **1 related fork** authored/involved PRs and **6 explicitly cited source/successor PRs**, including closed work. Metadata and complete conversation/review timelines were read for all 43 entries through the GitHub connector at that time. States below are timestamped observations, not a live status feed.
 
 The same accessible-account search found no involved PR in Comfy-Org/ComfyUI or its historical comfyanonymous/ComfyUI name. This is not a claim about inaccessible repositories. Titles below are GitHub's current titles. A PR marked closed may have been ported with credit; it is not labeled merged unless GitHub reports a merge.
 

@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "purpose": "Offline source reference preservation for mechanisms actually used by Adaptive Inference. Archived files are unmodified provenance, not executed runtime dependencies.",
+  "integrity_scope": "SHA-256 and Git blob identifiers detect byte changes against this manifest. This manifest does not authenticate upstream authorship or replace license terms.",
+  "groups": [
+    {
+      "id": "finagle",
+      "repository": "twitter/finagle",
+      "revision": "9cc08d15216497bb03a1cafda96b7266cfbbcff1",
+      "license": "Apache-2.0",
+      "reuse_kind": "adapted arithmetic",
+      "used_by": [
+        "src/adaptive_inference/costs.py"
+      ],
+      "description": "Spike-sensitive exponential cost update; the portable implementation adds context matching, sample minimums, expiry and empirical p90, and does not decay on reads or copy endpoint/pending-request logic.",
+      "archive_prefix": "finagle/9cc08d15216497bb03a1cafda96b7266cfbbcff1"
+    },
+    {
+      "id": "strata",
+      "repository": "Niko1221/Strata",
+      "revision": "15a59d4785f492b4df3fb78862373a5383696450",
+      "license": "MIT",
+      "reuse_kind": "adapted observation and recovery policy",
+      "used_by": [
+        "src/adaptive_inference/resource_policy.py"
+      ],
+      "description": "Fresh observation and gradual recovery patterns; the portable policy is not the upstream native allocator.",
+      "archive_prefix": "strata/15a59d4785f492b4df3fb78862373a5383696450"
+    },
+    {
+      "id": "strata",
+      "repository": "Niko1221/Strata",
+      "revision": "f273ef65e8f4548125f3e72833cd61019b82080f",
+      "license": "MIT",
+      "reuse_kind": "adapted budget arithmetic and regression references",
+      "used_by": [
+        "src/adaptive_inference/context_budget.py",
+        "tests/test_context_budget.py"
+      ],
+      "description": "Small-context safety-margin arithmetic and reference regression cases; the portable planner preserves requested output rather than clamping it. The archived upstream test requires upstream fixtures/dependencies that are not part of this reference archive.",
+      "archive_prefix": "strata/f273ef65e8f4548125f3e72833cd61019b82080f"
+    },
+    {
+      "id": "strata",
+      "repository": "Niko1221/Strata",
+      "revision": "64d119cd602ddc439c311dedf61fda460f2785ef",
+      "license": "MIT",
+      "reuse_kind": "adapted transaction and revision-check pattern",
+      "used_by": [
+        "src/adaptive_inference/task_store.py"
+      ],
+      "description": "Per-operation SQLite transactions and optimistic revision checks; task execution ledger, ownership locks, uncertain-effect reconciliation and durable feedback runner are local additions. A conversation archive is not autonomous execution recovery.",
+      "archive_prefix": "strata/64d119cd602ddc439c311dedf61fda460f2785ef"
+    },
+    {
+      "id": "dynamo",
+      "repository": "ai-dynamo/dynamo",
+      "revision": "868de572ad9e10e2effb16bb0cff57f3973ca1e8",
+      "license": "Apache-2.0",
+      "reuse_kind": "design reference only; no implementation port",
+      "used_by": [
+        "src/adaptive_inference/scheduler.py"
+      ],
+      "description": "Bounded arrival-offset scheduling reference. This archival Rust file is not compiled, imported or a runtime dependency; the portable queue is independently implemented.",
+      "archive_prefix": "dynamo/868de572ad9e10e2effb16bb0cff57f3973ca1e8"
+    }
+  ],
+  "files": [
+    {
+      "path": "finagle/9cc08d15216497bb03a1cafda96b7266cfbbcff1/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/PeakEwma.scala",
+      "source_repository": "twitter/finagle",
+      "source_revision": "9cc08d15216497bb03a1cafda96b7266cfbbcff1",
+      "source_path": "finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/PeakEwma.scala",
+      "source_url": "https://github.com/twitter/finagle/blob/9cc08d15216497bb03a1cafda96b7266cfbbcff1/finagle-core/src/main/scala/com/twitter/finagle/loadbalancer/PeakEwma.scala",
+      "git_blob_sha1": "2179c6b1db996984020ca4347f292e5aecb1e372",
+      "sha256": "a8ff4f617c71a10183c2a6cd439185696c835fe9c2b59abb1dfb51e3f82791cc",
+      "bytes": 3417,
+      "license_spdx": "Apache-2.0",
+      "license_path": "finagle/9cc08d15216497bb03a1cafda96b7266cfbbcff1/LICENSE",
+      "kind": "unmodified_reference_source",
+      "modifications": "none"
+    },
+    {
+      "path": "finagle/9cc08d15216497bb03a1cafda96b7266cfbbcff1/LICENSE",
+      "source_repository": "twitter/finagle",
+      "source_revision": "9cc08d15216497bb03a1cafda96b7266cfbbcff1",
+      "source_path": "LICENSE",
+      "source_url": "https://github.com/twitter/finagle/blob/9cc08d15216497bb03a1cafda96b7266cfbbcff1/LICENSE",
+      "git_blob_sha1": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358,
+      "license_spdx": "Apache-2.0",
+      "license_path": "finagle/9cc08d15216497bb03a1cafda96b7266cfbbcff1/LICENSE",
+      "kind": "license",
+      "modifications": "none"
+    },
+    {
+      "path": "finagle/9cc08d15216497bb03a1cafda96b7266cfbbcff1/NOTICE",
+      "source_repository": "twitter/finagle",
+      "source_revision": "9cc08d15216497bb03a1cafda96b7266cfbbcff1",
+      "source_path": "NOTICE",
+      "source_url": "https://github.com/twitter/finagle/blob/9cc08d15216497bb03a1cafda96b7266cfbbcff1/NOTICE",
+      "git_blob_sha1": "6122b4d9bd1aa6b06e6f80bcf10a0ea23121e479",
+      "sha256": "834671219aab8f95be5f5dfd6db3891a6b256c133c68bd065c417e1f358d4086",
+      "bytes": 296,
+      "license_spdx": "Apache-2.0",
+      "license_path": "finagle/9cc08d15216497bb03a1cafda96b7266cfbbcff1/LICENSE",
+      "kind": "notice",
+      "modifications": "none"
+    },
+    {
+      "path": "strata/15a59d4785f492b4df3fb78862373a5383696450/serve/resource_presets.py",
+      "source_repository": "Niko1221/Strata",
+      "source_revision": "15a59d4785f492b4df3fb78862373a5383696450",
+      "source_path": "serve/resource_presets.py",
+      "source_url": "https://github.com/Niko1221/Strata/blob/15a59d4785f492b4df3fb78862373a5383696450/serve/resource_presets.py",
+      "git_blob_sha1": "83e2ccd8777f79c50512fad3bc5435a5ef1f7bdd",
+      "sha256": "db3f88c417108ee28f50158cb40b22a04b4e8e9284c6f4a302a53c5a5f804310",
+      "bytes": 10944,
+      "license_spdx": "MIT",
+      "license_path": "strata/15a59d4785f492b4df3fb78862373a5383696450/LICENSE",
+      "kind": "unmodified_reference_source",
+      "modifications": "none"
+    },
+    {
+      "path": "strata/15a59d4785f492b4df3fb78862373a5383696450/serve/memory_policy.py",
+      "source_repository": "Niko1221/Strata",
+      "source_revision": "15a59d4785f492b4df3fb78862373a5383696450",
+      "source_path": "serve/memory_policy.py",
+      "source_url": "https://github.com/Niko1221/Strata/blob/15a59d4785f492b4df3fb78862373a5383696450/serve/memory_policy.py",
+      "git_blob_sha1": "8c587db33c0034d4329fbcf3599046b4dc9b304c",
+      "sha256": "a62a350c2ef049f812c353dce6c8e529ed210bd58eb9bf0d35f1d2faaac18d2b",
+      "bytes": 22348,
+      "license_spdx": "MIT",
+      "license_path": "strata/15a59d4785f492b4df3fb78862373a5383696450/LICENSE",
+      "kind": "unmodified_reference_source",
+      "modifications": "none"
+    },
+    {
+      "path": "strata/15a59d4785f492b4df3fb78862373a5383696450/LICENSE",
+      "source_repository": "Niko1221/Strata",
+      "source_revision": "15a59d4785f492b4df3fb78862373a5383696450",
+      "source_path": "LICENSE",
+      "source_url": "https://github.com/Niko1221/Strata/blob/15a59d4785f492b4df3fb78862373a5383696450/LICENSE",
+      "git_blob_sha1": "6687a423dde6b7aff1b748c07f5ee93ff788089c",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "bytes": 1093,
+      "license_spdx": "MIT",
+      "license_path": "strata/15a59d4785f492b4df3fb78862373a5383696450/LICENSE",
+      "kind": "license",
+      "modifications": "none"
+    },
+    {
+      "path": "strata/f273ef65e8f4548125f3e72833cd61019b82080f/apps/desktop/scripts/harness-budget.mjs",
+      "source_repository": "Niko1221/Strata",
+      "source_revision": "f273ef65e8f4548125f3e72833cd61019b82080f",
+      "source_path": "apps/desktop/scripts/harness-budget.mjs",
+      "source_url": "https://github.com/Niko1221/Strata/blob/f273ef65e8f4548125f3e72833cd61019b82080f/apps/desktop/scripts/harness-budget.mjs",
+      "git_blob_sha1": "4f588d756b7f2b2866c5a7c3ee3474ede7b9e8df",
+      "sha256": "1672a5f5be60399d6358db323a3ecac4e8b7c4a93abd94e90169e13801272ec0",
+      "bytes": 2958,
+      "license_spdx": "MIT",
+      "license_path": "strata/f273ef65e8f4548125f3e72833cd61019b82080f/LICENSE",
+      "kind": "unmodified_reference_source",
+      "modifications": "none"
+    },
+    {
+      "path": "strata/f273ef65e8f4548125f3e72833cd61019b82080f/apps/host/tests/harness-budget.test.mjs",
+      "source_repository": "Niko1221/Strata",
+      "source_revision": "f273ef65e8f4548125f3e72833cd61019b82080f",
+      "source_path": "apps/host/tests/harness-budget.test.mjs",
+      "source_url": "https://github.com/Niko1221/Strata/blob/f273ef65e8f4548125f3e72833cd61019b82080f/apps/host/tests/harness-budget.test.mjs",
+      "git_blob_sha1": "5d8a86b578c3ec103c12e351abde529b19a2544e",
+      "sha256": "0b9f06c9334d076cd4817aac5e9982b7e9ebac78752240318e35b765441e1033",
+      "bytes": 7189,
+      "license_spdx": "MIT",
+      "license_path": "strata/f273ef65e8f4548125f3e72833cd61019b82080f/LICENSE",
+      "kind": "unmodified_reference_source",
+      "modifications": "none"
+    },
+    {
+      "path": "strata/f273ef65e8f4548125f3e72833cd61019b82080f/LICENSE",
+      "source_repository": "Niko1221/Strata",
+      "source_revision": "f273ef65e8f4548125f3e72833cd61019b82080f",
+      "source_path": "LICENSE",
+      "source_url": "https://github.com/Niko1221/Strata/blob/f273ef65e8f4548125f3e72833cd61019b82080f/LICENSE",
+      "git_blob_sha1": "6687a423dde6b7aff1b748c07f5ee93ff788089c",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "bytes": 1093,
+      "license_spdx": "MIT",
+      "license_path": "strata/f273ef65e8f4548125f3e72833cd61019b82080f/LICENSE",
+      "kind": "license",
+      "modifications": "none"
+    },
+    {
+      "path": "strata/64d119cd602ddc439c311dedf61fda460f2785ef/serve/chat_archive.py",
+      "source_repository": "Niko1221/Strata",
+      "source_revision": "64d119cd602ddc439c311dedf61fda460f2785ef",
+      "source_path": "serve/chat_archive.py",
+      "source_url": "https://github.com/Niko1221/Strata/blob/64d119cd602ddc439c311dedf61fda460f2785ef/serve/chat_archive.py",
+      "git_blob_sha1": "e078e646f39a1fadc1c94ab682837c511ab1b90d",
+      "sha256": "fd85ea6a793ee6f427a35255495ac2e129a651857ebc80afc5adb2366bba1056",
+      "bytes": 19486,
+      "license_spdx": "MIT",
+      "license_path": "strata/64d119cd602ddc439c311dedf61fda460f2785ef/LICENSE",
+      "kind": "unmodified_reference_source",
+      "modifications": "none"
+    },
+    {
+      "path": "strata/64d119cd602ddc439c311dedf61fda460f2785ef/LICENSE",
+      "source_repository": "Niko1221/Strata",
+      "source_revision": "64d119cd602ddc439c311dedf61fda460f2785ef",
+      "source_path": "LICENSE",
+      "source_url": "https://github.com/Niko1221/Strata/blob/64d119cd602ddc439c311dedf61fda460f2785ef/LICENSE",
+      "git_blob_sha1": "6687a423dde6b7aff1b748c07f5ee93ff788089c",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "bytes": 1093,
+      "license_spdx": "MIT",
+      "license_path": "strata/64d119cd602ddc439c311dedf61fda460f2785ef/LICENSE",
+      "kind": "license",
+      "modifications": "none"
+    },
+    {
+      "path": "dynamo/868de572ad9e10e2effb16bb0cff57f3973ca1e8/lib/kv-router/src/scheduling/policy_queue.rs",
+      "source_repository": "ai-dynamo/dynamo",
+      "source_revision": "868de572ad9e10e2effb16bb0cff57f3973ca1e8",
+      "source_path": "lib/kv-router/src/scheduling/policy_queue.rs",
+      "source_url": "https://github.com/ai-dynamo/dynamo/blob/868de572ad9e10e2effb16bb0cff57f3973ca1e8/lib/kv-router/src/scheduling/policy_queue.rs",
+      "git_blob_sha1": "93ab24f7ca13a9667f9a332b98ade59e9d9f8e32",
+      "sha256": "a689510cd0b129a2a609865f9e5b7cc3942bd271295293a78b7f61b27cbbc6de",
+      "bytes": 67575,
+      "license_spdx": "Apache-2.0",
+      "license_path": "dynamo/868de572ad9e10e2effb16bb0cff57f3973ca1e8/LICENSE",
+      "kind": "unmodified_reference_source",
+      "modifications": "none"
+    },
+    {
+      "path": "dynamo/868de572ad9e10e2effb16bb0cff57f3973ca1e8/LICENSE",
+      "source_repository": "ai-dynamo/dynamo",
+      "source_revision": "868de572ad9e10e2effb16bb0cff57f3973ca1e8",
+      "source_path": "LICENSE",
+      "source_url": "https://github.com/ai-dynamo/dynamo/blob/868de572ad9e10e2effb16bb0cff57f3973ca1e8/LICENSE",
+      "git_blob_sha1": "1ed6128b8bf702befb5602b8fb7f22570bb942ae",
+      "sha256": "aeeca3d74a13b91d17ab9211c407b8d94a77bf8d9e5750c467818d3066b8adcf",
+      "bytes": 11904,
+      "license_spdx": "Apache-2.0",
+      "license_path": "dynamo/868de572ad9e10e2effb16bb0cff57f3973ca1e8/LICENSE",
+      "kind": "license",
+      "modifications": "none"
+    }
+  ]
+}

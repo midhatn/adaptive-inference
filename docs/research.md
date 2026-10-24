@@ -2,7 +2,7 @@
 
 Adaptive Inference combines a portable HTTP gateway, bounded pending-request scheduling and a small online execution-cost model. Research informs these choices; citing a system does not mean that its implementation or published performance has been reproduced here. Optional source overlays preserve the earlier Strata/Hermes integration. Its accepted Windows-owner/model results are historical evidence for that predecessor, whose owner is not shipped in these overlays. The gateway's own checks are recorded separately in the [evidence ledger](evidence.md). Comparative performance and richer task-level adaptation remain separate work.
 
-Links and project identities below were checked against their primary repositories, official documentation or paper pages on 24 October 2026. Pinned revisions denote the source actually inspected. The machine-readable bibliography is [REFERENCES.bib](../REFERENCES.bib); component PRs and historical feedback are indexed in [upstream-prs.md](upstream-prs.md).
+Links and project identities below were checked against their primary repositories, official documentation or paper pages on 24 October 2026. Pinned revisions denote the source actually inspected. The machine-readable bibliography is [REFERENCES.bib](../REFERENCES.bib); component PRs and historical feedback are indexed in [upstream-prs.md](upstream-prs.md). The [preserved source index](../third_party/reference-sources/README.md) contains exact licensed originals for the mechanisms actually used here, with offline hash verification. The implementation and design explanations in this checkout remain usable when an external link is unavailable.
 
 ## Direct implementation lineage
 

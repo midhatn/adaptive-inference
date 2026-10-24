@@ -6,8 +6,10 @@ Use a clean clone and Python3.11+. Create a virtual environment, install `requir
 
 ```text
 python -m unittest discover -s tests -v
+python -m unittest discover -s provenance -p "test_*.py" -v
 adaptive-inference demo --output demo-result.json
 python -m build
+python provenance/check_distribution.py
 ```
 
 The demo starts its own loopback simulated backend and gateway on temporary ports, exercises real HTTP, and closes both. It needs no model/GPU/account. The JSON result labels simulation explicitly. Tests cover observable contracts and failure cases; they do not claim native engine performance.
@@ -34,8 +36,8 @@ Changing the backend/model/runtime requires restarting the gateway to avoid lear
 
 ## Native predecessor reproduction
 
-See [legacy-reproduction.md](legacy-reproduction.md) for pinned public Strata and Hermes source reconstruction. It verifies patch bytes and expected changed files in a new checkout. Native compilation, model acquisition and hardware-dependent testing are separate steps. Never treat a reproduced source tree as a reproduced model benchmark.
+See [legacy-reproduction.md](legacy-reproduction.md) for pinned Strata and Hermes source reconstruction from locally preserved inputs. It verifies source and patch bytes and the resulting files in a new checkout. Native compilation, model acquisition and hardware-dependent testing are separate steps. Never treat a reproduced source tree as a reproduced model benchmark. The [preservation contract](source-of-truth.md) explains source archives, external prerequisites and preparing Python dependencies for offline installation.
 
 ## Reporting results
 
-Record the project commit, dependency versions, backend commit/version, model identity, platform, quality settings, workload, exact command and result. State whether tests used a fixture, installed client, actual model or native resource operation. Avoid publishing prompts, credentials, absolute personal paths or private transcripts. Keep failures alongside successes and link the responsible upstream PR.
+Record the project commit, dependency versions, backend commit/version, model identity, platform, quality settings, workload, exact command and result. State whether tests used a fixture, installed client, actual model or native resource operation. Avoid publishing prompts, credentials, absolute personal paths or private transcripts. Keep failures alongside successes and link the canonical issue or commit here. Link an upstream PR only when that result concerns its implementation.

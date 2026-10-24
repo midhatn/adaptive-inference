@@ -1,5 +1,17 @@
 {
   "base_revision": "2587d8231fc7e0f3e846acafa46eb5b67cdc70c8",
+  "baseline": {
+    "archive": {
+      "bytes": 81449809,
+      "file": "source/hermes-2587d823.bundle",
+      "sha256": "bff6c2c380ed710dede9d1e5b4d4c2c6edf3e2dd5fe208b48b80d3f980cb47c5"
+    },
+    "inventory": {
+      "file": "source/hermes-2587d823.manifest.json",
+      "sha256": "5545a9f3a119e7e9c22c37df687d63d3f11759a4b56527fa0b7afc654fefd42d"
+    }
+  },
+  "dependencies": [],
   "excluded_reference_changes": [],
   "expected_files": {
     "agent/auxiliary_client.py": "0a34d080fb3ccd5c94a2436af2856340fe3ef128b3f45580679950f32bffc852",
@@ -10,6 +22,7 @@
     "tests/agent/test_request_scheduling.py": "a76fa1447c4c08d8e6a4d2fa3ccd3b8d60ae8e3dbb18658fc13847301fda6e05",
     "website/docs/developer-guide/request-scheduling.md": "e43bc1ff0b71b385a8b9d3c00600e8986d5259435a8c6461f7808b0e18cef356"
   },
+  "expected_tree": "516c9e3a951d5ba5894c5933fda3b833209e5c47",
   "file_hash_scope": "canonical Git blob bytes with LF checkout; local Windows checkout line endings may differ",
   "local_reference_revision": "eaa9b473e5fab3fa94258f17ed6941aabba73d2d",
   "patches": [
@@ -18,7 +31,7 @@
       "sha256": "0cdf502d66aa23676b596fad75087be2df4ec591f21ed02661019035e8b2df81"
     }
   ],
-  "schema": 1,
+  "schema": 2,
   "scope": "complete seven-file host intent change; no historical private hooks",
   "upstream_url": "https://github.com/NousResearch/hermes-agent.git"
 }

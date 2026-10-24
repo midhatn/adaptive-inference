@@ -12,3 +12,8 @@ The queue's bounded arrival-plus-priority design was studied against NVIDIA
 Dynamo. Its queue source was not copied. Exact algorithm attribution remains
 in the exported source headers. The local overlays are experimental and do
 not imply endorsement or acceptance by Strata, Twitter or NVIDIA.
+
+The locally preserved llama.cpp source dependency is revision
+3cf03257f219afbe7334045ff7c6a06ac68c627d. It retains its MIT license in
+licenses/LLAMA-CPP-LICENSE.txt and within the complete source snapshot. Original
+third-party notices are preserved in the bundled trees, without relicensing.

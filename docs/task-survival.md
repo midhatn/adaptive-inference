@@ -2,7 +2,7 @@
 
 An always-on agent needs more than an open window or saved conversation. It needs to know its original objective, what it completed, what failed, and whether an interrupted action might already have happened. Adaptive Inference now provides a local checkpoint store and resumable feedback runner for that foundation.
 
-The transaction/revision pattern is adapted from medking82's [Strata #1136](https://github.com/Niko1221/Strata/pull/1136), pinned to [`serve/chat_archive.py` at 64d119cd](https://github.com/medking82/Strata/blob/64d119cd602ddc439c311dedf61fda460f2785ef/serve/chat_archive.py). Its MIT license and credit are retained in [NOTICE](../NOTICE) and [REFERENCES.bib](../REFERENCES.bib). The original archive preserves conversations; our execution ledger, OS ownership and resumable runner are new additions.
+The transaction/revision pattern is adapted from medking82's [Strata #1136](https://github.com/Niko1221/Strata/pull/1136), pinned to `serve/chat_archive.py` at `64d119cd602ddc439c311dedf61fda460f2785ef`. The [exact original source](../third_party/reference-sources/strata/64d119cd602ddc439c311dedf61fda460f2785ef/serve/chat_archive.py) is preserved locally. Its MIT license and credit are retained in the archive, [NOTICE](../NOTICE) and [REFERENCES.bib](../REFERENCES.bib). The original archive preserves conversations; our execution ledger, OS ownership and resumable runner are new additions.
 
 ## What is implemented
 

@@ -33,7 +33,8 @@ revision 9cc08d15216497bb03a1cafda96b7266cfbbcff1, Apache License 2.0.
 Its source attribution, license and notice are in third_party/finagle/.
 
 The bounded arrival-offset scheduling design is informed by NVIDIA Dynamo;
-no Dynamo implementation is copied. See docs/research.md and REFERENCES.bib.
+no Dynamo implementation is included in the portable runtime. See docs/research.md
+and REFERENCES.bib.
 
 Engine and agent names identify interoperability targets. Their respective
 projects do not sponsor or endorse this independent repository.
@@ -42,3 +43,17 @@ The optional Hermes overlays are derived from NousResearch/hermes-agent,
 Copyright (c) 2025 NousResearch, under the MIT license retained in
 integrations/hermes/licenses/UPSTREAM-LICENSE.txt. See that integration's NOTICE
 and source-lock.json for exact public base and overlay provenance.
+
+Complete pinned Strata and Hermes baseline source snapshots are preserved in
+integrations/*/source as Git bundles with exact file inventories. The Strata
+integration also preserves llama.cpp revision
+3cf03257f219afbe7334045ff7c6a06ac68c627d under its MIT license, retained in
+integrations/strata/licenses/LLAMA-CPP-LICENSE.txt and inside that snapshot.
+All original third-party notices remain within the preserved source trees.
+
+Unmodified source references for the mechanisms actually used above are retained
+under third_party/reference-sources with their original licenses/notices, exact
+revisions, file paths and checksums. The Dynamo design reference in that archive
+is Apache-2.0; its code is not part of the executable Python implementation.
+These references preserve attribution and inspectability without requiring the
+original pull-request pages. See the archive's README.md and manifest.json.
