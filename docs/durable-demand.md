@@ -51,7 +51,9 @@ model, reserve capacity, grant a resource lease or dispatch anything.
   controller still needs bounded demand handling and its normal resource gates.
 - Cancellation is durably recorded only at a safe checkpoint through its owner.
   This does not interrupt an executing generation/tool or bypass reconciliation.
-  Messaging a live owner and cancelling native startup are later work.
+  The [task-control component](task-controls.md) records ordered requests for
+  a cooperating owner. Wiring that owner into the runner and handling native
+  startup cancellation remain integration work.
 - A stable logical `owner_id` describes host/agent lineage; it is not an OS PID,
   credential, mutable ownership epoch or proof that a runner is alive.
 - Original arrival is immutable explicit UTC text, preserved across claims,
