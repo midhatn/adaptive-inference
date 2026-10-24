@@ -28,6 +28,7 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - run: python -m unittest discover -s provenance -p "test_*.py" -v
       - run: python third_party/reference-sources/verify.py
+      - run: python provenance/client-config-transports/verify-sources.py
       - run: python integrations/strata/setup.py --verify-only
       - run: python integrations/hermes/setup.py --verify-only
       - run: adaptive-inference demo --output demo-result.json

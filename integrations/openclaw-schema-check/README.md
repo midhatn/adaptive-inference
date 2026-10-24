@@ -1,0 +1,7 @@
+# Pinned OpenClaw schema fixture
+
+Run `npm ci --ignore-scripts --no-audit --no-fund`, then `node schema-check.mjs fixture-config.json` here. Requires a Node version supporting type stripping and module.registerHooks (tested on 24.14.0). This is a schema fixture only; that interpreter is below current full OpenClaw's supported runtime floor.
+
+The ten reference files are exact MIT-licensed upstream source files and license from OpenClaw237fdc662d90d216a8693fa6b9178afc0cbc54d6, verified by Git blob and SHA256 in source-lock.json. Only the schema's import dependency closure is retained. The loader maps workspace aliases and source .js specifiers to their original .ts files, with no source rewrites or schema mocks. The complete upstream project is not required for this bounded check. Zod4.6.7 is the same pinned dependency as that source; npm integrity is locked. No app, network inference or model is run.
+
+`fixture-config.json` is generated from the configuration helper's synthetic test inputs. It contains only fixture identifiers and a SecretRef, no real credentials. The actual native agent-defaults schema accepts it without changing fields and rejects an invalid child model. Provider rows are outside this schema's scope. Python tests in tests/test_openclaw_config.py cover helper preservation/refusal behavior separately. No installed-provider transport or full task acceptance is claimed.

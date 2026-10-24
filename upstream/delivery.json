@@ -1,0 +1,456 @@
+{
+  "schema": "adaptive-inference.delivery.v1",
+  "checked_date": "2026-10-24",
+  "canonical_release": "https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0",
+  "qualification_model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+  "scope": "Delivery ledger. Fixture tests do not qualify native engines or accepted agent tasks.",
+  "targets": [
+    {
+      "id": "strata",
+      "kind": "engine",
+      "name": "Strata",
+      "repository": "Niko1221/Strata",
+      "disposition": "continue_existing_pr",
+      "source_refs": [
+        {
+          "repo": "Niko1221/Strata",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "4efd7dd68049b626acf3306ad6a83288723268c8",
+          "url": "https://github.com/Niko1221/Strata/blob/7ddc17a38fe7f31637e895ecfba58c2cd43d65ec/CONTRIBUTING.md"
+        }
+      ],
+      "status": "existing-pr-narrow-fix-prepared",
+      "public_links": [
+        "https://github.com/Niko1221/Strata/pull/1493",
+        "https://github.com/Niko1221/Strata/pull/3399"
+      ],
+      "policy_summary": "Substantial features/default changes require scope agreement; focused reproduced fixes and benchmark reports can go straight to PR. Existing published PR scope must be distinguished from canonical overlays."
+    },
+    {
+      "id": "llamacpp",
+      "kind": "engine",
+      "name": "llama.cpp",
+      "repository": "ggml-org/llama.cpp",
+      "disposition": "conditional_policy_and_reproduction",
+      "source_refs": [
+        {
+          "repo": "ggml-org/llama.cpp",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "59ec3f311b5d9de3d47db3369a9f1c779edab071",
+          "url": "https://github.com/ggml-org/llama.cpp/blob/edc353842c1be9b4ebc27460a1da4526a026d3a9/CONTRIBUTING.md"
+        },
+        {
+          "repo": "ggml-org/llama.cpp",
+          "path": "AGENTS.md",
+          "blob_sha": "36390a6b4ad6dd96da2557d95bcde4141ea1f553",
+          "url": "https://github.com/ggml-org/llama.cpp/blob/edc353842c1be9b4ebc27460a1da4526a026d3a9/AGENTS.md"
+        }
+      ],
+      "status": "requires-human-contribution-step",
+      "public_links": [],
+      "policy_summary": "Features start with an issue; fixes need before/after regression. New contributors limited to one open PR. AI-assisted code requires disclosure; AI-written public posts and commit messages are prohibited."
+    },
+    {
+      "id": "vllm",
+      "kind": "engine",
+      "name": "vLLM",
+      "repository": "vllm-project/vllm",
+      "disposition": "candidate_needs_concrete_gap",
+      "source_refs": [
+        {
+          "repo": "vllm-project/vllm",
+          "path": ".github/CONTRIBUTING.md",
+          "blob_sha": "2947aad75ee5613b4bdf8019b581620b8073149c",
+          "url": "https://github.com/vllm-project/vllm/blob/7dc44a00161ace6f8ba7be2cc008f926e5a35fe2/.github/CONTRIBUTING.md"
+        },
+        {
+          "repo": "vllm-project/vllm",
+          "path": "docs/contributing/README.md",
+          "blob_sha": "d665116e47b53761fb721be132f9b414abe2b97f",
+          "url": "https://github.com/vllm-project/vllm/blob/7dc44a00161ace6f8ba7be2cc008f926e5a35fe2/docs/contributing/README.md"
+        },
+        {
+          "repo": "vllm-project/vllm",
+          "path": "docs/serving/online_serving/openai_compatible_server.md",
+          "blob_sha": "7b4e84a17feea9d88928298ab4bc3d74ab0051dc",
+          "url": "https://github.com/vllm-project/vllm/blob/7dc44a00161ace6f8ba7be2cc008f926e5a35fe2/docs/serving/online_serving/openai_compatible_server.md"
+        }
+      ],
+      "status": "requires-human-contribution-step",
+      "public_links": [],
+      "policy_summary": "Contribution guide permits how-to guides; commits require DCO sign-off and AI attribution. Large design changes require RFC discussion. The guide rejects pure-agent PRs and requires a human submitter to review changed lines and validate behavior; avoid isolated busywork."
+    },
+    {
+      "id": "sglang",
+      "kind": "engine",
+      "name": "SGLang",
+      "repository": "sgl-project/sglang",
+      "disposition": "candidate_needs_concrete_gap",
+      "source_refs": [
+        {
+          "repo": "sgl-project/sglang",
+          "path": "README.md",
+          "blob_sha": "0c28df5e901bf8f1e1b0f8c0d5972ed0004b0529",
+          "url": "https://github.com/sgl-project/sglang/blob/79e5c4bb9b438db8f06333f0bf9759221cee1ef3/README.md"
+        },
+        {
+          "repo": "sgl-project/sglang",
+          "path": "docs/CONTRIBUTING.md",
+          "blob_sha": "fc42a9b2d5e0726267551ac2007fd435661c7370",
+          "url": "https://github.com/sgl-project/sglang/blob/79e5c4bb9b438db8f06333f0bf9759221cee1ef3/docs/CONTRIBUTING.md"
+        },
+        {
+          "repo": "sgl-project/sglang",
+          "path": "docs/docs/developer_guide/contribution_guide.mdx",
+          "blob_sha": "277d087cfa3add88b407292c74f00ed8cd10622f",
+          "url": "https://github.com/sgl-project/sglang/blob/79e5c4bb9b438db8f06333f0bf9759221cee1ef3/docs/docs/developer_guide/contribution_guide.mdx"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "README requests discussion for larger changes and regression evidence for fixes/new behavior; docs live in the in-repo Mintlify tree."
+    },
+    {
+      "id": "ollama",
+      "kind": "engine",
+      "name": "Ollama",
+      "repository": "ollama/ollama",
+      "disposition": "candidate_needs_concrete_gap",
+      "source_refs": [
+        {
+          "repo": "ollama/ollama",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "8d51cc1de83c6fa2b34cefc67cdd5e6330e3789e",
+          "url": "https://github.com/ollama/ollama/blob/675150d6ad2747df1e218ef59de9194bc4a7e538/CONTRIBUTING.md"
+        },
+        {
+          "repo": "ollama/ollama",
+          "path": "openai/openai.go",
+          "blob_sha": "556c2fd8ef57b297c619cda9cbfe47ec533faab3",
+          "url": "https://github.com/ollama/ollama/blob/675150d6ad2747df1e218ef59de9194bc4a7e538/openai/openai.go"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "Non-trivial changes require issue discussion. Small corrections welcome; large docs additions/new API fields incur maintenance concerns; backward compatibility required."
+    },
+    {
+      "id": "lmstudio",
+      "kind": "engine",
+      "name": "LM Studio",
+      "repository": "lmstudio-ai/docs",
+      "disposition": "concrete_documentation_fix_identified",
+      "source_refs": [
+        {
+          "repo": "lmstudio-ai/docs",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "url": "https://github.com/lmstudio-ai/docs/blob/8c7159be3ffe364af10aa8ae6f5a7570e9402089/CONTRIBUTING.md"
+        },
+        {
+          "repo": "lmstudio-ai/docs",
+          "path": "1_developer/3_openai-compat/index.mdx",
+          "blob_sha": "0bca40d4c85c5f8daf78f3e4aaaa9f0b1b0e7784",
+          "url": "https://github.com/lmstudio-ai/docs/blob/8c7159be3ffe364af10aa8ae6f5a7570e9402089/1_developer/3_openai-compat/index.mdx"
+        },
+        {
+          "repo": "lmstudio-ai/docs",
+          "path": "1_developer/3_openai-compat/chat-completions.md",
+          "blob_sha": "ac506370b3482fb071805498ee5c324fb80486fd",
+          "url": "https://github.com/lmstudio-ai/docs/blob/8c7159be3ffe364af10aa8ae6f5a7570e9402089/1_developer/3_openai-compat/chat-completions.md"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "Public docs repository is active; CONTRIBUTING.md is empty, README describes article format. Desktop internals are not the target. Native LM Studio SDKs use their own protocol and are not gateway-compatible replacements."
+    },
+    {
+      "id": "mlx_lm",
+      "kind": "engine",
+      "name": "MLX-LM",
+      "repository": "ml-explore/mlx-lm",
+      "disposition": "conditional_hardware_and_public_communication",
+      "source_refs": [
+        {
+          "repo": "ml-explore/mlx-lm",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "58fdb6cb7282087e6b889bc9a1effa6ad2ce63a1",
+          "url": "https://github.com/ml-explore/mlx-lm/blob/4cfc6478473b0668ede3eb0cc93f2a9181a15052/CONTRIBUTING.md"
+        },
+        {
+          "repo": "ml-explore/mlx-lm",
+          "path": "README.md",
+          "blob_sha": "ab749b340175ea0fdc4c5b9f27253a8e291aa98d",
+          "url": "https://github.com/ml-explore/mlx-lm/blob/4cfc6478473b0668ede3eb0cc93f2a9181a15052/README.md"
+        },
+        {
+          "repo": "ml-explore/mlx-lm",
+          "path": "mlx_lm/server.py",
+          "blob_sha": "a6a9a6dcd91106625dbb242ac70b410593d052e6",
+          "url": "https://github.com/ml-explore/mlx-lm/blob/4cfc6478473b0668ede3eb0cc93f2a9181a15052/mlx_lm/server.py"
+        }
+      ],
+      "status": "requires-human-contribution-step",
+      "public_links": [],
+      "policy_summary": "AI-assisted code needs disclosure; AI-written public posts prohibited. Tests must fail on main before the fix. Do not substitute a new MLX quantized model to claim the requested baseline."
+    },
+    {
+      "id": "tgi",
+      "kind": "engine",
+      "name": "Text Generation Inference",
+      "repository": "huggingface/text-generation-inference",
+      "disposition": "archived_no_new_upstream_pr",
+      "source_refs": [
+        {
+          "repo": "huggingface/text-generation-inference",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "d541e47f3dd2bde6a406b2c70b8f5fdb191dbba5",
+          "url": "https://github.com/huggingface/text-generation-inference/blob/b4adbf2f6e2e721280bd0ea5f91d70f7d033f5ed/CONTRIBUTING.md"
+        },
+        {
+          "repo": "huggingface/text-generation-inference",
+          "path": "README.md",
+          "blob_sha": "0c79c9b26d254b213d2dabbb036a3772684c536b",
+          "url": "https://github.com/huggingface/text-generation-inference/blob/b4adbf2f6e2e721280bd0ea5f91d70f7d033f5ed/README.md"
+        }
+      ],
+      "status": "archived-no-new-pr",
+      "public_links": [],
+      "policy_summary": "GitHub archived=true overrides older README maintenance-mode wording; archive status blocks new pull requests."
+    },
+    {
+      "id": "hermes",
+      "kind": "agent",
+      "name": "Hermes",
+      "repository": "NousResearch/hermes-agent",
+      "disposition": "supported_external_plugin_catalog_path",
+      "source_refs": [
+        {
+          "repo": "NousResearch/hermes-agent",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "9ac4b7744df24a04bab9ef6b0695bf5398b26b73",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/CONTRIBUTING.md"
+        },
+        {
+          "repo": "NousResearch/hermes-agent",
+          "path": "plugin-catalog/README.md",
+          "blob_sha": "92bdae26ea334bf606936afd9e12527de9489373",
+          "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/plugin-catalog/README.md"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "Third-party product integrations must live in standalone plugin repos. Catalog entries must pin a commit, declare capabilities, use only public hooks, disclose risks, and not self-update. Core generic extension fixes remain separate."
+    },
+    {
+      "id": "openclaw",
+      "kind": "agent",
+      "name": "OpenClaw",
+      "repository": "openclaw/openclaw",
+      "disposition": "supported_provider_or_external_plugin_path",
+      "source_refs": [
+        {
+          "repo": "openclaw/openclaw",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "c153196ea954c598485179cd804fbfb859f02c84",
+          "url": "https://github.com/openclaw/openclaw/blob/24adbb81e0a36cbac79446ce603ccf3c46b84c64/CONTRIBUTING.md"
+        },
+        {
+          "repo": "openclaw/openclaw",
+          "path": "docs/gateway/config-tools/custom-providers.md",
+          "blob_sha": "f0f1c0c74fb268ea20674aecd7cea5db454a92db",
+          "url": "https://github.com/openclaw/openclaw/blob/24adbb81e0a36cbac79446ce603ccf3c46b84c64/docs/gateway/config-tools/custom-providers.md"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "New features normally belong in third-party plugins. Agent-authored/non-trivial work starts with an issue; small fixes have exception. No refactor-only or known-main-CI-fix PRs."
+    },
+    {
+      "id": "aider",
+      "kind": "agent",
+      "name": "Aider",
+      "repository": "Aider-AI/aider",
+      "disposition": "candidate_configuration_gap",
+      "source_refs": [
+        {
+          "repo": "Aider-AI/aider",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "abe35a1c0ee51421144b4513149c63068ade2af0",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/CONTRIBUTING.md"
+        },
+        {
+          "repo": "Aider-AI/aider",
+          "path": "aider/website/docs/llms/openai-compat.md",
+          "blob_sha": "ea45a574fb4c0848926aeecbda2331db517738a9",
+          "url": "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/website/docs/llms/openai-compat.md"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "Small fixes can go straight to PR; discuss substantial changes. Existing environment/config support means a duplicate provider implementation is unnecessary."
+    },
+    {
+      "id": "openhands",
+      "kind": "agent",
+      "name": "OpenHands",
+      "repository": "OpenHands/OpenHands",
+      "disposition": "ownership_split_requires_correct_target",
+      "source_refs": [
+        {
+          "repo": "OpenHands/OpenHands",
+          "path": "README.md",
+          "blob_sha": "54f41832322ab4701c202a102cd4db23e3e4dc3a",
+          "url": "https://github.com/OpenHands/OpenHands/blob/11eba891cb2455f87253888d9d3bf3f6b0f12bc1/README.md"
+        },
+        {
+          "repo": "OpenHands/OpenHands",
+          "path": "docs/DEVELOPMENT.md",
+          "blob_sha": "f8e31146ecd87dea9822f0e7ea4e922f8efa2d73",
+          "url": "https://github.com/OpenHands/OpenHands/blob/11eba891cb2455f87253888d9d3bf3f6b0f12bc1/docs/DEVELOPMENT.md"
+        },
+        {
+          "repo": "OpenHands/OpenHands",
+          "path": "AGENTS.md",
+          "blob_sha": "ff96361ee0929980432d79c266d0e60471b26eed",
+          "url": "https://github.com/OpenHands/OpenHands/blob/11eba891cb2455f87253888d9d3bf3f6b0f12bc1/AGENTS.md"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "Main renamed from All-Hands-AI and now is Agent Canvas. Its PR HUMAN section is reserved to human authors; AI must not supply it. Read sibling repo policies before implementation."
+    },
+    {
+      "id": "continue",
+      "kind": "agent",
+      "name": "Continue",
+      "repository": "continuedev/continue",
+      "disposition": "candidate_configuration_gap",
+      "source_refs": [
+        {
+          "repo": "continuedev/continue",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "dae75a8523ec3e0a06b9f07fbc668d51e900c4af",
+          "url": "https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/CONTRIBUTING.md"
+        },
+        {
+          "repo": "continuedev/continue",
+          "path": "core/llm/llms/OpenAI.ts",
+          "blob_sha": "c65b55dc1a56427305835b91e9896ae93ee6710d",
+          "url": "https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/core/llm/llms/OpenAI.ts"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "Contributor guide accepts tested provider contributions but requires CLA; existing OpenAI provider already covers this protocol, so any new code needs a demonstrated gap."
+    },
+    {
+      "id": "cline",
+      "kind": "agent",
+      "name": "Cline",
+      "repository": "cline/cline",
+      "disposition": "conditional_issue_scope",
+      "source_refs": [
+        {
+          "repo": "cline/cline",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "833e325dc8e949519f7fd4624f38f8351adfedd4",
+          "url": "https://github.com/cline/cline/blob/c7db4bfbd2643425e3c185367cb8c8b4bc468c4f/CONTRIBUTING.md"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "New features require a maintainer-approved issue; small bug/wording/type fixes have exceptions. Docs contributions welcomed, but a substantial integration feature must follow approval path."
+    },
+    {
+      "id": "roo_code",
+      "kind": "agent",
+      "name": "Roo Code",
+      "repository": "RooCodeInc/Roo-Code",
+      "disposition": "archived_no_new_upstream_pr",
+      "source_refs": [
+        {
+          "repo": "RooCodeInc/Roo-Code",
+          "path": "README.md",
+          "blob_sha": "6e2ce6fdaa138becacd85296433132d6c13b1c37",
+          "url": "https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/README.md"
+        }
+      ],
+      "status": "archived-no-new-pr",
+      "public_links": [],
+      "policy_summary": "GitHub archived=true; README announces shutdown May 15. ZooCode is public/active, but not automatically substituted or qualified."
+    },
+    {
+      "id": "langgraph",
+      "kind": "agent",
+      "name": "LangGraph",
+      "repository": "langchain-ai/langgraph",
+      "disposition": "conditional_approved_issue_and_ownership",
+      "source_refs": [
+        {
+          "repo": "langchain-ai/langgraph",
+          "path": "README.md",
+          "blob_sha": "97c31e9cb4d8fe56be8d768ce3eb5e22400e897e",
+          "url": "https://github.com/langchain-ai/langgraph/blob/4897c51365d3c82a3808da2bdb7ef2d55daba1a9/README.md"
+        },
+        {
+          "repo": "langchain-ai/langgraph",
+          "path": ".github/PULL_REQUEST_TEMPLATE.md",
+          "blob_sha": "14b12f13e351a1964901d895e60696f8429100de",
+          "url": "https://github.com/langchain-ai/langgraph/blob/4897c51365d3c82a3808da2bdb7ef2d55daba1a9/.github/PULL_REQUEST_TEMPLATE.md"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "All external PRs need an approved issue/discussion and assignment; dependency additions need permission. ChatOpenAI implementation belongs to LangChain's provider package, not LangGraph core; docs ownership must be checked."
+    },
+    {
+      "id": "autogen",
+      "kind": "agent",
+      "name": "AutoGen",
+      "repository": "microsoft/autogen",
+      "disposition": "maintainer_policy_unmaintained",
+      "source_refs": [
+        {
+          "repo": "microsoft/autogen",
+          "path": "CONTRIBUTING.md",
+          "blob_sha": "ba1168b608d691d3bc091bbe84700e4f7d9a812c",
+          "url": "https://github.com/microsoft/autogen/blob/004749e6b7102c8fd317b9b1499ce5807223c278/CONTRIBUTING.md"
+        },
+        {
+          "repo": "microsoft/autogen",
+          "path": "LICENSE-CODE",
+          "blob_sha": "9e841e7a26e4eb057b24511e7b92d42b257a80e5",
+          "url": "https://github.com/microsoft/autogen/blob/004749e6b7102c8fd317b9b1499ce5807223c278/LICENSE-CODE"
+        },
+        {
+          "repo": "microsoft/autogen",
+          "path": "README.md",
+          "blob_sha": "042b9df197a220ec7072a116d694cd497ec332ad",
+          "url": "https://github.com/microsoft/autogen/blob/004749e6b7102c8fd317b9b1499ce5807223c278/README.md"
+        }
+      ],
+      "status": "declared-unmaintained-compatibility-retained",
+      "public_links": [],
+      "policy_summary": "GitHub archived=false but README explicitly declares archived/unmaintained with no fixes or features. Code is MIT under LICENSE-CODE; documentation license metadata differs."
+    },
+    {
+      "id": "crewai",
+      "kind": "agent",
+      "name": "CrewAI",
+      "repository": "crewAIInc/crewAI",
+      "disposition": "candidate_existing_llm_factory_path",
+      "source_refs": [
+        {
+          "repo": "crewAIInc/crewAI",
+          "path": ".github/CONTRIBUTING.md",
+          "blob_sha": "8d7fdabb6f6f9493d2f992e9a2f4ec97c8c36955",
+          "url": "https://github.com/crewAIInc/crewAI/blob/07361f6dc5f96d22efe565ff89297d22bce4a90f/.github/CONTRIBUTING.md"
+        }
+      ],
+      "status": "prepared-not-submitted",
+      "public_links": [],
+      "policy_summary": "AI-authored issues/PRs require the llm-generated label. Current source is a monorepo and versioned docs; old docs/en/concepts path is stale."
+    }
+  ]
+}

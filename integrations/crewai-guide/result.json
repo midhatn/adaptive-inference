@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "scope": "actual CrewAI documentation construction and HTTP serialization against fixtures; no model or gateway run",
+  "versions": {
+    "crewai": "1.15.29",
+    "openai": "2.54.0"
+  },
+  "snippet_sha256": "b4660fb8adc9ad6af88bcf0675b78878291fe6d4173024a517e91e4b5f90dc5b",
+  "identical_locales": [
+    "en",
+    "ar",
+    "ko",
+    "pt-BR"
+  ],
+  "requests": [
+    {
+      "name": "interactive_llm",
+      "path": "/team/inference/v1/chat/completions",
+      "passed": true
+    },
+    {
+      "name": "background_llm",
+      "path": "/team/inference/background/v1/chat/completions",
+      "passed": true
+    }
+  ],
+  "external_connections": []
+}

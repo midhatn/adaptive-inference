@@ -1,0 +1,28 @@
+{
+  "schema": "adaptive-inference.hermes-plugin-validation.v1",
+  "plugin_sha256": "2a65d81edb39bb13623081ae761ab9bd086d43e6db3717bcc9b9bc3c1fbc05aa",
+  "scope": "Root independent verification of exported plugin with actual SDK/public call sites and synthetic child/HTTP fixtures; no model, service, network or completed agent task",
+  "independent_runs": [
+    {
+      "hermes_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+      "passed": 41,
+      "skipped": 0,
+      "warnings": 42,
+      "seconds": 7.15
+    },
+    {
+      "hermes_revision": "2587d8231fc7e0f3e846acafa46eb5b67cdc70c8",
+      "passed": 40,
+      "skipped": 1,
+      "warnings": 82,
+      "seconds": 5.41,
+      "skip_reason": "public cron identity API absent"
+    }
+  ],
+  "official_admission": {
+    "passed": 15,
+    "warnings": 0,
+    "install_deps_executed": false
+  },
+  "source_contracts": "../../plugins/hermes/SOURCE_LOCK.json"
+}

@@ -23,6 +23,14 @@ This repository is the **canonical source of truth** for the implementation, con
 
 Upstream PRs are delivery and discussion records. New shared development happens here, then focused adapters and fixes can be offered to engine and agent projects.
 
+The [integration delivery plan](docs/upstream-delivery.md) tracks all eight engine
+and ten agent targets, the concrete integration for each, its test evidence and
+any upstream requirement still outstanding. The optional [Hermes plugin](plugins/hermes/README.md)
+and [OpenClaw configuration composer](examples/agents/openclaw-config.md) use public
+host interfaces to classify background work while preserving model settings.
+
+The standalone [v0.2.0 release](https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0) includes the complete source archive, installable runtime, checksums and validation receipts. New integrations follow the shared [agent/engine contract](docs/integration-contract.md).
+
 ## Start in five minutes
 
 Python 3.11 or later; no GPU or model is required for the reproducible demo.

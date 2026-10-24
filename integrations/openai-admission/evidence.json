@@ -1,0 +1,90 @@
+{
+  "schema": "adaptive-inference.openai-admission.v1",
+  "canonical_release": "https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0",
+  "canonical_release_source": "45fe39836193b1fb3dc4fa375d6662410a70ad7b",
+  "engine_recipes": {
+    "sglang_base": "79e5c4bb9b438db8f06333f0bf9759221cee1ef3",
+    "ollama_base": "675150d6ad2747df1e218ef59de9194bc4a7e538",
+    "passed": 6,
+    "seconds": 2.64,
+    "gateway_source": "v0.2.0 source archive SHA256 5adc4911eee1e1266f22d9f43dce9ab4304cb9fbf9f31fc7b028d1a765c1d978",
+    "backend": "deterministic loopback HTTP fixture",
+    "openai": "2.24.0",
+    "httpx": "0.28.1",
+    "aiohttp": "3.14.5",
+    "scope": [
+      "actual documentation Python executed",
+      "both host classes consumed by canonical gateway",
+      "model, tools, images, sampling and output caps preserved",
+      "SGLang chat-template reasoning controls preserved",
+      "SSE parsed through actual SDK",
+      "nested backend URL preserved",
+      "foreign Strata control refuses before dispatch",
+      "503 produces one POST, no automatic retry"
+    ],
+    "mintlify": {
+      "cli": "4.0.1727",
+      "mint_package": "4.2.1124",
+      "sglang_validate": {
+        "exit_code": 0,
+        "result": "build validation passed"
+      },
+      "sglang_broken_links": {
+        "exit_code": 0,
+        "result": "no broken links found"
+      },
+      "ollama_validate": {
+        "exit_code": 0,
+        "result": "build validation passed"
+      },
+      "ollama_broken_links": {
+        "exit_code": 0,
+        "result": "no broken links found"
+      }
+    }
+  },
+  "models_run": false,
+  "native_engine_started": false,
+  "sources": {
+    "sglang": {
+      "repository": "https://github.com/sgl-project/sglang",
+      "base": "79e5c4bb9b438db8f06333f0bf9759221cee1ef3",
+      "candidate": "c3aaf7ec6aa075af47976b9dff8724f8c6f36921",
+      "path": "docs/docs/basic_usage/openai_api_completions.mdx"
+    },
+    "ollama": {
+      "repository": "https://github.com/ollama/ollama",
+      "base": "675150d6ad2747df1e218ef59de9194bc4a7e538",
+      "candidate": "c3304299a22cc200fbf4507e5ad7b0ff508b2294",
+      "path": "docs/api/openai-compatibility.mdx"
+    }
+  },
+  "files": {
+    "ollama.md": {
+      "sha256": "9c5e9addbec5b8c75e9db3806858879e383da0ae1e29053427be0917e2549b07",
+      "bytes": 4740
+    },
+    "README.md": {
+      "sha256": "bce36533b24ae2a983e565b4faf6e57cfd836f04753561558c6feabc1da8c4ce",
+      "bytes": 1500
+    },
+    "requirements.txt": {
+      "sha256": "96da5a802017273199bb43baf25c27240f4fbba3512cad7ea2e3a31e9ddea695",
+      "bytes": 31
+    },
+    "sglang.md": {
+      "sha256": "7f30679719ea766584b604d33fd7dce0aaaedd9783bf50c67739fc53d4071d2a",
+      "bytes": 4882
+    },
+    "test_recipes.py": {
+      "sha256": "8b9f36aa5d6ec9f498c9a7d16cdcf8f3bf1c89a02c82feba2bc292043a4fdcd4",
+      "bytes": 7828
+    }
+  },
+  "portable_validation": {
+    "passed": 6,
+    "seconds": 2.515,
+    "gateway": "installed v0.2.0 wheel",
+    "source": "exact new lines from the reviewed upstream patches"
+  }
+}

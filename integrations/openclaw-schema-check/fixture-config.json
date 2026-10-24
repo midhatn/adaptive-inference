@@ -1,0 +1,114 @@
+{
+  "models": {
+    "providers": {
+      "adaptive": {
+        "api": "openai-completions",
+        "baseUrl": "http://127.0.0.1:18100/v1",
+        "apiKey": {
+          "source": "env",
+          "provider": "default",
+          "id": "FIXTURE_GATEWAY_KEY"
+        },
+        "headers": {
+          "X-Tenant": "fixture"
+        },
+        "request": {
+          "headers": {
+            "X-Trace": "fixture"
+          }
+        },
+        "models": [
+          {
+            "id": "existing-IQ3_S",
+            "name": "Existing model",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "contextWindow": 65536,
+            "maxTokens": 10923,
+            "compat": {
+              "maxTokensField": "max_tokens",
+              "supportsReasoningEffort": true
+            }
+          }
+        ]
+      },
+      "adaptive-background": {
+        "api": "openai-completions",
+        "baseUrl": "http://127.0.0.1:18100/background/v1",
+        "apiKey": {
+          "source": "env",
+          "provider": "default",
+          "id": "FIXTURE_GATEWAY_KEY"
+        },
+        "headers": {
+          "X-Tenant": "fixture"
+        },
+        "request": {
+          "headers": {
+            "X-Trace": "fixture"
+          }
+        },
+        "models": [
+          {
+            "id": "existing-IQ3_S",
+            "name": "Existing model",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "contextWindow": 65536,
+            "maxTokens": 10923,
+            "compat": {
+              "maxTokensField": "max_tokens",
+              "supportsReasoningEffort": true
+            }
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "adaptive/existing-IQ3_S",
+        "fallbacks": [
+          "other/retained"
+        ]
+      },
+      "thinkingDefault": "high",
+      "params": {
+        "temperature": 0.2
+      },
+      "models": {
+        "adaptive/existing-IQ3_S": {
+          "params": {
+            "maxTokens": 10923,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false
+          }
+        },
+        "adaptive-background/existing-IQ3_S": {
+          "params": {
+            "maxTokens": 10923,
+            "reasoning_budget_tokens": 8192,
+            "experimental_speed_projection": false
+          }
+        }
+      },
+      "subagents": {
+        "maxConcurrent": 2,
+        "thinking": "high",
+        "model": {
+          "primary": "adaptive-background/existing-IQ3_S",
+          "fallbacks": [
+            "other/retained"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+- name: openai/qwen3.8-flash-next-iq3_s-adaptive-media-beta
+  use_temperature: true
+  extra_params:
+    max_tokens: 10923
+    num_retries: 0
+    extra_body:
+      reasoning_effort: high
+      reasoning_budget_tokens: 8192
+      experimental_speed_projection: false

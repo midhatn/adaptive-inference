@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "repository": "https://github.com/openclaw/openclaw",
+  "revision": "237fdc662d90d216a8693fa6b9178afc0cbc54d6",
+  "license": "MIT",
+  "files": {
+    "src/config/zod-schema.agent-defaults-base.ts": {
+      "git_blob": "fdfb0571194785c9f8d3da8353143dd259bd48c2",
+      "url": "https://github.com/openclaw/openclaw/blob/237fdc662d90d216a8693fa6b9178afc0cbc54d6/src/config/zod-schema.agent-defaults-base.ts",
+      "sha256": "385e4a61a8035ec82057fbfd296f215e1c17d9df498c81b5e51394f7bbe557d8",
+      "bytes": 12058
+    },
+    "src/config/zod-schema.agent-entry-base.ts": {
+      "git_blob": "ffe0674b8b1e157dde79c9cb6e01096fc5649aed",
+      "url": "https://github.com/openclaw/openclaw/blob/237fdc662d90d216a8693fa6b9178afc0cbc54d6/src/config/zod-schema.agent-entry-base.ts",
+      "sha256": "0ef8007c5e070cc66dd75930b5176900c2261241c81f0a709f32537756c6d441",
+      "bytes": 4773
+    },
+    "src/config/zod-schema.agent-model.ts": {
+      "git_blob": "0bbd6d723eda640045c8eaa79525d10e899676c5",
+      "url": "https://github.com/openclaw/openclaw/blob/237fdc662d90d216a8693fa6b9178afc0cbc54d6/src/config/zod-schema.agent-model.ts",
+      "sha256": "2fab56c6fa9ba7e527c76b5a98f2b9664f258bab1a5093495dcaea71339712e5",
+      "bytes": 1158
+    },
+    "src/config/byte-size.ts": {
+      "git_blob": "b03da142c66bbf26cc723c10ff78b57dd9f3dc5a",
+      "url": "https://github.com/openclaw/openclaw/blob/237fdc662d90d216a8693fa6b9178afc0cbc54d6/src/config/byte-size.ts",
+      "sha256": "9d994ab7909ac778e37fe3f0345fbc4b4c6bb352877dc0ebb19cc1df08917151",
+      "bytes": 944
+    },
+    "src/cli/parse-bytes.ts": {
+      "git_blob": "314050f5b5c1a86672d4653b947635b304ef7020",
+      "url": "https://github.com/openclaw/openclaw/blob/237fdc662d90d216a8693fa6b9178afc0cbc54d6/src/cli/parse-bytes.ts",
+      "sha256": "c8e110971ba2e7fad66c0fa1a003f7603ed9e89cda4e2b5c07763db6a374bb78",
+      "bytes": 1388
+    },
+    "src/auto-reply/thinking.shared.ts": {
+      "git_blob": "18101b470948a6f508fb566475a1bc841f5af449",
+      "url": "https://github.com/openclaw/openclaw/blob/237fdc662d90d216a8693fa6b9178afc0cbc54d6/src/auto-reply/thinking.shared.ts",
+      "sha256": "4514434e41f7febc3a1da4b07adc0498f90055a2f17998cccb59dd00213fd222",
+      "bytes": 6752
+    },
+    "packages/model-catalog-core/src/model-catalog-refs.ts": {
+      "git_blob": "48b2d09a598f59d0e7c1fb2354af03c88f33f3bb",
+      "url": "https://github.com/openclaw/openclaw/blob/237fdc662d90d216a8693fa6b9178afc0cbc54d6/packages/model-catalog-core/src/model-catalog-refs.ts",
+      "sha256": "9a89c44d63c310b3099b0fae36ff5364c23e461969701cd1e98aa3dd20e403c2",
+      "bytes": 2641
+    },
+    "packages/model-catalog-core/src/provider-id.ts": {
+      "git_blob": "07278f5052d2be88c2244bd25b6bd265e6fb4cfd",
+      "url": "https://github.com/openclaw/openclaw/blob/237fdc662d90d216a8693fa6b9178afc0cbc54d6/packages/model-catalog-core/src/provider-id.ts",
+      "sha256": "12fc8a816ebb1a91685a26042b0161f278de0f019dd8a59f62a5deed6dfcd53d",
+      "bytes": 1106
+    },
+    "packages/normalization-core/src/string-coerce.ts": {
+      "git_blob": "445a9cc4f8daff07f033c3958baf2b798e240e9d",
+      "url": "https://github.com/openclaw/openclaw/blob/237fdc662d90d216a8693fa6b9178afc0cbc54d6/packages/normalization-core/src/string-coerce.ts",
+      "sha256": "0f62efe900e43b23b12025da27f5e65aa6e7fee369191cbbdcf4200f0de70cdf",
+      "bytes": 5049
+    },
+    "LICENSE": {
+      "git_blob": "ed064819ab537575d0cad902f7e5af4a3488b1d0",
+      "url": "https://github.com/openclaw/openclaw/blob/237fdc662d90d216a8693fa6b9178afc0cbc54d6/LICENSE",
+      "sha256": "9efd316ecf1c4c60f6fd5d26433142fff2b6794d7d328e9bc6179b29bf9c82a4",
+      "bytes": 1076
+    }
+  },
+  "scope": "Complete exact source files needed for AgentDefaultsBaseSchema; not a complete OpenClaw distribution",
+  "npm": {
+    "zod": "4.6.7",
+    "integrity": "sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg=="
+  }
+}
