@@ -2,6 +2,22 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Persistent-controller portable components
+
+The optional demand-aware handoff and runtime timing components, combined with
+the corrected task store, passed **263 core software tests** on Windows/Python
+3.11 in 28.733 seconds. The new coverage includes 23 demand-controller tests and
+19 timing fixtures plus four independent timing probes. Native acknowledgements
+and model replies are simulated in these cases; the timing tests exercise the
+actual gateway, scheduler and local HTTP code.
+
+The [controller contract](persistent-controller.md) separates restoration,
+dispatch and idle release. The [timing contract](runtime-timing.md) retains the
+existing learner per verified runtime and captures it at dispatch. Both are
+opt-in; neither result is a latency improvement, a new model qualification or
+completion of M2. Exact reviewed inputs and the accepted historical runtime are
+[preserved locally](../provenance/persistent-desktop/README.md).
+
 ## Task-store verification correction
 
 The [verification correction](task-store-verification.md) passed **217 core

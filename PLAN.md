@@ -161,9 +161,10 @@ independent raw header reads were unsupported patterns, although the specific
 Windows failure's cause remains unproved. The
 [storage correction](docs/task-store-verification.md) reuses the existing stable
 lock for short operations and SQLite's recovery implementation. Its Windows
-component passed 75 supplied tests and four independent probes. Complete the
-cross-platform checks, then compose one exact corrected store in the host and
-every worker before rerunning pause/restart qualification. Stop and join older
+component passed 75 supplied tests and four independent probes. The focused
+canonical correction subsequently passed all 14 CI checks across Windows, Linux
+and macOS with Python 3.11/3.12 and offline source reconstruction. Compose one
+exact corrected store in the host and every worker. Stop and join older
 readers before upgrading; never mix the old and new access protocols. Preserve
 failed runs and the accepted M1 source identity. Model quality and acceptance
 requirements remain unchanged.
@@ -196,9 +197,10 @@ order and regression preserve the unsuccessful predecessor. Host composition
 also exposed a soft setup deadline and a completed-timeout cleanup retry bug.
 The successor retains setup work across timeout, fences late startup and joins
 completed failures while preserving their original errors. These lifecycle
-fixes are under component review, not live qualification. Next, connect controls
-at Hermes' actual native-history safe points, then qualify the complete cold
-start, demand, waiting, cancellation and cleanup path with unchanged IQ3_S.
+fixes passed component review; the installed-agent controls are connected at
+Hermes' actual native-history safe points in the development composition. Its
+complete cold-start, demand, waiting and cleanup path still needs successful
+live qualification with unchanged IQ3_S.
 
 The installed-agent bridge review exposed two further requirements. Saved
 completion candidates need exact fields and types before resumed acceptance;
@@ -208,38 +210,38 @@ task can briefly request a native load. Both original failures are retained in
 development evidence. A controlled safe checkpoint will qualify pause, worker
 replacement and resume without stopping an uncertain operation.
 
-The next live qualification is deliberately separate from the full UI gate:
-one fresh cold-host/report task with pause/resume and safe worker replacement,
-followed by a separate pre-cancelled task that must dispatch no work or request
-a native launch. Every case retains its original deadline, prompt, arrival and
-attempt accounting. Worker exits precede final host cleanup. These bounded
-cases do not alone demonstrate indefinite service lifetime or arbitrary tools.
+The first two live cases were deliberately separate from the full UI gate.
+The pre-cancelled development case completed across two worker owners without
+provider calls, tool effects or a native launch. A separate complete-task attempt
+remained parked while the actual foreground ChatGPT process used sustained CPU,
+then failed its existing 240-second readiness bound with clean shutdown and no
+model launch. That is useful protection evidence but not a completed task.
+
+**Next priority from that result:** finish and qualify the trusted own-window
+control interface before another complete-task attempt. It must authenticate its
+task/session, retain process/window ownership and distinguish the user's request
+from unrelated foreground activity. Do not whitelist ChatGPT, force focus to
+manufacture idle conditions, raise thresholds or extend the failed run's timers
+to obtain a pass. Research measured coexistence for M3 separately. Keep the
+failed attempt and use a new source-bound case for any changed composition.
+Every case retains its original deadline, prompt, arrival and attempt accounting;
+worker exits precede host cleanup. These bounded cases do not establish indefinite
+service lifetime, arbitrary tools or a reboot.
 
 Independent composition tests completed both simulated cases, then exposed a
 watchdog defect: a failed diagnostic write could prevent the emergency exit.
-Keep that unsuccessful runner and make termination independent of reporting
-before real-model execution. Final event evidence must also identify truncation
-instead of treating a bounded history buffer as a complete run ledger. These
-are qualification-harness fixes; passing simulated cases cannot replace the
-separate native/IQ3_S acceptance gate.
+The corrected runner now makes termination independent of reporting, stays armed
+through final teardown and refuses a truncated event ledger. Both the corrected
+runner and its successor composition passed independent CPU review. These are
+qualification-harness fixes; passing simulated cases cannot replace the separate
+native/IQ3_S acceptance gate.
 
-A later simulated run also hit an intermittent TaskStore verification error.
-The first bounded concurrent-reader/writer reproduction did not repeat it;
-retain the failure and collect its original SQLite cause before attributing it.
-Review nevertheless identified two unsupported live-file access patterns in
-the verifier: SQLite immutable mode on a changing database, and raw header
-reads that can interfere with POSIX locks. Research the standard SQLite
-locking/recovery path before correcting them. Preserve foreign-store refusal,
-the existing hot-journal recovery test, ownership and task accounting. This
-storage investigation now precedes the real M2 run.
-
-The selected correction reuses the existing short per-store coordination lock
-and normal SQLite read transactions. A specific hot-journal recovery need gets
-a bounded private copy checked by SQLite before the original is recovered;
-unsupported multi-database journals are refused. This is a private prototype
-until concurrency, process-death recovery, unchanged foreign files and failure
-cleanup pass independent review. The original intermittent Windows failure
-still has no proven cause; correcting documented misuse is not that proof.
+Control-interface review also reproduced two defects before integration: a
+historical Resume request could revive intent after a later Pause, and cancellation
+before a connection handler's first instruction could abandon its stream. Reuse
+the existing durable mailbox as command authority and retain accepted connection
+cleanup independently of handler execution. Preserve both failures and qualify
+the actual mailbox adapter before trusting fake-runtime component results.
 
 For the first UI, use the existing local launch/control and standard window
 facilities. Bind explicit intent to the project's exact owned window and one

@@ -8,11 +8,12 @@
       "repository": "twitter/finagle",
       "revision": "9cc08d15216497bb03a1cafda96b7266cfbbcff1",
       "license": "Apache-2.0",
-      "reuse_kind": "adapted arithmetic",
+      "reuse_kind": "adapted arithmetic and endpoint-bound metric lifecycle",
       "used_by": [
-        "src/adaptive_inference/costs.py"
+        "src/adaptive_inference/costs.py",
+        "src/adaptive_inference/gateway.py"
       ],
-      "description": "Spike-sensitive exponential cost update; the portable implementation adds context matching, sample minimums, expiry and empirical p90, and does not decay on reads or copy endpoint/pending-request logic.",
+      "description": "Spike-sensitive exponential cost update with local context matching, sample minimums, expiry and empirical p90. Optional runtime timing adapts endpoint-bound metric capture across completion; it reuses the unchanged learner and does not copy endpoint/pending-request implementation or decay on reads.",
       "archive_prefix": "finagle/9cc08d15216497bb03a1cafda96b7266cfbbcff1"
     },
     {
