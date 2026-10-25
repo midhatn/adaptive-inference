@@ -749,6 +749,27 @@ The previous Laya experiment established no advantage over the guarded
 deterministic baseline. New evaluations using another decision model or hosted
 model service are outside the current IQ3_S-only test constraint.
 
+The [cache-state assessment](docs/cache-state-research.md) adds a concrete
+efficiency path from the user-supplied Gandalf and cross-model KV papers:
+
+- First qualify same-model session save/restore through the existing native
+  Strata API after the current Continue saved task flow. Reuse the retained
+  implementation; do not build another file format or recovery store.
+- Keep optional native cache separate from durable task/effect authority.
+  Bind complete hybrid state to one prefix and exact runtime/model identity;
+  a missing or refused cache falls back to a clean re-prefill without replaying
+  tools or resetting budgets. Saved bytes do not promise identical future tokens.
+- Measure total resume cost, foreground delay and actual host/device writes
+  before comparing RAM retention, whole-session files and type-aware admission.
+  Gandalf informs placement criteria; no SSD-endurance multiplier is claimed here.
+- Treat cross-model mapping as an unenabled research lane. Dense-model results
+  do not validate the hybrid IQ3_S baseline. Reuse existing implementations only
+  after a compatible, separately authorized model-pair evaluation; do not change
+  the current model merely to demonstrate a speedup.
+
+These are adopted requirements and acceptance steps, not enabled runtime
+capabilities. They do not block M2 or weaken its recovery and cleanup gates.
+
 ### M9 — Expand hardware only where it helps
 
 **User result:** the same ownership and recovery principles can use additional
