@@ -1,6 +1,6 @@
 # Adaptive Inference roadmap
 
-**Updated: 24 October 2026. Status: living plan, with evidence-based completion gates.**
+**Updated: 25 October 2026. Status: living plan, with evidence-based completion gates.**
 
 ## Destination
 
@@ -50,7 +50,7 @@ interrupted runs will remain identified as such.
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
 | M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: durable demand and bounded task controls implemented; persistent host and Hermes control integration under review |
-| M3 | Measured coexistence with real desktop applications | M2; observation work can start earlier | Planned |
+| M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |
 | M6 | A reproducible daily-use release with fault and soak qualification | M3, M4 and M5 for its advertised scope | Planned |
@@ -61,6 +61,11 @@ interrupted runs will remain identified as such.
 The core order is **M1 → M2 → M3/M4 → M5 → M6**. Portable conformance work for
 M7 can proceed alongside this path. Broad porting and optional research must
 not displace a reproducible working reference system.
+
+The dependency order can change when integration evidence identifies a
+prerequisite. The 25 October adjustment brings a small part of M3 forward:
+distinguish progress in the controller's own interface from actual contention.
+This does not advance the broad desktop or reboot milestones.
 
 ### M1 — Finish the corrected complete workflow
 
@@ -217,16 +222,90 @@ remained parked while the actual foreground ChatGPT process used sustained CPU,
 then failed its existing 240-second readiness bound with clean shutdown and no
 model launch. That is useful protection evidence but not a completed task.
 
-**Next priority from that result:** finish and qualify the trusted own-window
+**Priority established by that result:** finish and qualify the trusted own-window
 control interface before another complete-task attempt. It must authenticate its
 task/session, retain process/window ownership and distinguish the user's request
 from unrelated foreground activity. Do not whitelist ChatGPT, force focus to
 manufacture idle conditions, raise thresholds or extend the failed run's timers
-to obtain a pass. Research measured coexistence for M3 separately. Keep the
+to obtain a pass. Treat a new coexistence policy as separate M3 development,
+with its own predeclared acceptance. Keep the
 failed attempt and use a new source-bound case for any changed composition.
 Every case retains its original deadline, prompt, arrival and attempt accounting;
 worker exits precede host cleanup. These bounded cases do not establish indefinite
 service lifetime, arbitrary tools or a reboot.
+
+**25 October development feedback and next priority:** the owned GUI now passes
+an actual cold Pause/Stop run with an installed worker, preserved task state and
+clean shutdown. The complete GUI/inference/replacement workflow remains
+unaccepted. Four full attempts failed before task inference. One was interrupted
+by a Windows status-file replacement error; a scratch experiment rejected a
+reader-only sharing fix. Subsequent observation reuses the existing gateway
+status API instead of opening its live status file.
+
+The latest unmodified retry restored the native model, then yielded and released
+it before admission; its original 240-second readiness gate failed. The saved API
+trace contained no successful admission. A separate paused-task GUI profile,
+spanning startup, waiting, Pause and Stop, found most measured GUI-thread CPU
+time inside the native Tk event loop, with little
+time in application callbacks. That diagnostic does not identify a native bug
+or establish unprofiled performance. Further speculative rendering changes and
+repeated identical retries are not the next step.
+
+The conservative foreground policy currently requires sampled foreground CPU
+at or below 0.05 cores through a five-second recovery dwell. It does not use the
+already sampled host CPU busy fraction. Process activity alone therefore acts as an
+admission veto, although it does not measure contention or responsiveness.
+Bring the relevant M3 work forward as an explicitly versioned, opt-in policy:
+
+1. Reuse the existing authenticated, serialized GUI status exchange to observe
+   main-thread control-path progress. Require the exact retained window/session
+   identity and genuine current user intent; a server response alone is not
+   proof that the GUI processed it.
+2. Combine fresh progress observations with host CPU headroom and existing
+   RAM/commit, demand, ownership and resource-release checks. Preserve the
+   conservative fallback for unqualified foreground applications.
+3. Declare freshness, recovery and control-response budgets before testing.
+   Validate missing/stalled progress, resource pressure and foreground switching
+   as well as successful IQ3_S task completion and worker replacement.
+4. Publish only the demonstrated scope. Control-path progress does not establish
+   frame time, video playback, gaming performance or arbitrary application
+   responsiveness. Those remain separate M3 workloads.
+
+The first candidate's trial bounds are fixed before implementation and tests:
+
+| Signal | Candidate requirement |
+| --- | --- |
+| Control exchange | Two consecutive successful authenticated status exchanges in one session and intent generation; host timestamps only |
+| Exchange completion | Each authenticated arrival to joined, successfully closed connection at most 0.5 seconds |
+| GUI progress | Previous successful closure to the next serialized status arrival at most 2.5 seconds; latest successful closure no older than 2.5 seconds |
+| Host CPU | Clear at or below 80% busy; busy at or above 95%; intermediate values block new admission and recovery |
+| Existing guards | Activity age at most 1 second; RAM and commit each at least 4 GiB; five-second recovery dwell; two busy samples to yield |
+| Qualification limits | Original 900-second task, 240-second readiness and 1,800-second outer limits |
+
+Selecting the cooperative profile does not permit fallback to the old
+low-process-CPU rule when its health or host measurements fail. Invalidate old
+evidence on intent/session changes, failed exchange completion, Stop, revocation
+or clock regression. Normal per-request connection closure remains expected.
+These are experimental control-progress bounds, not universal responsiveness
+constants. Preserve raw CPU observations rather than rewriting them as idle.
+
+This adapts the feedback-control principle studied in
+[Heracles](https://research.google/pubs/improving-resource-efficiency-at-scale-with-heracles/)
+and [Caladan](https://www.usenix.org/conference/osdi20/presentation/fried): use
+signals relevant to interference and the protected workload. Their datacenter
+results are not transferred to this Windows composition. Reuse the project's
+existing control transport and feedback contracts first. Windows background QoS
+remains a possible later actuator, not evidence of GPU or memory isolation.
+The existing [research review](docs/research.md) covers Envoy and Netflix's
+completed-request feedback and MARS's separate admission/execution layers.
+[Python's stream contract](https://docs.python.org/3.11/library/asyncio-stream.html#asyncio.StreamWriter.wait_closed)
+defines connection closure; it does not establish GUI consumption, hence the
+following serialized main-thread request requirement. Recent
+[DLFP results](https://arxiv.org/abs/2609.38386v1) reinforce this measurement
+boundary: a scheduler interval need not measure completed GPU work. No scheduler
+algorithm or published speedup from these references is claimed here.
+Keep every failed case failed and retain its original deadline and quality.
+The new policy must earn a new acceptance result; it cannot revise the old one.
 
 Independent composition tests completed both simulated cases, then exposed a
 watchdog defect: a failed diagnostic write could prevent the emergency exit.
@@ -243,8 +322,8 @@ the existing durable mailbox as command authority and retain accepted connection
 cleanup independently of handler execution. Preserve both failures and qualify
 the actual mailbox adapter before trusting fake-runtime component results.
 
-For the first UI, use the existing local launch/control and standard window
-facilities. Bind explicit intent to the project's exact owned window and one
+For the original conservative UI path, use the existing local launch/control
+and standard window facilities. Bind explicit intent to the project's exact owned window and one
 authenticated runner/task. Remove only its own recent-input block; keep CPU,
 memory, observation and native-ownership checks. Do not exempt a whole browser.
 Fresh window/session verification is separate from task-lifetime intent, so a
@@ -670,16 +749,18 @@ basis.
 
 ## Next execution packet
 
-Finish M1 publication with exact source/evidence preservation, fresh distribution
-checks and CI for the submitted revision. Keep the accepted native composition
-separate from any upstream target whose proposed change has not been tested.
-The first publication CI exposed temporary-path spelling mismatches in three
-evidence fixtures on macOS and hosted Windows. Resolve those fixture roots using the existing standard-library path
-operation, retain their originals, and rerun cross-platform CI. The runtime,
-exporter's exact-path checks and accepted hardware evidence stay unchanged.
+Preserve the published M1 source and evidence while developing its successor.
+Require fresh distribution checks and CI for each changed submitted revision.
+Keep the accepted native composition separate from any upstream target whose
+proposed change has not been tested.
 
 The active technical packet is M2:
 
+- First implement and independently review the opt-in control-progress and host
+  headroom policy described above. This bounded M3 prerequisite follows the
+  failed complete GUI cases; do not repeat them under unchanged assumptions.
+  Qualify progress, failed/stale observations, pressure and foreground switching
+  before promoting the new policy's real IQ3_S result.
 - Compose reviewed durable demand, cold parked ownership and the existing
   controller into one explicit persistent-host mode. Retain bounded M1 mode.
 - Reuse the actual native startup cache planner and original observations.
@@ -697,6 +778,6 @@ The active technical packet is M2:
 - Independently review the composed host before a fresh IQ3_S qualification.
   Record failures, revise this packet from evidence and keep quality unchanged.
 
-M3/M4 desktop and tool qualification follows the persistent composition; physical
+Broader M3/M4 desktop and tool qualification follows the persistent composition; physical
 restart recovery remains M5. The first release can be useful before every later
 milestone is finished, with its established experience stated precisely.
