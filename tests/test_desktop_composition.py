@@ -85,10 +85,11 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         c=self.case;c.work=c.root/'hermes-task';(c.work/'work').mkdir(parents=True)
         c.store=q.TaskStore(c.work/'task.sqlite3')
         c.identity=q.DemandIdentity('registration','orders-report','worker','2026-10-25T10:00:00Z')
-        prepare_task(c.store,c.identity,q.PROMPT,'session',metadata={'model':q.MODEL,'quality':q.QUALITY})
+        prepare_task(c.store,c.identity,q.PROMPT,'session',metadata={'model':q.MODEL,'quality':q.QUALITY,
+                     'deadline_clock':q.CLOCK_ID})
         c.registry=q.DemandRegistry((q.Registration(c.store,c.identity),));c.capability=object()
         c.box=q.Mailbox(c.registry,c.identity.registration_id,requester_capability=c.capability)
-        c.original=c.checkpoint();c.deadline=time.monotonic()+900;c.worker=Child()
+        c.original=c.checkpoint();c.deadline=q.execution_now()+900;c.worker=Child()
         c.host=SimpleNamespace(adapter=SimpleNamespace(launch_intent=None,started_owner=False),
             gateway=SimpleNamespace(_runtime_context=None,history=[],scheduler=SimpleNamespace(
                 active=None,pending=0,uncertain=False)),controller=SimpleNamespace(fault=None))
@@ -110,7 +111,7 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result['primary_error']['type'],'RuntimeError')
 
     async def test_completed_host_outlives_task_deadline_until_real_stop(self):
-        c=self.case;c.deadline=time.monotonic()-1;c.worker=Child(code=0)
+        c=self.case;c.deadline=q.execution_now()-1;c.worker=Child(code=0)
         c.handles=[c.worker];c.worker_exit_verified=False
         c.stop_binding=SimpleNamespace(_verify_exit=lambda code:'task_completed')
         async def refresh():pass
@@ -133,7 +134,14 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(c.result['lifecycle']['host_closed'])
 
     async def test_expired_active_task_still_refuses_more_work(self):
-        c=self.case;c.deadline=time.monotonic()-1;c.worker=Child()
+        c=self.case;c.deadline=q.execution_now()-1;c.worker=Child()
+        # The successor reads the existing runtime before distinguishing an
+        # observed Pause from active expiry. Supply that actual active shape.
+        cp=SimpleNamespace(state={'status':'pending','phase':'ready',
+            'deadline_monotonic':c.deadline,'pending_request':None},operation=None,
+            requires_reconciliation=False)
+        c.runtime=SimpleNamespace(refresh=mock.AsyncMock(),_cache=SimpleNamespace(snapshot=
+            SimpleNamespace(target=cp,demand={'state':'active'},requests=(),receipts=())))
         c.transport=SimpleNamespace(lifecycle=lambda:{'stop_requested':False})
         with self.assertRaises(TimeoutError):await c.interact()
 
@@ -153,8 +161,10 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
                 c.work.mkdir();(c.work/'work').mkdir()
                 identity=q.DemandIdentity('registration','orders-report','worker','2026-10-25T10:00:00Z')
                 store=q.TaskStore(c.work/'task.sqlite3')
-                prepare_task(store,identity,q.PROMPT,'session',metadata={'model':q.MODEL,'quality':q.QUALITY})
+                prepare_task(store,identity,q.PROMPT,'session',metadata={'model':q.MODEL,'quality':q.QUALITY,
+                             'deadline_clock':q.CLOCK_ID})
                 q.rec.save(c.work/'plan.json',{'demand_identity':q.asdict(identity),
+                    'deadline_clock':q.CLOCK_ID,
                     'base_python':str(c.profile.worker_python),'gateway':'http://127.0.0.1:18100/v1'})
                 events.append('prepare');child=prepare_child
             else:
@@ -211,6 +221,7 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
             with mock.patch.object(q,'os',SimpleNamespace(name='nt',getpid=os.getpid)), \
                     mock.patch.object(q,'sys',SimpleNamespace(version_info=(3,11,9))), \
                     mock.patch.object(q,'verify_interpreter'), mock.patch.object(q,'verify_sdk'), \
+                    mock.patch.object(q,'verify_execution_clock',return_value=q.CLOCK_ID), \
                     mock.patch.object(q,'package_identity',return_value={'version':'fixture','files':{}}), \
                     mock.patch('adaptive_inference.desktop.owned_job',job), \
                     mock.patch.object(activity,'WindowsActivityReader',return_value=object()), \

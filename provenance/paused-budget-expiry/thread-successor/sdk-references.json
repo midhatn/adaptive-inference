@@ -1,0 +1,21 @@
+{
+  "revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2025 Nous Research",
+  "files": {
+    "agent/tool_executor.py": "1b1b67d4b88f73c51dc147d0e0383b36c561d921d278d801326de5ba24b29702",
+    "tools/daemon_pool.py": "7a91a712125a820485665618753d14bfc61d2e7dd1d481dce9cb0f680ada1657",
+    "tools/thread_context.py": "4e1d7118141ed5ea0f4de6989ef346750941ba7b7b273a22ef0c1bb50a720e0e",
+    "tools/interrupt.py": "3127f53b4ca1431df828015a3eb06d29ffd43ea9b6a51954d3a45bc69483917b",
+    "agent/activity_tracking.py": "4b21eef1aa2656ee89ce0b4213bcb4c300edbc654d3cc19e9b27ee25e36f889a",
+    "agent/interrupt_control.py": "aee497b902f3cc6daa69021fb698382cc97d678a4fb749ab4c2a64309817c58f",
+    "run_agent.py": "8c215df03f32493f72992db0c0ccaddb811436f9025451e3f1e8f535dc9cda5d",
+    "tests/agent/test_sequential_tool_timeout.py": "40dc8a2148cff78e3e01b1adaf3523d20c3894930d566ccd02708ca857548493",
+    "tests/agent/test_sequential_tool_interrupt.py": "ceb684310fb4033e1b4c8c27ba8974efc5f01b8fff4fee3da72ddddeefd8a624",
+    "LICENSE": "e29dfaf6905a8d396a58ea4bd84ad27057756bbd9599b5bec0971ae34d2a2118"
+  },
+  "runtime_new_dependency": [
+    "tools/interrupt.py"
+  ],
+  "reuse": "Use the existing executor/context propagation and worker interruption API. Exact-source dispatch tests use the existing SDK timeout fixture submit-start synchronization. No SDK implementation copied into production."
+}

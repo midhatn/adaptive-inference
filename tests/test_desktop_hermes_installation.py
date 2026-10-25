@@ -1,12 +1,16 @@
 """Installed worker setup uses canonical identities before external SDK inputs."""
 from contextlib import ExitStack
 from pathlib import Path
+import json
+import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
 from adaptive_inference.desktop import installation
 from adaptive_inference.desktop.hermes import run_recovery, report_contract, recovery
+from adaptive_inference.desktop.hermes.sdk_pins import SDK_FILES
 
 
 class WorkerSetupTests(unittest.TestCase):
@@ -46,6 +50,48 @@ class WorkerSetupTests(unittest.TestCase):
                 mock.patch.object(run_recovery.site,'addsitedir'),mock.patch.object(report_contract,'configure_inputs') as configure:
             with self.assertRaises(RuntimeError):run_recovery.setup(self.plan)
         configure.assert_not_called()
+
+
+class SDKOriginTests(unittest.TestCase):
+    paths=('agent/activity_tracking.py','agent/turn_liveness.py','agent/interrupt_control.py',
+           'agent/turn_facade.py','agent/conversation_loop.py','tools/interrupt.py')
+
+    def test_all_six_adopted_interfaces_have_the_exact_reviewed_source_pins(self):
+        root=Path(__file__).resolve().parents[1]
+        pins=json.loads((root/'provenance/paused-budget-expiry/clock-successor/sdk-references.json').read_text())['files']
+        pins.update(json.loads((root/'provenance/paused-budget-expiry/thread-successor/sdk-references.json').read_text())['files'])
+        self.assertEqual(len(SDK_FILES),20)
+        for relative in self.paths:self.assertEqual(SDK_FILES[relative],pins[relative])
+
+    def test_preloaded_second_sdk_is_refused_for_each_newly_relied_module_even_with_equal_bytes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary).resolve()/'expected';root.mkdir()
+            alternate=root.parent/'alternate.py';alternate.write_text('# identical source fixture\n')
+            modules={}
+            for relative in SDK_FILES:
+                if relative.endswith('.py'):
+                    path=root/relative;path.parent.mkdir(parents=True,exist_ok=True)
+                    path.write_bytes(alternate.read_bytes())
+                    modules[relative[:-3].replace('/','.')]=SimpleNamespace(__file__=str(path))
+            with mock.patch.dict(sys.modules,modules):
+                installation.verify_sdk_imports(root)
+                for relative in self.paths:
+                    name=relative[:-3].replace('/','.')
+                    with self.subTest(name=name),mock.patch.dict(sys.modules,{name:SimpleNamespace(__file__=str(alternate))}), \
+                            self.assertRaisesRegex(RuntimeError,'Mixed Hermes SDK import identity: '+name):
+                        installation.verify_sdk_imports(root)
+
+    def test_newly_relied_module_without_file_origin_is_refused(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary).resolve()
+            # Other SDK modules are absent, as allowed before lazy import.
+            clean={p[:-3].replace('/','.'):None for p in SDK_FILES if p.endswith('.py')}
+            with mock.patch.dict(sys.modules,clean):
+                for relative in self.paths:
+                    name=relative[:-3].replace('/','.')
+                    with self.subTest(name=name),mock.patch.dict(sys.modules,{name:SimpleNamespace()}), \
+                            self.assertRaisesRegex(RuntimeError,'Mixed Hermes SDK import identity: '+name):
+                        installation.verify_sdk_imports(root)
 
 
 if __name__=='__main__':unittest.main()

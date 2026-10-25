@@ -152,7 +152,7 @@ def validate_reply(value, request, bootstrap):
                 or s['task_status'] not in {'pending','accepted','exhausted'}
                 or type(s['task_revision']) is not int or not 0 <= s['task_revision'] < 256
                 or s['demand'] not in {None,'active','waiting','paused','cancelled','fulfilled'}
-                or s['waiting_reason'] not in {None,'foreground','resources','paused','reconciliation','stop_requested','operation_inflight','unknown'}
+                or s['waiting_reason'] not in {None,'foreground','resources','paused','budget_expired','reconciliation','stop_requested','operation_inflight','unknown'}
                 or type(s['controls']) is not list or len(s['controls']) > 32):
             raise ClientError('invalid_reply')
         ids, sequences = set(), set()
@@ -165,6 +165,12 @@ def validate_reply(value, request, bootstrap):
     elif method in COMMANDS:
         if set(value)=={'ok','control'}:
             control(value['control'],request=request)
+        elif set(value)=={'ok','refusal'}:
+            refusal = value['refusal']
+            if (type(refusal) is not dict or set(refusal) != {'request_id','command','reason','recorded'}
+                    or refusal['request_id'] != request.request_id or refusal['command'] != request.method
+                    or refusal['reason'] != 'execution_budget_expired' or refusal['recorded'] is not False):
+                raise ClientError('invalid_reply')
         elif (set(value) != {'ok','state','request_id','recorded'} or value['state'] != 'pending'
               or value['request_id'] != request.request_id or value['recorded'] is not None):
             raise ClientError('invalid_reply')
@@ -308,6 +314,7 @@ class NetworkWorker:
 
 
 WAITING = {None:'Ready for the next step.', 'foreground':'Waiting while your other work has priority.',
+    'budget_expired':"This run's time budget ended. Your saved work is preserved.",
            'resources':'Waiting for enough available memory or computing resources.',
            'paused':'Paused. Resume when you want the task to continue.',
            'reconciliation':'Waiting for an earlier operation to be checked.',
@@ -376,7 +383,8 @@ class ClientController:
         if not available:return False
         terminal=self.status is not None and (self.status['task_status']!='pending'
             or self.status['demand'] in {'cancelled','fulfilled'})
-        controls=self.status is not None and not terminal and not self.stop_requested
+        controls=(self.status is not None and not terminal and not self.stop_requested
+            and self.status['waiting_reason']!='budget_expired')
         if retry:
             return (self.latest is not None and self.latest.method==method
                 and self.latest_stage=='unconfirmed' and (method=='stop' or controls))
@@ -482,6 +490,9 @@ class ClientController:
             self.latest_stage='applied' if reply['stop_confirmed'] else 'pending'
             self.action_text='Engine stopped safely.' if reply['stop_confirmed'] else 'Stop requested; waiting for safe shutdown.'
         elif 'control' in reply:self._apply_control(reply['control'])
+        elif 'refusal' in reply and request==self.latest:
+            self.latest_stage='unrecorded'
+            self.action_text="Not recorded; this run's time budget ended. Your saved work is preserved."
         elif request==self.latest:
             self.latest_stage='unconfirmed';self.action_text='The engine is checking this request; recording is not confirmed.'
         if self._close_on_stop_recorded and self.stop_recorded:self.close()

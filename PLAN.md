@@ -49,7 +49,7 @@ interrupted runs will remain identified as such.
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded installed composition and retained user commands qualified; safe task expiry and ordinary task continuation remain |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded installed composition, retained commands and safe paused expiry qualified; explicit continuation and ordinary task use remain |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |
@@ -436,7 +436,8 @@ actual package and complete result. The original quality and budgets are intact;
 only the client changed among 52 runtime modules. The deliberate status-ordering
 tests and the real GUI trials supply separate evidence: the live clicks were not
 proven to overlap a poll. These results do not establish universal input
-reliability, broader foreground performance or full M2. Safe task expiry is next.
+reliability, broader foreground performance or full M2. Safe task expiry was the
+next gate and is recorded separately below.
 
 **Publication test feedback:** one Windows CI job failed an existing intent test
 while the other 13 jobs passed. A controlled delayed-authority reproduction
@@ -447,17 +448,27 @@ retained operation; tests of pending replies must keep the distinction visible.
 Keep the production response timeout and freshness limits unchanged, preserve
 the failed CI run, and require fresh exact-head CI after the fixture repair.
 
+The repair then passed 48 relevant checks on Python 3.11 and 3.12, and an
+independent 48-check replay against the installed runtime. Restoring the old
+premature helper made the new regression fail as intended. All 14 CI checks
+passed on `26cc60dc4bc0f3b314cecc7aa05bf4913808a299` in
+[PR #19](https://github.com/midhatn/adaptive-inference/pull/19), which merged with
+the exact tested tree. The final source archive verified 694 files; the live
+wheel and all 52 runtime modules were unchanged by this fixture repair.
+
 Keep the ordinary host's lifetime independent of that task's deadline and the
 qualification supervisor's emergency bound. After verified task completion it
 can remain parked until an actual Stop. Preserve bounded task/qualification
 checks and truthful unresolved-cleanup reporting. Each changed deployment must
 earn its own relevant acceptance; the installed reference result does not
 transfer automatically to different imports, launch paths or control behavior.
-The first report still has its original 900-second task budget. Expiry while
-pending is a failure under the existing recovery contract, not a verified clean
-terminal outcome. Do not conceal that limitation by accepting an unknown worker
-exit. After the accepted interface follow-up, define and test safe ordinary task-expiry
-and recovery behavior before claiming the complete always-on M2 experience.
+The first report still has its original 900-second task budget. The predecessor
+recovery contract treated pending expiry as failure. The later
+[paused-expiry qualification](provenance/paused-budget-expiry/acceptance/README.md)
+accepts only an already verified safe Pause: the original budget is sealed, saved
+work remains pending, and the controller stays available until Stop. Active or
+uncertain expiry still fails. Explicit continuation and ordinary task use require
+their own gates before the complete always-on M2 experience can be claimed.
 
 Independent composition tests completed both simulated cases, then exposed a
 watchdog defect: a failed diagnostic write could prevent the emergency exit.
@@ -908,6 +919,81 @@ proposed change has not been tested.
 
 The active technical packet is M2:
 
+**Current gate, 25 October:** safe paused expiry passed its complete installed
+IQ3_S trial and 46-check independent terminal audit. The task retained its report
+and native history through the original deadline, kept the same window available,
+and shut down normally after one Stop. Preserve that exact result and the two
+failed predecessors. The next implementation is **Continue saved task**: an
+explicit new execution authorization for the same objective and effects, followed
+by a separate gate for a different task in the same host. Reuse the existing
+TaskStore, installed adapter and retained lifecycle; do not reopen the sealed
+execution or silently reset its cumulative request allowance. The researched
+identity and quiescent-transition references are
+[Temporal Continue-As-New](https://docs.temporal.io/develop/python/workflows/continue-as-new)
+and [LangGraph durable interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts).
+Research and inspect the exact existing transaction and effect-identity seams
+before implementing that additive authorization.
+
+**25 October live expiry feedback:** the first installed expiry trial failed after
+the worker returned its distinct expiry outcome. The host correctly rejected a
+seal timestamp that appeared to be in its future. Independent inspection found
+the same saved deadline throughout, but the installed Python 3.11 host used
+`GetTickCount64` for `monotonic()` while the Python 3.14 worker used
+`QueryPerformanceCounter`; their readings differed by about eight seconds.
+The report and native conversation survived, but there was no accepted expiry
+display or manual Stop. Preserve that failed run and its original package identity.
+Before another trial, use one explicit, documented same-machine clock for every
+shared execution deadline and seal comparison, and check compatibility in the
+actual installed interpreters. Python documents the system-wide
+[performance counter](https://docs.python.org/3.11/library/time.html#time.perf_counter)
+and its [newer implementation](https://docs.python.org/3.14/library/time.html#time.perf_counter).
+Do not compensate with a tolerance, reinterpret an old checkpoint silently, or
+weaken the future-timestamp check. The same run also exposed the pinned agent's
+600-second inactivity watchdog during an intentional Pause; address that distinct
+wait-versus-stall interaction using the existing SDK mechanism before accepting
+the longer paused experience. Neither observation changes the original quality,
+request budget or complete installed acceptance gate.
+
+**Follow-up installed feedback:** the shared-clock source and installed interpreter
+checks passed, but the next real-model trial stopped before writing its report.
+The new wait guard incorrectly equated task ownership with the thread that
+constructed the guard. The [pinned Hermes sequential tool path](https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/agent/tool_executor.py)
+dispatches through its existing worker pool, so a legitimate tool safe point arrived on another
+thread. Preserve this second failed trial. Before repeating the full scenario,
+exercise the actual pinned SDK dispatch path with the adapter's existing owned
+task and serialized safe-point contract. Correct the ownership check without
+adding an executor, allowing concurrent checkpoint mutation, or weakening lease
+and interruption checks. A component fixture that calls the middleware only on
+the constructor thread does not cover this integration boundary. Reuse the
+adapter's existing `Recovery` lock and the SDK's context-preserving executor;
+[Python futures](https://docs.python.org/3.14/library/concurrent.futures.html)
+already provide the required result and exception handoff.
+
+The actual pinned sequential dispatcher now reproduces the rejected-thread
+failure with a real task-store claim before any tool effect. That regression
+becomes the repair's positive gate: the same path must perform the allowed read
+and write exactly once under the original logical owner. Research also found
+that a tool timeout can return while its daemon callback is still running;
+`Future.cancel()` is not a callback join. Honor Hermes's existing
+[worker interruption signal](https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/interrupt.py)
+even when the agent's own interruption flags remain false. Serialize safe-point
+checks and final cleanup with the same existing lock, revoke late callbacks,
+and refuse a successful seal while callback completion is unresolved. Require
+an event-controlled timeout test and a concurrent-finalization test through the
+real SDK dispatcher before another installed trial. These are component gates;
+they do not replace the original full IQ3_S acceptance workflow.
+
+The five-module correction has now passed focused source checks on Python 3.11
+and 3.12, independent cleanup review, and the actual pinned SDK dispatcher checks
+on the deployed Python 3.14 interpreter. The same
+[reproducible dispatcher example](examples/validation/hermes_pause_dispatch/README.md)
+is included here with explicit source and installed modes. The subsequent ordinary
+package passed that dispatcher check with verified installed origins, then the
+complete expiry trial passed the independent terminal audit recorded above. Fresh
+clock observations and resource checks were taken after the computer restart;
+previous absolute timer readings were not reused. This same-boot qualification
+does not establish continuation across a reboot.
+
 - Preserve the now-qualified installed host/GUI/backend composition and its
   unchanged IQ3_S quality as the reference. Continue in that implementation;
   do not create another runner or repeat completed source-promotion work. Its
@@ -919,9 +1005,10 @@ The active technical packet is M2:
   trials and deterministic status-ordering tests have passed separately. Keep
   those boundaries when adding new task outcomes; do not repeat completed input
   work or transfer its evidence to a changed implementation without validation.
-- Define a safe budget-expiry outcome at an already verified paused checkpoint.
+- Preserve the accepted safe budget-expiry outcome at an already verified paused checkpoint.
   Preserve the pending task, effects, history and original deadline. Verify the
-  applied Pause and complete request/acknowledgement prefix, seal that execution,
+  applied Pause observed before the deadline and its complete request/acknowledgement
+  prefix, seal that execution,
   release ownership and join the retained worker. Verify final native history
   after cleanup and queued writes; a normal cleanup return alone is insufficient.
   Keep ownership through that cleanup and verify the final conversation through

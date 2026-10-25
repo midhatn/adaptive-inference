@@ -9,21 +9,90 @@ from copy import deepcopy
 from dataclasses import dataclass
 import hashlib
 import json
+import math
+import re
 
 from adaptive_inference.demand import DemandRegistry, _label, _record, _utc
+from adaptive_inference.execution_clock import CLOCK_ID
 from adaptive_inference.task_store import (
     OwnedTask, OwnershipError, RevisionConflict,
-    TaskStoreError, TerminalTaskError,
+    TaskStoreError, TerminalTaskError, MAX_REVISIONS,
 )
 
 REQUESTS = 'adaptive_inference.control_requests.v1'
 ACKS = 'adaptive_inference.control_acks.v1'
 MAX_REQUESTS = 32
 COMMANDS = {'pause': 'paused', 'resume': 'waiting', 'cancel': 'cancelled'}
+EXECUTION_OUTCOME = 'adaptive_inference.execution_outcome.v1'
+EXPIRY_SCHEMA = 'adaptive.paused-budget-expiry.v1'
+CLOCK_EXPIRY_SCHEMA = 'adaptive.paused-budget-expiry.v2'
 
 
 class ControlBlocked(TaskStoreError):
     """Cooperating host must not start another operation at this boundary."""
+
+
+def _execution_digest(value):
+    # Same canonical JSON encoding as the existing recovery receipt digest;
+    # the generic mailbox must not import a desktop/agent integration.
+    return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+
+def control_prefix_digest(requests, receipts):
+    return _execution_digest({'requests': list(requests), 'receipts': list(receipts)})
+
+
+def execution_outcome(state):
+    """Strict optional execution seal; a malformed present value is not absence."""
+    if EXECUTION_OUTCOME not in state:
+        return None
+    value = state[EXECUTION_OUTCOME]
+    keys = {'schema', 'deadline_monotonic', 'pause_observed_at_monotonic', 'sealed_at_monotonic',
+            'owner_epoch', 'pre_seal_revision', 'pre_seal_state_sha256', 'pause_request_id',
+            'pause_sequence', 'control_prefix_sha256'}
+    if type(value) is dict and value.get('schema') == CLOCK_EXPIRY_SCHEMA:
+        keys.add('deadline_clock')
+        if value.get('deadline_clock') != CLOCK_ID or state.get('deadline_clock') != CLOCK_ID:
+            raise ControlBlocked('Execution clock binding is malformed')
+    elif 'deadline_clock' in state:
+        raise ControlBlocked('Tagged execution requires its clock-bound outcome')
+    if type(value) is not dict or set(value) != keys or value['schema'] not in (EXPIRY_SCHEMA, CLOCK_EXPIRY_SCHEMA):
+        raise ControlBlocked('Execution outcome is malformed')
+    times = [value[key] for key in ('pause_observed_at_monotonic', 'deadline_monotonic', 'sealed_at_monotonic')]
+    try:
+        valid_times = all(type(v) in (int, float) and math.isfinite(v) and v > 0 for v in times)
+    except OverflowError:
+        valid_times = False
+    if (not valid_times or not times[0] < times[1] <= times[2]
+            or type(state.get('deadline_monotonic')) not in (int, float)
+            or value['deadline_monotonic'] != state.get('deadline_monotonic')
+            or type(value['owner_epoch']) is not str or not re.fullmatch('[0-9a-f]{32}', value['owner_epoch'])
+            or type(value['pre_seal_revision']) is not int or not 0 <= value['pre_seal_revision'] < MAX_REVISIONS - 1
+            or type(value['pause_sequence']) is not int or not 1 <= value['pause_sequence'] <= MAX_REQUESTS):
+        raise ControlBlocked('Execution outcome binding is malformed')
+    _label(value['pause_request_id'], 'pause_request_id')
+    for key in ('pre_seal_state_sha256', 'control_prefix_sha256'):
+        if type(value[key]) is not str or not re.fullmatch('[0-9a-f]{64}', value[key]):
+            raise ControlBlocked('Execution outcome digest is malformed')
+    before = deepcopy(state)
+    del before[EXECUTION_OUTCOME]
+    if value['pre_seal_state_sha256'] != _execution_digest(before):
+        raise ControlBlocked('Sealed execution state changed')
+    return deepcopy(value)
+
+
+@dataclass(frozen=True)
+class ControlNotRecorded:
+    """A proved no-append outcome, distinct from an ACK or uncertain mutation."""
+    request_id: str
+    command: str
+    reason: str = 'execution_budget_expired'
+
+    def __post_init__(self):
+        _label(self.request_id, 'request_id')
+        if (type(self.command) is not str or self.command not in COMMANDS
+                or type(self.reason) is not str or self.reason != 'execution_budget_expired'):
+            raise ValueError('Exact bounded non-recorded refusal required')
 
 
 def _find_request(requests, request_id):
@@ -188,18 +257,88 @@ class Mailbox:
                 return self.status(request_id)
         target = self.store.load(self.identity.task_id)
         _record(target, self.identity)
+        if execution_outcome(target.state) is not None:
+            return ControlNotRecorded(request_id, command)
         if target.state['status'] != 'pending':
             raise TerminalTaskError('Cannot submit new controls to a terminal task')
         if len(requests) >= MAX_REQUESTS:
             raise ControlBlocked('Mailbox lifetime request limit reached; no command removed')
         with self.store.claim(self.task_id, expected_revision=cp.revision,
                               owner_id='trusted-control-requester') as mailbox_owner:
-            state = deepcopy(mailbox_owner.checkpoint.state)
-            state[REQUESTS].append({'sequence': len(requests) + 1,
-                                   'request_id': request_id, 'command': command})
-            mailbox_owner.save_checkpoint(state,
-                expected_revision=mailbox_owner.checkpoint.revision)
+            # The target seal and mailbox append share the existing SQLite
+            # writer transaction; an earlier observation is not a reservation.
+            with self.store._connection(write=True) as db:
+                current = mailbox_owner._check(db, mailbox_owner.checkpoint.revision)
+                _, current_requests = self._request_checkpoint(current)
+                if current_requests != requests:
+                    raise ControlBlocked('Mailbox changed before append')
+                target = self.store._read(db, self.identity.task_id)
+                _record(target, self.identity)
+                if execution_outcome(target.state) is not None:
+                    return ControlNotRecorded(request_id, command)
+                state = deepcopy(current.state)
+                state[REQUESTS].append({'sequence': len(requests) + 1,
+                                       'request_id': request_id, 'command': command})
+                saved = self.store._write(db, current, state=state, operation=None,
+                    reconciliation=False, epoch=mailbox_owner._epoch, event='checkpoint')
+            mailbox_owner.checkpoint = saved
         return self.status(request_id)
+
+    def _paused_execution(self, db, owned):
+        if (type(owned) is not OwnedTask or owned._store.path != self.store.path
+                or owned.checkpoint.task_id != self.identity.task_id):
+            raise OwnershipError('Execution seal requires the exact target owner')
+        cp = owned._check(db, owned.checkpoint.revision)
+        _, requests = self._request_checkpoint(self.store._read(db, self.task_id))
+        receipts = self._acks(cp, requests)
+        demand = _record(cp, self.identity)
+        if (execution_outcome(cp.state) is not None or cp.state['status'] != 'pending'
+                or cp.operation is not None or cp.requires_reconciliation
+                or demand is None or demand['state'] != 'paused'
+                or not requests or len(receipts) != len(requests)
+                or requests[-1]['command'] != 'pause' or receipts[-1]['outcome'] != 'applied'):
+            raise ControlBlocked('Execution expiry lacks its complete applied Pause prefix')
+        return cp, requests, receipts
+
+    def paused_execution_observation(self, owned):
+        """Owner-safe caller supplies time; this coherent read binds the Pause."""
+        with self.store._connection() as db:
+            cp, requests, receipts = self._paused_execution(db, owned)
+            return {'owner_epoch': cp.owner_epoch, 'target_revision': cp.revision,
+                    'pause_request_id': requests[-1]['request_id'],
+                    'pause_sequence': requests[-1]['sequence'],
+                    'control_prefix_sha256': control_prefix_digest(requests, receipts)}
+
+    def seal_paused_execution(self, owned, *, deadline_monotonic,
+                              pause_observed_at_monotonic, observed_pause, sealed_at_monotonic,
+                              deadline_clock=None):
+        """Seal only the exact previously observed Pause, atomically with its prefix."""
+        with self.store._connection(write=True) as db:
+            cp, requests, receipts = self._paused_execution(db, owned)
+            expected = {'owner_epoch': cp.owner_epoch, 'target_revision': cp.revision,
+                        'pause_request_id': requests[-1]['request_id'],
+                        'pause_sequence': requests[-1]['sequence'],
+                        'control_prefix_sha256': control_prefix_digest(requests, receipts)}
+            if (type(observed_pause) is not dict or observed_pause != expected
+                    or any(type(observed_pause[k]) is not type(v) for k, v in expected.items())):
+                raise ControlBlocked('Applied Pause changed after its pre-deadline observation')
+            marker = {'schema': EXPIRY_SCHEMA, 'deadline_monotonic': deadline_monotonic,
+                      'pause_observed_at_monotonic': pause_observed_at_monotonic,
+                      'sealed_at_monotonic': sealed_at_monotonic, 'owner_epoch': cp.owner_epoch,
+                      'pre_seal_revision': cp.revision, 'pre_seal_state_sha256': _execution_digest(cp.state),
+                      'pause_request_id': expected['pause_request_id'], 'pause_sequence': expected['pause_sequence'],
+                      'control_prefix_sha256': expected['control_prefix_sha256']}
+            if deadline_clock is not None:
+                if deadline_clock != CLOCK_ID or cp.state.get('deadline_clock') != CLOCK_ID:
+                    raise ControlBlocked('Execution clock changed before sealing')
+                marker.update(schema=CLOCK_EXPIRY_SCHEMA, deadline_clock=CLOCK_ID)
+            state = deepcopy(cp.state)
+            state[EXECUTION_OUTCOME] = marker
+            execution_outcome(state)
+            saved = self.store._write(db, cp, state=state, operation=None,
+                reconciliation=False, epoch=owned._epoch, event='checkpoint')
+        owned.checkpoint = saved
+        return deepcopy(marker)
 
     def _owned_snapshot(self, owned):
         if (type(owned) is not OwnedTask or owned._store.path != self.store.path

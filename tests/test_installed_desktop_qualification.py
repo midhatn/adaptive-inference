@@ -14,6 +14,10 @@ def _load(name,filename):
 _qualification=_load('installed_desktop_qualification','qualify.py')
 _cold=_load('installed_desktop_cold_tests','test_cold.py')
 _full=_load('installed_desktop_full_tests','test_full.py')
+_expiry=_load('installed_desktop_expiry_tests','test_expiry.py')
 ColdHarnessTests=_cold.HarnessTests
 QualificationSourceTests=_cold.SourceTests
 FullUIBoundaries=_full.FullUIBoundaries
+PausedExpiryBoundaries=_expiry.PausedExpiryBoundaries
+ExpiryCaseSelectionTests=_expiry.ExpiryCaseSelectionTests
+ExpiryProofTests=_expiry.ExpiryProofTests

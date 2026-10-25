@@ -12,6 +12,7 @@ import json
 import re
 import secrets
 import threading
+from adaptive_inference.control_mailbox import ControlNotRecorded
 
 REQUEST_LIMIT, RESPONSE_LIMIT = 4096, 65536
 COMMANDS = frozenset(("pause", "resume", "cancel"))
@@ -249,7 +250,7 @@ class ControlTransport:
                 or value["task_status"] not in {"pending", "accepted", "exhausted"}
                 or type(value["task_revision"]) is not int or not 0 <= value["task_revision"] < 256
                 or value["demand"] not in {None, "active", "waiting", "paused", "cancelled", "fulfilled"}
-                or value["waiting_reason"] not in {None, "foreground", "resources", "paused", "reconciliation", "stop_requested", "operation_inflight", "unknown"}):
+                or value["waiting_reason"] not in {None, "foreground", "resources", "paused", "budget_expired", "reconciliation", "stop_requested", "operation_inflight", "unknown"}):
             raise Refused("projection_refused")
         if type(value["controls"]) is not list or len(value["controls"]) > 32:
             raise Refused("projection_refused")
@@ -292,6 +293,13 @@ class ControlTransport:
         try:
             async with self._serial:
                 value = await self.runtime.submit_control(request_id, command)
+                if type(value) is ControlNotRecorded:
+                    if (value.request_id != request_id or value.command != command
+                            or value.reason != 'execution_budget_expired'):
+                        raise Refused('projection_refused')
+                    record['outcome'] = 'known'
+                    return {'request_id': request_id, 'command': command,
+                            'reason': value.reason, 'recorded': False}
                 result = self._control_result(value, request_id, command)
                 authority = False
                 if new_intent and command == "resume" and result["outcome"] != "rejected":
@@ -399,7 +407,7 @@ class ControlTransport:
             result = await asyncio.wait_for(asyncio.shield(operation), self.io_timeout)
         except asyncio.TimeoutError:
             return {"ok": True, "state": "pending", "request_id": request["request_id"], "recorded": None}
-        return {"ok": True, "control": result}
+        return {"ok": True, "refusal" if result.get('recorded') is False else "control": result}
 
     async def _handle(self, reader, writer, connection):
         connection["started"] = True

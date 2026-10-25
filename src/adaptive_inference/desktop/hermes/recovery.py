@@ -15,6 +15,7 @@ import time
 
 from adaptive_inference.task_store import ReconciliationRequired
 from adaptive_inference.feedback import Verdict
+from adaptive_inference.control_mailbox import execution_outcome
 from adaptive_inference.desktop.hermes.admission import AdmissionStop
 
 
@@ -96,6 +97,8 @@ def resumable(owned, db, work):
     """Called under TaskStore ownership, before agent construction/model discovery."""
     checkpoint = owned.checkpoint
     state = checkpoint.state
+    if execution_outcome(state) is not None:
+        raise ReconciliationRequired('This execution budget is sealed')
     if checkpoint.operation or checkpoint.requires_reconciliation:
         raise ReconciliationRequired('Interrupted operation requires explicit reconciliation')
     if state['phase'] not in ('ready', 'waiting_admission', 'accepted'):
@@ -147,6 +150,7 @@ class Recovery:
         self.agent = None
         self.provider = None
         self.controls = controls
+        self._control_thread = None
 
     def state(self):
         return copy.deepcopy(self.owned.checkpoint.state)
@@ -156,34 +160,48 @@ class Recovery:
 
     def control_safe_point(self):
         """Owner-only gate after actual native history/receipts are safe to retain."""
-        if self.controls is None:
-            return
-        if self.owned.checkpoint.operation or self.owned.checkpoint.requires_reconciliation:
-            raise ReconciliationRequired('Controls cannot acknowledge unresolved execution')
-        state = self.state()
-        if state['phase'] not in ('ready', 'waiting_admission', 'awaiting_native_flush'):
-            raise ReconciliationRequired('Unknown application checkpoint phase')
-        history = native_history(self.db, state['session_id'])
-        assert_prefix(state['native_history'], history)
-        verify_tool_rows(history, state['tools'])
-        verify_validation_rows(history,state,self.validator_identity)
-        verify_artifacts(state, self.work)
-        if state['phase'] == 'awaiting_native_flush' and len(history) <= len(state['native_history']):
-            raise ReconciliationRequired('Native completion has not reached durable history')
-        if history != state['native_history'] or state['phase'] == 'awaiting_native_flush':
-            state.update(native_history=history,
-                         phase='waiting_admission' if state['phase']=='waiting_admission' else 'ready')
-            self.checkpoint(state)
-        self.controls.poll(self.owned)
-        # Callers must take a NEW state copy after this gate. Controls may have
-        # committed demand/ACKs while the owner waited; old copies are unsafe.
+        with self.lock:
+            if execution_outcome(self.owned.checkpoint.state) is not None:
+                raise ReconciliationRequired('This execution budget is sealed')
+            if self.controls is None:
+                return
+            if self.owned.checkpoint.operation or self.owned.checkpoint.requires_reconciliation:
+                raise ReconciliationRequired('Controls cannot acknowledge unresolved execution')
+            state = self.state()
+            if state['phase'] not in ('ready', 'waiting_admission', 'awaiting_native_flush'):
+                raise ReconciliationRequired('Unknown application checkpoint phase')
+            history = native_history(self.db, state['session_id'])
+            assert_prefix(state['native_history'], history)
+            verify_tool_rows(history, state['tools'])
+            verify_validation_rows(history,state,self.validator_identity)
+            verify_artifacts(state, self.work)
+            if state['phase'] == 'awaiting_native_flush' and len(history) <= len(state['native_history']):
+                raise ReconciliationRequired('Native completion has not reached durable history')
+            if history != state['native_history'] or state['phase'] == 'awaiting_native_flush':
+                state.update(native_history=history,
+                             phase='waiting_admission' if state['phase']=='waiting_admission' else 'ready')
+                self.checkpoint(state)
+            self._poll_controls()
+            # Callers must take a NEW state copy after this gate. Controls may have
+            # committed demand/ACKs while the owner waited; old copies are unsafe.
 
     def bootstrap_controls(self):
         """Before readiness/agent construction; metadata must be prepared already."""
-        if self.controls is None:
-            raise ValueError('Bootstrap requires explicit opted-in controls')
-        resumable(self.owned, self.db, self.work)
-        self.controls.bootstrap(self.owned)
+        with self.lock:
+            if self.controls is None:
+                raise ValueError('Bootstrap requires explicit opted-in controls')
+            resumable(self.owned, self.db, self.work)
+            self._poll_controls(bootstrap=True)
+
+    def _poll_controls(self, *, bootstrap=False):
+        # The existing Recovery RLock owns this synchronous boundary. Hermes may
+        # enter it on its serialized tool thread rather than the constructor.
+        previous = self._control_thread
+        self._control_thread = threading.current_thread()
+        try:
+            return self.controls.bootstrap(self.owned) if bootstrap else self.controls.poll(self.owned)
+        finally:
+            self._control_thread = previous
 
     def barrier(self, label):
         if self.pause != label:
@@ -356,6 +374,9 @@ class Recovery:
                         self.owned.complete_operation(cp.operation['id'],result=receipt,state=state,
                             expected_revision=self.owned.checkpoint.revision)
                         return result
+                activity = getattr(self.controls, 'wait_activity', None)
+                if activity is not None:
+                    activity.check_final(self.agent)  # Recheck SDK abandonment before an effect.
                 state.update(phase='tool_running', native_history=history)
                 details = {'name': tool_name, 'tool_call_id': tool_call_id, 'args': args,
                            'fingerprint': key, 'session_id': session_id}
