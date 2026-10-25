@@ -21,6 +21,11 @@ This is the long-term goal across engines such as Strata and llama.cpp, and agen
 
 The next milestone also has a tested [task-control component](docs/task-controls.md): a trusted host can save Pause, Resume and Cancel requests, and a cooperating task owner can acknowledge them at a safe checkpoint. It retains pending requests across owner replacement. Connecting these controls to the persistent host, installed agent and user interface is still in progress; the existing launchers do not yet expose them.
 
+The [desktop control library](docs/desktop-control-core.md) provides the shared
+authenticated transport, serialized listener, mailbox adapter and window-intent
+and progress contracts for that integration. It starts no GUI, agent or engine
+and introduces no new command-line launcher.
+
 This repository is the **canonical source of truth** for the implementation, contracts, documentation, tests and evidence. The portable package works independently of Strata or Hermes. Optional native integrations preserve pinned source baselines, patches and licenses locally; reproducing their source does not depend on an old PR or upstream repository remaining available. See the [source preservation contract](docs/source-of-truth.md).
 
 Upstream PRs are delivery and discussion records. New shared development happens here, then focused adapters and fixes can be offered to engine and agent projects.

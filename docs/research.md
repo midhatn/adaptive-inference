@@ -188,6 +188,18 @@ reused implementation and selected test classes. No upstream code was copied.
 
 ### Shutdown and evidence accounting
 
+The [desktop control library](desktop-control-core.md) promotes the existing
+authenticated transport, serialized listener, mailbox adapter, window-intent
+and progress components with qualified package imports. Python's
+[shielded task retention](https://docs.python.org/3.11/library/asyncio-task.html#shielding-from-cancellation)
+and [stream closure](https://docs.python.org/3.11/library/asyncio-stream.html#asyncio.StreamWriter.wait_closed)
+remain the lifecycle mechanisms: a cancelled observer does not erase accepted
+work, and a returned handler alone is not confirmed connection cleanup.
+PyPA's [source-layout guidance](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
+motivates validating the regular installed wheel outside the checkout. No new
+task owner, desktop launcher or native policy is introduced; the existing
+policy is retained only as an explicitly declared test consumer.
+
 The complete-workflow audit exposed two distinct implementation assumptions.
 The foreground wait collector starts before its animation window; checking
 every sample against the later window boundary rejects valid preliminary

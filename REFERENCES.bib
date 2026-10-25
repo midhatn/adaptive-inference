@@ -378,6 +378,13 @@
   note = {Inspected 2026-10-25 with https://docs.python.org/3.11/library/sqlite3.html\#transaction-control and CPython v3.11.9 Modules/\_sqlite/connection.c at https://github.com/python/cpython/blob/v3.11.9/Modules/\_sqlite/connection.c. Mailbox.snapshot reuses the existing TaskStore gate and explicit BEGIN/read/commit boundary; connection context entry alone does not begin a read transaction. No SQLite or CPython implementation copied; existing TaskStore attribution is retained}
 }
 
+@misc{desktopControlPackaging,
+  title = {{Installed Python package and retained asynchronous control lifecycle}},
+  author = {{Python Packaging Authority and Python Software Foundation}},
+  url = {https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/},
+  note = {Inspected 2026-10-25 with the PyPA entry-points specification and Python 3.11 isolated mode, asyncio shield and StreamWriter.wait\_closed documentation. Existing control components are promoted with one qualified module identity and validated from a regular installed wheel. Retained task and stream lifecycles are reused; no new task owner, launcher, native policy or upstream implementation is introduced}
+}
+
 @misc{temporalControlAcknowledgement,
   title = {{Temporal Python Workflow message passing}},
   author = {{Temporal Technologies and contributors}},

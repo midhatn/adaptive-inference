@@ -8,6 +8,9 @@ are different states, and callers can inspect both.
 This is a portable component. The current launchers and Hermes adapter do not
 yet consume these requests. It does not complete the persistent-controller
 milestone, interrupt a native process or establish computer-reboot recovery.
+The [desktop control library](desktop-control-core.md) supplies the reusable
+transport and mailbox adapter for a trusted host; full host/GUI wiring remains
+a separate integration.
 
 ## Why this uses the existing task store
 

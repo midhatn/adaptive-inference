@@ -1,0 +1,56 @@
+{
+  "schema": "adaptive.desktop-control-core-source-lineage.v1",
+  "scope": "Library component promotion only; no runnable desktop host, GUI, native engine, model or installed-agent acceptance",
+  "canonical_base_commit": "90ea3da753e998786399ec2ca1266949e5782b3f",
+  "source_component": "report-feedback-successor-v1",
+  "source_manifest_sha256": "c6cc2f022e7fdba157f1f19c2a644f8e69fc8d8a9eb3c665a6770fab3027b049",
+  "preserved": {
+    "reviewed/control_transport.py": "02a0a8c53b001399c6a3ae7d4e57592fa4c11dd28ebb8cdc0b6cb0e4899cb514",
+    "reviewed/serial_listener.py": "e69da0e33d558179b3be48c22beda774d2ec2995aedd1016d1b52c77391ce845",
+    "reviewed/mailbox_runtime.py": "89402aba029ff8a763a47c20a1a141cba1dcdfffa0ced7545a6cdbe3e9e3d5fd",
+    "reviewed/ui_intent.py": "ff67208a3890656bc76717ac18c8d0c02a19dc2e09b11b81d88fc1f63c0a29d1",
+    "reviewed/ui_progress.py": "22edb43db9d044b8ce46c94d7f44770ccab6bb7f5bb05d2452b1911a5303af0c",
+    "tests/test_control_transport.py": "35b259e283bb4bcd32ab8daf18336fa4d7b43374fecc2a66367a2a2083115d6c",
+    "tests/test_serial_listener.py": "0392531d338a47703d9c6c19ddd1459e3a5aab1355fb47260156a865632c07e0",
+    "tests/test_mailbox_runtime.py": "9b29d8ac813d9b9de1fbfd68b5f11eca46d34d35f3b659b3d945688c49030557",
+    "tests/test_ui_intent.py": "733866481fb8bb5e91ae1b8626bcd04019df79667b7be3cd7c406cc8f800488e",
+    "support/policy.py": "33c8aa8eada82a474708f1eb3c8fbfcca14fa1d0d18f00f431eb32010a955556",
+    "tests/test_cooperative_progress.py": "f45ee0db5415a216b5b5fc7a41b2876cdd1842d7469b9556de00fbf94fab0fd6"
+  },
+  "source_paths": {
+    "reviewed/control_transport.py": "control_transport.py",
+    "reviewed/serial_listener.py": "serial_listener.py",
+    "reviewed/mailbox_runtime.py": "mailbox_runtime.py",
+    "reviewed/ui_intent.py": "ui_intent.py",
+    "reviewed/ui_progress.py": "ui_progress.py",
+    "tests/test_control_transport.py": "provenance/test_control_transport.py",
+    "tests/test_serial_listener.py": "test_serial_listener.py",
+    "tests/test_mailbox_runtime.py": "ui-mailbox-runtime-prototype/tests/test_mailbox_runtime.py",
+    "tests/test_ui_intent.py": "test_ui_intent.py",
+    "support/policy.py": "foreground/policy.py",
+    "tests/test_cooperative_progress.py": "test_cooperative_progress.py"
+  },
+  "promotion": {
+    "runtime": "Only qualify local imports to adaptive_inference.desktop; no executable behavior change",
+    "tests": "Canonical imports; ordinary shared fixture imports instead of dynamic private path loading; unchanged selected test methods except the exact GUI objective constant substitution in transport-progress setup",
+    "mailbox_tests": "Retain DataFixture, FakeLifecycle and 27 RuntimeTests; the five SnapshotTests already exist in the canonical suite",
+    "progress_tests": "Retain ProgressTests, PolicyTests, TransportProgressTests and the first SafeBoundaryTests method; defer actual GUI-client serialization, desktop facade projection and two full-runner evidence tests until their components are promoted",
+    "test_support": "One unmodified-behavior foreground policy consumer with qualified imports, under tests/desktop_support only; original strict policy is the canonical adaptive_inference.handoff module",
+    "predecessor_policy": "Canonical ForegroundPolicy and number helper are AST-identical to the selected packet predecessor/handoff.py; no duplicate predecessor copy is added",
+    "private_manifests": "The complete private manifest includes local paths and is not copied; all selected implementation and test source bytes are retained here"
+  },
+  "canonical_dependency_sha256": {
+    "src/adaptive_inference/control_mailbox.py": "c4355ba7881f34086eb1772a3f914cd8749b79c3c43481038b6bb3243dffef5e",
+    "src/adaptive_inference/task_store.py": "b9978bb70844aecc8c2d1846ae5bc12abab38abb3d2782909def654a86255ee9",
+    "src/adaptive_inference/demand.py": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+    "src/adaptive_inference/handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1"
+  },
+  "license": "Original Apache-2.0 project code; existing TaskStore and policy reuse attribution remains in NOTICE and third_party; no new upstream implementation copied",
+  "references": [
+    "https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/",
+    "https://packaging.python.org/en/latest/specifications/entry-points/",
+    "https://docs.python.org/3.11/using/cmdline.html#cmdoption-I",
+    "https://docs.python.org/3.11/library/asyncio-stream.html#asyncio.StreamWriter.wait_closed",
+    "https://docs.python.org/3.11/library/asyncio-task.html#shielding-from-cancellation"
+  ]
+}

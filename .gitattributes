@@ -29,5 +29,7 @@ provenance/windows-handoff/arithmetic-feedback-predecessor/native/owner_source/o
 provenance/task-store-verification/** -text whitespace=cr-at-eol
 provenance/persistent-desktop/m1-runtime/** -text whitespace=cr-at-eol
 third_party/reference-sources/sqlite/** -text
+# Exact reviewed desktop control sources and fixture inputs.
+provenance/desktop-control-core/** -text whitespace=cr-at-eol,-blank-at-eof
 # Unmodified upstream pager contains its original trailing spaces.
 third_party/reference-sources/sqlite/189e44dfecdc7868bb860dfb5d98eab371318c37/src/pager.c -whitespace
