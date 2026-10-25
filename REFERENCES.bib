@@ -377,3 +377,39 @@
   url = {https://docs.temporal.io/develop/python/workflows/message-passing},
   note = {Inspected 2026-10-24 for recorded versus completed control requests and explicit update identity. Design adaptation in the bounded local control mailbox only; no Temporal dependency, copied implementation or inherited exactly-once guarantee}
 }
+
+@article{heraclesFeedback,
+  title = {Improving Resource Efficiency at Scale with Heracles},
+  author = {Lo, David and Cheng, Liqun and Govindaraju, Rama and Ranganathan, Parthasarathy and Kozyrakis, Christos},
+  journal = {ACM Transactions on Computer Systems},
+  volume = {34},
+  year = {2016},
+  url = {https://research.google/pubs/improving-resource-efficiency-at-scale-with-heracles/},
+  note = {Inspected 2026-10-25 for feedback-based protection of latency-sensitive work. Design reference for the planned coexistence policy; no source copied or datacenter performance result transferred}
+}
+
+@inproceedings{caladanInterference,
+  title = {Caladan: Mitigating Interference at Microsecond Timescales},
+  author = {Fried, Joshua and Ruan, Zhenyuan and Ousterhout, Amy and Belay, Adam},
+  booktitle = {14th USENIX Symposium on Operating Systems Design and Implementation},
+  year = {2020},
+  url = {https://www.usenix.org/conference/osdi20/presentation/fried},
+  note = {Inspected 2026-10-25 for interference-specific control signals and fast resource allocation. No kernel module, microsecond timing claim or published speedup is reused}
+}
+
+@misc{dlfpMeasurementBoundary,
+  title = {Decode-Latency Feedback Prefill: A Model-Free Controller and Its Generalization Limits},
+  author = {Agarwal, Gaurav and Garg, Ashish and Singhal, Isha},
+  year = {2026},
+  eprint = {2609.38386},
+  archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2609.38386v1},
+  note = {Version 1, submitted 2026-09-29; inspected 2026-10-25. Its negative generalization result informs the distinction between an asynchronous scheduler interval and completed GPU work. No controller code or model performance claim is adopted}
+}
+
+@misc{pythonStreamCompletion,
+  title = {Python 3.11 asyncio streams: drain, close and wait_closed},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.11/library/asyncio-stream.html#asyncio.StreamWriter.wait_closed},
+  note = {Inspected 2026-10-25 for the planned cooperative control-progress observation. Flow-control completion does not establish application consumption; subsequent serialized GUI progress is required. Official API contract, no source copied}
+}
