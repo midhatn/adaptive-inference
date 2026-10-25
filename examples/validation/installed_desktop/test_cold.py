@@ -43,7 +43,7 @@ class Child:
 class HarnessTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         temp=tempfile.TemporaryDirectory();self.addCleanup(temp.cleanup)
-        self.root=Path(temp.name);self.case=q.ColdUIQualification(args_for(self.root/'case'))
+        self.root=Path(temp.name).resolve();self.case=q.ColdUIQualification(args_for(self.root/'case'))
         c=self.case;c.root.mkdir();c.work=c.root/'hermes-task';(c.work/'work').mkdir(parents=True)
         c.store=q.TaskStore(c.work/'task.sqlite3')
         c.identity=q.DemandIdentity('cold-registration','cold-task','fixture-owner',NOW)
@@ -267,6 +267,7 @@ class SourceTests(unittest.TestCase):
     def test_preserved_acceptance_methods_match_frozen_predecessor(self):
         import ast
         import hashlib
+        from ast_preservation import preservation_dump
         tree=ast.parse((q.HERE/'qualify.py').read_text())
         functions={}
         for node in tree.body:
@@ -284,7 +285,7 @@ class SourceTests(unittest.TestCase):
                             ('prior','complete_ledger'),('cold','verify_closure')):
                         return ast.Name(id=node.attr,ctx=ast.Load())
                     return self.generic_visit(node)
-            actual=hashlib.sha256(ast.dump(Names().visit(node),include_attributes=False).encode()).hexdigest()
+            actual=hashlib.sha256(preservation_dump(Names().visit(node)).encode()).hexdigest()
             self.assertEqual(actual,expected,name)
 
     def test_cold_scenario_never_calls_kill_or_private_helper(self):

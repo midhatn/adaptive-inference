@@ -10,6 +10,8 @@ from types import SimpleNamespace
 import unittest
 from unittest import mock
 
+from ast_preservation import preservation_dump
+
 from adaptive_inference.desktop.gui_launch import CHILD_SOURCES, LaunchSpec
 from adaptive_inference.desktop.startup_pipe import StartupError
 
@@ -60,7 +62,7 @@ def normalized_source(text, name):
                 for method in node.body:
                     if isinstance(method, ast.FunctionDef) and method.name == 'verify':
                         method.body = [ast.Pass()]
-    return ast.dump(tree, include_attributes=False)
+    return preservation_dump(tree)
 
 
 class SourcePreservationTests(unittest.TestCase):

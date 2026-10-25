@@ -106,7 +106,7 @@ class InstallationTests(unittest.TestCase):
 
     def test_hash_equal_redirector_is_not_current_interpreter(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path=Path(tmp)/'python.exe';path.write_bytes(b'fixture')
+            path=Path(tmp).resolve()/'python.exe';path.write_bytes(b'fixture')
             expected=installation.sha(path)
             self.assertEqual(installation.verify_interpreter(path,expected),path)
             with mock.patch.object(installation,'sys',SimpleNamespace(executable=str(path),

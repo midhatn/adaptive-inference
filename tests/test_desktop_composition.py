@@ -39,7 +39,16 @@ class Child:
 class CompositionTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         temp=tempfile.TemporaryDirectory();self.addCleanup(temp.cleanup)
-        self.root=Path(temp.name);self.case=make_case(self.root);self.case.root.mkdir()
+        self.root=Path(temp.name).resolve();self.case=make_case(self.root);self.case.root.mkdir()
+
+    async def test_noncanonical_parent_is_rejected_until_explicitly_resolved(self):
+        nested=self.root/'nested';nested.mkdir()
+        parent=nested/'..'
+        with self.assertRaisesRegex(ValueError,'non-redirected parent'):
+            q.DesktopComposition(self.case.profile_path,parent/'fresh-run')
+        case=q.DesktopComposition(self.case.profile_path,parent.resolve()/'fresh-run')
+        self.assertEqual(case.root,self.root/'fresh-run')
+        self.assertFalse(case.root.exists())
 
     async def test_diagnostic_failure_still_retains_worker_and_log(self):
         c=self.case;child=Child()

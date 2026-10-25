@@ -7,6 +7,8 @@ import threading
 from types import SimpleNamespace
 import unittest
 
+from ast_preservation import preservation_dump
+
 from adaptive_inference.desktop import control_client as cc
 from test_desktop_control_client import Root, Widget, FakeWorker, Binding, bootstrap, status
 
@@ -188,7 +190,7 @@ class PreservationTests(unittest.TestCase):
                             for index in reversed(range(len(item.args.kwonlyargs))):
                                 if item.args.kwonlyargs[index].arg=='minimize_on_close':
                                     del item.args.kwonlyargs[index];del item.args.kw_defaults[index]
-            return ast.dump(tree,include_attributes=False)
+            return preservation_dump(tree)
         self.assertEqual(hashlib.sha256(normalized(Path(cc.__file__),False).encode()).hexdigest(),
                          'e832cd7511bfa41c75f89917cecc7241d7bb922bfc4441f26207a29d4c2eff5c')
 

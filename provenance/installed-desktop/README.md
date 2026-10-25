@@ -58,3 +58,22 @@ audited terminal facts using unchanged v7 sanitization helpers; its focused
 tests are exposed through `provenance/test_installed_desktop_acceptance.py` in
 the existing provenance discovery. No source-promotion fixture is treated as
 live acceptance, and no single-click reliability or reboot claim is made.
+
+## Cross-platform fixture repair
+
+The first publication CI run found two test assumptions outside the local
+installation: Windows short paths and macOS temporary-directory aliases differed
+from their canonical paths, and Python 3.12 added `type_params` to definition AST
+nodes. Test setup now uses [`Path.resolve`](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path.resolve)
+before supplying a temporary parent to the unchanged production checks. An
+actual-filesystem regression still verifies refusal of a noncanonical parent.
+
+The shared test-only AST comparison omits only an empty `type_params` field on
+functions, async functions and classes, following the documented
+[Python 3.12 AST change](https://docs.python.org/3.12/library/ast.html#ast.FunctionDef).
+Nonempty or malformed parameters are refused; original expected fingerprints
+are unchanged, and mutation tests check that meaningful source changes remain
+detectable. No runtime module or qualifier implementation changed. The current
+qualification source manifest records the revised test fixture; the historical
+live acceptance keeps its original source identity. A passing portable fixture
+does not extend the Windows deployment's actual tested scope.

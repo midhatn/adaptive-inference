@@ -407,6 +407,14 @@ workers, GUI and connections completed normal owned cleanup. The
 binds this result to its exact package and deployment; it is not full M2,
 computer-reboot, gaming-performance or general-task acceptance.
 
+**Publication feedback:** fresh CI found test assumptions that the local run did
+not expose: temporary-directory aliases on Windows/macOS and Python 3.12's
+additional AST fields. Correct the fixtures using canonical temporary paths and
+an explicitly bounded AST comparison, preserving the original expected hashes,
+runtime checks and historical live receipt. Require the full OS/Python CI matrix
+and a fresh source-distribution check before merging this installed baseline.
+These fixture repairs do not establish a new model or desktop result.
+
 The trial also exposed a usability issue: the first Stop click after task
 completion did not register, while a second click completed normal Stop. Keep
 both observations in the record. Before the next interface release, reproduce
@@ -877,6 +885,9 @@ proposed change has not been tested.
 
 The active technical packet is M2:
 
+- Finish the installed baseline's cross-platform fixture repairs and require
+  exact-head CI before merging. Keep its accepted runtime bytes and live evidence
+  fixed; record test/source-distribution successors separately.
 - Preserve the now-qualified installed host/GUI/backend composition and its
   unchanged IQ3_S quality as the reference. Continue in that implementation;
   do not create another runner or repeat completed source-promotion work.
