@@ -3,11 +3,13 @@ Copyright 2026 Midhat Nashar and contributors
 
 Original project code is provided under Apache License 2.0.
 
-src/adaptive_inference/desktop contains original Apache-2.0 control components
-promoted with qualified imports. Its existing foreground-policy consumer is
-retained only under tests/desktop_support, not in the runtime wheel. Existing
-TaskStore and policy attribution below remains applicable; this promotion adds
-no copied upstream runtime implementation or new external dependency.
+src/adaptive_inference/desktop contains the original Apache-2.0 control, GUI,
+foreground, native-lifecycle and bounded Hermes consumer components promoted
+with canonical imports. provenance/installed-desktop retains their source
+lineage and licenses. Its planner test support includes the preserved Strata
+memory policy under MIT; it is not included in the runtime wheel. Existing
+TaskStore and policy attribution below remains applicable. No Hermes SDK runtime
+or compiled engine is copied into the installed package.
 
 src/adaptive_inference/handoff.py and the Windows foreground, lifecycle and
 Hermes recovery examples are original Apache-2.0 project implementations.

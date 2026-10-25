@@ -1,0 +1,25 @@
+{
+  "schema": "adaptive.installed-desktop.qualification-source.v1",
+  "files": {
+    "qualify.py": {
+      "sha256": "f84c7894699d70b3f902df2dd7691e0f2242fab80c7e9767ef9eb98bca628a98",
+      "bytes": 36507
+    },
+    "README.md": {
+      "sha256": "623653459c80df787c3bd50400996d6304eef54a1ca4d9fe31befabe46208da4",
+      "bytes": 4031
+    },
+    "source-lineage.json": {
+      "sha256": "a29e2da5e9c1dc9b52c74445d07d810b776ff22c52c292b8ce3caea2957073cb",
+      "bytes": 3710
+    },
+    "test_cold.py": {
+      "sha256": "da26945991e1fbb5694450f943e59b34970b91f65d9aa142c149f3375916ff1e",
+      "bytes": 20825
+    },
+    "test_full.py": {
+      "sha256": "777a097f7959661dcb0e9f70673bdc4960d83ab25f87d9ef3cb8592d0bd1a0f3",
+      "bytes": 5862
+    }
+  }
+}

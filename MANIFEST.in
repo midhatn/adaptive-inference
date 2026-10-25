@@ -7,6 +7,6 @@ recursive-include integrations *.py *.md *.json *.yaml *.yml *.patch *.txt *.bun
 recursive-include provenance *.json *.py *.md *.txt *.csv *.lock *.mjs *.ts *.yml *.yaml *.gz .gitignore .gitattributes LICENSE NOTICE
 recursive-include plugins *.py *.md *.json *.yaml *.yml LICENSE NOTICE
 recursive-include upstream *.json *.patch *.md
-recursive-include tests *.py
+recursive-include tests *.py *.json
 recursive-include third_party LICENSE NOTICE .gitattributes *.txt *.md *.json *.py *.mjs *.scala *.rs *.c
 global-exclude __pycache__ *.py[cod] *.log

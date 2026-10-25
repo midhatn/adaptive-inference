@@ -1,0 +1,212 @@
+{
+  "accepted_packet_manifest_sha256": "c6cc2f022e7fdba157f1f19c2a644f8e69fc8d8a9eb3c665a6770fab3027b049",
+  "source_mappings": [
+    {
+      "source": "desktop_controls.py",
+      "destination": "src/adaptive_inference/desktop/desktop_controls.py",
+      "source_sha256": "46fc7768c46f26fb18826497bbfe69f7d960598c1435da5489ae75cd9b378f5d",
+      "retained_source": "provenance/installed-desktop/sources/desktop_controls.py"
+    },
+    {
+      "source": "native/cold_start.py",
+      "destination": "src/adaptive_inference/desktop/cold_start.py",
+      "source_sha256": "6368dc112662a190bca6b1cc8e7855d85177a75d5e16586ccaae9b96a0340904",
+      "retained_source": "provenance/installed-desktop/sources/native/cold_start.py"
+    },
+    {
+      "source": "native/native_owner_adapter.py",
+      "destination": "src/adaptive_inference/desktop/native_owner_adapter.py",
+      "source_sha256": "efb34a121a3814d52f1855e8c701f88bf9551004d180288295c149f3a8350a8c",
+      "retained_source": "provenance/installed-desktop/sources/native/native_owner_adapter.py"
+    },
+    {
+      "source": "native/persistent_host.py",
+      "destination": "src/adaptive_inference/desktop/persistent_host.py",
+      "source_sha256": "3d6fce906b381d3919eb031e3212ae186e69eb536dcbe4699dd855864fbe313b",
+      "retained_source": "provenance/installed-desktop/sources/native/persistent_host.py"
+    },
+    {
+      "source": "native/load_feasibility.py",
+      "destination": "src/adaptive_inference/desktop/load_feasibility.py",
+      "source_sha256": "23e94f3ee770b065fb323f30bb104d8d5732bf710bd3cc9b2a27daa746014dda",
+      "retained_source": "provenance/installed-desktop/sources/native/load_feasibility.py"
+    },
+    {
+      "source": "native/windows_host_base.py",
+      "destination": "src/adaptive_inference/desktop/windows_host_base.py",
+      "source_sha256": "bef54595b56f07eedd1f52e1e6d64eb68a468194fc7c976a20d96a46121acba9",
+      "retained_source": "provenance/installed-desktop/sources/native/windows_host_base.py"
+    },
+    {
+      "source": "native/owner_source/owned_job.py",
+      "destination": "src/adaptive_inference/desktop/owned_job.py",
+      "source_sha256": "4c62671096e2fc2f559a0a0e1807645df5161022701d210f5ba6c810d7b3439f",
+      "retained_source": "provenance/installed-desktop/sources/native/owner_source/owned_job.py"
+    },
+    {
+      "source": "foreground/activity.py",
+      "destination": "src/adaptive_inference/desktop/activity.py",
+      "source_sha256": "034bc130d0e6b04d0a8e244dad30b99139a484888634220566470efec3d8a281",
+      "retained_source": "provenance/installed-desktop/sources/foreground/activity.py"
+    },
+    {
+      "source": "foreground/policy.py",
+      "destination": "src/adaptive_inference/desktop/foreground_policy.py",
+      "source_sha256": "33c8aa8eada82a474708f1eb3c8fbfcca14fa1d0d18f00f431eb32010a955556",
+      "retained_source": "provenance/installed-desktop/sources/foreground/policy.py"
+    },
+    {
+      "source": "hermes/admission.py",
+      "destination": "src/adaptive_inference/desktop/hermes/admission.py",
+      "source_sha256": "dd076cee1bcddd9577de853d292ac368c5a6d94e0c478fda2c3e5b3cafb3f6d9",
+      "retained_source": "provenance/installed-desktop/sources/hermes/admission.py"
+    },
+    {
+      "source": "hermes/recovery.py",
+      "destination": "src/adaptive_inference/desktop/hermes/recovery.py",
+      "source_sha256": "81b3316be57bfb3c9c72236bdc80905e20b4d30e290b38e603d6c5557fc5b1c2",
+      "retained_source": "provenance/installed-desktop/sources/hermes/recovery.py"
+    },
+    {
+      "source": "hermes/control_bridge.py",
+      "destination": "src/adaptive_inference/desktop/hermes/control_bridge.py",
+      "source_sha256": "2126894888dbcb229cce04e77655802baf27b64781c8f4a9697f1a4f5bf33605",
+      "retained_source": "provenance/installed-desktop/sources/hermes/control_bridge.py"
+    },
+    {
+      "source": "hermes/service_stop.py",
+      "destination": "src/adaptive_inference/desktop/hermes/service_stop.py",
+      "source_sha256": "e33890e3b3cf485330548b19619b8481d7886dd0068ee415e2059b557995b048",
+      "retained_source": "provenance/installed-desktop/sources/hermes/service_stop.py"
+    },
+    {
+      "source": "hermes/report_validator.py",
+      "destination": "src/adaptive_inference/desktop/hermes/report_validator.py",
+      "source_sha256": "378dd445a088a075d300fc85b86160f3b96790ee046adecf926f9e59e8e7d9af",
+      "retained_source": "provenance/installed-desktop/sources/hermes/report_validator.py"
+    },
+    {
+      "source": "hermes/run_recovery.py",
+      "destination": "src/adaptive_inference/desktop/hermes/run_recovery.py",
+      "source_sha256": "39c1533566d0569b6979c638bc986973447e5bf830caefe44a15d86f3c355b5d",
+      "retained_source": "provenance/installed-desktop/sources/hermes/run_recovery.py"
+    },
+    {
+      "source": "examples/validation/hermes_tool_task/run_task.py",
+      "destination": "src/adaptive_inference/desktop/hermes/report_contract.py",
+      "source_sha256": "15c104e2316d0e6c5b4e8f9581877d39e0b61c7c041e9f63d1183f1e18076eb7",
+      "extracted": [
+        "Boundary",
+        "Refused",
+        "config",
+        "configure_inputs",
+        "digest",
+        "git",
+        "save",
+        "snapshot"
+      ],
+      "retained_source": "provenance/installed-desktop/sources/examples/validation/hermes_tool_task/run_task.py"
+    },
+    {
+      "source": "control_client.py",
+      "destination": "src/adaptive_inference/desktop/control_client.py",
+      "source_sha256": "dac1f85bf52ea098df730df82533033421b6aedc3c127ca426f44d57345ba49b",
+      "retained_source": "provenance/installed-desktop/sources/control_client.py"
+    },
+    {
+      "source": "gui_session.py",
+      "destination": "src/adaptive_inference/desktop/gui_session.py",
+      "source_sha256": "e789cf103cddc2311cea9191553b90ff6f000a9a6ea1a73fb6b17f29cdc46553",
+      "retained_source": "provenance/installed-desktop/sources/gui_session.py"
+    },
+    {
+      "source": "startup_pipe.py",
+      "destination": "src/adaptive_inference/desktop/startup_pipe.py",
+      "source_sha256": "a02c7c564adf7b313e6f051309dc8fd1a51bd0032ab9ad93a519476e43ab987b",
+      "retained_source": "provenance/installed-desktop/sources/startup_pipe.py"
+    },
+    {
+      "source": "window_marker.py",
+      "destination": "src/adaptive_inference/desktop/window_marker.py",
+      "source_sha256": "e2613ef662993be88c332657e4e53c598fdc006634bf8fabf9e0d0a9765c0d36",
+      "retained_source": "provenance/installed-desktop/sources/window_marker.py"
+    },
+    {
+      "source": "run_gui.py",
+      "destination": "src/adaptive_inference/desktop/run_gui.py",
+      "source_sha256": "3b10f19170eed5d278e2cc81c05ae436a2492e88dec055df46840cfba17364e8",
+      "retained_source": "provenance/installed-desktop/sources/run_gui.py"
+    },
+    {
+      "source": "gui_launch.py",
+      "destination": "src/adaptive_inference/desktop/gui_launch.py",
+      "source_sha256": "354a711975e1b5837a44024875b630f70e89b49e363749aad40eb6675cbce6c9",
+      "retained_source": "provenance/installed-desktop/sources/gui_launch.py"
+    },
+    {
+      "source": "retained_ui.py",
+      "destination": "src/adaptive_inference/desktop/retained_ui.py",
+      "source_sha256": "4b02bd1d302954ac3d2eb148df929ec38cf19535d76f7206c97fcb5cee15f58d",
+      "retained_source": "provenance/installed-desktop/sources/retained_ui.py"
+    }
+  ],
+  "composition_fragments": [
+    {
+      "source": "run_cold_ui.py",
+      "source_sha256": "79861fd9c28fe3d56f7e7326f03fcae4edb5c65118d93f731a0ca20f4afc1634",
+      "retained_class": "ColdUIQualification",
+      "retained_source": "provenance/installed-desktop/sources/run_cold_ui_class.py",
+      "retained_sha256": "4f79ded285649e4ec0448ad277d5b67edd8ab78dc36c87909ce612490716b645"
+    },
+    {
+      "source": "qualification_helpers.py",
+      "source_sha256": "5b474142399a16d89fe4729dadeb13ace39205825e4311835322b3f45c8b2be6",
+      "retained_class": "Qualification",
+      "retained_source": "provenance/installed-desktop/sources/qualification_helpers_class.py",
+      "retained_sha256": "cfc313d42ddd86f3c8e04c4234bdd2fbd420324a10758dfdaef410c8ce5a1dd9"
+    }
+  ],
+  "test_and_planner_support": [
+    {
+      "source": "native/test_native_owner_adapter.py",
+      "retained_source": "provenance/installed-desktop/sources/native/test_native_owner_adapter.py",
+      "sha256": "0be3daa9300d9574c6638402c0f154be289ef13de9eab23c6618a2903469989d"
+    },
+    {
+      "source": "native/test_persistent_host.py",
+      "retained_source": "provenance/installed-desktop/sources/native/test_persistent_host.py",
+      "sha256": "7a272ae4229c64812cba3fb082eebc5b6832f0ca67808123b3e9cfc1ce815927"
+    },
+    {
+      "source": "test_desktop_controls.py",
+      "retained_source": "provenance/installed-desktop/sources/test_desktop_controls.py",
+      "sha256": "11fe9d3a21eb4a947cd9a4323eee330f0e2406f79fc660ff00ec367cc8403ea2"
+    },
+    {
+      "source": "test_report_feedback.py",
+      "retained_source": "provenance/installed-desktop/sources/test_report_feedback.py",
+      "sha256": "d41d0da43637cb9cdf951d7885af6a27820ee8bd4727b8be3eb7dccc10b0aa4c"
+    },
+    {
+      "source": "test_report_hold.py",
+      "retained_source": "provenance/installed-desktop/sources/test_report_hold.py",
+      "sha256": "4432ee98be684e0d91814121fec87d6ac88caf7eb013c80fc41b09bf0f651acc"
+    },
+    {
+      "source": "native/planner_source/sealed_memory_policy.py",
+      "retained_source": "provenance/installed-desktop/sources/native/planner_source/sealed_memory_policy.py",
+      "sha256": "7372fc3078380e3545830ed68de66934780e34391f6f1ad7a4c99df89d1d51fc"
+    },
+    {
+      "source": "native/planner_source/owner_engine.py",
+      "retained_source": "provenance/installed-desktop/sources/native/planner_source/owner_engine.py",
+      "sha256": "d0b4174d3b1aff944d749c6094e2953399bf895f31001aa2f8a1180fba18a4f4"
+    },
+    {
+      "source": "native/planner_source/memory_reader.py",
+      "retained_source": "provenance/installed-desktop/sources/native/planner_source/memory_reader.py",
+      "sha256": "d3c36b74a6040b8c743bb7362275fb7fc6c7a22f8aaed38e94798ab193167e86"
+    }
+  ],
+  "scope": "Original Apache-2.0 project mechanisms; imported Strata memory-policy test support retains MIT lineage. No model, compiled engine or Hermes SDK is packaged."
+}

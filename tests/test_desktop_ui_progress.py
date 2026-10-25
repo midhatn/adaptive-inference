@@ -12,7 +12,7 @@ from adaptive_inference.desktop.ui_intent import UIBinding, UIIntentGate, Verifi
 from adaptive_inference.desktop.ui_progress import CooperativeProgress
 from adaptive_inference.desktop.control_transport import ControlTransport, PreparedTask
 from adaptive_inference.desktop.serial_listener import SerialListener
-from desktop_support.policy import ForegroundPolicy
+from adaptive_inference.desktop.foreground_policy import ForegroundPolicy
 import test_desktop_control_transport as fixtures
 
 

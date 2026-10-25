@@ -49,7 +49,7 @@ interrupted runs will remain identified as such.
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: durable demand and bounded task controls implemented; persistent host and Hermes control integration under review |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: one bounded installed Windows host/GUI/Hermes composition qualified; daily-use intent and task-expiry work remain |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |
@@ -367,6 +367,66 @@ changed launch/import path. Avoid a second miniature task runner or another copy
 of the private experiment layout. Interface close/reopen, meaningful terminal
 status text, cancellation, busy/quiet bursts and longer service use remain M2
 work; computer reboot and broad desktop workloads retain their separate gates.
+
+**Installation feedback:** use one complete installed composition, with the
+existing host and GUI sharing the same full Python environment. Inspection of
+the pinned CPython Windows launcher and a bounded process probe confirmed that
+an ordinary virtual-environment launcher adds a process between the retained
+launcher and the executing GUI. Keep the exact process/window ownership checks;
+do not replace them with process discovery. Verify the child's installed import
+closure, including package initializers, before acquiring its GUI resources.
+The first installed task profile remains the qualified IQ3_S orders-report
+workflow; packaging it does not establish arbitrary agent tasks.
+For the first installed interface, the window's X minimizes the same owned
+window to the taskbar, where it can be restored; Stop remains explicit shutdown.
+Qualify that behavior without presenting it as window destruction/reopening or
+process-restart recovery. Those broader interface-survival gates remain open.
+
+The actual installation also exposed a packaging constraint: the selected
+worker Python was externally managed, so ordinary package installation was
+refused. Preserve that failure and the existing managed installation. Reuse
+Astral's documented standalone archive deployment in a dedicated directory,
+then verify the exact distribution, executable, installed wheel and actual
+process identity before the live trials. Do not weaken ownership checks or add
+another package bootstrap to work around the refusal. Archive variants must
+be checked explicitly: the first archive had a different executable hash and
+was withheld from execution. This is a deployment adjustment, not a model,
+quality, task-budget or acceptance change. Sources and the supported procedure
+belong in the [deployment guide](docs/installed-desktop.md).
+
+**Installed reference qualification, 25 October:** the regular package passed
+separate cold and full Windows trials. Independent terminal review passed 35
+cold checks and 47 full checks. The cold case acknowledged Pause, minimized and
+restored the same window, then stopped without model calls or file effects.
+The full case made three real IQ3_S requests, wrote one independently checked
+report, replaced the worker at a verified checkpoint and completed from the
+saved task without repeating that write. The original quality, eight-request
+allowance and 900-second deadline were preserved. Both native model instances,
+workers, GUI and connections completed normal owned cleanup. The
+[installed acceptance record](provenance/installed-desktop/acceptance/README.md)
+binds this result to its exact package and deployment; it is not full M2,
+computer-reboot, gaming-performance or general-task acceptance.
+
+The trial also exposed a usability issue: the first Stop click after task
+completion did not register, while a second click completed normal Stop. Keep
+both observations in the record. Before the next interface release, reproduce
+and resolve interaction between user commands and the existing serialized
+status refresh, using researched event-loop/queue mechanisms. Preserve a user's
+accepted command and its recording/acknowledgement distinction without parallel
+requests or automatic replay. A successful repeated click does not establish
+single-click reliability. This interface fix now precedes safe task-expiry work.
+
+Keep the ordinary host's lifetime independent of that task's deadline and the
+qualification supervisor's emergency bound. After verified task completion it
+can remain parked until an actual Stop. Preserve bounded task/qualification
+checks and truthful unresolved-cleanup reporting. Each changed deployment must
+earn its own relevant acceptance; the installed reference result does not
+transfer automatically to different imports, launch paths or control behavior.
+The first report still has its original 900-second task budget. Expiry while
+pending is a failure under the existing recovery contract, not a verified clean
+terminal outcome. Do not conceal that limitation by accepting an unknown worker
+exit. After the interface follow-up, define and test safe ordinary task-expiry
+and recovery behavior before claiming the complete always-on M2 experience.
 
 Independent composition tests completed both simulated cases, then exposed a
 watchdog defect: a failed diagnostic write could prevent the emergency exit.
@@ -817,29 +877,36 @@ proposed change has not been tested.
 
 The active technical packet is M2:
 
-- First promote the reviewed control library, then package and independently
-  qualify the existing host/GUI/backend composition from a regular installed
-  wheel. The sixth development trial supports the bounded control-progress
-  policy and worker replacement; changed imports and launch paths require their
-  own acceptance. Preserve its retained ownership and startup protocol.
-  Pressure and foreign-application switching remain separate outstanding gates;
-  do not generalize the owned-window result to those workloads.
-- Compose reviewed durable demand, cold parked ownership and the existing
-  controller into one explicit persistent-host mode. Retain bounded M1 mode.
-- Reuse the actual native startup cache planner and original observations.
-  Distinguish low capacity, unknown data and unresolved startup; a cache proposal
-  is neither full GPU feasibility nor a reservation.
-- Add trusted pause/resume/cancel delivery with durable acknowledgement at safe
-  owner checkpoints. Keep waiting outside active provider requests and retain
-  the original task across interface or worker replacement.
-- Start with one qualified profile and cooperating worker. Reuse the existing
-  lifecycle/watchdog mechanisms, make service stop distinct from interface
-  close, and bound storage without discarding unfinished work.
-- Provide understandable status and explicit user AI-task intent, then test
-  cold idle, demand arrival, repeated busy/quiet activity, pause/resume/cancel,
-  active-request boundaries, interrupted startup and orderly shutdown.
-- Independently review the composed host before a fresh IQ3_S qualification.
-  Record failures, revise this packet from evidence and keep quality unchanged.
+- Preserve the now-qualified installed host/GUI/backend composition and its
+  unchanged IQ3_S quality as the reference. Continue in that implementation;
+  do not create another runner or repeat completed source-promotion work.
+- Fix user commands lost during a pending read-only status exchange. A bounded
+  reproduction against the installed package confirmed the refusal for Pause,
+  Resume, Cancel, Stop and explicit Retry. Reuse the serialized channel and
+  retain one explicit user intent until it can be dispatched, with truthful queued/recorded/unknown
+  states. Test status completion, close and failure boundaries, then qualify
+  the actual interface. The live missed click's exact timing is not proven by
+  the deterministic reproduction.
+- Define a safe budget-expiry outcome at an already verified paused checkpoint.
+  Preserve the task, effects, history and original deadline; fence new work,
+  receive acknowledgement, release ownership and join the retained worker.
+  Unknown effects or exits remain failures. Reuse the distinction between
+  [overall execution and attempt timeouts](https://docs.temporal.io/encyclopedia/detecting-activity-failures)
+  and [durable interruption with protected effects](https://docs.langchain.com/oss/python/langgraph/interrupts).
+  Expiry must not be mislabeled completion or attempt exhaustion.
+- Design explicit continuation after expiry and acceptance of another task in
+  the same host using the existing task store and identity contracts. Do not
+  renew a spent execution budget silently. Preserve user intent and completed
+  work, and keep resource waiting outside active provider requests.
+- Qualify cold idle, demand arrival, cancellation, active-request boundaries,
+  interrupted startup, longer service use and bounded storage. Broader pressure
+  and foreign-application switching remain separate outstanding gates; the
+  owned-window result does not establish those workloads. Reuse the native
+  cache planner while distinguishing unknown data, insufficient capacity and
+  unresolved ownership; a cache proposal is not a reservation.
+- Independently review changes, run the relevant actual IQ3_S qualification,
+  preserve failures and revise this packet from the observations. Publish only
+  accepted scope, with exact-head CI and reproducible source/distribution checks.
 
 Broader M3/M4 desktop and tool qualification follows the persistent composition; physical
 restart recovery remains M5. The first release can be useful before every later
