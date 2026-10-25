@@ -26,8 +26,13 @@ actual GUI Pause/Stop without model loading, followed by three real IQ3_S
 requests, one correct report write and a retained Hermes worker replacement.
 The [source-bound acceptance record](../provenance/installed-desktop/acceptance/README.md)
 contains 35 cold and 47 full independent checks and the exact wheel/profile.
-The full trial also recorded a missed first Stop click; a second click produced
-normal shutdown. Single-click control reliability remains a known limitation.
+That version's full trial recorded a missed first Stop click; a second click
+produced normal shutdown. The [retained-command successor](desktop-control-intent.md)
+resolves the reproduced status-polling gap and has its own
+[installed acceptance](../provenance/desktop-control-intent/acceptance/README.md):
+38 cold and 50 full independent checks, including one click for each Resume and
+one Stop after task completion. Deterministic tests establish the deliberate
+poll-overlap ordering; the live clicks establish their observed GUI outcomes.
 This bounded result does not qualify reboot recovery, pending-task expiry or
 every agent/engine. New installations must run their own qualification.
 

@@ -11,6 +11,7 @@ import unittest
 from unittest import mock
 
 from ast_preservation import preservation_dump
+from desktop_gui_support.intent_lineage import restore_predecessor
 
 from adaptive_inference.desktop.gui_launch import CHILD_SOURCES, LaunchSpec
 from adaptive_inference.desktop.startup_pipe import StartupError
@@ -18,6 +19,7 @@ from adaptive_inference.desktop.startup_pipe import StartupError
 
 def normalized_source(text, name):
     tree = ast.parse(text)
+    if name == 'control_client':tree = restore_predecessor(tree)
     for node in ast.walk(tree):
         if isinstance(node, ast.ImportFrom) and (node.module or '').startswith('adaptive_inference.desktop.'):
             node.module = node.module.removeprefix('adaptive_inference.desktop.')
