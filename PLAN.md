@@ -242,7 +242,7 @@ by a Windows status-file replacement error; a scratch experiment rejected a
 reader-only sharing fix. Subsequent observation reuses the existing gateway
 status API instead of opening its live status file.
 
-The latest unmodified retry restored the native model, then yielded and released
+The fourth full attempt restored the native model, then yielded and released
 it before admission; its original 240-second readiness gate failed. The saved API
 trace contained no successful admission. A separate paused-task GUI profile,
 spanning startup, waiting, Pause and Stop, found most measured GUI-thread CPU
@@ -306,6 +306,38 @@ boundary: a scheduler interval need not measure completed GPU work. No scheduler
 algorithm or published speedup from these references is claimed here.
 Keep every failed case failed and retain its original deadline and quality.
 The new policy must earn a new acceptance result; it cannot revise the old one.
+
+**Later 25 October feedback:** the first live cooperative-policy attempt passed
+initial admission and ran two real IQ3_S requests with its owned control window
+in the foreground. Its readiness observation recorded healthy control progress,
+fresh resource headroom and foreground process CPU above the old 0.05-core
+recovery limit. This supports the narrow distinction the candidate was designed
+to test; it does not establish arbitrary application responsiveness.
+
+That fifth full attempt still **failed**: the model wrote correct per-item
+amounts but incorrect unit and grand totals. The unchanged report check caught
+the error before worker replacement, and normal shutdown released the owned
+model and preserved the failed task. Initial admission is therefore supported;
+complete-task and replacement acceptance are still outstanding.
+
+**Next adjustment:** make correctable tool proposals part of the existing
+feedback path. The bounded recovery adapter deliberately refuses to overwrite
+a completed file effect. Validate a proposed report before dispatching its
+write, return diagnostic feedback through Hermes' existing native tool-result
+loop, and retain rejected proposals separately from completed effects. Reuse
+the shared `Verdict` contract and the existing eight-request budget and whole-task
+deadline. Preserve the original prompt, IQ3_S quality, independent final oracle,
+and exactly one dispatched report write. Do not wrap the agent in a second
+conversation or retry loop, or silently repair its file outside the agent.
+
+This follows established
+[tool argument validation and bounded correction](https://pydantic.dev/docs/ai/tools-toolsets/tools-advanced/#tool-retries)
+and the project's existing feedback design. Pydantic AI is a design reference,
+not a new dependency; implementation uses the pinned Hermes public middleware.
+Bind the validator identity to the durable task, preserve rejection feedback
+across restart, and keep interrupted or uncertain effects blocked. Test a wrong
+proposal followed by correction before the next source-bound full trial. The
+fifth failure remains failed even if its successor succeeds.
 
 Independent composition tests completed both simulated cases, then exposed a
 watchdog defect: a failed diagnostic write could prevent the emergency exit.
