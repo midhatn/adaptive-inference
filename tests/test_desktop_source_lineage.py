@@ -5,6 +5,8 @@ import hashlib
 import json
 from pathlib import Path
 import unittest
+from paused_expiry_lineage import restore_expiry, ARCHIVE as EXPIRY_ARCHIVE
+from execution_clock_lineage import restore_clock
 
 ROOT=Path(__file__).resolve().parents[1]
 ARCHIVE=ROOT/'provenance/installed-desktop'
@@ -26,7 +28,15 @@ class Imports(ast.NodeTransformer):
         return node
 
 
-def tree(path):return ast.parse(path.read_text(encoding='utf-8'))
+def tree(path):
+    value=ast.parse(path.read_text(encoding='utf-8'))
+    package=ROOT/'src/adaptive_inference'
+    if path.is_relative_to(package):
+        relative=path.relative_to(package).as_posix()
+        if relative in json.loads((EXPIRY_ARCHIVE/'source-lineage.json').read_text())['modules']:
+            value=restore_expiry(value,relative)
+        else:value=restore_clock(value,relative)
+    return value
 def dump(node):return ast.dump(node,include_attributes=False)
 def definition(value,name):
     return next(n for n in ast.walk(value) if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef)) and n.name==name)

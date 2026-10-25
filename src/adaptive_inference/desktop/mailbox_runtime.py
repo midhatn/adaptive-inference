@@ -12,8 +12,9 @@ import math
 import threading
 import time
 
-from adaptive_inference.control_mailbox import Mailbox, MailboxSnapshot
+from adaptive_inference.control_mailbox import Mailbox, MailboxSnapshot, ControlNotRecorded, execution_outcome
 from adaptive_inference.demand import _label
+from adaptive_inference.execution_clock import CLOCK_ID, execution_now
 from adaptive_inference.desktop.control_transport import PreparedTask
 from adaptive_inference.desktop.ui_intent import UIBinding, UIIntentGate
 
@@ -109,7 +110,8 @@ class MailboxRuntime:
         # intent even when it came from another trusted mailbox submitter.
         # A latest pending Resume is explicit intent while its preceding
         # paused state awaits the actual owner's ACK; it is not an ACK itself.
-        if (latest is not None and latest['command'] in ('pause', 'cancel')
+        if (execution_outcome(snapshot.target.state) is not None
+                or latest is not None and latest['command'] in ('pause', 'cancel')
                 or snapshot.demand is None
                 or snapshot.demand['state'] == 'paused' and not resume_pending):
             self.gate.deactivate(self._intent)
@@ -169,7 +171,7 @@ class MailboxRuntime:
         def apply(value):
             result, observation = value
             self._install(observation)
-            return _control(result)
+            return result if type(result) is ControlNotRecorded else _control(result)
 
         return await self._database(submit, apply)
 
@@ -180,7 +182,9 @@ class MailboxRuntime:
             snapshot = self._install(observation)
             latest = snapshot.requests[-1] if snapshot.requests else None
             target = snapshot.target
-            if (self._faults or latest is None or latest['request_id'] != request_id or latest['command'] != 'resume'
+            if (self._faults or execution_outcome(target.state) is not None
+                    or not self._execution_live(target.state)
+                    or latest is None or latest['request_id'] != request_id or latest['command'] != 'resume'
                     or target.state['status'] != 'pending' or target.requires_reconciliation
                     or target.operation is not None or snapshot.demand is None
                     or snapshot.demand['state'] not in ('active', 'waiting', 'paused')):
@@ -211,6 +215,8 @@ class MailboxRuntime:
             reason = 'operation_inflight'
         elif demand is None:
             reason = 'unknown'
+        elif execution_outcome(target.state) is not None:
+            reason = 'budget_expired'
         elif demand['state'] == 'paused':
             reason = 'paused'
         return {'host_phase': host['host_phase'], 'task_status': target.state['status'],
@@ -243,7 +249,25 @@ class MailboxRuntime:
         self._owner()
         if self._stopping or not self.session_is_live(session_id):
             raise RuntimeUnavailable('Session cannot activate during close or identity loss')
+        # Authority was read asynchronously. A seal may follow that read, but
+        # cannot precede this original deadline; no loop-thread DB read needed.
+        snapshot = self._check_observation(self._cache)
+        if execution_outcome(snapshot.target.state) is not None or not self._execution_live(snapshot.target.state):
+            self.gate.deactivate(self._intent)
+            return False
         self.gate.activate(self._intent, session_id=session_id, task_id=self.prepared.task_id)
+        return True
+
+    def _execution_live(self, state):
+        if 'deadline_monotonic' not in state:
+            return True  # Existing tasks without the explicit execution budget.
+        if 'deadline_clock' in state and state['deadline_clock'] != CLOCK_ID:
+            raise RuntimeUnavailable('Original execution clock is unknown')
+        deadline = state['deadline_monotonic']
+        now = execution_now() if 'deadline_clock' in state else self._clock()
+        if not _number(deadline) or deadline <= 0 or not _number(now):
+            raise RuntimeUnavailable('Original execution deadline is malformed')
+        return now < deadline
 
     def window_closed(self, session_id):
         self._owner()

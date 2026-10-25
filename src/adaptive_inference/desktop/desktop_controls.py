@@ -14,6 +14,7 @@ from adaptive_inference.desktop.control_transport import PreparedTask
 from adaptive_inference.desktop.mailbox_runtime import MailboxRuntime
 from adaptive_inference.desktop.persistent_host import PersistentDesktopHost
 from adaptive_inference.desktop.ui_intent import UIBinding
+from adaptive_inference.control_mailbox import execution_outcome
 
 
 def bounded(value, maximum):
@@ -124,6 +125,7 @@ class DesktopControlLifecycle:
         snapshot = expected.mailbox.snapshot()
         expected._original(snapshot.target)
         if (snapshot.target.task_id != self.prepared.task_id
+                or execution_outcome(snapshot.target.state) is not None
                 or snapshot.target.state['status'] != 'pending'
                 or snapshot.target.operation is not None or snapshot.target.requires_reconciliation
                 or snapshot.demand is None or snapshot.demand['state'] != 'paused'):
@@ -289,7 +291,7 @@ class DesktopControlLifecycle:
         return (not self._replacement_pending and type(value) is dict and value.get('worker_joined') is True
                 and value.get('safe_checkpoint') is True and value.get('uncertain') is False
                 and value.get('fault') is None
-                and value.get('outcome') in ('service_stopped', 'task_completed', 'task_cancelled'))
+                and value.get('outcome') in ('service_stopped', 'task_completed', 'task_cancelled', 'paused_budget_expired'))
 
     def _gui_safe(self):
         value = self.gui_receipt

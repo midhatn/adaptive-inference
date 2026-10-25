@@ -48,13 +48,14 @@ class HarnessTests(unittest.IsolatedAsyncioTestCase):
         c.store=q.TaskStore(c.work/'task.sqlite3')
         c.identity=q.DemandIdentity('cold-registration','cold-task','fixture-owner',NOW)
         prepare_task(c.store,c.identity,q.PROMPT,'native-fixture',
-            metadata={'model':q.MODEL,'quality':q.QUALITY},max_attempts=8)
+            metadata={'model':q.MODEL,'quality':q.QUALITY,'deadline_clock':q.CLOCK_ID},max_attempts=8)
         c.registry=q.DemandRegistry((q.Registration(c.store,c.identity),));c.capability=object()
         c.box=q.Mailbox(c.registry,c.identity.registration_id,requester_capability=c.capability)
-        c.original=c.checkpoint();c.deadline=time.monotonic()+900
+        c.original=c.checkpoint();c.deadline=q.execution_now()+900
         self.context=c.store.claim(c.identity.task_id,expected_revision=c.original.revision)
         self.owned=self.context.__enter__();self.addCleanup(self.release_owner)
         state=deepcopy(self.owned.checkpoint.state);state['deadline_monotonic']=c.deadline
+        state['deadline_clock']=q.CLOCK_ID
         self.owned.save_checkpoint(state,expected_revision=self.owned.checkpoint.revision)
         c.box.submit(c.capability,q.INITIAL_PAUSE,'pause');c.box.consume(self.owned,updated_at_utc=NOW)
         c.worker=Child();self.addCleanup(c.worker.finish,2)
@@ -191,8 +192,9 @@ class HarnessTests(unittest.IsolatedAsyncioTestCase):
         c=self.case;await self.gui_pause();c.worker.pid=os.getpid()
         c.stop_binding=WorkerStopBinding(c.worker,c.work,c.box,requester_capability=c.capability,
             capability=object(),stop_request_id=c.stop_id,original=c.original,
-            deadline_monotonic=c.deadline,model=q.MODEL,quality=q.QUALITY,fence=lambda:None)
-        controls=Controls(c.box,deadline=c.deadline,utc_now=lambda:NOW)
+            deadline_monotonic=c.deadline,model=q.MODEL,quality=q.QUALITY,fence=lambda:None,
+            deadline_clock=q.CLOCK_ID)
+        controls=Controls(c.box,deadline=c.deadline,utc_now=lambda:NOW,deadline_clock=q.CLOCK_ID)
         db=SimpleNamespace(resolve_resume_session_id=lambda sid:sid,get_messages_as_conversation=lambda *a,**kw:[])
         recovery=q.rec.Recovery(self.owned,db,c.work/'work',c.work,controls=controls)
         controls.safe_boundary=StopAtPause(recovery,c.stop_id)
@@ -256,12 +258,12 @@ class SourceTests(unittest.TestCase):
     def test_source_closure_matches_clone_stable_lf_bytes(self):
         manifest=q.read(q.HERE/'source-manifest.json')
         self.assertEqual(set(manifest['files']),
-            {'qualify.py','test_cold.py','test_full.py','README.md','source-lineage.json'})
+            {'qualify.py','test_cold.py','test_full.py','test_expiry.py','README.md','source-lineage.json'})
         for name in {*manifest['files'],'source-manifest.json'}:
             self.assertNotIn(b'\r\n',(q.HERE/name).read_bytes(),name)
         with mock.patch.object(q,'package_identity',return_value={'fixture':'installed'}):
             result=q.verify_closure()
-        self.assertEqual(result['files'],5)
+        self.assertEqual(result['files'],6)
         self.assertEqual(result['installed_package'],{'fixture':'installed'})
 
     def test_preserved_acceptance_methods_match_frozen_predecessor(self):

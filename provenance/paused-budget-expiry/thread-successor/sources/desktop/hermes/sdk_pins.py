@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+"""Qualified Hermes source interfaces; upstream MIT, no SDK code copied."""
+SDK_REV = "14e1e43a23761b369641208e204365cd6cb9399d"
+SDK_FILES = {'run_agent.py': '8c215df03f32493f72992db0c0ccaddb811436f9025451e3f1e8f535dc9cda5d', 'hermes_cli/middleware.py': '3745ad211f365554a3c070083dc39d3ff9b6cdc93965f13d8796918433ec2328', 'hermes_state.py': 'e507ebd78b870364fd2fced94212592380cd26d0d39eec67547ed9bc233ebb98', 'hermes_state_messages.py': 'b3c5ad76a6d1a63c2800a0eca0c36240ad3098999a248568e46a7c3649cf9136', 'hermes_state_compression.py': 'b41cb7af654c38db96b91d8bb39ea0736ab25fe638c81d100d28e663a0a34798', 'agent/turn_tool_round.py': '1ccd3574528597f5c3a5589729849f8a10e422f0d970af3bb03b1fbd277f1f29', 'agent/turn_facade_lease.py': '67c0aa57a489f3b587697c9217422a67d88620ff0afaed1e6838e0e15a461885', 'agent/turn_api_call.py': '809f38471e58b20d68911c73b39945c3b2b4f1e9de1c8be7d451ac3f91774be1', 'agent/session_persistence.py': 'b1a0a29ad4089c77dd6c7ee7551c92d4b103ccd2ecdd1e05fd8f9af5bc11b119', 'LICENSE': 'e29dfaf6905a8d396a58ea4bd84ad27057756bbd9599b5bec0971ae34d2a2118', 'agent/chat_completion_helpers.py': '7c822d0213d9471ec3b9a04ffb0604badbe3761520e1948cb9fc9b7f67466e1c', 'agent/transports/chat_completions.py': '6793be69882fad0eae48f02b2fcc959c0e9718af625202b1095565a2ba1c74de', 'agent/chat_completion_nonstream.py': '34d4afad0a0c7228a0518eed4a2521ba1a340f509c83784c74abceb56f1becb7', 'hermes_cli/timeouts.py': '5181b1dad8c0fdf670da01365f9a5dff4692665e5564177bf66fb956a59d559e'}
+# The paused-wait guard relies on these exact activity/interrupt/unwind paths.
+# Existing disk and already-imported-origin checks consume this same map.
+SDK_FILES.update({
+    'agent/activity_tracking.py': '4b21eef1aa2656ee89ce0b4213bcb4c300edbc654d3cc19e9b27ee25e36f889a',
+    'agent/turn_liveness.py': '1577203f3c2b8f19c42103e2f310b1e147d9eaadab14759d12cb7e4ea30b2f84',
+    'agent/interrupt_control.py': 'aee497b902f3cc6daa69021fb698382cc97d678a4fb749ab4c2a64309817c58f',
+    'agent/turn_facade.py': 'e9176a8ae1d7822fa45c75b680d5ae4be7c949e49c877673aea867cc146856a0',
+    'agent/conversation_loop.py': '36dd6f02b169a544a95598dee74cb775914420dc700cc88cc946effd103b72bc',
+})

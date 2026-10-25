@@ -238,3 +238,26 @@ uncertain completion remains a fault. The harness must inspect the final
 controller state and record events after close completes. These are design
 references applied to existing repository mechanisms; no external source was
 copied and no new shutdown framework was introduced.
+
+### Paused execution expiry and SDK worker ownership
+
+The [paused-budget expiry implementation](paused-budget-expiry.md) reuses the
+existing task transaction, acknowledged Pause and retained cleanup obligations.
+Its first installed trial exposed different Windows clock implementations in
+the Python 3.11 host and Python 3.14 worker. The correction uses the documented
+[performance counter](https://docs.python.org/3.11/library/time.html#time.perf_counter)
+and Microsoft's [QPC contract](https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps)
+for shared execution deadlines, with an explicit clock-domain tag. No tolerance
+or conversion of an old checkpoint hides the mismatch. The contract remains
+same-machine and same-boot.
+
+The second trial exposed Hermes's actual sequential-tool worker dispatch. The
+repair reuses the adapter's existing lock, the pinned SDK's activity and lease
+checks, and its [worker interruption API](https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/interrupt.py).
+Python's [Future cancellation contract](https://docs.python.org/3.14/library/concurrent.futures.html#concurrent.futures.Future.cancel)
+explains why a returned timeout cannot prove that a running callback has stopped.
+Cleanup therefore revokes future activity and refuses to seal an unresolved
+callback. No new executor, lease renewal or automatic budget renewal is added.
+The [pinned sources and attribution](../provenance/paused-budget-expiry/thread-successor/README.md)
+and [actual SDK fixture](../examples/validation/hermes_pause_dispatch/README.md)
+retain this reuse separately from the complete installed IQ3_S acceptance.

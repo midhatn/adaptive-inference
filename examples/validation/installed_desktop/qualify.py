@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Accepted cold/full scenarios against the ordinary installed desktop package.
+"""Cold/full and paused-expiry scenarios against the installed desktop package.
 
 No resources are acquired on import. Run with the explicitly selected full
 Python interpreter. The separately retained parent must also verify exit zero.
@@ -27,6 +27,7 @@ from adaptive_inference.desktop.hermes.service_stop import WorkerStopBinding, ST
 from adaptive_inference.demand import DemandIdentity, DemandRegistry, Registration, NAMESPACE
 from adaptive_inference.task_store import TaskStore
 from adaptive_inference.control_mailbox import Mailbox
+from adaptive_inference.execution_clock import CLOCK_ID, execution_now
 
 HERE = Path(__file__).resolve().parent
 REPORT = {'rows':4,'units':17,'total_cents':4350,
@@ -263,6 +264,7 @@ class FullUIQualification(ColdUIQualification):
             snapshot=self.host.snapshot()
             checkpoint=self.checkpoint()
             row={'started_monotonic':started,'finished_monotonic':time.monotonic(),
+                'finished_deadline_clock':execution_now(),'deadline_clock':CLOCK_ID,
                 'worker_pid':child.pid,'worker_live':child.poll() is None,
                 'owner_epoch':checkpoint.owner_epoch,'task_revision':checkpoint.revision,
                 'intent_revision':self.gate._revision,
@@ -546,22 +548,260 @@ class FullUIQualification(ColdUIQualification):
         if verify_closure()!=self.result['source']:raise RuntimeError('Runtime source changed during trial')
 
 
+class PausedExpiryQualification(FullUIQualification):
+    """Observe the ordinary installed host through one already-paused expiry."""
+    def __init__(self,args):
+        super().__init__(args)
+        self.args.case='expiry'
+        self.result['case']='gui-iq3s-installed-paused-budget-expiry'
+        self.result['expiry_case_checks_passed']=False
+        self.product_interaction=None
+        self.gui_pauses=[]
+        self.expiry_observation=None
+
+    async def prepare(self):
+        await super().prepare()
+        ready=read(self.root/'ready.private.json')
+        ready.update(no_resume_requested=False,
+            instructions='Resume once. When the report is safely saved, Pause through this window. Wait for the saved-work budget-expired state, then Stop when instructed.')
+        rec.save(self.root/'ready.private.json',ready)
+
+    def gui_pause(self,after_sequence,owner_epoch):
+        snapshot=self.box.snapshot()
+        if not snapshot.requests:return None
+        latest=snapshot.requests[-1]
+        request_id=latest['request_id']
+        record=self.transport._records.get(request_id)
+        if record is None or record['command']!='pause' or record['outcome']!='known' or not record['task'].done():
+            return None
+        record['task'].result()
+        ack=snapshot.status(request_id)
+        if ack['sequence']<=after_sequence or ack['outcome']!='applied' or ack['owner_acknowledged'] is not True:
+            return None
+        if (snapshot.target.owner_epoch!=owner_epoch or snapshot.target.state['status']!='pending'
+                or snapshot.demand is None or snapshot.demand['state']!='paused'
+                or snapshot.target.operation is not None or snapshot.target.requires_reconciliation):
+            raise RuntimeError('GUI Pause is not the current safe paused owner')
+        self.assert_original(snapshot.target)
+        if not self.facade.session_is_live(self.gui.binding.session_id):
+            raise RuntimeError('GUI Pause lacks the retained authenticated session')
+        return {key:ack[key] for key in ('request_id','command','sequence','outcome','owner_acknowledged')}
+
+    def require_product_live(self):
+        if self.product_interaction is None:
+            raise RuntimeError('Qualification has no retained production interaction')
+        if self.product_interaction.done():
+            self.product_interaction.result()
+            raise RuntimeError('Production interaction ended before the required manual Stop')
+        if self.transport.lifecycle()['stop_requested']:
+            raise RuntimeError('Manual Stop interrupted paused-expiry qualification')
+        if self.gui.process.poll() is not None:
+            raise RuntimeError('GUI exited before the required manual Stop')
+        if self.host.controller.fault:
+            raise RuntimeError('Controller fault: '+str(self.host.controller.fault))
+
+    async def observe_until(self,predicate,*,before_deadline=False):
+        # This observes the retained product task; it never owns or cancels its
+        # worker wait. The existing qualification guard bounds post-expiry work.
+        while True:
+            self.require_product_live()
+            if before_deadline:self.remaining()
+            value=predicate()
+            if value:return value
+            await asyncio.sleep(.1)
+
+    def obligations(self):
+        return super().obligations()+[self.product_interaction]
+
+    def verify_expired_progress(self):
+        from adaptive_inference.control_mailbox import EXECUTION_OUTCOME,execution_outcome,control_prefix_digest
+        from adaptive_inference.desktop.hermes.service_stop import PAUSED_EXPIRY_EXIT
+        cp=self.checkpoint();self.assert_original(cp)
+        marker=execution_outcome(cp.state)
+        joined=self.waits.get(self.worker.pid)
+        if (self.result.get('execution_expired') is not True
+                or self.result.get('worker_outcome')!='paused_budget_expired'
+                or self.result.get('task_completed') is not False
+                or self.worker.poll()!=PAUSED_EXPIRY_EXIT or joined is None or not joined.done()
+                or joined.result()!=PAUSED_EXPIRY_EXIT
+                or self.stop_binding._verify_exit(PAUSED_EXPIRY_EXIT)!='paused_budget_expired'):
+            raise RuntimeError('Expiry lacks the production retained join and verified outcome')
+        if (marker is None or cp.owner_epoch is not None or cp.operation is not None
+                or cp.requires_reconciliation or cp.state['status']!='pending'
+                or cp.state[NAMESPACE]['state']!='paused'):
+            raise RuntimeError('Expired execution did not preserve an unowned pending paused task')
+        state=deepcopy(cp.state);del state[EXECUTION_OUTCOME]
+        pause=self.gui_pauses[0]
+        snapshot=self.box.snapshot()
+        prefix={'requests':list(snapshot.requests),'receipts':list(snapshot.receipts)}
+        if (state!=self.before.state or cp.revision!=self.before.revision+1
+                or marker['pre_seal_revision']!=self.before.revision
+                or marker['owner_epoch']!=self.before.owner_epoch
+                or marker['deadline_monotonic']!=self.deadline
+                or self.plan.get('deadline_clock')!=CLOCK_ID
+                or cp.metadata.get('deadline_clock')!=CLOCK_ID or state.get('deadline_clock')!=CLOCK_ID
+                or marker.get('deadline_clock')!=CLOCK_ID
+                or not marker['pause_observed_at_monotonic']<self.deadline<=marker['sealed_at_monotonic']<=execution_now()
+                or marker['pause_request_id']!=pause['request_id'] or marker['pause_sequence']!=pause['sequence']
+                or marker['pre_seal_state_sha256']!=rec.digest(self.before.state)
+                or prefix!=self.paused_prefix
+                or marker['control_prefix_sha256']!=control_prefix_digest(snapshot.requests,snapshot.receipts)):
+            raise RuntimeError('Expiry changed the saved task or genuine Pause prefix')
+        rec.verify_tool_rows(cp.state['native_history'],cp.state['tools'])
+        rec.verify_artifacts(cp.state,self.work/'work')
+        wires=read(self.work/'wire-observations.json')
+        final=read(self.work/f'result-{self.worker.pid}.json')
+        if ((self.work/'effect-receipts.jsonl').read_bytes()!=self.effects
+                or read(self.work/'work/report.json')!=REPORT or sha(self.work/'work/report.json')!=self.report_hash
+                or wires!=self.wires or not 0<len(wires)<=8 or cp.state['requests']!=len(wires)
+                or any(row.get('model')!=MODEL or row.get('quality')!=QUALITY or row.get('class')!='normal'
+                       or not row.get('finished_at') for row in wires)
+                or final.get('model')!=MODEL or final.get('quality')!=QUALITY
+                or final.get('fixture') is not False or final.get('sdk_revision')!=self.plan['sdk_revision']
+                or final.get('passed') is not False or final.get('completed') is not False
+                or final.get('controlled') is not True or final.get('control_state')!='paused'
+                or final.get('control_reason')!='paused_budget_expired' or final.get('provider_calls')!=len(wires)
+                or final.get('context')!=CONTEXT):
+            raise RuntimeError('Expiry lost the original report, quality, accounting or single-write evidence')
+        if self.registry.observe(self.identity.registration_id).eligible:
+            raise RuntimeError('Expired paused execution still requests model admission')
+        return cp,final
+
+    def observe_parked(self):
+        controller=self.host.controller;scheduler=self.host.gateway.scheduler
+        if controller.state!='parked':return None
+        events=complete_ledger(controller.events,self.initial_events)
+        releases=[row['release'] for row in events if 'release' in row]
+        proof=releases[-1] if releases else None
+        if (self.host.closed or scheduler.closing or scheduler.active is not None or scheduler.pending
+                or scheduler.uncertain or controller() or not isinstance(proof,dict)
+                or proof.get('owner_id')!=controller.identity['owner_id']
+                or any(proof.get(key) is not True for key in ('released','cleanup_confirmed','port_free'))
+                or type(proof.get('retained_processes')) is not int or proof['retained_processes']<1
+                or type(proof.get('confirmed_process_exits')) is not int
+                or proof['confirmed_process_exits']!=proof['retained_processes']):
+            raise RuntimeError('Expiry park lacks normal idle release and an open responsive service')
+        return {'at_monotonic':time.monotonic(),'at_deadline_clock':execution_now(),'deadline_clock':CLOCK_ID,
+                'handoff_state':controller.state,
+                'admission_allowed':controller(),'host_closed':self.host.closed,
+                'scheduler_closing':scheduler.closing,'release':deepcopy(proof)}
+
+    async def observe_expiry_scenario(self):
+        owner=self.checkpoint().owner_epoch
+        resume=await self.observe_until(
+            lambda:self.gui_resume(self.status(INITIAL_PAUSE)['sequence'],owner),before_deadline=True)
+        self.gui_resumes.append(resume);self.event('gui_resume_acknowledged',**resume)
+        self.phase('first_owner_waiting_for_resources')
+        # Only the actual product interaction calls ready(); its existing
+        # override records the unchanged 240-second readiness proof.
+        await self.observe_until(lambda:self.first_ready.exists(),before_deadline=True)
+        self.phase('first_owner_running_original_task')
+        await self.observe_until(lambda:(self.work/'pause.json').exists(),before_deadline=True)
+        self.safe_report(pid=self.worker.pid)
+        self.phase('report_saved_ready_for_genuine_gui_pause')
+        pause=await self.observe_until(lambda:self.gui_pause(resume['sequence'],owner),before_deadline=True)
+        self.gui_pauses.append(pause);self.event('gui_pause_acknowledged',**pause)
+        self.before,self.report_hash,self.effects,self.wires=self.safe_report(pid=self.worker.pid)
+        snapshot=self.box.snapshot()
+        self.paused_prefix={'requests':list(snapshot.requests),'receipts':list(snapshot.receipts)}
+        if (snapshot.target!=self.before or len(snapshot.requests)!=3 or len(snapshot.receipts)!=3
+                or [row['request_id'] for row in snapshot.requests]!=[INITIAL_PAUSE,resume['request_id'],pause['request_id']]
+                or any(snapshot.status(row['request_id'])['outcome']!='applied' for row in snapshot.requests)
+                or self.host.gateway.scheduler.active is not None or self.host.gateway.scheduler.pending
+                or self.host.gateway.scheduler.uncertain):
+            raise RuntimeError('Genuine Pause has not left the exact complete safe boundary')
+        rec.save(self.root/'paused-checkpoint.private.json',asdict(self.before))
+        rec.save(self.root/'paused-wire.private.json',self.wires)
+        self.result['original_task_deadline']=self.deadline
+        self.result['deadline_clock']=CLOCK_ID
+        self.phase('genuine_pause_waiting_for_original_budget_expiry',original_task_deadline=self.deadline,
+            report_sha256=self.report_hash,completed_effects=1,provider_calls=len(self.wires))
+        await self.observe_until(lambda:self.result.get('execution_expired') is True)
+        cp,final=self.verify_expired_progress()
+        self.result['verified_expiry_observed_monotonic']=time.monotonic()
+        self.result['verified_expiry_observed_deadline_clock']=execution_now()
+        self.result['expiry_parked_observation']=await self.observe_until(self.observe_parked)
+        await self.runtime.refresh()
+        status=self.runtime.status()
+        if status['waiting_reason']!='budget_expired' or status['task_status']!='pending' or status['demand']!='paused':
+            raise RuntimeError('Expired task is not honestly projected to the live GUI')
+        self.expiry_observation={'at_monotonic':time.monotonic(),'at_deadline_clock':execution_now(),
+            'deadline_clock':CLOCK_ID,'worker_pid':self.worker.pid,
+            'worker_exit_code':self.worker.poll(),'task_revision':cp.revision,
+            'task_state_sha256':rec.digest(cp.state),'runtime':deepcopy(status),
+            'gui_binding':asdict(self.gui.binding),'expiry_receipt':deepcopy(final['paused_expiry'])}
+        rec.save(self.root/'expiry-observation.private.json',self.expiry_observation)
+        self.phase('expiry_verified_observing_open_service',original_task_deadline=self.deadline)
+        start=time.monotonic()
+        await self.observe_until(lambda:time.monotonic()-start>=10)
+        self.verify_expired_progress();self.observe_parked()
+        self.result['expiry_service_observation_seconds']=time.monotonic()-start
+        self.phase('expired_progress_saved_ready_for_manual_stop',original_task_deadline=self.deadline)
+        while not self.transport.lifecycle()['stop_requested']:
+            self.require_product_live()
+            await asyncio.sleep(.1)
+        self.result['manual_stop_observed']=True
+
+    async def interact(self):
+        if self.product_interaction is not None:
+            raise RuntimeError('Production interaction was already retained')
+        self.product_interaction=asyncio.create_task(DesktopComposition.interact(self))
+        await self.observe_expiry_scenario()
+        await asyncio.shield(self.product_interaction)
+        if (not self.transport.lifecycle()['stop_confirmed']
+                or self.result.get('lifecycle')!={'worker_joined':True,'host_closed':True,'uncertain':False,'fault':None}):
+            raise RuntimeError('Expired session lacks a real confirmed normal Stop')
+
+    def validate_terminal(self):
+        cp,final=self.verify_expired_progress()
+        if self.product_interaction is None or not self.product_interaction.done():
+            raise RuntimeError('Production interaction is not joined')
+        self.product_interaction.result()
+        if (len(self.worker_records)!=1 or self.facade.worker_replacements
+                or len(self.gui_resumes)!=1 or len(self.gui_pauses)!=1
+                or set(self.transport._records)!={self.gui_resumes[0]['request_id'],self.gui_pauses[0]['request_id']}
+                or self.expiry_observation is None or self.result.get('expiry_service_observation_seconds',0)<10
+                or self.result.get('manual_stop_observed') is not True
+                or not self.facade._gui_safe() or not self.facade._worker_safe()
+                or self.facade.worker_receipt['outcome']!='paused_budget_expired'):
+            raise RuntimeError('Expiry scenario control, observation or ownership lineage differs')
+        snapshot=self.box.snapshot()
+        events=complete_ledger(self.host.controller.events,self.initial_events)
+        self.result.update(expiry_case_checks_passed=True,task_completed=False,provider_calls=len(self.wires),
+            dispatched_file_effects=1,report=REPORT,report_sha256=self.report_hash,
+            effect_receipts_sha256=hashlib.sha256(self.effects).hexdigest(),
+            retained_prompt_sha256=rec.digest(cp.prompt),native_history_sha256=rec.digest(cp.state['native_history']),
+            task_status='pending',demand_state='paused',owner_released=True,worker_exit_code=self.worker.poll(),
+            worker_stop_outcome='paused_budget_expired',paused_expiry_receipt=deepcopy(final['paused_expiry']),
+            gui_resume_acknowledgements=deepcopy(self.gui_resumes),gui_pause_acknowledgements=deepcopy(self.gui_pauses),
+            full_handoff_ledger=True,handoff_events=events,actual_job_members_after_cleanup=[os.getpid()],
+            retained_worker_lifetimes=[{'pid':self.worker.pid,'exit_code':self.worker.poll(),'stop_request_id':self.stop_id}],
+            controls=[snapshot.status(row['request_id']) for row in snapshot.requests])
+        self.result['runtime_binding']=self.verify_runtime_bindings()
+        rec.save(self.root/'terminal-checkpoint.private.json',asdict(cp))
+        if verify_closure()!=self.result['source']:raise RuntimeError('Runtime source changed during trial')
+
+
 def execute(args):
     # Original hard qualification bound includes event-loop/interpreter teardown.
     threading.Thread(target=hard_deadline,args=(1800,),daemon=True).start()
     cold_case=args.case=='cold'
-    case=ColdUIQualification if cold_case else FullUIQualification
+    expiry_case=args.case=='expiry'
+    case=PausedExpiryQualification if expiry_case else ColdUIQualification if cold_case else FullUIQualification
     result=asyncio.run(case(args).run())
     result['asyncio_teardown_completed']=True
-    result['qualification_case_passed']=bool(result['case_checks_and_cleanup_passed']
-        and (cold_case or result['task_completed']))
+    accepted=cold_case or result['task_completed']
+    if expiry_case:
+        accepted=(result.get('expiry_case_checks_passed') is True
+            and result.get('execution_expired') is True and result['task_completed'] is False)
+    result['qualification_case_passed']=bool(result['case_checks_and_cleanup_passed'] and accepted)
     rec.save(args.run/'result.private.json',result)
     return result
 
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('--case',choices=('cold','full'),required=True)
+    parser.add_argument('--case',choices=('cold','full','expiry'),required=True)
     parser.add_argument('--profile',type=Path,required=True)
     parser.add_argument('--run',type=Path,required=True)
     result=execute(parser.parse_args())

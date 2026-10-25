@@ -1,0 +1,9 @@
+{
+  "files": {
+    "result.json": "e31512fd37b776e750a3bd5fe752a9ce22523442052dd91230411effe481f142"
+  },
+  "reused_helper_sha256": "12004621166522cb80682e2bf1e4bc6d19e2ca72aeb585d21ce6408c2a965b33",
+  "sanitizer_sha256": "1d9f9949fb8985531e9a18c182389f1c992f12a8d943ea137cbef95fccdb7a1d",
+  "schema": "adaptive.public-evidence-files.v1",
+  "source_selection": "Explicit fields with fixed role hashes; private paths are never exported"
+}

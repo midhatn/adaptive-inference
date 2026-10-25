@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Installed bounded Hermes report consumer; never controls a model service."""
 from __future__ import annotations
+from contextlib import contextmanager, nullcontext
 import argparse
 import hashlib
 import importlib.util
@@ -17,6 +18,7 @@ import time
 from datetime import datetime, timezone
 import uuid
 import traceback
+from adaptive_inference.execution_clock import CLOCK_ID, execution_now, verify_execution_clock
 
 HERE = Path(__file__).resolve().parent
 SDK_REV = '14e1e43a23761b369641208e204365cd6cb9399d'
@@ -56,6 +58,7 @@ def prepare(args):
     from adaptive_inference.desktop.installation import package_identity, sha, verify_interpreter, verify_sdk
     from adaptive_inference.desktop.profile import WindowsProfile
 
+    verify_execution_clock()
     run = args.run.resolve()
     if sha(args.profile) != args.profile_sha256:
         raise RuntimeError('Deployment profile changed before preparation')
@@ -97,13 +100,14 @@ def prepare(args):
     plugin = home / 'plugins/recovery-checkpoint'; plugin.mkdir(parents=True)
     (plugin / '__init__.py').write_text('from adaptive_inference.desktop.hermes.recovery import register\n', encoding='utf-8')
     (plugin / 'plugin.yaml').write_text("name: recovery-checkpoint\nversion: '0.1.0'\ndescription: Explicit owned restart checkpoint.\n", encoding='utf-8')
+    plan['deadline_clock'] = CLOCK_ID
     config = base.config(work)
     config['plugins'] = {'enabled': ['recovery-checkpoint']}
     rec.save(home / 'config.yaml', config)
     from adaptive_inference.task_store import TaskStore
     from adaptive_inference.demand import DemandIdentity
     from adaptive_inference.desktop.hermes.control_bridge import prepare_task
-    metadata={'sdk_revision':SDK_REV,'model':MODEL,'quality':QUALITY}
+    metadata={'sdk_revision':SDK_REV,'model':MODEL,'quality':QUALITY,'deadline_clock':CLOCK_ID}
     if validator_identity is not None:metadata['pre_effect_validator']=validator_identity
     prepare_task(TaskStore(run/'task.sqlite3'),DemandIdentity(**plan['demand_identity']),PROMPT,
         plan['session_id'],metadata=metadata,max_attempts=8)
@@ -161,6 +165,18 @@ def worker(args):
     for path, expected in plan['pins'].items():
         if hashlib.sha256(Path(path).read_bytes()).hexdigest() != expected:
             raise RuntimeError('Pinned integration input changed before import')
+    # Reject a sealed execution before SDK import or a new target claim.
+    from adaptive_inference.task_store import TaskStore, ReconciliationRequired
+    from adaptive_inference.control_mailbox import execution_outcome
+    store = TaskStore(run / 'task.sqlite3')
+    startup_checkpoint = store.load(plan['task_id'])
+    if execution_outcome(startup_checkpoint.state) is not None:
+        raise ReconciliationRequired('This execution budget is sealed')
+    verify_execution_clock()
+    if (plan.get('deadline_clock') != CLOCK_ID
+            or startup_checkpoint.metadata.get('deadline_clock') != CLOCK_ID
+            or startup_checkpoint.state.get('deadline_clock') != CLOCK_ID):
+        raise ReconciliationRequired('Installed task has no recognized original execution clock')
     for key in list(os.environ):
         if key.startswith(('HERMES_', 'OPENAI_', 'ANTHROPIC_', 'STRATA_')) or key in ('PYTHONPATH', 'PYTHONHOME'):
             os.environ.pop(key, None)
@@ -176,14 +192,16 @@ def worker(args):
     from adaptive_inference.demand import DemandIdentity,DemandRegistry,Registration,NAMESPACE
     from adaptive_inference.control_mailbox import Mailbox,ACKS
     from adaptive_inference.desktop.hermes.control_bridge import Controls
-    from adaptive_inference.desktop.hermes.service_stop import StopAtPause, ProductStop, STOP_EXIT
+    from adaptive_inference.desktop.hermes.service_stop import (
+        StopAtPause, ProductStop, STOP_EXIT, PAUSED_EXPIRY_EXIT, finalize_paused_expiry)
     from hermes_state import SessionDB
     from adaptive_inference.desktop.installation import verify_sdk_imports
     verify_sdk_imports(plan['sdk'])
     result = {'passed': False, 'fixture': plan['fixture'], 'sdk_revision': SDK_REV,
               'model': MODEL, 'quality': QUALITY, 'mode': args.mode}
-    store = TaskStore(run / 'task.sqlite3')
     db = agent = provider = None
+    controller = None
+    pending_expiry = None
     original_send = httpx.Client.send
     original_connect, original_ex = socket.socket.connect, socket.socket.connect_ex
     original_pair, original_dns = socket.socketpair, socket.getaddrinfo
@@ -270,12 +288,31 @@ def worker(args):
     socket.socket.connect = lambda s, a: connect(s, a)
     socket.socket.connect_ex = lambda s, a: connect(s, a, True)
     socket.socketpair, socket.getaddrinfo = pair, dns
+    @contextmanager
+    def paused_expiry_boundary(owned):
+        nonlocal agent, db, provider, pending_expiry
+        try:
+            yield
+        except rec.ControlStop as exc:
+            if (exc.control_state != 'paused' or exc.reason != 'control_wait_deadline'
+                    or controller is None):
+                raise
+            proof = finalize_paused_expiry(controller, agent=agent, db=db,
+                provider=provider, session_db_factory=SessionDB)
+            # The exact objects were successfully closed while owned. Outer
+            # finally must not close them again after sealing the checkpoint.
+            agent = db = provider = None
+            pending_expiry = proof  # Provisional until claim exit and final restoration.
+        finally:
+            if controller is not None and controller.controls.wait_activity is not None:
+                controller.controls.wait_activity.revoke()
     try:
-        cp = store.load(plan['task_id'])
+        cp = startup_checkpoint
         identity=DemandIdentity(**plan['demand_identity'])
         validator_identity=plan.get('pre_effect_validator')
         pre_effect_validator=None
-        expected_metadata={'sdk_revision':SDK_REV,'model':MODEL,'quality':QUALITY,NAMESPACE:identity.metadata()}
+        expected_metadata={'sdk_revision':SDK_REV,'model':MODEL,'quality':QUALITY,NAMESPACE:identity.metadata(),
+                           'deadline_clock':CLOCK_ID}
         if validator_identity is not None:
             from adaptive_inference.desktop.hermes.report_validator import identity as report_identity,validator as report_validator
             if validator_identity!=report_identity(base.REPORT):
@@ -284,12 +321,12 @@ def worker(args):
             pre_effect_validator=report_validator(base.REPORT)
         if (cp.prompt != PROMPT or cp.max_attempts != 8 or cp.metadata != expected_metadata):
             raise ReconciliationRequired('Original task identity differs from the prepared contract')
-        with store.claim(plan['task_id'], expected_revision=cp.revision) as owned:
+        with store.claim(plan['task_id'], expected_revision=cp.revision) as owned, paused_expiry_boundary(owned):
             result['owner_epoch']=owned.checkpoint.owner_epoch
             if args.mode=='worker':
                 deadline=args.deadline_monotonic
                 if (type(deadline) not in (int,float) or not math.isfinite(deadline)
-                        or not 0 < deadline-time.monotonic() <= 900):
+                        or not 0 < deadline-execution_now() <= 900):
                     raise ValueError('Explicit remaining whole-task deadline required')
                 previous=owned.checkpoint.state.get('deadline_monotonic')
                 if previous is not None and previous!=deadline:
@@ -313,9 +350,15 @@ def worker(args):
                     registry=DemandRegistry((Registration(store,identity),))
                     mailbox=Mailbox(registry,identity.registration_id,requester_capability=object())
                     controls=Controls(mailbox,deadline=deadline,
+                        deadline_clock=CLOCK_ID,
                         utc_now=lambda:datetime.now(timezone.utc).isoformat().replace('+00:00','Z'))
                     controller=rec.Recovery(owned,db,run/'work',run,controls=controls,
                         pre_effect_validator=pre_effect_validator,validator_identity=validator_identity)
+                    from adaptive_inference.desktop.hermes.pause_activity import PauseActivity
+                    def sdk_thread_interrupted():
+                        from tools.interrupt import is_interrupted
+                        return is_interrupted()
+                    controls.wait_activity = PauseActivity(controller,thread_interrupted=sdk_thread_interrupted)
                     if args.stop_request_id is not None:
                         controls.safe_boundary=StopAtPause(controller,args.stop_request_id)
                     # Publish durable demand before waiting for the parent host.
@@ -325,14 +368,15 @@ def worker(args):
                     rec.save(run/f'bootstrap-{os.getpid()}.json',{'pid':os.getpid(),
                         'task_id':identity.task_id,'registration_id':identity.registration_id,
                         'revision':owned.checkpoint.revision,'owner_epoch':owned.checkpoint.owner_epoch,
-                        'deadline_monotonic':deadline,'demand':{'state':demand.state,'eligible':demand.eligible}})
+                        'deadline_monotonic':deadline,'deadline_clock':CLOCK_ID,
+                        'demand':{'state':demand.state,'eligible':demand.eligible}})
                     # Root/controller owns readiness. Never construct an agent while parked;
                     # metadata discovery uses GET and is not an admitted model generation.
                     if not args.controller_ready or not args.gateway_instance:
                         raise ValueError('Explicit owned gateway instance and readiness receipt required')
                     while not args.controller_ready.exists():
                         controller.control_safe_point()
-                        if time.monotonic()>=deadline:raise rec.RecoveryStop('Bootstrap readiness deadline')
+                        if execution_now()>=deadline:raise rec.RecoveryStop('Bootstrap readiness deadline')
                         time.sleep(.05)
                     controller.control_safe_point()
                     ready = json.loads(args.controller_ready.read_text(encoding='utf-8'))
@@ -355,7 +399,7 @@ def worker(args):
                             boundary=boundary,deadline=900,status=status,clock=lambda:clock.now,sleep=tick)
                     else:
                         provider=admission.Provider(base_url=plan['gateway'],model=MODEL,instance=instance,
-                            boundary=boundary,deadline=deadline)
+                            boundary=boundary,deadline=deadline,clock=execution_now)
                     boundary.provider=provider
                     controller.provider=provider
                     original_barrier=controller.barrier
@@ -373,7 +417,7 @@ def worker(args):
                             'history_sha256':rec.digest(owned.checkpoint.state['native_history'])})
                         while not resumed():
                             controller.control_safe_point()
-                            if time.monotonic()>=deadline:raise rec.RecoveryStop('Controlled safe-point hold deadline')
+                            if execution_now()>=deadline:raise rec.RecoveryStop('Controlled safe-point hold deadline')
                             time.sleep(.05)
                     if args.stop_request_id is None or args.qualification_hold_after_report:
                         controller.barrier=controlled_safe_hold
@@ -403,6 +447,7 @@ def worker(args):
                     report = json.loads((run / 'work/report.json').read_text(encoding='utf-8'))
                     if report != base.REPORT:
                         raise rec.RecoveryStop('Original artifact acceptance failed')
+                    controls.wait_activity.finish_turn(outcome)
                     controller.finish(outcome)
                     result.update(passed=True, provider_calls=len(boundary.rows) - before,
                         resumed=bool(history), original_prompt_sha256=rec.digest(PROMPT),
@@ -414,6 +459,7 @@ def worker(args):
                         admission_deferrals=len(owned.checkpoint.state.get('admission_deferrals',[])),
                         fixture_admission_clock_s=clock.now if clock else None)
     except BaseException as exc:
+        pending_expiry = None
         result.update(error_type=type(exc).__name__, error=str(exc), provider_calls=len(boundary.rows)-starting_requests)
         chain=[];details=[];seen=set();cause=exc
         while cause is not None and id(cause) not in seen and len(chain)<8:
@@ -433,17 +479,36 @@ def worker(args):
         if isinstance(exc,ProductStop):
             result.update(service_stopped=True,service_stop=exc.receipt)
     finally:
-        if agent is not None:
-            agent.close()
-        if db is not None:
-            db.close()
-        if provider is not None:
-            provider.close()
+        cleanup_errors = []
+        activity = None if controller is None else controller.controls.wait_activity
+        try:
+            # Revoke late callbacks on every exit, including SDK abandonment.
+            # A busy logical owner is a cleanup failure, never concurrent close.
+            with activity.cleanup_scope(agent,verify=False) if activity is not None else nullcontext():
+                for name, resource in (('agent', agent), ('database', db), ('provider', provider)):
+                    if resource is not None:
+                        try:
+                            resource.close()
+                        except BaseException as cleanup_error:
+                            cleanup_errors.append({'resource': name,
+                                'type': type(cleanup_error).__name__, 'message': str(cleanup_error)})
+        except BaseException as cleanup_error:
+            cleanup_errors.append({'resource':'recovery_serialization',
+                'type':type(cleanup_error).__name__,'message':str(cleanup_error)})
         httpx.Client.send = original_send
         socket.socket.connect, socket.socket.connect_ex = original_connect, original_ex
         socket.socketpair, socket.getaddrinfo = original_pair, original_dns
+        if cleanup_errors:
+            pending_expiry = None
+            result.update(passed=False, completed=False, cleanup_errors=cleanup_errors)
+            result.pop('service_stopped', None)
+        if pending_expiry is not None:
+            result.update(passed=False, controlled=True, completed=False,
+                control_state='paused', control_reason='paused_budget_expired',
+                paused_expiry=pending_expiry, provider_calls=len(boundary.rows)-starting_requests)
         rec.save(run / f'result-{os.getpid()}.json', result)
-    return (0 if result['passed'] else STOP_EXIT if result.get('service_stopped') is True
+    return (2 if result.get('cleanup_errors') else 0 if result['passed'] else STOP_EXIT if result.get('service_stopped') is True
+            else PAUSED_EXPIRY_EXIT if result.get('paused_expiry') is not None
             else 3 if result.get('control_state')=='cancelled' else 2)
 
 

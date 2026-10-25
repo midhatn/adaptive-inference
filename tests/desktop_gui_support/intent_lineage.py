@@ -5,6 +5,7 @@ import hashlib
 from pathlib import Path
 
 from ast_preservation import preservation_dump
+from paused_expiry_lineage import restore_expiry
 
 ROOT=Path(__file__).resolve().parents[2]
 BEFORE=ROOT/'provenance/desktop-control-intent/control_client.before.py'
@@ -35,6 +36,10 @@ def restore_predecessor(tree):
     """Keep every other definition intact; do not exempt the whole controller."""
     tree=deepcopy(tree);before=predecessor_tree()
     if preservation_dump(tree)==preservation_dump(before):return tree
+    waiting=next(n for n in tree.body if isinstance(n,ast.Assign) and any(
+        isinstance(t,ast.Name) and t.id=='WAITING' for t in n.targets))
+    if any(isinstance(n,ast.Constant) and n.value=='budget_expired' for n in ast.walk(waiting)):
+        tree=restore_expiry(tree,'desktop/control_client.py')
     prior={n.name:n for n in controller(before).body if isinstance(n,ast.FunctionDef)}
     current=controller(tree)
     for name in (*EDITED,*ADDED):

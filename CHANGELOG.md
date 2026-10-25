@@ -2,6 +2,7 @@
 
 ## Unreleased — foreground handoff and installed-agent continuation
 
+- Qualify safe expiry of an already paused installed IQ3_S task: preserve its report and native history through the original deadline, keep the controller and Stop available, then verify normal shutdown. Use one explicit Windows performance-counter clock across the host and worker, and serialize Hermes tool-thread safe points with the existing task lock and interruption checks. Preserve both failed predecessor trials. Explicitly continuing the saved task, active-work expiry and reboot recovery remain separate gates; see the [accepted result](provenance/paused-budget-expiry/acceptance/README.md).
 - Correct task-store verification to use SQLite locking and a short cooperating-operation gate. Validate interrupted rollback recovery on a private copied pair before touching the original; refuse foreign schemas, possible external super-journals and WAL layouts. Stop and join all older TaskStore readers/workers before upgrading. Preserve the accepted historical runtime and the reviewed source/tests locally.
 - Add a portable handoff controller and optional Windows native host. Close admission on observed foreground activity, drain active inference, verify owned-process release, admit a declared tool against fresh capacity, and restore the unchanged model configuration.
 - Add immediate admission with explicit non-dispatch receipts. The pinned Hermes adapter waits outside provider execution, preserves native history and accepted tool effects, and resumes a task in a replacement worker.

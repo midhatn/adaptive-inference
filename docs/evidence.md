@@ -2,6 +2,38 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Safe expiry of a paused task
+
+The [paused-expiry acceptance record](../provenance/paused-budget-expiry/acceptance/README.md)
+binds the corrected installed Windows/Strata/Hermes composition to one complete
+IQ3_S trial. Two model requests produced one correct report write with no
+validation rejections. One genuine Resume and one genuine Pause preceded the
+original 900-second deadline. The verified Pause was observed 654.325 seconds
+before that deadline; the execution seal followed the deadline by 0.174 seconds.
+The saved report and native history remained unchanged, and the task stayed
+pending and paused rather than being marked complete.
+
+The same window displayed the saved-progress expiry message and kept Stop
+available. There were 55 complete status-request intervals after verified expiry
+and before the Stop timing bracket. One genuine Stop was followed by normal
+runner, worker, GUI, listener and owned-native cleanup. The independent terminal
+audit passed 46 checks. These observations establish availability in that interval,
+not UI or network latency performance. The observer's three connection errors
+after service closure remain inconclusive for cleanup; retained process and
+resource evidence establishes cleanup separately.
+
+The correction passed 104 focused checks on Python 3.11 and 3.12. Independent
+review passed those 104 plus one worker-cleanup regression. The public
+[Hermes dispatcher example](../examples/validation/hermes_pause_dispatch/README.md)
+passed three cases through the pinned SDK, including the installed wheel on the
+actual Python 3.14 worker. Those dispatcher checks use a reduced native-history
+fixture and are separate from the live model trial. The failed clock-domain and
+constructor-thread trials remain failed and preserved in the acceptance record.
+
+This result does not qualify active or uncertain-work expiry, automatic budget
+renewal, another task in the same host, broad foreground workloads, physical
+reboot recovery or the complete M2 milestone.
+
 ## Installed Windows desktop composition
 
 The [installed cold01/full01 receipt](../provenance/installed-desktop/acceptance/README.md)
@@ -25,8 +57,10 @@ same window, without testing destroyed-window reopening or a physical reboot.
 Both full readiness observations had GUI CPU below 0.05 cores, so this installed
 case does not itself demonstrate the new policy's distinction above the old
 threshold. The report had zero validator rejections and supplies no real-model
-correction evidence. Pending-task expiry, pressure/foreign-foreground trials,
-arbitrary tasks and daily-use always-on completion remain separate work.
+correction evidence. That historical build does not qualify pending-task expiry;
+the later paused-expiry result above has its own source and evidence.
+Pressure/foreign-foreground trials, arbitrary tasks and daily-use always-on
+completion remain separate work.
 
 ## Persistent-controller portable components
 

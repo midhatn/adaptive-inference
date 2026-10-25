@@ -23,7 +23,8 @@ import uuid
 
 from adaptive_inference.demand import DemandIdentity, DemandRegistry, Registration, NAMESPACE
 from adaptive_inference.task_store import TaskStore
-from adaptive_inference.control_mailbox import Mailbox
+from adaptive_inference.control_mailbox import Mailbox, execution_outcome
+from adaptive_inference.execution_clock import CLOCK_ID, execution_now, verify_execution_clock
 from adaptive_inference.handoff import ToolRequirements
 from adaptive_inference.desktop.installation import package_identity, sha, verify_interpreter, verify_sdk
 from adaptive_inference.desktop.profile import WindowsProfile, COOPERATIVE_POLICY
@@ -113,7 +114,8 @@ class DesktopComposition:
         self.deadline=self.original=self.initial_events=None
         self.progress=None; self.stop_id='service-stop-'+uuid.uuid4().hex
         self.result={'schema':'adaptive.desktop.windows-orders.result.v1', 'clean_stop':False,
-                     'task_completed':False, 'model':MODEL, 'quality':deepcopy(QUALITY)}
+                     'task_completed':False, 'execution_expired':False,
+                     'model':MODEL, 'quality':deepcopy(QUALITY)}
         self.worker_exit_verified=False
 
     def launch(self, command, label):
@@ -136,18 +138,18 @@ class DesktopComposition:
             stream.write(json.dumps(value,allow_nan=False)+'\n');stream.flush()
 
     async def until(self,predicate,child=None,timeout=240):
-        limit=min(time.monotonic()+timeout,self.deadline or float('inf'))
+        limit=min(execution_now()+timeout,self.deadline or float('inf'))
         while True:
             value=predicate()
             if value:return value
             if child is not None and child.poll() is not None:
                 raise RuntimeError('Owned worker exited before required boundary; see retained log')
-            if time.monotonic()>=limit:raise TimeoutError('Qualification boundary deadline')
+            if execution_now()>=limit:raise TimeoutError('Qualification boundary deadline')
             if self.host and self.host.controller.fault:raise RuntimeError('Controller fault: '+str(self.host.controller.fault))
             await asyncio.sleep(.05)
 
     def remaining(self):
-        remaining=self.deadline-time.monotonic()
+        remaining=self.deadline-execution_now()
         if remaining<=0:raise TimeoutError('Original900second task deadline exhausted')
         return remaining
 
@@ -168,7 +170,8 @@ class DesktopComposition:
     def assert_original(self,cp):
         if (cp.prompt!=self.original.prompt or cp.metadata!=self.original.metadata
                 or cp.state['messages'][0]!=self.original.state['messages'][0]
-                or cp.state.get('deadline_monotonic')!=self.deadline):
+                or cp.state.get('deadline_monotonic')!=self.deadline
+                or cp.state.get('deadline_clock')!=CLOCK_ID):
             raise RuntimeError('Original identity, objective or deadline changed')
 
     async def ready(self,child,path):
@@ -177,7 +180,8 @@ class DesktopComposition:
         self.assert_original(cp)
         if (boot['pid']!=child.pid or boot['task_id']!=self.identity.task_id
                 or boot['registration_id']!=self.identity.registration_id
-                or boot['deadline_monotonic']!=self.deadline or boot['owner_epoch']!=cp.owner_epoch):
+                or boot['deadline_monotonic']!=self.deadline or boot.get('deadline_clock')!=CLOCK_ID
+                or boot['owner_epoch']!=cp.owner_epoch):
             raise RuntimeError('Bootstrap receipt is not the retained owner')
         if not self.registry.observe(self.identity.registration_id).eligible:
             raise RuntimeError('Readiness waiting lacks actual trusted durable demand')
@@ -192,7 +196,8 @@ class DesktopComposition:
             self.worker_cap=object()
             self.stop_binding=WorkerStopBinding(self.worker,self.work,self.box,requester_capability=self.capability,
                 capability=self.worker_cap,stop_request_id=self.stop_id,original=self.original,
-                deadline_monotonic=self.deadline,model=MODEL,quality=QUALITY,fence=self.fence)
+                deadline_monotonic=self.deadline,model=MODEL,quality=QUALITY,fence=self.fence,
+                deadline_clock=CLOCK_ID)
 
     async def join_child(self,child):
         if child not in self.handles:raise RuntimeError('Cannot adopt a child for cleanup')
@@ -305,6 +310,7 @@ class DesktopComposition:
         # child. Windows APIs/native modules are imported only on this path.
         if os.name != 'nt' or sys.version_info[:3] != (3, 11, 9):
             raise RuntimeError('This first desktop profile requires full Windows CPython 3.11.9')
+        verify_execution_clock()
         profile = self.profile
         verify_interpreter(profile.host_python, profile.host_python_sha256, current=True)
         verify_interpreter(profile.worker_python, profile.worker_python_sha256)
@@ -340,6 +346,9 @@ class DesktopComposition:
         self.capability = object()
         self.box = Mailbox(self.registry, self.identity.registration_id, requester_capability=self.capability)
         self.original = self.checkpoint()
+        if (self.plan.get('deadline_clock')!=CLOCK_ID or self.original.metadata.get('deadline_clock')!=CLOCK_ID
+                or self.original.state.get('deadline_clock')!=CLOCK_ID):
+            raise RuntimeError('Fresh installed task lacks the explicit execution clock')
         rec.save(self.root/'original-checkpoint.private.json', asdict(self.original))
         self.submit(INITIAL_PAUSE, 'pause')
         self.host_epoch = 'desktop-'+uuid.uuid4().hex
@@ -362,8 +371,9 @@ class DesktopComposition:
         complete_ledger(self.host.controller.events, self.initial_events)
         if adapter.launch_intent is not None or adapter.started_owner or self.registry.observe(self.identity.registration_id).eligible:
             raise RuntimeError('Cold host unexpectedly loaded before paused owner bootstrap')
-        self.deadline = time.monotonic()+900
+        self.deadline = execution_now()+900
         self.result['deadline_monotonic'] = self.deadline
+        self.result['deadline_clock'] = CLOCK_ID
         self.first_ready = self.work/'controller-ready-1.json'
         command = [self.plan['base_python'], '-I', '-B', '-m',
             'adaptive_inference.desktop.hermes.run_recovery', 'worker', '--run', str(self.work),
@@ -411,19 +421,41 @@ class DesktopComposition:
             'worker_pid':self.worker.pid,'task_id':self.identity.task_id,'paused_owner_acknowledged':True,
             'model_started':False,'instructions':'Resume to run the report. Pause pauses at a safe boundary. Stop closes this session.'})
 
+    async def _paused_expiry_candidate(self):
+        # Reuse the runtime's retained off-loop coherent read; no new database
+        # observer or blocking SQLite work is introduced on the host loop.
+        await self.runtime.refresh()
+        snapshot = self.runtime._cache.snapshot
+        cp = snapshot.target
+        marker = execution_outcome(cp.state)
+        return (cp.state['status'] == 'pending' and cp.operation is None
+            and not cp.requires_reconciliation and cp.state.get('deadline_monotonic') == self.deadline
+            and cp.state.get('deadline_clock') == CLOCK_ID
+            and cp.state.get('phase') in ('ready','waiting_admission')
+            and cp.state.get('pending_request') is None
+            and snapshot.demand is not None and snapshot.demand['state'] == 'paused'
+            and bool(snapshot.requests) and len(snapshot.requests) == len(snapshot.receipts)
+            and snapshot.requests[-1]['command'] == 'pause' and snapshot.receipts[-1]['outcome'] == 'applied'
+            and (marker is None or marker['deadline_monotonic'] == self.deadline))
+
     async def interact(self):
         # No invented admission or automatic Resume: the worker's saved demand,
         # host capacity and authenticated GUI intent must agree first.
         while not self.transport.lifecycle()['stop_requested']:
             code = self.worker.poll()
             if code is None:
-                self.remaining()
+                if execution_now() >= self.deadline:
+                    if not await self._paused_expiry_candidate():
+                        self.remaining()
+                else:
+                    self.remaining()
             if code is not None and not self.worker_exit_verified:
                 await self.join_child(self.worker)
                 outcome = self.stop_binding._verify_exit(code)
                 self.worker_exit_verified = True
                 self.result['worker_outcome'] = outcome
                 self.result['task_completed'] = outcome == 'task_completed'
+                self.result['execution_expired'] = outcome == 'paused_budget_expired'
                 await self.runtime.refresh()
             if (code is None and not self.first_ready.exists()
                     and (self.work/f'bootstrap-{self.worker.pid}.json').exists()

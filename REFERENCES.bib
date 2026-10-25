@@ -448,3 +448,31 @@
   url = {https://docs.python.org/3.11/library/site.html#site.addsitedir},
   note = {Inspected 2026-10-25. Explicit Hermes dependency setup preserves the existing site.addsitedir contract, including .pth execution; canonical installed identities and pinned SDK inputs are verified before setup and canonical identities rechecked afterward}
 }
+
+@misc{pythonSharedPerformanceCounter,
+  title = {Python time: performance counter and monotonic clock contracts},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.11/library/time.html#time.perf_counter},
+  note = {Inspected 2026-10-25 alongside Python 3.14 time documentation. Reuses perf_counter for explicitly tagged same-machine, same-boot execution deadlines across the installed Python 3.11 host and Python 3.14 worker; no old-deadline conversion or reboot guarantee}
+}
+
+@misc{windowsSharedQpc,
+  title = {Acquiring high-resolution time stamps},
+  author = {{Microsoft}},
+  url = {https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps},
+  note = {Inspected 2026-10-25. QueryPerformanceCounter contract informs the shared execution clock and separate wall-clock observations; no external synchronization or performance claim}
+}
+
+@misc{hermesPausedWorkerInterruption,
+  title = {Hermes Agent worker interruption, tool dispatch and activity tracking},
+  author = {{Nous Research and contributors}},
+  url = {https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/interrupt.py},
+  note = {MIT, revision 14e1e43a23761b369641208e204365cd6cb9399d; inspected 2026-10-25. Reuses existing sequential dispatcher, context propagation, interruption and acknowledged-Pause activity APIs. Exact related sources and fixture attribution are preserved under provenance/paused-budget-expiry/thread-successor; no new SDK executor or watchdog is introduced}
+}
+
+@misc{pythonFutureCancellation,
+  title = {Python concurrent.futures: Future cancellation},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.14/library/concurrent.futures.html#concurrent.futures.Future.cancel},
+  note = {Inspected 2026-10-25. A running callback is not joined by cancellation or a timeout result; this informs serialized cleanup refusal and the real SDK dispatch regression. Official API contract, no source copied}
+}

@@ -8,6 +8,7 @@ import unittest
 
 from adaptive_inference.desktop import control_client as cc
 from ast_preservation import preservation_dump
+from paused_expiry_lineage import restore_expiry, retained, ARCHIVE
 from desktop_gui_support.intent_lineage import (
     ADDED, BEFORE_SHA256, EDITED, ROOT, controller, predecessor_tree, restore_predecessor,
 )
@@ -16,14 +17,15 @@ from desktop_gui_support.intent_lineage import (
 class IntentLineageTests(unittest.TestCase):
     def setUp(self):
         self.before=predecessor_tree()
-        self.after=ast.parse(Path(cc.__file__).read_text(encoding='utf-8'))
+        self.after=restore_expiry(ast.parse(Path(cc.__file__).read_text(encoding='utf-8')),'desktop/control_client.py')
         self.prior={n.name:n for n in controller(self.before).body if isinstance(n,ast.FunctionDef)}
         self.current={n.name:n for n in controller(self.after).body if isinstance(n,ast.FunctionDef)}
 
     def test_pinned_successor_and_exact_declared_method_set(self):
         record=json.loads((ROOT/'provenance/desktop-control-intent/source-lineage.json').read_text())
         self.assertEqual(record['predecessor_sha256'],BEFORE_SHA256)
-        self.assertEqual(record['successor_sha256'],hashlib.sha256(Path(cc.__file__).read_bytes()).hexdigest())
+        expiry,_=retained('desktop/control_client.py')
+        self.assertEqual(record['successor_sha256'],hashlib.sha256((ARCHIVE/expiry['predecessor_source']).read_bytes()).hexdigest())
         self.assertEqual(record['edited_methods'],list(EDITED));self.assertEqual(record['added_methods'],list(ADDED))
         self.assertEqual(set(self.current)-set(self.prior),set(ADDED))
         self.assertEqual(set(self.prior)-set(self.current),set())
@@ -75,7 +77,9 @@ class IntentLineageTests(unittest.TestCase):
             ("self.stop_recorded=True","self.stop_recorded=False")):
             self.assertIn(old,text)
             changed=ast.parse(text.replace(old,new,1))
-            self.assertNotEqual(preservation_dump(restore_predecessor(changed)),preservation_dump(self.before),old)
+            try:restored=restore_predecessor(changed)
+            except AssertionError:continue  # A pinned expiry seam rejects the mutation before restoration.
+            self.assertNotEqual(preservation_dump(restored),preservation_dump(self.before),old)
 
     def test_signature_change_is_refused_and_historical_lineage_still_matches(self):
         changed=deepcopy(self.after)
