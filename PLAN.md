@@ -318,7 +318,7 @@ That fifth full attempt still **failed**: the model wrote correct per-item
 amounts but incorrect unit and grand totals. The unchanged report check caught
 the error before worker replacement, and normal shutdown released the owned
 model and preserved the failed task. Initial admission is therefore supported;
-complete-task and replacement acceptance are still outstanding.
+complete-task and replacement acceptance were still outstanding at that point.
 
 **Next adjustment:** make correctable tool proposals part of the existing
 feedback path. The bounded recovery adapter deliberately refuses to overwrite
@@ -338,6 +338,35 @@ Bind the validator identity to the durable task, preserve rejection feedback
 across restart, and keep interrupted or uncertain effects blocked. Test a wrong
 proposal followed by correction before the next source-bound full trial. The
 fifth failure remains failed even if its successor succeeds.
+
+**Sixth development trial: bounded recovery passed.** The successor completed
+the real control-window/IQ3_S/installed-Hermes sequence with validation enabled:
+two actual Resume commands, a verified report checkpoint, replacement of that
+worker, completion from the preserved conversation and normal final Stop.
+Independent terminal review passed 42 checks. Three real model requests produced
+one correct report write; the replacement preserved its bytes and the completed
+tool results. Both native model lifetimes and all retained controls and children
+closed cleanly. The original prompt, deadline and quality settings were retained.
+
+Both readiness observations belonged to their current intent generations and
+passed the cooperative progress/resource checks. The first also admitted above
+the old foreground-CPU recovery floor. This qualifies that bounded development
+composition, not the complete M2 milestone or unrelated foreground applications.
+The real model proposed a correct report on its first try, so this run does not
+prove real-model correction. A separate installed-Hermes synthetic-provider
+fixture exercised rejection, native feedback, correction and one actual write.
+
+**Next priority: promote and qualify the installed composition.** Move the
+reviewed control components into one maintained package with qualified imports,
+preserved sources, citations and existing tests. Keep a library-only slice
+clearly separate from a runnable desktop host. Then parameterize the existing
+host/backend composition, preserve retained startup pipes and process ownership,
+and qualify the installed wheel outside its source checkout. Packaging changes
+cannot inherit a previous runtime's live qualification without checking the
+changed launch/import path. Avoid a second miniature task runner or another copy
+of the private experiment layout. Interface close/reopen, meaningful terminal
+status text, cancellation, busy/quiet bursts and longer service use remain M2
+work; computer reboot and broad desktop workloads retain their separate gates.
 
 Independent composition tests completed both simulated cases, then exposed a
 watchdog defect: a failed diagnostic write could prevent the emergency exit.
@@ -788,11 +817,13 @@ proposed change has not been tested.
 
 The active technical packet is M2:
 
-- First implement and independently review the opt-in control-progress and host
-  headroom policy described above. This bounded M3 prerequisite follows the
-  failed complete GUI cases; do not repeat them under unchanged assumptions.
-  Qualify progress, failed/stale observations, pressure and foreground switching
-  before promoting the new policy's real IQ3_S result.
+- First promote the reviewed control library, then package and independently
+  qualify the existing host/GUI/backend composition from a regular installed
+  wheel. The sixth development trial supports the bounded control-progress
+  policy and worker replacement; changed imports and launch paths require their
+  own acceptance. Preserve its retained ownership and startup protocol.
+  Pressure and foreign-application switching remain separate outstanding gates;
+  do not generalize the owned-window result to those workloads.
 - Compose reviewed durable demand, cold parked ownership and the existing
   controller into one explicit persistent-host mode. Retain bounded M1 mode.
 - Reuse the actual native startup cache planner and original observations.
