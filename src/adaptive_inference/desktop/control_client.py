@@ -329,6 +329,7 @@ class ClientController:
         self.marker_removed=False;self.close_ack=False;self.cleanup_error=None
         self._started=False;self._destroy_attempted=False
         self.stop_recorded=False;self._close_on_stop_recorded=close_on_stop_recorded
+        self._local_intent=None;self._local_feedback=None
 
     def _main(self):
         if threading.current_thread() is not self._owner:raise PermissionError('UI belongs to its creator thread')
@@ -361,23 +362,70 @@ class ClientController:
             if identity in self._ids:raise ClientError('request_identity_reused')
             request=Request(method,identity)
         else:request=Request(method)
-        if not self._send(request):return False
         if request.request_id:self._ids.add(request.request_id)
-        self.latest=request;self.latest_stage='unconfirmed'
-        self.action_text='Request queued; recording is not yet confirmed.'
-        if method=='stop':self.stop_requested=True
-        self.render();return True
+        return self._retain_intent(request,retry=False)
 
     def retry(self):
         self._main()
         if not self.buttons()['retry']:return False
-        if not self._send(self.latest):return False
-        self.action_text='Checking the same request; recording is not yet confirmed.'
-        self.render();return True
+        return self._retain_intent(self.latest,retry=True)
+
+    def _eligible(self,method,*,retry=False,reserved=False):
+        available=(self.ready and not self.closing and self.cleanup_error is None
+            and (self.pending is None or self.pending.method=='status'))
+        if not available:return False
+        terminal=self.status is not None and (self.status['task_status']!='pending'
+            or self.status['demand'] in {'cancelled','fulfilled'})
+        controls=self.status is not None and not terminal and not self.stop_requested
+        if retry:
+            return (self.latest is not None and self.latest.method==method
+                and self.latest_stage=='unconfirmed' and (method=='stop' or controls))
+        if method=='stop':return not self.stop_requested
+        return controls and (reserved or len(self._ids)<32) and (method!='resume' or self.status_valid)
+
+    def _retain_intent(self,request,*,retry):
+        # The GUI owns one unsent intent; the worker still owns at most one
+        # request. An earlier status result must release that slot first.
+        self._local_intent=(request,retry)
+        self._local_feedback=('Retry waiting locally for the current status check; this retry has not been sent.' if retry
+            else 'Waiting locally for the current status check; this request has not been sent.')
+        waiting=self.pending is not None
+        sent=self._drain_intent()
+        self.render()
+        return waiting or sent
+
+    def _drain_intent(self):
+        if self._local_intent is None or self.pending is not None:return False
+        request,retry=self._local_intent
+        self._local_intent=None
+        prefix='Retry not sent; ' if retry else 'Not sent; '
+        if not self._eligible(request.method,retry=retry,reserved=True) or retry and request!=self.latest:
+            reason=('connection cleanup is unconfirmed.' if self.cleanup_error is not None
+                else 'the latest task state no longer permits this request.')
+            self._local_feedback=prefix+reason
+            return False
+        try:
+            sent=self._send(request)
+        except Exception:
+            # Submission may have partly succeeded. Retain the possible reply
+            # and fence further dispatch rather than calling this "not sent".
+            self.pending=request;self.cleanup_error='worker_submission_unconfirmed'
+            self.latest=request;self.latest_stage='unconfirmed'
+            self._local_feedback='Dispatch is unconfirmed; no automatic retry was sent.'
+            return False
+        if not sent:
+            self._local_feedback=prefix+'the control worker did not accept this attempt.'
+            return False
+        self._local_feedback=None
+        self.latest=request;self.latest_stage='unconfirmed'
+        self.action_text=('Checking the same request; recording is not yet confirmed.' if retry
+            else 'Request queued; recording is not yet confirmed.')
+        if request.method=='stop':self.stop_requested=True
+        return True
 
     def poll_status(self):
         self._main()
-        if self.closing or not self.ready:return False
+        if self.closing or not self.ready or self._local_intent is not None:return False
         return self._send(Request('status'))
 
     def _apply_control(self,row):
@@ -446,6 +494,7 @@ class ClientController:
             try:self._result(result)
             except Exception:
                 self.status_valid=False;self.connection='Invalid or stale status; no outcome is assumed.'
+        self._drain_intent()
         if self.closing and self.marker_removed and self.worker.joined() and not self._destroy_attempted:
             self._destroy_attempted=True
             try:self.view.destroy();self.closed=True
@@ -455,6 +504,10 @@ class ClientController:
     def close(self):
         self._main()
         if self.closing:return
+        if self._local_intent is not None:
+            _,retry=self._local_intent;self._local_intent=None
+            self._local_feedback=('Retry not sent; the window closed. The earlier request outcome is unchanged.'
+                if retry else 'Not sent; the window closed before local dispatch.')
         self.closing=True;self.ready=False
         try:
             self.marker_removed=self.binding.remove() is True
@@ -466,13 +519,9 @@ class ClientController:
         self.render()
 
     def buttons(self):
-        terminal=self.status is not None and (self.status['task_status']!='pending' or self.status['demand'] in {'cancelled','fulfilled'})
-        available=self.ready and not self.closing and self.pending is None and self.cleanup_error is None
-        controls=available and self.status is not None and not terminal and not self.stop_requested
-        return {'pause':controls and len(self._ids)<32,'resume':controls and self.status_valid and len(self._ids)<32,'cancel':controls and len(self._ids)<32,
-                'stop':available and not self.stop_requested,
-                'retry':available and self.latest is not None and self.latest_stage=='unconfirmed'
-                        and (self.latest.method=='stop' or controls)}
+        free=self._local_intent is None
+        return {**{method:free and self._eligible(method) for method in (*COMMANDS,'stop')},
+                'retry':free and self.latest is not None and self._eligible(self.latest.method,retry=True)}
 
     def render(self):
         self._main()
@@ -493,7 +542,7 @@ class ClientController:
             elif s['host_phase']=='closed':waiting='Engine is closed; stop confirmation is unavailable.'
             elif s['host_phase']=='fault':waiting='The engine reported a problem; progress is not assumed.'
         self.view.render({'objective':self.bootstrap.objective,'connection':self.connection,'task':task,
-            'waiting':waiting,'action':self.action_text,'buttons':self.buttons(),
+            'waiting':waiting,'action':self._local_feedback or self.action_text,'buttons':self.buttons(),
             'closing':self.closing,'cleanup_unconfirmed':self.cleanup_error is not None})
 
 

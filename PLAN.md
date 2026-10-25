@@ -49,7 +49,7 @@ interrupted runs will remain identified as such.
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: one bounded installed Windows host/GUI/Hermes composition qualified; daily-use intent and task-expiry work remain |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded installed composition and retained user commands qualified; safe task expiry and ordinary task continuation remain |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |
@@ -409,20 +409,43 @@ computer-reboot, gaming-performance or general-task acceptance.
 
 **Publication feedback:** fresh CI found test assumptions that the local run did
 not expose: temporary-directory aliases on Windows/macOS and Python 3.12's
-additional AST fields. Correct the fixtures using canonical temporary paths and
+additional AST fields. The repaired fixtures use canonical temporary paths and
 an explicitly bounded AST comparison, preserving the original expected hashes,
-runtime checks and historical live receipt. Require the full OS/Python CI matrix
-and a fresh source-distribution check before merging this installed baseline.
-These fixture repairs do not establish a new model or desktop result.
+runtime checks and historical live receipt. The publication gate passed in
+[PR #18](https://github.com/midhatn/adaptive-inference/pull/18):
+all 14 checks passed on `de735ddedaad02703c6c379fca91287219644316`, and
+the successor source archive verified 681 files against Git and all 52 runtime
+modules against the accepted wheel. The merged tree is the unchanged reference
+for the following interface work. These fixture repairs do not establish a new
+model or desktop result.
 
 The trial also exposed a usability issue: the first Stop click after task
-completion did not register, while a second click completed normal Stop. Keep
-both observations in the record. Before the next interface release, reproduce
-and resolve interaction between user commands and the existing serialized
-status refresh, using researched event-loop/queue mechanisms. Preserve a user's
-accepted command and its recording/acknowledgement distinction without parallel
-requests or automatic replay. A successful repeated click does not establish
-single-click reliability. This interface fix now precedes safe task-expiry work.
+completion did not register, while a second click completed normal Stop. Both
+observations remain in that version's record. The follow-up reproduced the
+interaction with background status polling and reused the existing serialized
+channel to retain one local user command. Recording and owner acknowledgement
+remain distinct; there are no parallel requests or automatic mutation retries.
+
+**Retained-command successor accepted, 25 October:** the new installed cold and
+full cases passed 38 and 50 independent terminal checks. Cold used one Pause and
+one Stop click with no model launch. Full used one click for each of two Resumes
+and one Stop after completion, with three real IQ3_S requests, one correct report
+write, preserved worker-restart progress and normal cleanup. The
+[successor record](provenance/desktop-control-intent/acceptance/README.md) binds the
+actual package and complete result. The original quality and budgets are intact;
+only the client changed among 52 runtime modules. The deliberate status-ordering
+tests and the real GUI trials supply separate evidence: the live clicks were not
+proven to overlap a poll. These results do not establish universal input
+reliability, broader foreground performance or full M2. Safe task expiry is next.
+
+**Publication test feedback:** one Windows CI job failed an existing intent test
+while the other 13 jobs passed. A controlled delayed-authority reproduction
+exposed its invalid assumption: a bounded `pending` response can arrive before
+the retained Resume operation finishes and activates intent. The exact original
+CI timing was not captured. Tests of completed activation must await that exact
+retained operation; tests of pending replies must keep the distinction visible.
+Keep the production response timeout and freshness limits unchanged, preserve
+the failed CI run, and require fresh exact-head CI after the fixture repair.
 
 Keep the ordinary host's lifetime independent of that task's deadline and the
 qualification supervisor's emergency bound. After verified task completion it
@@ -433,7 +456,7 @@ transfer automatically to different imports, launch paths or control behavior.
 The first report still has its original 900-second task budget. Expiry while
 pending is a failure under the existing recovery contract, not a verified clean
 terminal outcome. Do not conceal that limitation by accepting an unknown worker
-exit. After the interface follow-up, define and test safe ordinary task-expiry
+exit. After the accepted interface follow-up, define and test safe ordinary task-expiry
 and recovery behavior before claiming the complete always-on M2 experience.
 
 Independent composition tests completed both simulated cases, then exposed a
@@ -885,26 +908,43 @@ proposed change has not been tested.
 
 The active technical packet is M2:
 
-- Finish the installed baseline's cross-platform fixture repairs and require
-  exact-head CI before merging. Keep its accepted runtime bytes and live evidence
-  fixed; record test/source-distribution successors separately.
 - Preserve the now-qualified installed host/GUI/backend composition and its
   unchanged IQ3_S quality as the reference. Continue in that implementation;
-  do not create another runner or repeat completed source-promotion work.
-- Fix user commands lost during a pending read-only status exchange. A bounded
-  reproduction against the installed package confirmed the refusal for Pause,
-  Resume, Cancel, Stop and explicit Retry. Reuse the serialized channel and
-  retain one explicit user intent until it can be dispatched, with truthful queued/recorded/unknown
-  states. Test status completion, close and failure boundaries, then qualify
-  the actual interface. The live missed click's exact timing is not proven by
-  the deterministic reproduction.
+  do not create another runner or repeat completed source-promotion work. Its
+  cross-platform fixture repairs and exact-head CI passed in PR #18; keep the
+  historical runtime/evidence identities separate from each successor.
+- Preserve the accepted [retained-command change](docs/desktop-control-intent.md):
+  one locally waiting intent, serialized dispatch, stable request identities,
+  fresh eligibility and truthful queued/recorded/unknown states. Its cold/full
+  trials and deterministic status-ordering tests have passed separately. Keep
+  those boundaries when adding new task outcomes; do not repeat completed input
+  work or transfer its evidence to a changed implementation without validation.
 - Define a safe budget-expiry outcome at an already verified paused checkpoint.
-  Preserve the task, effects, history and original deadline; fence new work,
-  receive acknowledgement, release ownership and join the retained worker.
+  Preserve the pending task, effects, history and original deadline. Verify the
+  applied Pause and complete request/acknowledgement prefix, seal that execution,
+  release ownership and join the retained worker. Verify final native history
+  after cleanup and queued writes; a normal cleanup return alone is insufficient.
+  Keep ownership through that cleanup and verify the final conversation through
+  the same pinned agent SDK after its original database closes. Reject unknown
+  drain or a still-running writer; do not claim billing persistence from this
+  task-history check. Serialize the execution seal and new control append using
+  the existing [SQLite write transaction](https://www.sqlite.org/lang_transaction.html):
+  check the full request/acknowledgement prefix in the seal transaction and
+  recheck the seal in the append transaction. A host-only lock or earlier
+  snapshot cannot fence another process. A command already committed remains
+  visible; a new command refused before append receives a distinct known
+  non-recorded outcome. Preserve truthful same-ID lookup and reject a sealed
+  execution before worker claim or replacement launch.
+  Reuse paused demand and ordinary idle release to park resources while keeping
+  the service available; the whole-service Stop fence is unsuitable here.
   Unknown effects or exits remain failures. Reuse the distinction between
   [overall execution and attempt timeouts](https://docs.temporal.io/encyclopedia/detecting-activity-failures)
   and [durable interruption with protected effects](https://docs.langchain.com/oss/python/langgraph/interrupts).
-  Expiry must not be mislabeled completion or attempt exhaustion.
+  Expiry must not be mislabeled completion or attempt exhaustion. Qualify the
+  installed IQ3_S report at a safe Pause through its original 900-second deadline,
+  with no renewed budget or repeated write, then a genuine Stop. Fake-clock
+  fixtures remain component evidence. Post-expiry new budgets and task mutations
+  require their own explicit continuation contract.
 - Design explicit continuation after expiry and acceptance of another task in
   the same host using the existing task store and identity contracts. Do not
   renew a spent execution budget silently. Preserve user intent and completed

@@ -125,6 +125,14 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
         await task
         return json.loads(writer.data)
 
+    async def completed_control(self, method, *, request_id):
+        # A handler may truthfully return pending before the retained mutation
+        # and its authority read finish. Final-intent assertions need that task.
+        reply = await self.request(method, request_id=request_id)
+        self.assertTrue(reply['ok'])
+        await asyncio.wait_for(asyncio.shield(self.transport._records[request_id]['task']), 3)
+        return reply
+
     def matches(self):
         now = time.monotonic()
         return self.gate.matches({'monotonic_s': now, 'foreground': {
@@ -160,17 +168,17 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
         self.submit('old-resume', 'resume'); self.consume()
         self.submit('later-pause', 'pause'); self.consume()
         history = self.store.history(self.box.task_id)
-        value = await self.request('resume', request_id='old-resume')
+        value = await self.completed_control('resume', request_id='old-resume')
         self.assertTrue(value['ok'])
         self.assertFalse(self.matches())
         self.assertEqual(history, self.store.history(self.box.task_id))
         self.assertIs(await self.runtime.resume_authority('old-resume'), False)
 
     async def test_new_resume_activates_real_gate_then_pause_revokes(self):
-        result = await self.request('resume', request_id='fresh')
+        result = await self.completed_control('resume', request_id='fresh')
         self.assertTrue(result['ok'])
         self.assertTrue(self.matches())
-        await self.request('pause', request_id='pause')
+        await self.completed_control('pause', request_id='pause')
         self.assertFalse(self.matches())
         self.assertEqual(self.store.load('task').prompt, OBJECTIVE)
         self.assertEqual(self.runtime.status()['controls'][0]['outcome'], 'pending')
@@ -196,7 +204,7 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
             self.assertEqual(self.runtime.status()['waiting_reason'], 'reconciliation')
 
     async def test_terminal_target_revokes_intent_and_refuses_authority(self):
-        await self.request('resume', request_id='resume')
+        await self.completed_control('resume', request_id='resume')
         self.assertTrue(self.matches())
         with self.claim() as owned:
             state = deepcopy(owned.checkpoint.state)
@@ -224,7 +232,7 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
                 gate=self.gate, intent_capability=object(), lifecycle=self.host)
 
     async def test_refresh_revokes_external_later_pause_even_before_owner_ack(self):
-        await self.request('resume', request_id='resume')
+        await self.completed_control('resume', request_id='resume')
         self.assertTrue(self.matches())
         self.consume()
         self.submit('external-pause', 'pause')
@@ -238,11 +246,47 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
 
     async def test_latest_pending_resume_can_keep_intent_while_owner_is_paused(self):
         self.demand('paused')
-        await self.request('resume', request_id='resume')
+        await self.completed_control('resume', request_id='resume')
         self.assertTrue(self.matches())
         await self.runtime.refresh()
         self.assertEqual(self.runtime.status()['demand'], 'paused')
         self.assertTrue(self.matches())
+
+    async def test_pending_reply_precedes_retained_resume_authority_completion(self):
+        entered, release, blocked = self.block_observation()
+        actual_authority = self.runtime.resume_authority
+        actual_request = self.request
+        responded = asyncio.get_running_loop().create_future()
+        async def held_authority(request_id):
+            with mock.patch.object(self.box, 'snapshot', side_effect=blocked):
+                return await actual_authority(request_id)
+        async def observed_request(*args, **kwargs):
+            reply = await actual_request(*args, **kwargs)
+            responded.set_result(reply)
+            return reply
+        with mock.patch.object(self.runtime, 'resume_authority', side_effect=held_authority), \
+                mock.patch.object(self, 'request', side_effect=observed_request):
+            completed = asyncio.create_task(self.completed_control('resume', request_id='resume'))
+            try:
+                await self.signal(entered)
+                operation = self.transport._records['resume']['task']
+                # Observe the actual response before releasing authority; no sleep
+                # or assumption about SQLite/CI scheduling establishes this order.
+                reply = await asyncio.wait_for(asyncio.shield(responded), 2)
+                self.assertEqual(reply, {'ok': True, 'state': 'pending', 'request_id': 'resume', 'recorded': None})
+                self.assertFalse(operation.done())
+                self.assertFalse(completed.done())
+                self.assertFalse(self.matches())
+            finally:
+                release.set()
+                # Settle the extra fixture task even if an assertion failed;
+                # shield keeps its retained control operation uncancelled.
+                await asyncio.wait_for(asyncio.shield(
+                    asyncio.gather(completed, return_exceptions=True)), 3)
+            self.assertEqual(completed.result(), reply)
+        self.assertTrue(operation.done())
+        self.assertTrue(self.matches())
+        self.assertEqual(len(self.box.snapshot().requests), 1)
 
     async def test_crash_gap_pending_resume_does_not_invent_ack_or_reapply(self):
         self.demand('paused')

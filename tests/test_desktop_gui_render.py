@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import unittest
 
 from ast_preservation import preservation_dump
+from desktop_gui_support.intent_lineage import restore_predecessor
 
 from adaptive_inference.desktop import control_client as cc
 from test_desktop_control_client import Root, Widget, FakeWorker, Binding, bootstrap, status
@@ -146,18 +147,18 @@ class RenderTests(unittest.TestCase):
         client.poll_status();worker.respond(status());client.tick()
         return client,worker
 
-    def test_actual_client_pending_status_tick_and_reply_only_update_changed_buttons(self):
+    def test_actual_client_status_poll_never_disables_eligible_buttons_or_redraws(self):
         client,worker=self.ready_client();objective=self.view.labels['objective']
         self.assertEqual(sum(widget is objective for widget,_ in self.calls),1)
         self.calls.clear();sent=len(worker.sent)
         self.assertTrue(client.poll_status());request=client.pending
         self.assertEqual(request.method,'status');client.tick()
-        changed=('pause','resume','cancel','stop')
-        self.assertEqual(self.calls,[(self.view.buttons[name],{'state':'disabled'}) for name in changed])
-        self.assertIs(client.pending,request);self.assertFalse(any(client.buttons().values()))
+        self.assertEqual(self.calls,[])
+        self.assertIs(client.pending,request)
+        self.assertTrue(all(client.buttons()[name] for name in ('pause','resume','cancel','stop')))
         self.calls.clear();client.tick();self.assertEqual(self.calls,[])
         worker.respond(status());client.tick()
-        self.assertEqual(self.calls,[(self.view.buttons[name],{'state':'normal'}) for name in changed])
+        self.assertEqual(self.calls,[])
         self.assertIsNone(client.pending);self.assertEqual(len(worker.sent),sent+1)
         self.assertEqual(self.view.labels['objective'].options['text'],bootstrap().objective)
 
@@ -171,6 +172,7 @@ class PreservationTests(unittest.TestCase):
     def test_module_except_view_cache_terminal_presentation_and_copy_import_is_ast_exact(self):
         def normalized(path,predecessor):
             tree=ast.parse(path.read_text())
+            if not predecessor:tree=restore_predecessor(tree)
             if predecessor:
                 copies=[node for node in tree.body if isinstance(node,ast.ImportFrom) and node.module=='copy']
                 self.assertEqual(len(copies),1)

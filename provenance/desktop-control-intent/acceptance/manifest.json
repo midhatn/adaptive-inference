@@ -1,0 +1,10 @@
+{
+  "files": {
+    "result.json": "620a828cd482b81c28b4fcd4647e037eed43215a6f889a4252a2c0a0048344da"
+  },
+  "previous_selector_sha256": "7eeec842d1aac88b3d0f9039b54c1f8aa7dfa76d81beecbd72c98467225e4b89",
+  "reused_helper_sha256": "12004621166522cb80682e2bf1e4bc6d19e2ca72aeb585d21ce6408c2a965b33",
+  "sanitizer_sha256": "b2a319ad8d1880a1fa61224bea895e50734976f098a140962c2da91fa60c9ca1",
+  "schema": "adaptive.public-evidence-files.v1",
+  "source_selection": "explicit nested allowlists"
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "adaptive.desktop.control-intent.successor.v1",
+  "predecessor_commit": "9971609ca8f5960e30f1a956daadf14d8873b5d1",
+  "predecessor_sha256": "5c614b6f4b568bb6837fc9360913750c574c1ec7343ef283579c79f0744f46c9",
+  "predecessor_source": "control_client.before.py",
+  "successor_source": "src/adaptive_inference/desktop/control_client.py",
+  "successor_sha256": "2cb2fb52bbf8bc420d6030b1753c0494552b6e73c60aa9b32d9ed415103711d5",
+  "edited_methods": [
+    "__init__",
+    "action",
+    "retry",
+    "poll_status",
+    "tick",
+    "close",
+    "buttons",
+    "render"
+  ],
+  "added_methods": [
+    "_eligible",
+    "_retain_intent",
+    "_drain_intent"
+  ],
+  "license": "Apache-2.0",
+  "evidence_scope": "Deterministic CPU/thread fixtures; predecessor installed acceptance is historical, not successor live qualification",
+  "sources": [
+    "https://docs.python.org/3.11/library/tkinter.html#threading-model",
+    "https://www.tcl-lang.org/man/tcl8.6.14/TclCmd/after.htm",
+    "https://github.com/tcltk/tk/blob/core-8-6-14/library/ttk/button.tcl"
+  ]
+}
