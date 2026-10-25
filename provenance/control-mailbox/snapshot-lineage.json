@@ -1,0 +1,29 @@
+{
+  "schema": "adaptive.control-mailbox-snapshot-lineage.v1",
+  "scope": "Portable coherent-read component source lineage; no model, desktop or installed-agent acceptance",
+  "canonical_base_commit": "c6f3369c6d18ece02158d9a520a3b51f9b22c6fe",
+  "preserved": {
+    "snapshot-reviewed/control_mailbox.py": "c4355ba7881f34086eb1772a3f914cd8749b79c3c43481038b6bb3243dffef5e",
+    "snapshot-reviewed/snapshot_test_classes.py": "f429342f9851c000b6a2d9fab3a72f4212340f4e407f4635119a284166b5ae98"
+  },
+  "selected_test_input": {
+    "source_component": "ui-mailbox-runtime-prototype",
+    "source_file": "tests/test_mailbox_runtime.py",
+    "complete_source_sha256": "9b29d8ac813d9b9de1fbfd68b5f11eca46d34d35f3b659b3d945688c49030557",
+    "preserved_classes": ["DataFixture", "SnapshotTests"],
+    "method_count": 5,
+    "selection": "Exact contiguous class excerpt; unrelated desktop lifecycle and transport fixtures are omitted"
+  },
+  "promotion": {
+    "runtime": "Byte-identical preserved implementation at src/adaptive_inference/control_mailbox.py",
+    "tests": "Unchanged selected class bodies with canonical package imports, original fixture constants and a unittest entry point",
+    "transactions": "Reuse existing TaskStore._connection gate and explicit read transaction; no TaskStore or DemandRegistry implementation change",
+    "private_manifests": "Not published because they include local paths; component implementation and selected test source are preserved here"
+  },
+  "license": "Apache-2.0; existing TaskStore MIT-derived transaction attribution retained; no new upstream implementation copied",
+  "references": [
+    "https://www.sqlite.org/lang_transaction.html",
+    "https://docs.python.org/3.11/library/sqlite3.html#transaction-control",
+    "https://github.com/python/cpython/blob/v3.11.9/Modules/_sqlite/connection.c"
+  ]
+}

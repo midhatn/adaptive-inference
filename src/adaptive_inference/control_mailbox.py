@@ -6,6 +6,7 @@ safe boundary. No service, transport, new schema, process control or replay.
 See docs/task-controls.md for the authority boundary and two-commit crash gap.
 """
 from copy import deepcopy
+from dataclasses import dataclass
 import hashlib
 import json
 
@@ -23,6 +24,44 @@ COMMANDS = {'pause': 'paused', 'resume': 'waiting', 'cancel': 'cancelled'}
 
 class ControlBlocked(TaskStoreError):
     """Cooperating host must not start another operation at this boundary."""
+
+
+def _find_request(requests, request_id):
+    found = next((row for row in requests if row['request_id'] == request_id), None)
+    if found is None:
+        raise KeyError(request_id)
+    return found
+
+
+def _status_from_snapshot(target, found, receipts):
+    """Existing result semantics shared by the original read and a full snapshot."""
+    for receipt in receipts:
+        if receipt['request_id'] == found['request_id']:
+            return {**receipt, 'owner_acknowledged': True}
+    # A terminal TaskStore cannot accept another checkpoint. This rejection
+    # is derived from its durable terminal record, not invented owner ACK.
+    if target.state['status'] != 'pending':
+        return {**found, 'outcome': 'rejected', 'owner_acknowledged': False,
+                'reason': 'target_task_terminal'}
+    return {**found, 'outcome': 'pending', 'owner_acknowledged': False}
+
+
+@dataclass(frozen=True)
+class MailboxSnapshot:
+    """Detached, bounded read evidence; never an admission reservation.
+
+    Nested records are private copies, not a second durable log. Callers must
+    not expose raw checkpoint state/metadata through a UI projection.
+    """
+    target: object
+    mailbox_revision: int
+    requests: tuple
+    receipts: tuple
+    demand: dict | None
+
+    def status(self, request_id):
+        _label(request_id, 'request_id')
+        return _status_from_snapshot(self.target, _find_request(self.requests, request_id), self.receipts)
 
 
 class Mailbox:
@@ -54,7 +93,10 @@ class Mailbox:
 
     def _requests(self):
         cp = self.store.load(self.task_id)
-        if (cp.prompt != self.prompt or cp.max_attempts != 1
+        return self._request_checkpoint(cp)
+
+    def _request_checkpoint(self, cp):
+        if (cp.task_id != self.task_id or cp.prompt != self.prompt or cp.max_attempts != 1
                 or cp.metadata != {REQUESTS: self.declaration}
                 or cp.state['status'] != 'pending' or cp.state['attempts'] != 0
                 or cp.operation is not None or cp.requires_reconciliation):
@@ -109,19 +151,23 @@ class Mailbox:
         # these reads could mistake concurrent valid progress for corruption.
         target = self.store.load(self.identity.task_id)
         _, requests = self._requests()
-        found = next((row for row in requests if row['request_id'] == request_id), None)
-        if found is None:
-            raise KeyError(request_id)
+        found = _find_request(requests, request_id)
         receipts = self._acks(target, requests)
-        for receipt in receipts:
-            if receipt['request_id'] == request_id:
-                return {**receipt, 'owner_acknowledged': True}
-        # A terminal TaskStore cannot accept another checkpoint. This rejection
-        # is derived from its durable terminal record, not invented owner ACK.
-        if target.state['status'] != 'pending':
-            return {**found, 'outcome': 'rejected', 'owner_acknowledged': False,
-                    'reason': 'target_task_terminal'}
-        return {**found, 'outcome': 'pending', 'owner_acknowledged': False}
+        return _status_from_snapshot(target, found, receipts)
+
+    def snapshot(self):
+        """Validate bound task, requests and ACK prefix in one read transaction.
+
+        The existing TaskStore gate covers the entire transaction. Do not call
+        connection-opening helpers within this context. No target is claimed,
+        no operation is acknowledged, and a later command can follow this read.
+        """
+        with self.store._connection() as db:
+            target = self.store._read(db, self.identity.task_id)
+            mailbox, requests = self._request_checkpoint(self.store._read(db, self.task_id))
+            receipts = self._acks(target, requests)
+            demand = deepcopy(_record(target, self.identity))
+            return MailboxSnapshot(target, mailbox.revision, tuple(requests), tuple(receipts), demand)
 
     def submit(self, capability, request_id, command):
         """Commit promptly without the target's owner lock or Recovery RLock.
