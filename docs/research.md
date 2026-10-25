@@ -4,6 +4,13 @@ Adaptive Inference combines a portable HTTP gateway, bounded pending-request sch
 
 Links and project identities below were checked against their primary repositories, official documentation or paper pages on 24 October 2026. Pinned revisions denote the source actually inspected. The machine-readable bibliography is [REFERENCES.bib](../REFERENCES.bib); component PRs and historical feedback are indexed in [upstream-prs.md](upstream-prs.md). The [preserved source index](../third_party/reference-sources/README.md) contains exact licensed originals for the mechanisms actually used here, with offline hash verification. The implementation and design explanations in this checkout remain usable when an external link is unavailable.
 
+The [cache-state assessment](cache-state-research.md), added 25 October 2026,
+evaluates Gandalf and cross-model KV transfer against the actual reference
+stack. It adopts a same-model cache qualification path and write measurements,
+keeps approximate cross-model transfer unenabled, and records existing native
+and LMCache mechanisms to reuse. This is design integration, not a new runtime
+benchmark or a reproduced paper result.
+
 ## Direct implementation lineage
 
 | Source | Use here | Attribution and boundary |

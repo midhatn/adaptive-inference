@@ -476,3 +476,37 @@
   url = {https://docs.python.org/3.14/library/concurrent.futures.html#concurrent.futures.Future.cancel},
   note = {Inspected 2026-10-25. A running callback is not joined by cancellation or a timeout result; this informs serialized cleanup refusal and the real SDK dispatch regression. Official API contract, no source copied}
 }
+
+@misc{gandalfFlashEndurance,
+  title = {Gandalf: Flash Shall Not Die! Increasing Flash Storage Lifetime for KV Cache Offloading in LLM Serving},
+  author = {Irawan, Maharani A. P. and Du, Kuntai and Yao, Jiayi and Seo, Dongjoo and Huang, Yuyang and Gunawi, Haryadi S. and Jiang, Junchen},
+  year = {2026},
+  eprint = {2610.30791},
+  archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2610.30791v1},
+  note = {Version 1, inspected 2026-10-25; CC BY 4.0. Informs planned cache placement and write measurements. No algorithm port, SSD lifetime result or cache backend is claimed}
+}
+
+@misc{crossModelKvRidge,
+  title = {Cross-Model KV Cache Transfer in LLM Families: A Closed-Form Linear Mapping for Prefill Reuse},
+  author = {Heo, Taekyung and Shafipour, Rasoul and Zhao, Ritchie and Golub, Maximilian and Kamani, Mohammad Mahdi and Borkar, Ritika and Chandran, Makesh Tarun and Zardoshti, Pantea and Rouhani, Bita Darvish},
+  year = {2026},
+  eprint = {2608.03893},
+  archivePrefix = {arXiv},
+  url = {https://arxiv.org/abs/2608.03893v1},
+  note = {Version 1, inspected 2026-10-25; CC BY 4.0. Assessed as an optional research direction; approximate dense-model transfer does not qualify our hybrid single-model IQ3_S baseline. No mapper copied or enabled}
+}
+
+@misc{lmcacheHybridState,
+  title = {LMCache: Qwen3.8-Flash-Next and lazy KV cache offload},
+  author = {{LMCache contributors}},
+  url = {https://docs.lmcache.ai/recipes/qwen3_8_flash_next.html},
+  note = {Inspected 2026-10-25 with https://docs.lmcache.ai/mp/lazy_offload.html. Existing hybrid group and deferred-store contracts inform future adapter qualification. LMCache code is Apache-2.0; no source copied and no installed IQ3_S integration claimed}
+}
+
+@misc{independentCrossKvConnector,
+  title = {vllm-cross-model-kv: independent cross-model KV transfer connector},
+  author = {{alesha-pro}},
+  url = {https://github.com/alesha-pro/vllm-cross-model-kv/tree/2e27fb4bcadcbe07136a79480d50ef7d81a2e1dc},
+  note = {Apache-2.0; README and repository identity inspected 2026-10-25. Targets vLLM 0.26.0. Reuse candidate only, not an author implementation, executed dependency or validated adapter here}
+}

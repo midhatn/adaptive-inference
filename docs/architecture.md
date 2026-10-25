@@ -40,6 +40,12 @@ The [task store](../src/adaptive_inference/task_store.py) and [resumable runner]
 
 The runner commits operation intent before calling generation or validation, commits generated text before validating it, and commits a verdict before another attempt. After process death, committed safe boundaries can resume; an unfinished operation requires explicit reconciliation. A host may explicitly retry pure text generation while retaining its consumed attempt. The store cannot determine the outcome of an arbitrary external action, so an uncertain effect is never automatically replayed. Accepted and exhausted tasks return their saved result without callbacks. See the complete [task survival contract](task-survival.md) and runnable process-restart example.
 
+Native model caches are optional acceleration state, separate from durable task
+and effect authority. The [cache-state contract and qualification plan](cache-state-research.md)
+requires complete compatible hybrid state, truthful cache-miss fallback and
+unchanged task accounting before any new save/restore or placement adapter is
+enabled. HTTP route compatibility alone does not provide these native controls.
+
 ## Citations
 
 Queue design, Finagle reuse, resource-control research and framework documentation are recorded in [research.md](research.md), [../REFERENCES.bib](../REFERENCES.bib), and [../NOTICE](../NOTICE). The HTTP implementation uses [aiohttp's documented disconnect and shutdown behavior](https://docs.aiohttp.org/en/stable/web_advanced.html). Handler cancellation is disabled intentionally so an active upstream response can drain; the application tracks ownership until completion or a reported uncertain state.
