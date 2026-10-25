@@ -41,6 +41,7 @@ needs its own trusted binding and authentication; none is introduced here.
 | --- | --- |
 | `submit(capability, request_id, command)` | Persist an ordered `pause`, `resume` or `cancel` request and return its current status. |
 | `status(request_id)` | Observe `pending`, `applied` or `rejected`, including whether the owner acknowledged it. No write or ownership claim. |
+| `snapshot()` | Read the bound task, mailbox revision, ordered requests, acknowledged prefix and demand together in one existing TaskStore transaction. |
 | `consume(owned_task, updated_at_utc=...)` | Apply pending controls in order on the actual owner thread at an application-safe checkpoint. |
 | `begin_operation(owned_task, kind, ...)` | Consume controls, refuse blocked work, then use the existing TaskStore operation ledger. |
 
@@ -103,6 +104,29 @@ The pending integration must:
 These controls do not grant resources, authorize tools, reserve GPU capacity or
 permit unloading an active model.
 
+## Reading a coherent snapshot
+
+A host that needs the task checkpoint, demand and several control results at
+once can use `snapshot = mailbox.snapshot()`, then `snapshot.status(request_id)`.
+Both task records are read through the same existing TaskStore connection and
+explicit read transaction. The store gate covers that complete read; no nested
+`load()` call opens a second connection, and the target's owner lock is not
+claimed. Registration identity and the entire acknowledgement prefix are
+validated before a snapshot is returned.
+
+The result is detached read evidence. Its fields cannot be reassigned, but
+nested task state, request, receipt and demand records are private mutable
+copies. Changing them does not write to the database. Keep raw checkpoint
+content inside the trusted host and project only the fields a user interface
+needs. This is not a reservation: a command can arrive after the read, and the
+owner must still consume controls at its next safe boundary.
+
+`status(request_id)` keeps its existing read order and result semantics,
+including `KeyError` for an unknown request before acknowledgement validation.
+`snapshot()` validates all stored requests and acknowledgements even when the
+caller has not selected a request. It does not make the separate demand and
+acknowledgement commits atomic.
+
 ## Finite bounds
 
 Each mailbox keeps at most **32 lifetime commands**. Full capacity is explicit;
@@ -122,6 +146,12 @@ unknown operations, control/dispatch races, exhausted bounds and terminal tasks.
 Run `python -m unittest discover -s tests -p test_control_mailbox.py -v` after
 installing this checkout. There are no model, hardware or installed-agent calls.
 
+Five additional snapshot fixtures use real SQLite and the existing store gate.
+They cover one connection without a target ownership claim, detached returned
+data, a writer attempting to commit between the two reads, identity and
+acknowledgement validation, and terminal rejection semantics. Run them with
+`python -m unittest discover -s tests -p test_control_mailbox_snapshot.py -v`.
+
 Independent review found a valid concurrent status read being mistaken for
 corruption. Reading the target acknowledgements first and the append-only
 requests second preserves a valid prefix. The regression and original sources
@@ -136,3 +166,13 @@ distinction adapts those design references without adding Temporal or copying
 its implementation. Existing TaskStore transaction/revision reuse credits
 [medking82's Strata implementation](../third_party/reference-sources/README.md)
 and retains its MIT source and license. The new coordination code is Apache-2.0.
+
+The snapshot addition reuses TaskStore's explicit `BEGIN` read transaction.
+SQLite's [transaction contract](https://www.sqlite.org/lang_transaction.html),
+Python 3.11's [transaction control](https://docs.python.org/3.11/library/sqlite3.html#transaction-control)
+and the [CPython 3.11.9 connection implementation](https://github.com/python/cpython/blob/v3.11.9/Modules/_sqlite/connection.c)
+were checked before promotion. A connection context manager alone does not
+start a read transaction; the existing TaskStore implementation already does.
+No SQLite or CPython implementation was copied, and no new database, lock or
+dependency is introduced. Exact reused sources and selected fixtures remain
+available in the [snapshot lineage](../provenance/control-mailbox/snapshot-lineage.json).

@@ -15,10 +15,20 @@ the component's review. It is not a live M2 qualification receipt.
   during an earlier acknowledgement.
 - `source-lineage.json` binds these exact files and records the TaskStore and
   demand revisions inspected. Private manifests with local paths are omitted.
+- `snapshot-reviewed/` retains the coherent snapshot implementation and the
+  exact `DataFixture` and five-test `SnapshotTests` class excerpt used in the
+  later promotion. The excerpt is historical source, not a standalone test
+  entry point. `snapshot-lineage.json` binds these bytes, records the complete
+  original fixture file's hash and identifies the selected classes.
 
-The production module differs from the reviewed helper only in its documentation
-link. The portable test module combines all 22 fixture methods unchanged, uses
+The initial production module differed from `reviewed/` only in its documentation
+link. The snapshot promotion adds a single-transaction read API and shares the
+existing status-result calculation without changing control writes or ownership.
+Its production implementation is byte-identical to `snapshot-reviewed/` at
+promotion. The original portable test module combines all 22 fixture methods unchanged, uses
 the canonical package import and removes private path/dependency-hash setup.
+The additional `tests/test_control_mailbox_snapshot.py` retains the selected
+fixture classes unchanged and supplies only their portable imports and constants.
 Run the current tests under `tests/`; the archived test entry points retain
 their historical layout and are evidence, not installed commands. The existing
 CI test discovery runs the portable tests on Windows, Linux and macOS with

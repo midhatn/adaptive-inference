@@ -170,6 +170,22 @@ is preserved in the reference archive. No new database or recovery parser is use
 See the [implementation and upgrade boundaries](task-store-verification.md).
 This is a correctness correction, not a measured scheduling or throughput gain.
 
+### Coherent task-control reads
+
+The [mailbox snapshot](task-controls.md#reading-a-coherent-snapshot) reuses the
+existing TaskStore gate and explicit SQLite read transaction to read a task,
+its requests, acknowledgements and demand together. SQLite's
+[transaction documentation](https://www.sqlite.org/lang_transaction.html),
+Python 3.11's [transaction control](https://docs.python.org/3.11/library/sqlite3.html#transaction-control)
+and the [CPython 3.11.9 connection implementation](https://github.com/python/cpython/blob/v3.11.9/Modules/_sqlite/connection.c)
+confirm the relevant distinction: entering a connection context is not itself
+an explicit read transaction. The existing store already issues `BEGIN`, so
+the addition uses that connection for both records and introduces no nested
+transaction or lock. The detached snapshot is observation, not admission or
+ownership. Five existing SQLite fixtures are promoted with canonical imports;
+[source lineage](../provenance/control-mailbox/snapshot-lineage.json) retains the
+reused implementation and selected test classes. No upstream code was copied.
+
 ### Shutdown and evidence accounting
 
 The complete-workflow audit exposed two distinct implementation assumptions.
