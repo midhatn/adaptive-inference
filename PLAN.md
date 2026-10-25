@@ -438,6 +438,15 @@ tests and the real GUI trials supply separate evidence: the live clicks were not
 proven to overlap a poll. These results do not establish universal input
 reliability, broader foreground performance or full M2. Safe task expiry is next.
 
+**Publication test feedback:** one Windows CI job failed an existing intent test
+while the other 13 jobs passed. A controlled delayed-authority reproduction
+exposed its invalid assumption: a bounded `pending` response can arrive before
+the retained Resume operation finishes and activates intent. The exact original
+CI timing was not captured. Tests of completed activation must await that exact
+retained operation; tests of pending replies must keep the distinction visible.
+Keep the production response timeout and freshness limits unchanged, preserve
+the failed CI run, and require fresh exact-head CI after the fixture repair.
+
 Keep the ordinary host's lifetime independent of that task's deadline and the
 qualification supervisor's emergency bound. After verified task completion it
 can remain parked until an actual Stop. Preserve bounded task/qualification
@@ -915,6 +924,17 @@ The active technical packet is M2:
   applied Pause and complete request/acknowledgement prefix, seal that execution,
   release ownership and join the retained worker. Verify final native history
   after cleanup and queued writes; a normal cleanup return alone is insufficient.
+  Keep ownership through that cleanup and verify the final conversation through
+  the same pinned agent SDK after its original database closes. Reject unknown
+  drain or a still-running writer; do not claim billing persistence from this
+  task-history check. Serialize the execution seal and new control append using
+  the existing [SQLite write transaction](https://www.sqlite.org/lang_transaction.html):
+  check the full request/acknowledgement prefix in the seal transaction and
+  recheck the seal in the append transaction. A host-only lock or earlier
+  snapshot cannot fence another process. A command already committed remains
+  visible; a new command refused before append receives a distinct known
+  non-recorded outcome. Preserve truthful same-ID lookup and reject a sealed
+  execution before worker claim or replacement launch.
   Reuse paused demand and ordinary idle release to park resources while keeping
   the service available; the whole-service Stop fence is unsuitable here.
   Unknown effects or exits remain failures. Reuse the distinction between
