@@ -1,0 +1,43 @@
+{
+  "schema": "adaptive.installed-desktop.qualification-lineage.v1",
+  "accepted_predecessor_manifest_sha256": "c6cc2f022e7fdba157f1f19c2a644f8e69fc8d8a9eb3c665a6770fab3027b049",
+  "predecessor_files": {
+    "run_cold_ui.py": "79861fd9c28fe3d56f7e7326f03fcae4edb5c65118d93f731a0ca20f4afc1634",
+    "run_full_ui.py": "6d3f0f1babfb0da2fe602a3f0a126a847bbc754a6427536b3f743bf6355974de",
+    "qualification_helpers.py": "5b474142399a16d89fe4729dadeb13ace39205825e4311835322b3f45c8b2be6",
+    "test_cold_ui.py": "25edaa0da19e6fa0b59d8da7253e9021aebb6c8755cb2876d54389724949ab92",
+    "test_full_ui.py": "ed6a9d520546c14b98ceda4661fccca1f935144c00ea436a5f377976958b7a60"
+  },
+  "preserved_methods": {
+    "ValidationChecks.activate_verified_runtime": "2c9a64f0de4285964df311cf089abd59ab9f53e0ce7382e350a874f43b957658",
+    "ValidationChecks.verify_runtime_bindings": "7fd8c2d01db40313c46ac97e1363799d0af8044b55a631a351b8e2631280fcb2",
+    "ValidationChecks.safe_report": "62b57f2decadc47f55335ffde952906170e995ec37d2a0788b3bb7487792c8ef",
+    "gui_controls": "f8453ae97cc42e44da706219ce561339d48c2e6db3b9bc92c843b9704d9b16d9",
+    "ColdUIQualification.interact": "30cfcffac7af3cca65c2dedbfded8f610d94ff3aaf17f85d773a5d7fc9707362",
+    "ColdUIQualification.validate_terminal": "8d8b827592b760c7720a340af34e6c77a2ee0f31e5b63ae146bab1c4bbf3a9c7",
+    "FullUIQualification.require_continuing": "67bc7b21701dfd3516d3c6659939616c2c7b6881dc1b37e321b2bd367b1b511e",
+    "FullUIQualification.gui_resume": "cfbfdcb9a2a5227fd20c4cf64c65f5dd3c0a7f81ed5baa6c42ed76283af81ddf",
+    "FullUIQualification.await_gui_resume": "c6ed79de891c24901b434c14482cfad01e29e6278cae45f6c08334b17bbb397e",
+    "FullUIQualification.restart_at_checkpoint": "325e9f9b0dd44f08797a04752d33cf5aaceb4423716530c2a9d91c457d1d0d6b",
+    "FullUIQualification.interact": "48177d560eb534feae66dfbc1ddd5fe6382886ae3fcb128bbc1ed5af4cf52fbc",
+    "FullUIQualification.verify_completed_task": "757296880691420ce06b01960b5a6611812498a658f93ad939b8d2b551d80f8f",
+    "FullUIQualification.obligations": "106ce8e803d4e8d2aeb2158a86536e6ef47dd36763511d5d7cb926160f919fd8",
+    "FullUIQualification.dispose": "ba475baf1dc4b14625c0e29f58e089a57b76d273e00034b89e502a2555757278",
+    "FullUIQualification.validate_terminal": "570ca65757f92f21de02611e56ae67c08979a20c854f934128874ef0b96e7887"
+  },
+  "declared_deltas": [
+    "Replace private path-injecting helper imports with canonical installed DesktopComposition, core and Hermes imports.",
+    "Copy three validation-only methods and unchanged REPORT/CONTEXT constants into the qualification script; product lifecycle remains inherited.",
+    "Use one explicit deployment profile and the shared installed host prepare/dispose/run methods, retaining original cold/full scenarios and terminal gates.",
+    "Use the canonical installed worker module through the selected full interpreter; product prepare supplies validator and optional report hold.",
+    "Installed package identity and adjacent qualification source closure replace private packet import closure.",
+    "CLI selects cold or full and explicit deployment profile; same 1800-second emergency bound and exit/teardown conjunction.",
+    "Fixtures use explicit profile JSON, fake installed Popen seam, and fresh constructor directory; retain real SQLite and original ownership/control checks.",
+    "Qualification source tests use preserved predecessor method digests instead of loading private source files."
+  ],
+  "sources": [
+    "https://docs.python.org/3.11/using/cmdline.html#cmdoption-I",
+    "https://docs.python.org/3.11/using/cmdline.html#cmdoption-m",
+    "https://packaging.python.org/en/latest/specifications/recording-installed-packages/"
+  ]
+}

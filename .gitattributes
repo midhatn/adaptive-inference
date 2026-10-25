@@ -31,5 +31,17 @@ provenance/persistent-desktop/m1-runtime/** -text whitespace=cr-at-eol
 third_party/reference-sources/sqlite/** -text
 # Exact reviewed desktop control sources and fixture inputs.
 provenance/desktop-control-core/** -text whitespace=cr-at-eol,-blank-at-eof
+provenance/installed-desktop/** -text whitespace=cr-at-eol,-blank-at-eof
+tests/desktop_native_support/** -text whitespace=cr-at-eol,-blank-at-eof
+# Retain the two reviewed worker modules' installed byte identities.
+# Git's existing no-conversion mechanism: https://git-scm.com/docs/gitattributes#_text
+src/adaptive_inference/desktop/hermes/__init__.py -text whitespace=cr-at-eol
+src/adaptive_inference/desktop/hermes/sdk_pins.py -text whitespace=cr-at-eol
+tests/desktop_gui_support/source-lineage.json -text whitespace=cr-at-eol
+# Promoted source retains the final blank lines exercised in the installed wheel.
+src/adaptive_inference/desktop/hermes/report_contract.py whitespace=-blank-at-eof
+src/adaptive_inference/desktop/owned_job.py whitespace=-blank-at-eof
+src/adaptive_inference/desktop/persistent_host.py whitespace=-blank-at-eof
+tests/test_desktop_persistent_host.py whitespace=-blank-at-eof
 # Unmodified upstream pager contains its original trailing spaces.
 third_party/reference-sources/sqlite/189e44dfecdc7868bb860dfb5d98eab371318c37/src/pager.c -whitespace

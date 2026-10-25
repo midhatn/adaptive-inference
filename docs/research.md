@@ -196,9 +196,27 @@ and [stream closure](https://docs.python.org/3.11/library/asyncio-stream.html#as
 remain the lifecycle mechanisms: a cancelled observer does not erase accepted
 work, and a returned handler alone is not confirmed connection cleanup.
 PyPA's [source-layout guidance](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
-motivates validating the regular installed wheel outside the checkout. No new
-task owner, desktop launcher or native policy is introduced; the existing
-policy is retained only as an explicitly declared test consumer.
+motivates validating the regular installed wheel outside the checkout. The
+initial library promotion introduced no launcher or native policy. The next
+[installed composition](installed-desktop.md) reuses the same full host, GUI,
+native owner and bounded report worker with explicit deployment configuration.
+It promotes the existing foreground policy rather than creating another policy.
+The ordinary persistent host keeps its existing unlimited host lifetime; the
+report's finite task budget and a qualification's emergency bound remain
+separate. Unknown cleanup still retains its actual obligations.
+
+Installed identity uses Python's
+[distribution file metadata](https://docs.python.org/3.11/library/importlib.metadata.html#distribution-files)
+and recorded hashes instead of checkout-path injection. The full host and GUI
+share one interpreter. CPython 3.11.9's
+[Windows launcher](https://github.com/python/cpython/blob/v3.11.9/PC/launcher.c)
+can redirect a venv executable to a different actual process, so a standard
+Windows venv launcher cannot replace the retained full interpreter under the
+existing exact-process/window contract. Explicit Hermes dependency setup
+retains [site.addsitedir](https://docs.python.org/3.11/library/site.html#site.addsitedir)
+with verification before and after it; the canonical package remains regularly
+installed. These are existing packaging/API mechanisms, not a new task owner
+or package loader.
 
 The complete-workflow audit exposed two distinct implementation assumptions.
 The foreground wait collector starts before its animation window; checking

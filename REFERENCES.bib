@@ -427,3 +427,24 @@
   url = {https://docs.python.org/3.11/library/asyncio-stream.html#asyncio.StreamWriter.wait_closed},
   note = {Inspected 2026-10-25 for the planned cooperative control-progress observation. Flow-control completion does not establish application consumption; subsequent serialized GUI progress is required. Official API contract, no source copied}
 }
+
+@misc{cpythonWindowsVenvRedirector,
+  title = {CPython 3.11.9 Windows virtual environment launcher},
+  author = {{Python Software Foundation and contributors}},
+  url = {https://github.com/python/cpython/blob/v3.11.9/PC/launcher.c},
+  note = {Inspected 2026-10-25 with PCbuild/venvlauncher.vcxproj and Lib/venv/__init__.py. The redirector can launch another base-Python PID; the installed GUI profile therefore uses one explicit full host/GUI interpreter without weakening retained-process ownership. Source consulted, not copied}
+}
+
+@misc{pythonInstalledDistributionFiles,
+  title = {Python 3.11 importlib.metadata: Distribution files},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.11/library/importlib.metadata.html#distribution-files},
+  note = {Inspected 2026-10-25. Reuses regular wheel RECORD paths and hashes to compare host and worker installations and imported module origins. No alternate package loader or checkout fallback}
+}
+
+@misc{pythonSiteDependencies,
+  title = {Python 3.11 site: Site-specific configuration hook},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.11/library/site.html#site.addsitedir},
+  note = {Inspected 2026-10-25. Explicit Hermes dependency setup preserves the existing site.addsitedir contract, including .pth execution; canonical installed identities and pinned SDK inputs are verified before setup and canonical identities rechecked afterward}
+}

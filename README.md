@@ -19,12 +19,13 @@ This is the long-term goal across engines such as Strata and llama.cpp, and agen
 
 **Current status:** one complete Windows workflow now passes independent acceptance using the existing IQ3_S model, an explicitly owned Strata backend and installed Hermes. It detects real foreground interaction, releases and restores its backend, makes room for a checked GPU video encode, and finishes the agent's saved task after a worker restart. The [source-bound result](provenance/windows-handoff/controlled-11/README.md) includes the complete shutdown checks and retained unsuccessful attempts. This is a bounded qualification; persistent everyday operation, games and video playback, and computer-restart recovery are the next milestones. The [automatic handoff controller](docs/automatic-handoff.md), [resource waiting](docs/resource-waiting.md) and [durable demand](docs/durable-demand.md) build on the existing request queue, execution-time feedback and independently checked task results. Model weights and quality settings remain unchanged.
 
-The next milestone also has a tested [task-control component](docs/task-controls.md): a trusted host can save Pause, Resume and Cancel requests, and a cooperating task owner can acknowledge them at a safe checkpoint. It retains pending requests across owner replacement. Connecting these controls to the persistent host, installed agent and user interface is still in progress; the existing launchers do not yet expose them.
+The [task-control component](docs/task-controls.md) saves Pause, Resume and Cancel requests, and a cooperating task owner acknowledges them at a safe checkpoint. It retains pending requests across owner replacement. The new [installed Windows profile](docs/installed-desktop.md) connects these controls to the existing host, retained GUI and bounded Hermes report worker. It starts paused and uses explicit local interpreter, SDK and native-owner configuration. Its first scope is the IQ3_S orders-report workflow; new installed cold/full qualification remains separate from the accepted source composition.
 
 The [desktop control library](docs/desktop-control-core.md) provides the shared
 authenticated transport, serialized listener, mailbox adapter and window-intent
-and progress contracts for that integration. It starts no GUI, agent or engine
-and introduces no new command-line launcher.
+and progress contracts for that integration. Importing the library starts no
+GUI, agent or engine. The explicit `desktop` command composes those lifecycles
+using the [installed profile](docs/installed-desktop.md).
 
 This repository is the **canonical source of truth** for the implementation, contracts, documentation, tests and evidence. The portable package works independently of Strata or Hermes. Optional native integrations preserve pinned source baselines, patches and licenses locally; reproducing their source does not depend on an old PR or upstream repository remaining available. See the [source preservation contract](docs/source-of-truth.md).
 

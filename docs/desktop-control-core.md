@@ -5,11 +5,11 @@ prepared task: an authenticated loopback transport, a serialized listener, a
 durable mailbox adapter, explicit window intent and control-progress evidence.
 Importing these modules starts no listener, GUI, worker, engine or model.
 
-This is a **library component**, not an installed desktop application. The
-current CLI and launchers do not expose these controls. A runnable host still
-needs to connect the existing retained GUI, agent and backend lifecycles through
-explicit configuration. There is no new task owner, scheduler or demonstration
-host in this package slice.
+These remain reusable **library components**. The subsequent
+[installed Windows composition](installed-desktop.md) connects them to the
+existing retained GUI, agent and backend lifecycles through explicit
+configuration. Its `desktop` command has the bounded orders-report scope; it
+does not introduce another task owner, scheduler or demonstration host.
 
 ## Components and trusted inputs
 
@@ -78,8 +78,8 @@ readiness returns the exact `UIBinding`; status exposes only the bounded host
 phase and waiting reason. Stop must return the actual `worker_joined`,
 `host_closed`, `uncertain` and `fault` result after the retained obligations are
 resolved. A callback returning a fabricated success does not establish process
-cleanup. The native host and GUI implementations of these obligations are not
-part of this library slice.
+cleanup. The installed composition supplies the existing native host and GUI
+implementations of these obligations.
 
 ## Progress and shutdown boundaries
 
@@ -116,12 +116,12 @@ loopback sockets, plus explicit simulated lifecycle/window boundaries. They
 cover durable control races, cancellation retention, session/identity changes,
 closure-before-progress publication, stale data and safe-boundary handoff.
 
-`tests/desktop_support/policy.py` is an existing test-only consumer of intent
-and progress. It is included in the source distribution, not the runtime wheel.
-It does not publish or change the production foreground policy. GUI-client
-serialization, desktop-facade projection and full-runner evidence tests remain
-with their unpromoted components. There are no model, installed-agent, real
-window or native-resource acceptance claims from this suite.
+The original `tests/desktop_support/policy.py` is retained as historical source
+support. The intent/progress regressions now target that same policy promoted as
+`adaptive_inference.desktop.foreground_policy`. GUI-client, lifecycle and native
+component tests accompany the installed composition. There are no model,
+installed-agent, real window or native-resource acceptance claims from these
+software fixtures.
 
 The [retained source lineage](../provenance/desktop-control-core/README.md)
 records exact inputs, qualified-import changes, test selection and licensing.
@@ -134,7 +134,7 @@ No new upstream implementation or service dependency was added.
 Package promotion follows PyPA's
 [source-layout guidance](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/):
 validate a regular installed wheel outside the checkout so local imports cannot
-hide missing files. The future GUI launch must preserve its owned standard
+hide missing files. The installed GUI launch preserves its owned standard
 pipes; a Windows `gui_scripts` wrapper is not interchangeable with that launch.
 See the [entry-point specification](https://packaging.python.org/en/latest/specifications/entry-points/)
 and Python's [isolated mode](https://docs.python.org/3.11/using/cmdline.html#cmdoption-I).

@@ -4,7 +4,7 @@ from dataclasses import replace
 import threading
 import unittest
 
-from desktop_support.policy import ForegroundPolicy
+from adaptive_inference.desktop.foreground_policy import ForegroundPolicy
 from adaptive_inference.desktop.ui_intent import UIBinding, UIIntentGate, VerifiedUIObservation
 
 

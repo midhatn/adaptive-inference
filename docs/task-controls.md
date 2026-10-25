@@ -5,12 +5,13 @@ and Cancel while an agent is busy or waiting. The agent's actual task owner
 applies the request at a safe checkpoint. A saved request and an applied request
 are different states, and callers can inspect both.
 
-This is a portable component. The current launchers and Hermes adapter do not
-yet consume these requests. It does not complete the persistent-controller
-milestone, interrupt a native process or establish computer-reboot recovery.
-The [desktop control library](desktop-control-core.md) supplies the reusable
-transport and mailbox adapter for a trusted host; full host/GUI wiring remains
-a separate integration.
+This remains a portable component. The [desktop control library](desktop-control-core.md)
+supplies its reusable authenticated transport and mailbox adapter. The
+[installed Windows profile](installed-desktop.md) now connects them to the
+existing host, GUI and bounded Hermes orders-report worker through the explicit
+`desktop` command. It does not complete the persistent-controller milestone,
+interrupt a native process or establish computer-reboot recovery. Fresh
+installed cold/full qualification remains distinct from component tests.
 
 ## Why this uses the existing task store
 

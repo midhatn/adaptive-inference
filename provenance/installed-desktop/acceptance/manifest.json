@@ -1,0 +1,9 @@
+{
+  "files": {
+    "result.json": "092f9467c209760fd17b98cc18b9066b1095a83947372e4c62d8ff0e45a5283a"
+  },
+  "reused_helper_sha256": "12004621166522cb80682e2bf1e4bc6d19e2ca72aeb585d21ce6408c2a965b33",
+  "sanitizer_sha256": "7eeec842d1aac88b3d0f9039b54c1f8aa7dfa76d81beecbd72c98467225e4b89",
+  "schema": "adaptive.public-evidence-files.v1",
+  "source_selection": "explicit nested allowlists"
+}

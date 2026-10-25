@@ -1,0 +1,61 @@
+{
+  "accepted_packet_manifest_sha256": "c6cc2f022e7fdba157f1f19c2a644f8e69fc8d8a9eb3c665a6770fab3027b049",
+  "modules": {
+    "control_client": {
+      "accepted_source_sha256": "dac1f85bf52ea098df730df82533033421b6aedc3c127ca426f44d57345ba49b",
+      "normalized_ast_sha256": "298466c26064c59bf2ecbeff24cda927288d5e581da88f45a20e7a58728de59e"
+    },
+    "gui_session": {
+      "accepted_source_sha256": "e789cf103cddc2311cea9191553b90ff6f000a9a6ea1a73fb6b17f29cdc46553",
+      "normalized_ast_sha256": "5e2715fabf975f39204013e198c6485d859eeb4bbc97f453866b2599516652ba"
+    },
+    "startup_pipe": {
+      "accepted_source_sha256": "a02c7c564adf7b313e6f051309dc8fd1a51bd0032ab9ad93a519476e43ab987b",
+      "normalized_ast_sha256": "7aef50463c22f171b5936bb73096b5852a19153d8cdcea5001fafc2509ef94f6"
+    },
+    "window_marker": {
+      "accepted_source_sha256": "e2613ef662993be88c332657e4e53c598fdc006634bf8fabf9e0d0a9765c0d36",
+      "normalized_ast_sha256": "1bc32956f199638cb53a85e4ff9a2415d44657f0a2a82e1000c49315a02f7cb1"
+    },
+    "run_gui": {
+      "accepted_source_sha256": "3b10f19170eed5d278e2cc81c05ae436a2492e88dec055df46840cfba17364e8",
+      "normalized_ast_sha256": "2cb96e954769bd0db376d67bdd259e9cc72e9c01b98ce9cbe0a0cf53e5156974"
+    },
+    "gui_launch": {
+      "accepted_source_sha256": "354a711975e1b5837a44024875b630f70e89b49e363749aad40eb6675cbce6c9",
+      "normalized_ast_sha256": "116f27995c17ca974bfb31fa141a19432a65da9e98d7c029c40fc1c06eac2638"
+    },
+    "retained_ui": {
+      "accepted_source_sha256": "4b02bd1d302954ac3d2eb148df929ec38cf19535d76f7206c97fcb5cee15f58d",
+      "normalized_ast_sha256": "1b2a112b91b9a91869521e35bd697a5c87fad0295f059bf99ba10fb1874d8069"
+    }
+  },
+  "declared_runtime_deltas": [
+    "Qualified adaptive_inference.desktop imports only",
+    "run_gui removes source path injection and its unused pathlib import",
+    "LaunchSpec verifies fixed installed package closure including both package initializers",
+    "run_gui validates qualified child package origins against its installed script package before owning pipes or GUI resources",
+    "ClientController.render clears ordinary wait hints only for confirmed terminal task state; uncertainty and engine lifecycle overrides remain",
+    "Optional TkView minimize_on_close preserves default close; installed run_gui opts into owner-thread iconify without changing controller/marker/Stop lifecycle"
+  ],
+  "declared_test_deltas": [
+    "Qualified production imports and renamed test fixture imports",
+    "Actual canonical transport and existing canonical fake streams replace private standalone transport reload",
+    "Launch fixtures use installed package layout",
+    "Render preservation compares fixed normalized predecessor digest rather than private file",
+    "Standalone test path injection removed",
+    "Two mock string targets qualified to canonical module names",
+    "Terminal presentation regression and declared render AST allowance",
+    "ABI declaration test runs only on the exact supported runtime; unsupported runtime rejection tested separately",
+    "Minimize/default/owner-thread/Stop regressions and declared TkView initialization/attach/minimize + entrypoint-option AST allowance"
+  ],
+  "sources": [
+    "https://packaging.python.org/en/latest/specifications/entry-points/",
+    "https://docs.python.org/3.11/using/cmdline.html#cmdoption-I",
+    "https://github.com/python/cpython/blob/v3.11.9/PCbuild/venvlauncher.vcxproj",
+    "https://github.com/python/cpython/blob/v3.11.9/PC/launcher.c",
+    "https://github.com/python/cpython/blob/v3.11.9/Lib/venv/__init__.py",
+    "https://docs.python.org/3.11/library/tkinter.ttk.html#label-options",
+    "https://www.tcl-lang.org/man/tcl8.6.14/TkCmd/wm.htm"
+  ]
+}

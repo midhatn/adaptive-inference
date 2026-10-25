@@ -2,6 +2,32 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Installed Windows desktop composition
+
+The [installed cold01/full01 receipt](../provenance/installed-desktop/acceptance/README.md)
+binds one regular installed wheel and explicit Windows deployment to two
+independently accepted cases. Cold Pause/Stop produced no model calls, native
+launches or file effects and retained the unfinished paused task. The full case
+made three actual IQ3_S requests, wrote the correct 4-row/17-unit/4,350-cent report
+once, preserved its context across a safe retained-worker replacement, then
+joined its worker, GUI, control connections and native owners normally. The
+independent terminal audits passed 35 and 47 checks respectively.
+
+The tested source passed 985 required software checks; its focused 348 product,
+GUI and qualification cases are included in that total. An independent regular
+wheel installation repeated those 348 cases outside the checkout. Twenty later
+evidence-selection tests verify the new public receipt's refusal/privacy rules;
+they are not additional live-model validation.
+
+The full GUI's first Stop click did not register; the second produced normal
+shutdown. This limitation remains explicit. Cold minimize/restore reused the
+same window, without testing destroyed-window reopening or a physical reboot.
+Both full readiness observations had GUI CPU below 0.05 cores, so this installed
+case does not itself demonstrate the new policy's distinction above the old
+threshold. The report had zero validator rejections and supplies no real-model
+correction evidence. Pending-task expiry, pressure/foreign-foreground trials,
+arbitrary tasks and daily-use always-on completion remain separate work.
+
 ## Persistent-controller portable components
 
 The optional demand-aware handoff and runtime timing components, combined with
