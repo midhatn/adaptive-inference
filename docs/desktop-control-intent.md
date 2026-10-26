@@ -41,6 +41,22 @@ minimizes to the taskbar**; minimizing does not tear down the session or discard
 the local intent. **Stop engine** retains its existing recorded-Stop and owned
 cleanup sequence.
 
+## Continuing a safely expired execution
+
+[Continue saved task](explicit-continuation.md) uses the same retained intent and
+bounded pending-response mechanisms. One eligible click grants a finite successor
+execution and requests its Resume through fresh owner acknowledgements. The
+window and logical task remain stable; an execution ID and generation distinguish
+the selected work. Adopting the grant invalidates old status/acknowledgement
+freshness, and the client waits for a real successor snapshot before enabling
+ordinary task controls. Delayed old replies cannot restore the previous selection.
+
+Retry keeps the exact command identity and cannot create another grant or child.
+Selection/startup status is distinct from task acceptance. Stop remains available
+for the whole retained host during the transition, and lost-session or uncertain
+outcomes do not create automatic new intent. These are successor semantics; the
+historical retained-command acceptance below continues to describe its own build.
+
 ## Why this change exists
 
 The first installed full-task trial completed its task and cleanup, but its

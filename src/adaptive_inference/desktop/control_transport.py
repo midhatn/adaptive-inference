@@ -16,9 +16,12 @@ from adaptive_inference.control_mailbox import ControlNotRecorded
 
 REQUEST_LIMIT, RESPONSE_LIMIT = 4096, 65536
 COMMANDS = frozenset(("pause", "resume", "cancel"))
-METHODS = COMMANDS | {"status", "window_ready", "window_closed", "stop"}
+MUTATIONS = COMMANDS | {"continue"}
+METHODS = MUTATIONS | {"status", "window_ready", "window_closed", "stop"}
+PHASES = {"unavailable", "available", "selected", "preparing", "ready", "running", "blocked"}
 ERRORS = {"invalid_request", "unauthorized", "projection_refused", "stopping",
-          "conflicting_request_id", "capacity_exhausted", "session_not_ready"}
+          "conflicting_request_id", "capacity_exhausted", "session_not_ready",
+          "stale_execution", "continuation_unavailable", "continuation_blocked"}
 
 
 def label(value):
@@ -59,6 +62,26 @@ class PreparedTask:
         label(self.task_id)
         if type(self.objective) is not str or not self.objective.strip() or len(self.objective.encode("utf-8")) > 16384:
             raise ValueError("Prepared objective must fit unchanged in the bounded UI projection")
+
+
+def execution(value):
+    if (type(value) is not dict or set(value) != {"execution_id", "execution_generation"}
+            or type(value["execution_generation"]) is not int
+            or not 0 <= value["execution_generation"] <= 32):
+        raise Refused("projection_refused")
+    label(value["execution_id"])
+    return dict(value)
+
+
+def continuation_phase(value):
+    if (type(value) is not dict or set(value) != {"phase", "request_id"}
+            or value["phase"] not in PHASES):
+        raise Refused("projection_refused")
+    if value["phase"] in {"unavailable", "available"}:
+        if value["request_id"] is not None: raise Refused("projection_refused")
+    else:
+        label(value["request_id"])
+    return dict(value)
 
 
 class ControlTransport:
@@ -104,10 +127,42 @@ class ControlTransport:
         self._stop_task = self._close_task = None
         self._stop_confirmed = False
         self._faults, self._stream_close_failures = set(), 0
+        for name in ("selected_execution", "select_continuation", "continue_selected", "lookup_continuation"):
+            if not callable(getattr(runtime, name, None)):
+                raise TypeError("Explicit continuation runtime hook required: " + name)
+        self._selection = execution(runtime.selected_execution())
+        self._seen_executions = {self._selection["execution_generation"]: self._selection["execution_id"]}
+        self._continuing = None
 
     def _owner(self):
         if threading.current_thread() is not self._thread or asyncio.get_running_loop() is not self._loop:
             raise PermissionError("Transport belongs to its host loop/thread")
+
+    def _adopt_execution(self, value):
+        value = execution(value)
+        generation, identity = value["execution_generation"], value["execution_id"]
+        if (generation < self._selection["execution_generation"]
+                or generation in self._seen_executions and self._seen_executions[generation] != identity
+                or any(g != generation and i == identity for g, i in self._seen_executions.items())):
+            raise Refused("projection_refused")
+        self._seen_executions[generation] = identity
+        self._selection = value
+        return dict(value)
+
+    def _current_execution(self):
+        return self._adopt_execution(self.runtime.selected_execution())
+
+    @staticmethod
+    def _request_execution(request):
+        return execution({key: request[key] for key in ("execution_id", "execution_generation")})
+
+    def _require_execution(self, expected):
+        if execution(expected) != self._current_execution():
+            raise Refused("stale_execution")
+
+    def _mutation_tasks(self):
+        return [task for row in self._records.values()
+                for task in (row["task"], row.get("lookup_task")) if task is not None]
 
     def bind_session(self, capability, session_id, token):
         self._owner()
@@ -218,15 +273,24 @@ class ControlTransport:
         if type(request) is not dict or type(request.get("method")) is not str or request["method"] not in METHODS:
             raise Refused("invalid_request")
         keys = {"host_epoch", "session_id", "task_id", "token", "method"}
-        if request["method"] in COMMANDS:
-            keys.add("request_id")
-        if set(request) != keys or any(type(value) is not str for value in request.values()):
+        if request["method"] in MUTATIONS:
+            keys.update(("request_id", "execution_id", "execution_generation"))
+        if request["method"] == "continue":
+            keys.add("expected_task_revision")
+        integer_keys = {"execution_generation", "expected_task_revision"}
+        if set(request) != keys or any(type(value) is not str for key, value in request.items() if key not in integer_keys):
             raise Refused("invalid_request")
         try:
             for key in ("host_epoch", "session_id", "task_id"):
                 label(request[key])
             if "request_id" in request:
                 label(request["request_id"])
+                label(request["execution_id"])
+                if type(request["execution_generation"]) is not int or not 0 <= request["execution_generation"] <= 32:
+                    raise ValueError("Invalid execution generation")
+            if "expected_task_revision" in request and (type(request["expected_task_revision"]) is not int
+                    or not 0 <= request["expected_task_revision"] < 256):
+                raise ValueError("Invalid expected revision")
         except ValueError:
             raise Refused("invalid_request") from None
         if not re.fullmatch(r"[0-9a-f]{64}", request["token"]):
@@ -244,7 +308,8 @@ class ControlTransport:
 
     def _public_status(self):
         value = self.runtime.status()
-        keys = {"host_phase", "task_status", "task_revision", "demand", "waiting_reason", "controls"}
+        keys = {"host_phase", "task_status", "task_revision", "demand", "waiting_reason", "controls",
+                "execution_id", "execution_generation", "continuation"}
         if (type(value) is not dict or set(value) != keys
                 or value["host_phase"] not in {"starting", "ready", "parked", "restoring", "stopping", "closed", "fault"}
                 or value["task_status"] not in {"pending", "accepted", "exhausted"}
@@ -252,6 +317,8 @@ class ControlTransport:
                 or value["demand"] not in {None, "active", "waiting", "paused", "cancelled", "fulfilled"}
                 or value["waiting_reason"] not in {None, "foreground", "resources", "paused", "budget_expired", "reconciliation", "stop_requested", "operation_inflight", "unknown"}):
             raise Refused("projection_refused")
+        self._require_execution({key: value[key] for key in ("execution_id", "execution_generation")})
+        continuation_phase(value["continuation"])
         if type(value["controls"]) is not list or len(value["controls"]) > 32:
             raise Refused("projection_refused")
         controls, ids = [], set()
@@ -271,7 +338,7 @@ class ControlTransport:
         self._owner()
         unresolved = sum(record["outcome"] == "unknown" for record in self._records.values())
         return {"stop_requested": self._stop_requested, "stop_confirmed": self._stop_confirmed,
-                "pending_mutations": sum(not record["task"].done() for record in self._records.values()),
+                "pending_mutations": sum(not task.done() for task in self._mutation_tasks()),
                 "unknown_mutations": unresolved, "handlers": len(self._handlers),
                 "pending_connections": len(self._connections),
                 "stream_close_failures": self._stream_close_failures, "faults": sorted(self._faults)}
@@ -290,63 +357,203 @@ class ControlTransport:
 
     async def _apply_control(self, request_id, command, session, revision, new_intent):
         record = self._records[request_id]
+        selected = record["execution"]
+        runtime = record["runtime"]
         try:
             async with self._serial:
-                value = await self.runtime.submit_control(request_id, command)
+                try:
+                    if self._stop_requested: raise Refused("stopping")
+                    self._require_execution(selected)
+                except Refused:
+                    record["outcome"] = "known"
+                    raise
+                value = await runtime.submit_control(request_id, command, execution=dict(selected))
                 if type(value) is ControlNotRecorded:
                     if (value.request_id != request_id or value.command != command
-                            or value.reason != 'execution_budget_expired'):
-                        raise Refused('projection_refused')
-                    record['outcome'] = 'known'
-                    return {'request_id': request_id, 'command': command,
-                            'reason': value.reason, 'recorded': False}
+                            or value.reason != "execution_budget_expired"):
+                        raise Refused("projection_refused")
+                    record["outcome"] = "known"
+                    return {"request_id": request_id, "command": command,
+                            "reason": value.reason, "recorded": False}
                 result = self._control_result(value, request_id, command)
                 authority = False
                 if new_intent and command == "resume" and result["outcome"] != "rejected":
-                    # A first-seen local ID is never proof of a new durable
-                    # command. The trusted runtime must inspect the existing
-                    # mailbox request/ACK prefix and current target demand.
-                    authority = await self.runtime.resume_authority(request_id)
+                    authority = await runtime.resume_authority(request_id, execution=dict(selected))
                 if (authority is True and new_intent and command == "resume"
-                        and revision == self._intent_revision
-                        and session == self._session and self._ready and not self._stop_requested
-                        and self.runtime.session_is_live(session) is True):
-                    self.runtime.activate_intent(session)
+                        and revision == self._intent_revision and selected == self._current_execution()
+                        and runtime is self.runtime and session == self._session and self._ready
+                        and not self._stop_requested and runtime.session_is_live(session) is True):
+                    runtime.activate_intent(session, execution=dict(selected))
                 record["outcome"] = "known"
                 return result
         except BaseException:
-            record["outcome"] = "unknown"
+            if record["outcome"] != "known": record["outcome"] = "unknown"
             raise
+
+    def _completed_mutation(self, record, task):
+        if task.cancelled() or task.exception() is not None:
+            if record["outcome"] != "known": record["outcome"] = "unknown"
+
+    def _record_request(self, request):
+        return {key: value for key, value in request.items() if key != "token"}
+
+    def _capacity(self, new):
+        if (new and len(self._records) >= self.max_ids
+                or sum(not task.done() for task in self._mutation_tasks()) >= self.max_mutations):
+            raise Refused("capacity_exhausted")
 
     def _retain_control(self, request):
         request_id, command = request["request_id"], request["method"]
+        payload = self._record_request(request)
         record = self._records.get(request_id)
-        new_intent = record is None
-        if self._stop_requested:
-            raise Refused("stopping")
-        self.invalidate_progress('progress_control_pending')
-        if record is not None and record["command"] != command:
+        if record is not None and record["payload"] != payload:
             raise Refused("conflicting_request_id")
-        if command in {"pause", "cancel"}:
-            self._deactivate()
-        if record is not None and not record["task"].done():
-            return record["task"]
-        if (record is None and len(self._records) >= self.max_ids
-                or sum(not row["task"].done() for row in self._records.values()) >= self.max_mutations):
-            raise Refused("capacity_exhausted")
+        if self._stop_requested: raise Refused("stopping")
+        selected = self._request_execution(request)
+        self._require_execution(selected)
+        if "continuation_failed" in self._faults:
+            raise Refused("continuation_blocked")
+        if self._continuing is not None:
+            raise Refused("continuation_unavailable")
+        projected = continuation_phase(self.runtime.status()["continuation"])
+        if projected["phase"] in {"selected", "preparing", "ready", "blocked"}:
+            raise Refused("continuation_blocked")
+        self.invalidate_progress("progress_control_pending")
+        if command in {"pause", "cancel"}: self._deactivate()
+        if record is not None and not record["task"].done(): return record["task"]
+        self._capacity(record is None)
+        new_intent = record is None
         self._intent_revision += 1
-        record = {"command": command, "outcome": "pending"}
+        record = {"command": command, "payload": payload, "execution": selected,
+                  "runtime": self.runtime, "outcome": "pending"}
         self._records[request_id] = record
-        task = self._loop.create_task(self._apply_control(request_id, command, self._session, self._intent_revision, new_intent))
+        task = self._loop.create_task(self._apply_control(request_id, command, self._session,
+                                                        self._intent_revision, new_intent))
         record["task"] = task
-        # Retain every current operation by stable ID and retrieve exceptions,
-        # even when its originating stream disappears. Explicit same-ID retries
-        # invoke the existing durable mailbox's idempotent lookup/submit again.
-        def completed(done):
-            if done.cancelled() or done.exception() is not None:
-                record["outcome"] = "unknown"
-        task.add_done_callback(completed)
+        task.add_done_callback(lambda done: self._completed_mutation(record, done))
         return task
+
+    def _grant(self, value, request):
+        keys = {"request_id", "predecessor_execution_id", "predecessor_generation",
+                "execution_id", "execution_generation", "phase"}
+        if (type(value) is not dict or set(value) != keys
+                or value["request_id"] != request["request_id"]
+                or value["predecessor_execution_id"] != request["execution_id"]
+                or type(value["predecessor_generation"]) is not int
+                or value["predecessor_generation"] != request["execution_generation"]
+                or value["phase"] not in {"selected", "preparing", "ready", "running", "blocked"}):
+            raise Refused("projection_refused")
+        selected = execution({key: value[key] for key in ("execution_id", "execution_generation")})
+        if (selected["execution_generation"] != request["execution_generation"] + 1
+                or selected["execution_id"] == request["execution_id"]):
+            raise Refused("projection_refused")
+        return dict(value)
+
+    def _continuation_intent(self, record):
+        self._owner()
+        valid = (not self._stop_requested and self._ready
+                 and record["session"] == self._session
+                 and record["intent_revision"] == self._intent_revision
+                 and record["runtime"] is self.runtime
+                 and self.runtime.session_is_live(record["session"]) is True)
+        if valid:
+            expected = record["execution"] if record["grant"] is None else self._request_execution(record["grant"])
+            valid = expected == self._current_execution()
+        return valid
+
+    async def _apply_continue(self, record):
+        try:
+            async with self._serial:
+                try:
+                    if not self._continuation_intent(record): raise Refused("continuation_blocked")
+                    self._require_execution(record["execution"])
+                except Refused:
+                    record["outcome"] = "known"
+                    raise
+                try:
+                    value = await record["runtime"].select_continuation(dict(record["payload"]),
+                        intent_valid=lambda: self._continuation_intent(record))
+                except Refused as error:
+                    if str(error) in {"stale_execution", "continuation_unavailable", "continuation_blocked", "stopping"}:
+                        record["outcome"] = "known"
+                    raise
+                grant = self._grant(value, record["payload"])
+                if grant["phase"] != "selected": raise Refused("projection_refused")
+                record["grant"] = grant
+                self._adopt_execution(self._request_execution(grant))
+            # Bootstrap/readiness must never occupy the serial mutation lock.
+            value = await record["runtime"].continue_selected(dict(grant),
+                intent_valid=lambda: self._continuation_intent(record))
+            result = self._grant(value, record["payload"])
+            if {k:v for k,v in result.items() if k != "phase"} != {k:v for k,v in grant.items() if k != "phase"}:
+                raise Refused("projection_refused")
+            record["grant"], record["outcome"] = result, "known"
+            return result
+        except BaseException:
+            if record["outcome"] != "known":
+                record["outcome"] = "unknown"
+                self._faults.add("continuation_failed")
+            raise
+        finally:
+            if self._continuing is record: self._continuing = None
+
+    async def _lookup_continue(self, record):
+        value = await record["runtime"].lookup_continuation(dict(record["payload"]))
+        if value is not None:
+            result = self._grant(value, record["payload"])
+            if result["phase"] not in {"selected", "blocked"}: raise Refused("projection_refused")
+            record["grant"] = result
+        return value
+
+    def _retain_continue(self, request):
+        payload = self._record_request(request)
+        record = self._records.get(request["request_id"])
+        if record is not None:
+            if record["payload"] != payload: raise Refused("conflicting_request_id")
+            return record  # Same command is lookup only, including a stale predecessor.
+        if self._stop_requested: raise Refused("stopping")
+        if "continuation_failed" in self._faults: raise Refused("continuation_blocked")
+        self._require_execution(self._request_execution(request))
+        if self._continuing is not None: raise Refused("continuation_unavailable")
+        self._capacity(True)
+        self._deactivate()
+        record = {"command": "continue", "payload": payload,
+                  "execution": self._request_execution(request), "runtime": self.runtime,
+                  "session": self._session, "intent_revision": self._intent_revision,
+                  "outcome": "pending", "grant": None}
+        self._records[request["request_id"]] = record
+        self._continuing = record
+        task = self._loop.create_task(self._apply_continue(record))
+        record["task"] = task
+        task.add_done_callback(lambda done: self._completed_mutation(record, done))
+        return record
+
+    async def _continue_reply(self, request):
+        existing = request["request_id"] in self._records
+        record = self._retain_continue(request)
+        if record["grant"] is not None:
+            return {"ok": True, "continuation": dict(record["grant"])}
+        operation = record["task"]
+        if existing and not operation.done():
+            return self._pending_reply(request)
+        if existing:
+            operation = record.get("lookup_task")
+            if operation is None or operation.done():
+                self._capacity(False)
+                operation = self._loop.create_task(self._lookup_continue(record))
+                record["lookup_task"] = operation
+                operation.add_done_callback(lambda done: self._completed_mutation(record, done))
+        try:
+            await asyncio.wait_for(asyncio.shield(operation), self.io_timeout)
+        except asyncio.TimeoutError:
+            pass
+        if record["grant"] is not None:
+            return {"ok": True, "continuation": dict(record["grant"])}
+        return self._pending_reply(request)
+
+    def _pending_reply(self, request):
+        return {"ok": True, "state": "pending", "request_id": request["request_id"],
+                "recorded": None, **self._request_execution(request)}
 
     def _request_stop(self):
         if self._stop_requested:
@@ -363,7 +570,7 @@ class ControlTransport:
         self._stop_task = self._loop.create_task(self._cooperative_stop())
 
     async def _cooperative_stop(self):
-        await asyncio.gather(*(row["task"] for row in self._records.values()), return_exceptions=True)
+        await asyncio.gather(*self._mutation_tasks(), return_exceptions=True)
         try:
             value = await self.runtime.cooperative_stop()
             if (type(value) is not dict or set(value) != {"worker_joined", "host_closed", "uncertain", "fault"}
@@ -402,12 +609,15 @@ class ControlTransport:
                     raise Refused("session_not_ready")
                 self._ready = True
             return {"ok": True, "state": "window_ready"}
+        if method == "continue":
+            return await self._continue_reply(request)
         operation = self._retain_control(request)
         try:
             result = await asyncio.wait_for(asyncio.shield(operation), self.io_timeout)
         except asyncio.TimeoutError:
-            return {"ok": True, "state": "pending", "request_id": request["request_id"], "recorded": None}
-        return {"ok": True, "refusal" if result.get('recorded') is False else "control": result}
+            return self._pending_reply(request)
+        return {"ok": True, **self._request_execution(request),
+                "refusal" if result.get("recorded") is False else "control": result}
 
     async def _handle(self, reader, writer, connection):
         connection["started"] = True

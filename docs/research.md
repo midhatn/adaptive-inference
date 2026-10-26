@@ -274,3 +274,37 @@ callback. No new executor, lease renewal or automatic budget renewal is added.
 The [pinned sources and attribution](../provenance/paused-budget-expiry/thread-successor/README.md)
 and [actual SDK fixture](../examples/validation/hermes_pause_dispatch/README.md)
 retain this reuse separately from the complete installed IQ3_S acceptance.
+
+### Explicit continuation of a safely expired execution
+
+[Continue saved task](explicit-continuation.md) applies existing mechanisms to a
+new execution of the same pending task. [Temporal Continue-As-New](https://docs.temporal.io/develop/python/workflows/continue-as-new)
+informed stable logical identity, a separate execution identity and settling
+accepted handlers before transition. The inspected MIT documentation is revision
+`013b6f8b13f0613056250b17a5034960b3a440ae`, file
+`docs/develop/python/workflows/continue-as-new.mdx`, blob
+`a1f8fe2b0b44a923375375eb6bd85ce0def73e41`. This project does not import
+Temporal's successful workflow-closure semantics: its predecessor is an expired,
+pending execution, and the original task remains unfinished.
+
+[LangGraph interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts)
+informed explicit saved-state resumption and the repeated-effect hazard. The
+inspected MIT documentation is revision
+`4506df5fb4105a39b84c2b7390d21bed89e28668`, file
+`src/oss/langgraph/interrupts.mdx`, blob
+`32b562c8c91387fc5aa274700d98181cbcadbf54`. Existing effect receipts and native
+history are carried forward and checked; this is not a generic external
+exactly-once guarantee. Neither framework is a new dependency and no source from
+these references is copied into the implementation.
+
+The implementation reuses TaskStore's SQLite transactions for one atomic grant
+and successor, its cooperating-owner lock for shared logical authority, existing
+asyncio retention for bounded pending replies and Stop, and the retained Popen
+object for each actual child wait. See the existing [SQLite transaction](https://www.sqlite.org/lang_transaction.html),
+[shield](https://docs.python.org/3.11/library/asyncio-task.html#shielding-from-cancellation)
+and [process-wait](https://docs.python.org/3.11/library/subprocess.html#subprocess.Popen.wait)
+contracts. The same pinned Hermes native session/history and SDK dispatcher are
+reused; new upstream documentation is not evidence for the older installed SDK.
+Official continuation and SQLite pages were rechecked on 26 October 2026.
+Component, installed-SDK and complete model acceptance remain separate in the
+[evidence ledger](evidence.md#explicit-continuation-after-safe-expiry).

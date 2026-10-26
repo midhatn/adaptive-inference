@@ -1,0 +1,13 @@
+{
+  "checks_source": "Reviewed continuation qualification checks.py; exact bytes retained adjacent.",
+  "checks_source_sha256": "dc795462df84516d5a8f3ffac9dd0b30f74ee29d98902e4dbdb07328b95cfae8",
+  "license": "Apache-2.0 project mechanisms; existing external source attribution is unchanged.",
+  "references": [
+    "https://packaging.python.org/en/latest/specifications/binary-distribution-format/",
+    "https://docs.python.org/3.11/library/unittest.html#test-discovery"
+  ],
+  "schema": "adaptive.continuation.export-reuse.v1",
+  "synthetic_fixture_ast_sha256": "698997d49c046b05574b04f1c76fe07317125ee2201f5bd8c07ad588e47dc596",
+  "synthetic_source_sha256": "ca277f30ce50cf1ac8d58a38dd5f46daf9ca1971e226fd16b48bb14960cb5ef6",
+  "terminal_auditor_sha256": "b6758dc3aa631e60cd5405132b97f499e399c72c91ed70eadd52ed4c96517908"
+}

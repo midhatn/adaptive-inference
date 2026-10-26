@@ -4,6 +4,7 @@ import unittest
 
 from thread_pause_lineage import ROOT, record, predecessor, restore_thread
 from ast_preservation import preservation_dump
+from continuation_lineage import predecessor as continuation_predecessor
 
 
 class ThreadPauseLineageTests(unittest.TestCase):
@@ -11,7 +12,7 @@ class ThreadPauseLineageTests(unittest.TestCase):
         rows=record();self.assertEqual(len(rows['modules']),5)
         self.assertEqual(len(rows['unchanged_runtime']),49)
         for relative,pin in rows['unchanged_runtime'].items():
-            self.assertEqual(hashlib.sha256((ROOT/'src/adaptive_inference'/relative).read_bytes()).hexdigest(),pin)
+            self.assertEqual(hashlib.sha256(continuation_predecessor(relative,(ROOT/'src/adaptive_inference'/relative).read_bytes())).hexdigest(),pin)
         for relative in rows['modules']:
             current=(ROOT/'src/adaptive_inference'/relative).read_bytes()
             old=predecessor(relative,current)

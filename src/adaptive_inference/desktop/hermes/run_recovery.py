@@ -154,6 +154,21 @@ def qualification_report_resumed(mailbox, owned):
 
 
 def worker(args):
+    grant_path = getattr(args, 'continuation_grant', None)
+    if grant_path is None:
+        return _worker(args)
+    if args.mode != 'worker' or getattr(args, 'host_generation', None) is None:
+        raise ValueError('Selected execution requires worker mode and exact host generation')
+    from adaptive_inference.desktop.hermes.continuation_worker import read_json, selected_worker
+    grant = read_json(grant_path)
+    with selected_worker(args.run, grant, host_generation=args.host_generation,
+                         deadline=args.deadline_monotonic, clock=execution_now) as selected:
+        code = _worker(args, selected=selected)
+        selected.finish(code)
+        return code
+
+
+def _worker(args, *, selected=None):
     run = args.run.resolve(strict=True)
     plan = json.loads((run / 'plan.json').read_text(encoding='utf-8'))
     if (plan.get('sdk_revision') != SDK_REV or plan.get('model') != MODEL
@@ -169,9 +184,12 @@ def worker(args):
     from adaptive_inference.task_store import TaskStore, ReconciliationRequired
     from adaptive_inference.control_mailbox import execution_outcome
     store = TaskStore(run / 'task.sqlite3')
-    startup_checkpoint = store.load(plan['task_id'])
+    startup_checkpoint = store.load(plan['task_id']) if selected is None else selected.owned.checkpoint
     if execution_outcome(startup_checkpoint.state) is not None:
         raise ReconciliationRequired('This execution budget is sealed')
+    if selected is not None:
+        plan = selected.exact_plan()
+    diagnostics = run if selected is None else selected.diagnostics
     verify_execution_clock()
     if (plan.get('deadline_clock') != CLOCK_ID
             or startup_checkpoint.metadata.get('deadline_clock') != CLOCK_ID
@@ -199,6 +217,9 @@ def worker(args):
     verify_sdk_imports(plan['sdk'])
     result = {'passed': False, 'fixture': plan['fixture'], 'sdk_revision': SDK_REV,
               'model': MODEL, 'quality': QUALITY, 'mode': args.mode}
+    if selected is not None:
+        result['selected_execution'] = {'logical_task_id': selected.original['task_id'],
+            'execution_id': selected.execution_id, 'execution_generation': selected.execution_generation}
     db = agent = provider = None
     controller = None
     pending_expiry = None
@@ -265,8 +286,9 @@ def worker(args):
             return super().fake_response(req, 'parent', 1 if tools else 0)
 
     boundary = Boundary(run, plan['fixture'])
-    if (run / 'wire-observations.json').exists():
-        boundary.rows = json.loads((run / 'wire-observations.json').read_text())
+    if selected is not None or (run / 'wire-observations.json').exists():
+        boundary.rows = (selected.load_wire() if selected is not None else
+                         json.loads((run / 'wire-observations.json').read_text()))
         boundary.steps['parent'] = len(boundary.rows)
         boundary.seen = {r['body_sha256'] for r in boundary.rows}
     boundary.original = boundary.transport
@@ -303,6 +325,11 @@ def worker(args):
             # finally must not close them again after sealing the checkpoint.
             agent = db = provider = None
             pending_expiry = proof  # Provisional until claim exit and final restoration.
+            if selected is not None:
+                from adaptive_inference.desktop.hermes.continuation_worker import effect_receipts
+                selected.note_cleanup({'resources_closed': True, 'state_sha256': proof['state_sha256'],
+                    'native_history_sha256': proof['native_history_sha256'],
+                    'effect_receipts_sha256': effect_receipts(selected.owned, run)})
         finally:
             if controller is not None and controller.controls.wait_activity is not None:
                 controller.controls.wait_activity.revoke()
@@ -319,9 +346,13 @@ def worker(args):
                 raise ReconciliationRequired('Prepared report validator source or oracle changed')
             expected_metadata['pre_effect_validator']=validator_identity
             pre_effect_validator=report_validator(base.REPORT)
+        if selected is not None:
+            from adaptive_inference.desktop.hermes.continuation import LINK
+            expected_metadata[LINK] = selected.owned.checkpoint.metadata[LINK]
         if (cp.prompt != PROMPT or cp.max_attempts != 8 or cp.metadata != expected_metadata):
             raise ReconciliationRequired('Original task identity differs from the prepared contract')
-        with store.claim(plan['task_id'], expected_revision=cp.revision) as owned, paused_expiry_boundary(owned):
+        claim = store.claim(plan['task_id'], expected_revision=cp.revision) if selected is None else nullcontext(selected.owned)
+        with claim as owned, paused_expiry_boundary(owned):
             result['owner_epoch']=owned.checkpoint.owner_epoch
             if args.mode=='worker':
                 deadline=args.deadline_monotonic
@@ -343,7 +374,7 @@ def worker(args):
                                     expected_operation_id=args.operation_id)
                 result.update(passed=True, reconciled=True, provider_calls=0)
             else:
-                history = rec.resumable(owned, db, run / 'work')
+                history = (rec.resumable(owned, db, run / 'work') if selected is None else selected.verify_native(db))
                 if owned.checkpoint.state['status'] == 'accepted':
                     result.update(passed=True, terminal_noop=True, provider_calls=0)
                 else:
@@ -365,7 +396,7 @@ def worker(args):
                     # This may intentionally block in prequeued pause or exit cancelled.
                     controller.bootstrap_controls()
                     demand=registry.observe(identity.registration_id)
-                    rec.save(run/f'bootstrap-{os.getpid()}.json',{'pid':os.getpid(),
+                    rec.save(diagnostics/f'bootstrap-{os.getpid()}.json',{'pid':os.getpid(),
                         'task_id':identity.task_id,'registration_id':identity.registration_id,
                         'revision':owned.checkpoint.revision,'owner_epoch':owned.checkpoint.owner_epoch,
                         'deadline_monotonic':deadline,'deadline_clock':CLOCK_ID,
@@ -374,12 +405,15 @@ def worker(args):
                     # metadata discovery uses GET and is not an admitted model generation.
                     if not args.controller_ready or not args.gateway_instance:
                         raise ValueError('Explicit owned gateway instance and readiness receipt required')
+                    if selected is not None:
+                        selected.ready_path(args.controller_ready)
                     while not args.controller_ready.exists():
                         controller.control_safe_point()
                         if execution_now()>=deadline:raise rec.RecoveryStop('Bootstrap readiness deadline')
                         time.sleep(.05)
                     controller.control_safe_point()
-                    ready = json.loads(args.controller_ready.read_text(encoding='utf-8'))
+                    ready = (json.loads(args.controller_ready.read_text(encoding='utf-8')) if selected is None
+                             else selected.read_ready(args.controller_ready))
                     if (ready.get('ready') is not True or ready.get('model') != MODEL
                             or ready.get('quality') != QUALITY or ready.get('gateway') != plan['gateway']
                             or ready.get('gateway_instance')!=args.gateway_instance
@@ -412,7 +446,7 @@ def worker(args):
                                 for r in owned.checkpoint.state.get(ACKS,{}).get('receipts',[]))
                         if resumed():return
                         rec.resumable(owned,db,run/'work')
-                        rec.save(run/'pause.json',{'boundary':label,'pid':os.getpid(),
+                        rec.save(diagnostics/'pause.json',{'boundary':label,'pid':os.getpid(),
                             'revision':owned.checkpoint.revision,
                             'history_sha256':rec.digest(owned.checkpoint.state['native_history'])})
                         while not resumed():
@@ -485,13 +519,23 @@ def worker(args):
             # Revoke late callbacks on every exit, including SDK abandonment.
             # A busy logical owner is a cleanup failure, never concurrent close.
             with activity.cleanup_scope(agent,verify=False) if activity is not None else nullcontext():
-                for name, resource in (('agent', agent), ('database', db), ('provider', provider)):
-                    if resource is not None:
-                        try:
-                            resource.close()
-                        except BaseException as cleanup_error:
-                            cleanup_errors.append({'resource': name,
-                                'type': type(cleanup_error).__name__, 'message': str(cleanup_error)})
+                if selected is not None and db is not None and controller is not None:
+                    from adaptive_inference.desktop.hermes.service_stop import close_safe_resources
+                    selected.verify_native(db)
+                    proof = close_safe_resources(controller, agent=agent, db=db, provider=provider,
+                                                 session_db_factory=SessionDB)
+                    from adaptive_inference.desktop.hermes.continuation_worker import effect_receipts
+                    effect_receipt_sha = effect_receipts(selected.owned, run)
+                    selected.note_cleanup({**proof, 'effect_receipts_sha256': effect_receipt_sha})
+                    agent = db = provider = None
+                else:
+                    for name, resource in (('agent', agent), ('database', db), ('provider', provider)):
+                        if resource is not None:
+                            try:
+                                resource.close()
+                            except BaseException as cleanup_error:
+                                cleanup_errors.append({'resource': name,
+                                    'type': type(cleanup_error).__name__, 'message': str(cleanup_error)})
         except BaseException as cleanup_error:
             cleanup_errors.append({'resource':'recovery_serialization',
                 'type':type(cleanup_error).__name__,'message':str(cleanup_error)})
@@ -506,7 +550,9 @@ def worker(args):
             result.update(passed=False, controlled=True, completed=False,
                 control_state='paused', control_reason='paused_budget_expired',
                 paused_expiry=pending_expiry, provider_calls=len(boundary.rows)-starting_requests)
-        rec.save(run / f'result-{os.getpid()}.json', result)
+        if selected is not None:
+            result['continuation_cleanup_verified'] = selected.cleanup_proof is not None and not cleanup_errors
+        rec.save(diagnostics / f'result-{os.getpid()}.json', result)
     return (2 if result.get('cleanup_errors') else 0 if result['passed'] else STOP_EXIT if result.get('service_stopped') is True
             else PAUSED_EXPIRY_EXIT if result.get('paused_expiry') is not None
             else 3 if result.get('control_state')=='cancelled' else 2)
@@ -528,6 +574,8 @@ def main():
     p.add_argument('--gateway-instance')
     p.add_argument('--stop-request-id')
     p.add_argument('--qualification-hold-after-report',action='store_true')
+    p.add_argument('--continuation-grant', type=Path)
+    p.add_argument('--host-generation')
     p.add_argument('--validate-report-before-write',action='store_true')
     p.add_argument('--control-case',choices=['complete','cancel'])
     p.add_argument('--fixture-scenario',choices=['normal','wait-race','unknown-failure','report-feedback'],default='normal')

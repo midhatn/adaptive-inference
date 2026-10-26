@@ -65,7 +65,7 @@ class IntentTests(unittest.TestCase):
                 if method=='stop':
                     w.respond({'ok':True,'state':'stop_requested',**life(stop_requested=True)})
                 else:
-                    w.respond({'ok':True,'control':receipt(queued,outcome='applied',owner_acknowledged=True)})
+                    w.respond({'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(queued,outcome='applied',owner_acknowledged=True)})
                 c.tick()
                 if method=='stop':
                     self.assertTrue(c.closing);self.assertEqual(b.calls,['install','remove'])
@@ -95,7 +95,7 @@ class IntentTests(unittest.TestCase):
         c.poll_status();self.assertTrue(c.action('pause'))
         request=c._local_intent[0];self.assertEqual(len(c._ids),32)
         w.respond(status());c.tick();self.assertIs(c.latest,request)
-        w.respond({'ok':True,'control':receipt(request)});c.tick()
+        w.respond({'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(request)});c.tick()
         self.assertFalse(c.action('pause'));self.assertFalse(c.action('resume'));self.assertFalse(c.action('cancel'))
         self.assertTrue(c.buttons()['stop'])
 
@@ -159,6 +159,23 @@ class IntentTests(unittest.TestCase):
             self.assertFalse(c.status_valid);self.assertIs(c.pending,original)
             self.assertEqual(sum(r==original for r in w.sent),2)
             self.assertEqual(len(c._ids),int(method!='stop'))
+
+    def test_uncertain_resume_retry_cannot_cross_selected_execution_change(self):
+        c,w,b,v,original=self.uncertain()
+        c.poll_status();self.assertTrue(c.retry())
+        w.respond(status(execution_id='successor',execution_generation=1,task_revision=0,
+            continuation={'phase':'preparing','request_id':'continue-1'}));c.tick()
+        self.assertIsNone(c.latest);self.assertFalse(c.retry());self.assertIsNone(c._local_intent)
+        self.assertEqual(sum(request==original for request in w.sent),1)
+        self.assertFalse(c.buttons()['resume']);self.assertFalse(c.buttons()['continue'])
+
+    def test_status_error_never_grants_new_continue_or_resume_after_selection(self):
+        c,w,b,v=self.client();c.poll_status()
+        w.respond(status(execution_id='successor',execution_generation=1,task_revision=0,
+            demand='paused',waiting_reason='budget_expired',continuation={'phase':'available','request_id':None}));c.tick()
+        self.assertTrue(c.buttons()['continue']);c.poll_status();w.respond(error='outcome_unconfirmed');c.tick()
+        self.assertFalse(c.action('continue'));self.assertFalse(c.action('resume'))
+        self.assertTrue(c.buttons()['stop'])
 
     def test_new_ack_settles_queued_retry_without_resending(self):
         c,w,b,v,original=self.uncertain()
@@ -228,7 +245,7 @@ class IntentTests(unittest.TestCase):
         self.assertIs(c.pending,queued);self.assertIs(c.latest,queued)
         self.assertEqual(c.latest_stage,'unconfirmed');self.assertIsNone(c._local_intent)
         self.assertFalse(any(c.buttons().values()));self.assertIn('Dispatch is unconfirmed',self.text(v))
-        w.results.append(cc.Result(queued,{'ok':True,'control':receipt(queued)}));c.tick()
+        w.results.append(cc.Result(queued,{'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(queued)}));c.tick()
         self.assertEqual(c.latest_stage,'pending');self.assertIsNone(c.pending)
         self.assertIsNotNone(c.cleanup_error)
 
@@ -248,7 +265,7 @@ class WorkerIntentTests(unittest.TestCase):
                 return cc.Result(request,status())
             if request.method=='window_ready':return cc.Result(request,{'ok':True,'state':'window_ready'})
             if request.method=='window_closed':return cc.Result(request,{'ok':True,'state':'window_closed','task_cancelled':False})
-            return cc.Result(request,{'ok':True,'control':receipt(request,outcome='applied',owner_acknowledged=True)})
+            return cc.Result(request,{'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(request,outcome='applied',owner_acknowledged=True)})
         worker=cc.NetworkWorker(exchange);view=cc.TkView(Root(),ttk_module=FakeTk)
         client=cc.ClientController(bootstrap(),worker,Binding(),view,id_factory=lambda:'thread-command')
         view.attach(client)

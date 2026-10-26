@@ -1,6 +1,6 @@
 # Adaptive Inference roadmap
 
-**Updated: 25 October 2026. Status: living plan, with evidence-based completion gates.**
+**Updated: 26 October 2026. Status: living plan, with evidence-based completion gates.**
 
 ## Destination
 
@@ -49,7 +49,7 @@ interrupted runs will remain identified as such.
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded installed composition, retained commands and safe paused expiry qualified; explicit continuation and ordinary task use remain |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded installed composition, retained commands, safe paused expiry and explicit same-window continuation qualified; ordinary task use remains |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |
@@ -770,6 +770,17 @@ efficiency path from the user-supplied Gandalf and cross-model KV papers:
 These are adopted requirements and acceptance steps, not enabled runtime
 capabilities. They do not block M2 or weaken its recovery and cleanup gates.
 
+The [precision assessment](docs/precision-research.md) identifies mixed precision
+already present in the retained engine and the existing optional
+`STRATA_PF_WMMA=1` expert-prompt path. After continuation qualification, evaluate
+it on the same IQ3_S assets using control, candidate and restored-control runs,
+verified native-child configuration and actual kernel dispatch. Keep task
+validators and reasoning/output allowances intact; measure complete task time,
+foreground response and resource cost. The reported GPU unlock changes the
+performance environment, so record that identity separately and do not infer
+an application gain from dense matrix rates or compare old/new timings as a
+scheduler-only change. No precision setting is enabled by this plan.
+
 ### M9 — Expand hardware only where it helps
 
 **User result:** the same ownership and recovery principles can use additional
@@ -940,20 +951,87 @@ proposed change has not been tested.
 
 The active technical packet is M2:
 
-**Current gate, 25 October:** safe paused expiry passed its complete installed
-IQ3_S trial and 46-check independent terminal audit. The task retained its report
-and native history through the original deadline, kept the same window available,
-and shut down normally after one Stop. Preserve that exact result and the two
-failed predecessors. The next implementation is **Continue saved task**: an
-explicit new execution authorization for the same objective and effects, followed
-by a separate gate for a different task in the same host. Reuse the existing
-TaskStore, installed adapter and retained lifecycle; do not reopen the sealed
-execution or silently reset its cumulative request allowance. The researched
-identity and quiescent-transition references are
+**Current gate, 26 October:** **Continue saved task** passed the complete installed
+Windows/Hermes/Strata IQ3_S trial and its independent 70-check terminal audit.
+The original 900-second allowance expired naturally after a genuine Pause. One
+Continue click in the same window selected a fresh execution and resumed the
+original objective without a second Resume. The task completed with three
+cumulative model requests and one physical report write; the sealed predecessor,
+report and existing history stayed unchanged. One normal Stop joined the retained
+workers, native engine and window and closed the service controls. See the
+[continuation evidence](provenance/explicit-continuation/acceptance/README.md).
+Preserve the earlier 46-check paused-expiry acceptance and both failed expiry
+predecessors as separate historical results.
+
+**Next functional M2 gate:** accept a different user task in the same retained
+host, with explicit task identity, isolated task/effect records and clear completed,
+waiting and stopped states. First inspect existing TaskStore and pinned Hermes
+session/task facilities and current upstream guidance; reuse the installed
+controller and adapters. Qualify two distinct useful tasks without restarting the
+host or confusing old controls with the new objective. Reboot recovery remains M5.
+
+**Next bounded efficiency experiment:** after publishing this accepted baseline,
+evaluate the existing FP16 expert-prompt path using the
+[precision comparison](docs/precision-research.md#reversible-qualification).
+Use unchanged control, candidate and restored control on the same IQ3_S assets,
+verify actual dispatch and compare correct completed tasks and resource use.
+The reported GPU unlock is a changed environment, not a measured application
+speedup. Keep one owner of heavy model experiments and retain an ineffective or
+slower result. No precision setting has been enabled by the continuation trial.
+
+The continuation implementation reuses the existing TaskStore, installed adapter
+and retained lifecycle; it does not reopen the sealed execution or reset the
+cumulative request allowance. The researched identity and transition references are
 [Temporal Continue-As-New](https://docs.temporal.io/develop/python/workflows/continue-as-new)
 and [LangGraph durable interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts).
-Research and inspect the exact existing transaction and effect-identity seams
-before implementing that additive authorization.
+The implementation feedback below records why those existing transaction and
+effect-identity mechanisms needed the final inherited-state and lifecycle checks.
+
+**Continuation implementation feedback:** the current ownership lock protects a
+single stored execution ID. Different executions of the same task would otherwise
+have different locks while sharing one Hermes session and report destination.
+Reuse a separate logical-task authority claim, then the selected execution claim,
+with one documented lock order. Create and select the successor in one existing
+SQLite write transaction. Read the sealed predecessor without claiming it:
+claiming a pending task itself appends history. Preserve its complete state and
+history, and return the original grant on a matching retry even while the new
+worker owns the authority. Carry forward cumulative requests, attempts, admission
+accounting and the verified prefix of the shared request ledger. A storage-only
+prototype is an implementation step, not a usable continuation result.
+
+The first private storage prototype passed its supplied tests, but independent
+second-extension checks found that a new valid expiry seal could hide a changed
+inherited request entry or a changed earlier deadline. Hold that prototype and
+preserve the failing cases. Reuse one inherited-grant validator at both worker
+claim and every later authorization: validate the original selected deadline,
+creation record, preserved history/counters and request-ledger prefix. A valid
+new seal does not replace these earlier obligations. Require the original cases
+to fail against the predecessor and pass against the repair before integration.
+The narrow repair passed the same two independent failure cases and supplied
+storage tests, including legitimate second extensions and later request-ledger
+growth. That component result preceded the worker, host and UI gates; the complete
+installed qualification above now covers the first explicit continuation.
+
+Keep the task, window and authenticated UI session stable, with a separate selected
+execution ID and increasing execution generation. Delayed commands and status from
+an earlier generation must not affect or replace the current one. Stop remains
+available across that transition. One explicit **Continue saved task** click should
+grant the new finite execution budget and request its Resume through the existing
+fresh Pause/acknowledgement bootstrap; it should not require a second click in the
+successful path. Retain the launch immediately, honor Stop or lost user intent at
+every transition, and distinguish a selected grant from readiness or task
+completion. The complete installed IQ3_S workflow above qualifies this one
+continuation; keep the earlier expiry acceptance independently reproducible.
+
+**Final integration feedback:** a late successful status read from the retired
+execution must not replace the newly selected execution. Genuine read failures
+still surface. Retain process waits by the actual child object, not a reusable
+process number. The assembled source passed 954 tests; exact installed origins,
+the actual SDK dispatcher and both interpreters' shared clock were checked before
+the real run. The external status observer ended with three connection errors
+after shutdown (1,147 valid observations of 1,150); direct task, retained-process
+and resource evidence established completion and cleanup. Do not reinterpret
+connection loss as successful shutdown or add overlapping test counts together.
 
 **25 October live expiry feedback:** the first installed expiry trial failed after
 the worker returned its distinct expiry outcome. The host correctly rejected a

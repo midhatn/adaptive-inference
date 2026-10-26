@@ -46,3 +46,13 @@ src/adaptive_inference/desktop/persistent_host.py whitespace=-blank-at-eof
 tests/test_desktop_persistent_host.py whitespace=-blank-at-eof
 # Unmodified upstream pager contains its original trailing spaces.
 third_party/reference-sources/sqlite/189e44dfecdc7868bb860dfb5d98eab371318c37/src/pager.c -whitespace
+# Preserve the exact continuation fixtures exercised and independently reviewed.
+tests/test_desktop_control_client.py -text whitespace=cr-at-eol
+tests/test_desktop_control_intent.py -text whitespace=cr-at-eol
+tests/test_desktop_expiry_controls.py -text whitespace=cr-at-eol
+tests/test_desktop_mailbox_runtime.py -text whitespace=cr-at-eol
+tests/test_continuation_protocol.py -text whitespace=cr-at-eol
+# Preserve exact accepted continuation evidence and predicate bytes.
+provenance/explicit-continuation/acceptance/** -text whitespace=cr-at-eol
+# Preserve exact reusable continuation workflow and source identity.
+examples/validation/explicit_continuation/** -text whitespace=cr-at-eol

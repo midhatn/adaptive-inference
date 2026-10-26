@@ -18,7 +18,7 @@ HERE=Path(__file__).resolve().parent
 def presentation():
     return {'objective':'Preserve the original task.', 'connection':'Connected.',
             'task':'Task is in progress.', 'waiting':'Waiting for resources.', 'action':'',
-            'buttons':{'pause':True,'resume':True,'cancel':True,'stop':True,'retry':False},
+            'buttons':{'pause':True,'resume':True,'cancel':True,'stop':True,'continue':False,'retry':False},
             'closing':False,'cleanup_unconfirmed':False}
 
 
@@ -39,9 +39,9 @@ class RenderTests(unittest.TestCase):
 
     def test_repeated_equal_presentations_make_no_additional_widget_calls(self):
         state=presentation();self.view.render(state)
-        self.assertEqual(len(self.calls),11)
+        self.assertEqual(len(self.calls),12)
         for _ in range(1000):self.view.render(deepcopy(state))
-        self.assertEqual(len(self.calls),11)
+        self.assertEqual(len(self.calls),12)
         self.assertEqual(self.view.labels['objective'].options['text'],state['objective'])
 
     def test_only_changed_text_button_and_cleanup_are_configured(self):
@@ -67,13 +67,13 @@ class RenderTests(unittest.TestCase):
     def test_first_render_failure_retries_only_unsuccessful_option(self):
         state=presentation();self.view.footnote.fail_before=True
         with self.assertRaisesRegex(RuntimeError,'before'):self.view.render(state)
-        self.assertEqual(len(self.view._rendered_options),10)
+        self.assertEqual(len(self.view._rendered_options),11)
         self.assertNotIn((self.view.footnote,'text'),self.view._rendered_options)
         self.view.footnote.fail_before=False;self.calls.clear()
         self.view.render(state)
         self.assertEqual(self.calls,[(self.view.footnote,{'text':
             'Closing this window leaves the task and engine running.'})])
-        self.assertEqual(len(self.view._rendered_options),11)
+        self.assertEqual(len(self.view._rendered_options),12)
 
     def test_apply_then_raise_invalidates_failed_option_and_old_value_is_repaired(self):
         old=presentation();self.view.render(old)
@@ -125,7 +125,7 @@ class RenderTests(unittest.TestCase):
         thread.start();thread.join(timeout=2)
         self.assertFalse(thread.is_alive());self.assertEqual(len(errors),1)
         self.assertIsInstance(errors[0],PermissionError)
-        self.assertEqual(len(self.calls),11)
+        self.assertEqual(len(self.calls),12)
 
     def test_tick_poll_and_close_callbacks_continue_on_equal_presentations(self):
         events=[];state=presentation()
@@ -136,7 +136,7 @@ class RenderTests(unittest.TestCase):
         for _ in range(20):self.view._tick()
         self.view._poll();self.root.protocols['WM_DELETE_WINDOW']()
         self.assertEqual(events,['tick']*20+['poll','close'])
-        self.assertEqual(len(self.calls),11)
+        self.assertEqual(len(self.calls),12)
         self.assertEqual([n for n,_ in self.root.calls],[100,1000]+[100]*20+[1000])
 
     def ready_client(self):

@@ -21,7 +21,7 @@ class ExpiryCompositionTests(unittest.IsolatedAsyncioTestCase):
         c.handles=[c.worker];c.worker_exit_verified=False
         c.first_ready=c.root/'ready.json';c.first_ready.write_text('{}')
         c.stop_binding=SimpleNamespace(_verify_exit=mock.Mock(return_value='paused_budget_expired'))
-        c.runtime=SimpleNamespace(refresh=mock.AsyncMock())
+        c.runtime=SimpleNamespace(refresh=mock.AsyncMock(),_transitioning=False)
         c.facade=SimpleNamespace(cooperative_stop=mock.AsyncMock(return_value=dict(
             worker_joined=True,host_closed=True,uncertain=False,fault=None)))
         c.host=SimpleNamespace(controller=SimpleNamespace(fault=None));c.gui=SimpleNamespace(process=fixture.Child(42))

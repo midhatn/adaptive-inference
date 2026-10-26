@@ -618,7 +618,7 @@ class PausedExpiryQualification(FullUIQualification):
         from adaptive_inference.desktop.hermes.service_stop import PAUSED_EXPIRY_EXIT
         cp=self.checkpoint();self.assert_original(cp)
         marker=execution_outcome(cp.state)
-        joined=self.waits.get(self.worker.pid)
+        joined=self.waits.get(self.worker)
         if (self.result.get('execution_expired') is not True
                 or self.result.get('worker_outcome')!='paused_budget_expired'
                 or self.result.get('task_completed') is not False

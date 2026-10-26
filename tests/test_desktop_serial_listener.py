@@ -12,6 +12,8 @@ import test_desktop_control_transport as fixtures
 
 def request(method='status', **changes):
     value = dict(host_epoch='host', session_id='session', task_id='task', token='a'*64, method=method)
+    if method in ("pause", "resume", "cancel", "continue"):
+        value.update(execution_id="task", execution_generation=0)
     value.update(changes)
     return (json.dumps(value, separators=(',', ':'))+'\n').encode()
 

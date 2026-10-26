@@ -2,6 +2,49 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Explicit continuation after safe expiry
+
+The [source-bound continuation record](../provenance/explicit-continuation/acceptance/README.md)
+and [public result](../provenance/explicit-continuation/acceptance/result.json)
+cover one installed Windows/Hermes/Strata IQ3_S task on 26 October 2026. One real
+Resume and Pause led to safe expiry of the first 900-second execution. One
+Continue in the same window granted another 900 seconds and requested Resume
+through fresh acknowledgements. The original objective completed before the
+successor budget ended; one Stop produced normal owned cleanup. No Retry was
+used.
+
+The three cumulative model requests are two before Continue and one after it.
+The sealed predecessor and its history stayed immutable. The report remained
+four rows, 17 units and 4,350 cents, with one physical file write. Model, context,
+quality and the shared eight-request ceiling remained unchanged. The independent
+terminal audit passed **70 checks**, binding **214 private inputs**, including
+actual task/native history, request/effect files, UI observations, both retained
+worker exits and native/window/control cleanup.
+
+The qualified wheel SHA-256 is
+`02010db139127855e4ec5a5542e1bda3c5f7dde12ea650fe9235181cef83ce66`,
+with 57 runtime modules from source freeze
+`73fbec145f95a7f97b60ba51dd8cbe737b3124b37c442417ac4acc69effe8906`.
+The acceptance record binds source, package and actual installation gates.
+Later documentation and evidence additions form a separate publication overlay;
+they do not change the identity of that qualification wheel.
+
+The external observer retained 1,147 valid status responses in 1,150 samples and
+exited with code 1 after three connection errors following Stop. Its samples
+establish observed service availability before and after Continue. They do not
+establish cleanup or task completion; those follow from retained process/resource
+proofs. UI times are operation brackets, not exact click timestamps or latency
+measurements.
+
+The final host component separately passed 295 supplied checks plus one
+independent receipt-integrity case, and its qualification harness passed 37
+synthetic/source-equivalence checks. Public export tests and custodian replay
+are described in the acceptance record; they remain distinct from the actual
+model trial. Earlier failed development and expiry evidence remains preserved.
+This result does not complete M2, establish physical reboot recovery, qualify
+arbitrary tasks/engines or broader foreground activity, or claim a performance
+or precision improvement.
+
 ## Safe expiry of a paused task
 
 The [paused-expiry acceptance record](../provenance/paused-budget-expiry/acceptance/README.md)

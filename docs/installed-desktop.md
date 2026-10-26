@@ -9,8 +9,10 @@ window, pipes and native resources before reporting a clean shutdown.
 
 This first profile runs the **orders-report task** with the existing **IQ3_S**
 model. It preserves context 65,536, output allowance 10,923, high reasoning with
-an 8,192-token budget, the original report oracle and at most eight model
-requests within the original 900-second task deadline. Rejected report proposals
+an 8,192-token budget, the original report oracle and at most eight cumulative
+model requests. Each execution has a 900-second budget. After verified safe
+expiry, [Continue saved task](explicit-continuation.md) can explicitly authorize
+a successor in the same window; it does not reset the request allowance. Rejected report proposals
 use the existing feedback mechanism before a file effect. It is not yet an
 arbitrary-task launcher, general Hermes service installer or computer-reboot
 recovery service.
@@ -174,12 +176,21 @@ obligations and reports uncertainty instead of claiming a clean Stop. Explicit
 qualification callers retain the original 1,800-second emergency guard; an
 emergency exit is a failed test, never normal cleanup.
 
-Pending report-task expiry retains the original bounded-task failure behavior.
-It is not a successful task, a new resumable deadline, or verified clean Stop.
-The host does not reinterpret an unexpected worker exit as a safe terminal
-outcome. Safe ordinary expiry/recovery and accepting another task in the same
-long-lived service remain separate M2 work; this first installed reference
-composition is not a daily-use always-on completion claim.
+A safely paused execution can end with the separately verified
+[paused-expiry outcome](paused-budget-expiry.md), preserving its pending task and
+keeping the host/window open. Active or uncertain work does not acquire that
+outcome merely because its deadline passed. Unexpected worker exit is never
+reinterpreted as safe completion or clean Stop.
+
+The later [explicit Continue action](explicit-continuation.md) preserves the
+same logical task/window and creates a distinct execution only after verified
+release and authorization. One click includes the derived Resume; ordinary
+foreground/capacity gates still apply. Its [separate installed acceptance](../provenance/explicit-continuation/acceptance/README.md)
+passed 70 independent terminal checks with three cumulative IQ3_S requests, one
+report write and normal shutdown. Its qualification envelope is 2,700 seconds for two 900-second
+budgets plus setup/cleanup; the original 1,800-second expiry qualification is
+unchanged. New tasks, physical reboot recovery and daily-use always-on operation
+remain separate M2 gates.
 
 ## Component and deployment checks
 

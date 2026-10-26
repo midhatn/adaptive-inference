@@ -1,0 +1,20 @@
+{
+  "files": {
+    "README.md": "9ae4217c70dc9c7324bb28e18c0bdfc4ba1dea8eef134005610307322a509be2",
+    "audit_continue.py": "b6758dc3aa631e60cd5405132b97f499e399c72c91ed70eadd52ed4c96517908",
+    "bindings.py": "3c72b9ff536c68245124fc8742fc32037c553bd418e6eeb8fa9575681595d1a5",
+    "bindings.template.private.json": "3e37df0818f3f16dff8662ad6a7be9c6865700238615818fa55757e2328e2886",
+    "checks.py": "dc795462df84516d5a8f3ffac9dd0b30f74ee29d98902e4dbdb07328b95cfae8",
+    "observe_continue.py": "6a47e2d38897bf44ad15da90c21d2f462346b3c831486191c335901fcc1076f5",
+    "predecessor-bindings.py": "6368c283aa1b2852c8c0fd12c8d6ecabcbd0e0fa7278aee6aca11819c3bda3d7",
+    "qpc_helpers.py": "aa9eb3f0e0bb9e51cc761919497be029c768336b351792758219c481c4796939",
+    "qualify_continue.py": "b0b75a6edbeb820c0ca3143c17fc8e075be732aa7f4462f6496fedb90f8fb414",
+    "run_continue.py": "59f713ff3d9778095b77b9a0b97b3e185937f541a7fb9352bdae6e35eceed354",
+    "source-lineage.json": "1d598b6e647614f29cf00b5745cf906b5cd2c0482628001dff3c1f087e5354f7",
+    "test_checks.py": "da8b217b9fbe3a5f819acfb40b3de4ea15983ddaf838918e4a2c60f9aa5bb131",
+    "test_source.py": "bf8bb0ae0504ed452bd555eee6aefec5c9ec22da5c06ff45a0f2d34718dc10a0",
+    "ui-observations.template.json": "d704f13eaf8626f69151a768b96b6ad7884b18e64a88f6305bb410dc63a79776"
+  },
+  "schema": "private.continuation.harness-source.v1",
+  "scope": "Public path adaptation with exact workflow sources; CPU/source equivalence, no new live run"
+}

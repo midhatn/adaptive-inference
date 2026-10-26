@@ -117,6 +117,7 @@ class DesktopComposition:
                      'task_completed':False, 'execution_expired':False,
                      'model':MODEL, 'quality':deepcopy(QUALITY)}
         self.worker_exit_verified=False
+        self.continuation = None
 
     def launch(self, command, label):
         stream=(self.root/(label+'.log')).open('wb'); self.logs.append(stream)
@@ -201,9 +202,11 @@ class DesktopComposition:
 
     async def join_child(self,child):
         if child not in self.handles:raise RuntimeError('Cannot adopt a child for cleanup')
-        task=self.waits.get(child.pid)
+        task=self.waits.get(child)
         if task is None:
-            task=self.waits[child.pid]=asyncio.create_task(asyncio.to_thread(child.wait))
+            # The retained object owns the OS handle; a reused PID must never
+            # borrow the completed wait of an earlier process in this host.
+            task=self.waits[child]=asyncio.create_task(asyncio.to_thread(child.wait))
         code=await asyncio.shield(task)
         self.event('retained_process_exit',pid=child.pid,exit_code=code,terminated=False)
         return code
@@ -230,7 +233,8 @@ class DesktopComposition:
     def obligations(self):
         tasks=[]
         if self.facade is not None:tasks += [self.facade._wake,self.facade._stop,*self.facade._joins]
-        if self.runtime is not None:tasks += [self.runtime._stop_task,*tuple(self.runtime._pending)]
+        if self.runtime is not None:tasks += [self.runtime._stop_task,*tuple(self.runtime._pending),
+                                             *tuple(self.runtime._continuation_tasks)]
         if self.stop_binding is not None:tasks += [self.stop_binding._work]
         if self.gui is not None:tasks += [self.gui._start_task,*self.gui._io]
         if self.listener is not None:
@@ -401,6 +405,8 @@ class DesktopComposition:
             gate=self.gate,intent_capability=self.intent_cap,lifecycle=self.facade)
         await self.runtime.refresh()
         self.host.attach_control_runtime(self.runtime)
+        from adaptive_inference.desktop.continuation_host import HostContinuation
+        self.continuation = HostContinuation(self,self.runtime)
         self.transport_cap = object()
         self.transport = ControlTransport(prepared,self.runtime,capability=self.transport_cap,
             runner_credential='local-no-key',cooperative_progress=self.progress)
@@ -438,10 +444,173 @@ class DesktopComposition:
             and snapshot.requests[-1]['command'] == 'pause' and snapshot.receipts[-1]['outcome'] == 'applied'
             and (marker is None or marker['deadline_monotonic'] == self.deadline))
 
+    def assert_continuation_parked(self, release):
+        controller,scheduler = self.host.controller,self.host.gateway.scheduler
+        owner = None if controller.identity is None else controller.identity['owner_id']
+        if (controller.state != 'parked' or controller.fault is not None or controller.tool is not None
+                or scheduler.active is not None or scheduler.pending or scheduler.uncertain
+                or owner != release['native']['owner_id']
+                or self.host.adapter._barrier is None
+                or self.host.adapter._cold_start_error is not None or self.host.adapter._startup_failure is not None):
+            raise RuntimeError('Continuation requires the same verified parked native owner')
+        if owner is not None and self.host.adapter._released != release['native']['release']:
+            raise RuntimeError('Parked release identity changed before selection')
+
+    async def continuation_release(self, request, intent_valid):
+        from adaptive_inference.desktop.control_transport import Refused
+        from adaptive_inference.desktop.hermes.service_stop import PAUSED_EXPIRY_EXIT
+        child,binding = self.worker,self.stop_binding
+        if request['execution_id'] != binding.original.task_id:
+            raise Refused('stale_execution')
+        limit=execution_now()+120
+        while child.poll() is None:
+            if self.runtime._stopping or not intent_valid():raise Refused('continuation_blocked')
+            if execution_now()>=limit:raise TimeoutError('Previous worker has not released')
+            await asyncio.sleep(.05)
+        code=await self.join_child(child)
+        if code!=PAUSED_EXPIRY_EXIT:raise Refused('continuation_unavailable')
+        outcome=await asyncio.to_thread(binding._verify_exit,code)
+        if outcome!='paused_budget_expired':raise Refused('continuation_unavailable')
+        while self.host.controller.state!='parked':
+            if self.runtime._stopping or not intent_valid():raise Refused('continuation_blocked')
+            if self.host.controller.fault or execution_now()>=limit:
+                raise RuntimeError('Previous native owner did not reach verified parking')
+            await asyncio.sleep(.05)
+        async with self.host.controller.lock:
+            adapter,controller=self.host.adapter,self.host.controller
+            def parked():
+                if (adapter._barrier is None or adapter._cold_start_error is not None
+                        or adapter._startup_failure is not None):
+                    raise RuntimeError('Native startup/release ownership is unresolved')
+                state=adapter.driver.status()
+                adapter._stopped_identity(state)
+                if adapter.driver.owner_idle() is not True or adapter.driver.port_free(18098) is not True:
+                    raise RuntimeError('Native owner or backend port is still occupied')
+                owner=None if controller.identity is None else controller.identity['owner_id']
+                proof=deepcopy(adapter._released)
+                if owner is None:
+                    if adapter.started_owner or not adapter._cold_prepared or adapter.parked_observation is None:
+                        raise RuntimeError('Cold native parking is not proven')
+                elif (type(proof) is not dict or proof.get('owner_id')!=owner
+                        or any(proof.get(key) is not True for key in ('released','cleanup_confirmed','port_free'))
+                        or type(proof.get('retained_processes')) is not int or proof['retained_processes']<1
+                        or proof.get('confirmed_process_exits')!=proof['retained_processes']):
+                    raise RuntimeError('Exact retained native release is missing')
+                return {'owner_id':owner,'release':proof,'status_sha256':rec.digest(state),
+                        'owner_lock_idle':True,'backend_port_free':True,'startup_barrier_held':True}
+            native=await adapter._call(parked)
+            release={'worker_joined':True,'worker_pid':child.pid,'exit_code':code,'outcome':outcome,
+                     'native':native,'execution_id':request['execution_id']}
+            self.assert_continuation_parked(release)
+        return release
+
+    async def launch_continuation(self, record, coordinator, intent_valid):
+        from adaptive_inference.desktop.continuation_host import SelectedWorkerStopBinding,selection
+        grant=record['grant'];suffix=grant['payload_sha256'][:24]
+        record.update(pause_id='continue-pause-'+suffix,resume_id='continue-resume-'+suffix,
+                      stop_id='continue-stop-'+suffix)
+        diagnostics=self.work/'executions'/grant['payload']['successor_id']
+        record['diagnostics']=diagnostics
+        def files():
+            diagnostics.mkdir(parents=True,exist_ok=False)
+            path=diagnostics/'grant.json';rec.save(path,grant)
+            return path
+        path=await asyncio.to_thread(files)
+        if not coordinator.live(intent_valid):return
+        await self.runtime.submit_control(record['pause_id'],'pause',execution=selection(grant),_transition=True)
+        if not coordinator.live(intent_valid):return
+        self.first_ready=diagnostics/'controller-ready.json'
+        command=[self.plan['base_python'],'-I','-B','-m','adaptive_inference.desktop.hermes.run_recovery',
+            'worker','--run',str(self.work),'--continuation-grant',str(path),
+            '--host-generation',self.runtime.prepared.host_epoch,'--controller-ready',str(self.first_ready),
+            '--gateway-instance',self.host.gateway.instance,'--deadline-monotonic',str(grant['deadline_monotonic']),
+            '--stop-request-id',record['stop_id']]
+        # The original trial's report hold is not inherited: this click supplies
+        # one fresh Resume, and existing artifact/receipt verification still wins.
+        record['launch_attempted']=True
+        before=len(self.handles)
+        try:
+            self.launch(command,'worker-continue-'+str(grant['execution_generation']))
+        finally:
+            if len(self.handles)==before+1:
+                child=self.handles[-1]
+                record['child']=child;self.worker=child
+                capability=object()
+                binding=SelectedWorkerStopBinding(child,self.work,record['mailbox'],
+                    requester_capability=record['requester'],capability=capability,
+                    stop_request_id=record['stop_id'],original=record['original'],
+                    deadline_monotonic=grant['deadline_monotonic'],model=MODEL,quality=QUALITY,
+                    fence=self.fence,deadline_clock=CLOCK_ID,grant=grant,authority=record['authority'])
+                self.facade.bind_selected_worker(record,binding,capability)
+                self.stop_binding,self.worker_cap,self.stop_id=binding,capability,record['stop_id']
+                self.worker_exit_verified=False
+        child=record['child']
+        handle=self.launch_api.handle(child)
+        observed=self.launch_api.identity(handle)
+        if self.launch_api.in_job(handle,self.job._HANDLE) is not True or observed[0]!=child.pid or child.poll() is not None:
+            raise RuntimeError('Selected child is not live in the retained containing job')
+        record['retained_child_identity']={'pid':observed[0],'creation_time_100ns':observed[1],
+                                           'containing_job_verified':True}
+        await self.wait_continuation_ack(record,record['pause_id'],intent_valid)
+
+    async def wait_continuation_ack(self,record,request_id,intent_valid):
+        child,mailbox=record['child'],record['mailbox']
+        while True:
+            if self.runtime._stopping or not intent_valid():return None
+            await self.runtime._database(lambda:self.runtime._observe(mailbox),self.runtime._install)
+            if self.runtime._stopping or not intent_valid():return None
+            snapshot=self.runtime._cache.snapshot
+            ack=snapshot.status(request_id)
+            if ack['owner_acknowledged']:
+                if (ack['outcome']!='applied' or snapshot.target.owner_epoch is None
+                        or snapshot.target.task_id!=record['grant']['payload']['successor_id']
+                        or child.poll() is not None):
+                    raise RuntimeError('Selected control lacks exact live owner acknowledgement')
+                return ack
+            if child.poll() is not None or execution_now()>=record['grant']['deadline_monotonic']:
+                raise RuntimeError('Selected worker did not acknowledge before its deadline')
+            await asyncio.sleep(.05)
+
+    async def ready_continuation(self,record,intent_valid):
+        from adaptive_inference.desktop.continuation_host import selection
+        child=record['child'];boot_path=record['diagnostics']/f'bootstrap-{child.pid}.json'
+        # Keep the existing readiness bound, independent of a fresh task budget.
+        limit=min(execution_now()+240,record['grant']['deadline_monotonic'])
+        record['readiness_deadline_monotonic']=limit
+        while True:
+            if self.runtime._stopping or not intent_valid():return
+            if child.poll() is not None:
+                raise RuntimeError('Selected readiness exceeded the retained worker lifetime')
+            if execution_now()>=limit:raise TimeoutError('Selected readiness boundary deadline')
+            if self.host.controller.fault:raise RuntimeError('Controller fault during selected readiness')
+            if boot_path.exists() and self.host.controller():break
+            await asyncio.sleep(.05)
+        mailbox=record['mailbox']
+        await self.runtime._database(lambda:self.runtime._observe(mailbox),self.runtime._install)
+        if self.runtime._stopping or not intent_valid():return
+        boot=await asyncio.to_thread(read,boot_path)
+        cp=self.runtime._cache.snapshot.target
+        if (boot['pid']!=child.pid or boot['task_id']!=cp.task_id
+                or boot['registration_id']!=record['identity'].registration_id
+                or boot['owner_epoch']!=cp.owner_epoch or boot['deadline_clock']!=CLOCK_ID
+                or boot['deadline_monotonic']!=record['grant']['deadline_monotonic']):
+            raise RuntimeError('Selected bootstrap identity differs from its retained owner')
+        if self.runtime._stopping or not intent_valid() or not self.host.controller():return
+        value={'ready':True,'model':MODEL,'quality':QUALITY,'gateway':self.plan['gateway'],
+               'gateway_instance':self.host.gateway.instance,'observed_at':time.time(),
+               'selected_execution':selection(record['grant'])}
+        await asyncio.to_thread(rec.save,self.first_ready,value)
+
     async def interact(self):
         # No invented admission or automatic Resume: the worker's saved demand,
         # host capacity and authenticated GUI intent must agree first.
         while not self.transport.lifecycle()['stop_requested']:
+            selected = None if self.continuation is None else self.continuation.current
+            if self.runtime._transitioning or selected is not None and selected['child'] is None:
+                if self.gui.process.poll() is not None:
+                    raise RuntimeError('GUI exited without confirmed Stop')
+                await asyncio.sleep(.05)
+                continue
             code = self.worker.poll()
             if code is None:
                 if execution_now() >= self.deadline:
@@ -457,7 +626,7 @@ class DesktopComposition:
                 self.result['task_completed'] = outcome == 'task_completed'
                 self.result['execution_expired'] = outcome == 'paused_budget_expired'
                 await self.runtime.refresh()
-            if (code is None and not self.first_ready.exists()
+            if (selected is None and code is None and not self.first_ready.exists()
                     and (self.work/f'bootstrap-{self.worker.pid}.json').exists()
                     and self.registry.observe(self.identity.registration_id).eligible
                     and self.host.controller()):
@@ -475,7 +644,11 @@ class DesktopComposition:
             raise RuntimeError('Cooperative Stop lacks exact verified closure')
 
     def validate_cleanup(self):
-        self.stop_binding._verify_exit(self.worker.poll())
+        selected = None if self.continuation is None else self.continuation.current
+        if selected is not None and selected['child'] is None:
+            self.continuation.verify_unlaunched(selected)
+        else:
+            self.stop_binding._verify_exit(self.worker.poll())
         if (self.result.get('joined_obligation_errors')
                 or self.result.get('retained_obligations_joined') is not True
                 or self.result.get('gui_cleanup',{}).get('closed') is not True

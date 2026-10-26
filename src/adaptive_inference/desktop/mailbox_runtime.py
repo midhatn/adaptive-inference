@@ -15,7 +15,7 @@ import time
 from adaptive_inference.control_mailbox import Mailbox, MailboxSnapshot, ControlNotRecorded, execution_outcome
 from adaptive_inference.demand import _label
 from adaptive_inference.execution_clock import CLOCK_ID, execution_now
-from adaptive_inference.desktop.control_transport import PreparedTask
+from adaptive_inference.desktop.control_transport import PreparedTask, execution as checked_execution, Refused
 from adaptive_inference.desktop.ui_intent import UIBinding, UIIntentGate
 
 
@@ -73,17 +73,22 @@ class MailboxRuntime:
         self._cache = self._binding = self._stop_task = self._stop_receipt = None
         self._stopping = False
         self._clock, self.max_age_s, self.max_pending = clock, max_age_s, max_pending
+        self._selection = {'execution_id': prepared.task_id, 'execution_generation': 0}
+        self._transitioning = False
+        self._continuation = None
+        self._continuation_tasks = set()
+        self._continuation_phase, self._continuation_request = 'unavailable', None
 
     def _owner(self):
         if threading.current_thread() is not self._thread or asyncio.get_running_loop() is not self._loop:
             raise RuntimeError('Runtime belongs to its original host loop and thread')
 
-    def _observe(self):
+    def _observe(self, mailbox=None):
         started = self._clock()
-        snapshot = self.mailbox.snapshot()
+        snapshot = (self.mailbox if mailbox is None else mailbox).snapshot()
         return Observation(snapshot, started, self._clock())
 
-    def _check_observation(self, observation):
+    def _check_observation(self, observation, *, execution=None):
         now = self._clock()
         if (type(observation) is not Observation or type(observation.snapshot) is not MailboxSnapshot
                 or not all(_number(value) for value in (observation.started, observation.finished, now))
@@ -91,7 +96,8 @@ class MailboxRuntime:
                 or now - observation.started > self.max_age_s):
             raise RuntimeUnavailable('Observation is unavailable or stale')
         target = observation.snapshot.target
-        if target.task_id != self.prepared.task_id or target.prompt != self.prepared.objective:
+        selected = self._selection if execution is None else execution
+        if target.task_id != selected['execution_id'] or target.prompt != self.prepared.objective:
             raise RuntimeUnavailable('Original task binding changed')
         return observation.snapshot
 
@@ -157,16 +163,44 @@ class MailboxRuntime:
         return await asyncio.shield(task)
 
     async def refresh(self):
-        await self._database(self._observe, self._install)
+        if self._transitioning:
+            return self.status()
+        mailbox = self.mailbox
+        def apply(observation):
+            # A refresh accepted before Continue still joins its real read. Once
+            # transition has fenced intent, that old observation is no longer a
+            # candidate for installation or admission. Actual read failures and
+            # all mutation/Resume-authority apply paths retain their usual guards.
+            if self._transitioning and mailbox is self.mailbox:
+                return None
+            return self._install(observation)
+        await self._database(lambda: self._observe(mailbox), apply)
         return self.status()
 
-    async def submit_control(self, request_id, command):
+    def selected_execution(self):
+        self._owner()
+        return dict(self._selection)
+
+    def _require_execution(self, execution):
+        self._owner()
+        value = dict(self._selection) if execution is None else checked_execution(execution)
+        if value != self._selection:
+            raise Refused('stale_execution')
+        return value
+
+    async def submit_control(self, request_id, command, *, execution=None, _transition=False):
+        selected = self._require_execution(execution)
+        if self._transitioning and not _transition:
+            raise Refused('continuation_unavailable')
+        mailbox, requester = self.mailbox, self._requester
         def submit():
             # Verify actual immutable task binding before the first possible
             # mutation, even if a caller did not explicitly refresh at startup.
-            self._check_observation(self._observe())
-            value = self.mailbox.submit(self._requester, request_id, command)
-            return value, self._observe()
+            if selected != self._selection:
+                raise Refused('stale_execution')
+            self._check_observation(self._observe(mailbox))
+            value = mailbox.submit(requester, request_id, command)
+            return value, self._observe(mailbox)
 
         def apply(value):
             result, observation = value
@@ -175,7 +209,9 @@ class MailboxRuntime:
 
         return await self._database(submit, apply)
 
-    async def resume_authority(self, request_id):
+    async def resume_authority(self, request_id, *, execution=None):
+        self._require_execution(execution)
+        mailbox = self.mailbox
         _label(request_id, 'request_id')
 
         def authority(observation):
@@ -191,11 +227,14 @@ class MailboxRuntime:
                 return False
             return snapshot.status(request_id)['outcome'] in ('pending', 'applied')
 
-        return await self._database(self._observe, authority)
+        return await self._database(lambda: self._observe(mailbox), authority)
 
     def status(self):
         self._owner()
-        snapshot = self._check_observation(self._cache)
+        # A retained transition projects its exact captured snapshot explicitly;
+        # this branch does not grant admission from an expired observation.
+        snapshot = (self._cache.snapshot if self._transitioning and self._cache is not None
+                    else self._check_observation(self._cache))
         host = self.lifecycle.status()
         if (type(host) is not dict or set(host) != {'host_phase', 'waiting_reason'}
                 or host['host_phase'] not in ('starting', 'ready', 'parked', 'restoring', 'stopping', 'closed', 'fault')
@@ -219,9 +258,13 @@ class MailboxRuntime:
             reason = 'budget_expired'
         elif demand['state'] == 'paused':
             reason = 'paused'
+        phase, request = self._continuation_phase, self._continuation_request
+        if not self._transitioning and self._continuation is not None and execution_outcome(target.state) is not None:
+            phase, request = ('blocked', request) if self._faults else ('available', None)
         return {'host_phase': host['host_phase'], 'task_status': target.state['status'],
                 'task_revision': target.revision, 'demand': None if demand is None else demand['state'],
                 'waiting_reason': reason,
+                **self._selection, 'continuation': {'phase': phase, 'request_id': request},
                 'controls': [_control(snapshot.status(row['request_id'])) for row in snapshot.requests]}
 
     def session_is_live(self, session_id):
@@ -245,8 +288,9 @@ class MailboxRuntime:
         self._owner()
         self.gate.deactivate(self._intent)
 
-    def activate_intent(self, session_id):
+    def activate_intent(self, session_id, *, execution=None):
         self._owner()
+        self._require_execution(execution)
         if self._stopping or not self.session_is_live(session_id):
             raise RuntimeUnavailable('Session cannot activate during close or identity loss')
         # Authority was read asynchronously. A seal may follow that read, but
@@ -298,9 +342,18 @@ class MailboxRuntime:
     async def _finish_stop(self):
         # No new database work enters after the fence; already accepted work
         # must finish, even if the original UI handler disappeared.
+        while self._continuation_tasks:
+            await asyncio.gather(*(asyncio.shield(task) for task in tuple(self._continuation_tasks)), return_exceptions=True)
+            await asyncio.sleep(0)
         while self._pending:
             await asyncio.gather(*(asyncio.shield(task) for task in tuple(self._pending)), return_exceptions=True)
             await asyncio.sleep(0)
+        if (self._continuation is not None and any(not row['authorization_resolved']
+                for row in self._continuation.records.values())):
+            raise RuntimeUnavailable('Continuation authorization outcome is unresolved')
+        if (self._continuation is not None and self._continuation.current is not None
+                and self.lifecycle._selected is not self._continuation.current):
+            raise RuntimeUnavailable('Committed selection lacks its lifecycle obligation')
         value = await self.lifecycle.cooperative_stop()
         self._stop_receipt = deepcopy(value)
         if (type(value) is not dict or set(value) != {'worker_joined', 'host_closed', 'uncertain', 'fault'}
@@ -309,6 +362,38 @@ class MailboxRuntime:
         if self._faults and value['fault'] is None:
             value = {**value, 'fault': 'runtime_operation_failed'}
         return deepcopy(value)
+
+    def configure_continuation(self, continuation):
+        self._owner()
+        if self._continuation is not None or continuation.runtime is not self or self._stopping:
+            raise RuntimeUnavailable('Continuation must bind this runtime once')
+        self._continuation = continuation
+
+    async def _retain_continuation(self, operation):
+        self._owner()
+        if self._continuation is None:
+            raise Refused('continuation_unavailable')
+        task = self._loop.create_task(operation())
+        self._continuation_tasks.add(task)
+        def completed(done):
+            try:
+                if done.cancelled() or done.exception() is not None and not isinstance(done.exception(), Refused):
+                    self._faults.add('continuation_failed')
+                    self._continuation_phase = 'blocked'
+                    self.gate.deactivate(self._intent)
+            finally:
+                self._continuation_tasks.discard(done)
+        task.add_done_callback(completed)
+        return await asyncio.shield(task)
+
+    async def select_continuation(self, request, *, intent_valid):
+        return await self._retain_continuation(lambda: self._continuation.select(request, intent_valid=intent_valid))
+
+    async def continue_selected(self, grant, *, intent_valid):
+        return await self._retain_continuation(lambda: self._continuation.continue_selected(grant, intent_valid=intent_valid))
+
+    async def lookup_continuation(self, request):
+        return await self._retain_continuation(lambda: self._continuation.lookup(request))
 
     def diagnostics(self):
         self._owner()

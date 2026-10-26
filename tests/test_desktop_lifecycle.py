@@ -214,11 +214,12 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         # Exercise the actual subclass observer with explicit fake dependencies.
         host = object.__new__(ControlledDesktopHost)
         host.closing = False
+        host._control_rebinding = False
         host.demand_error = None
         host.controller = SimpleNamespace(refresh_demand=demand, _demand_valid=True)
         host.control_runtime = SimpleNamespace(refresh=ui)
         observer = asyncio.create_task(host._observe_demand())
-        await entered.wait()
+        await asyncio.wait_for(entered.wait(),2)
         host.closing = True
         release.set()
         await asyncio.wait_for(observer, 1)
