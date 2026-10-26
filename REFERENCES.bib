@@ -510,3 +510,24 @@
   url = {https://github.com/alesha-pro/vllm-cross-model-kv/tree/2e27fb4bcadcbe07136a79480d50ef7d81a2e1dc},
   note = {Apache-2.0; README and repository identity inspected 2026-10-25. Targets vLLM 0.26.0. Reuse candidate only, not an author implementation, executed dependency or validated adapter here}
 }
+
+@misc{nvidiaMixedPrecisionContracts,
+  title = {NVIDIA cuBLAS compute types and matrix multiplication performance},
+  author = {{NVIDIA}},
+  url = {https://docs.nvidia.com/cuda/cublas/index.html#cublascomputetype-t},
+  note = {Inspected 2026-10-26 with the NVIDIA Matrix Multiplication Background User's Guide. Distinguishes FP16/BF16 operands from FP32 accumulation and compute limits from memory limits. Informs an existing-kernel experiment plan; no new precision mode or speedup is claimed}
+}
+
+@misc{pytorchHalfAccumulation,
+  title = {PyTorch CUDA semantics: Full FP16 accumulation in FP16 GEMMs},
+  author = {{PyTorch contributors}},
+  url = {https://docs.pytorch.org/docs/main/notes/cuda.html#full-fp16-accumulation-in-fp16-gemms},
+  note = {Inspected 2026-10-26. Full-half accumulation and reduced-precision reductions are distinct backend controls. They do not configure the separately compiled native Strata engine. No PyTorch setting is enabled by this assessment}
+}
+
+@misc{ad106mGpuEnvironment,
+  title = {AD106M Windows Secure Boot validation},
+  author = {{midhatn and gpu-unlock-ada contributors}},
+  url = {https://github.com/midhatn/gpu-unlock-ada/blob/440d22f9c84ddcf3aad41db1b5c181cf3c1321dd/docs/ad106m-windows-secure-boot.md},
+  note = {Inspected 2026-10-26 at PR 64 head 440d22f9c84ddcf3aad41db1b5c181cf3c1321dd, including windows/validation/gemm_probe.py. Records a user-reported hardware environment change and bounded dense-GEMM evidence, not IQ3_S application performance. No implementation copied or driver modification performed}
+}
