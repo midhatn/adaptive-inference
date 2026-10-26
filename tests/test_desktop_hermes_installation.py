@@ -60,7 +60,7 @@ class SDKOriginTests(unittest.TestCase):
         root=Path(__file__).resolve().parents[1]
         pins=json.loads((root/'provenance/paused-budget-expiry/clock-successor/sdk-references.json').read_text())['files']
         pins.update(json.loads((root/'provenance/paused-budget-expiry/thread-successor/sdk-references.json').read_text())['files'])
-        self.assertEqual(len(SDK_FILES),20)
+        self.assertEqual(len(SDK_FILES),21)
         for relative in self.paths:self.assertEqual(SDK_FILES[relative],pins[relative])
 
     def test_preloaded_second_sdk_is_refused_for_each_newly_relied_module_even_with_equal_bytes(self):

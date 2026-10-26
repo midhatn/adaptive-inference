@@ -9,6 +9,10 @@ import task_file_alias_lineage as lineage
 from paused_expiry_lineage import fingerprint
 
 
+def old_source(relative):
+    return lineage.safe_wait_predecessor(relative, (lineage.ROOT / relative).read_bytes())
+
+
 def method(tree, key):
     class_name, name = key.split('.')
     cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == class_name)
@@ -23,7 +27,7 @@ class PauseObservationLineageTests(unittest.TestCase):
         for relative, row in rows['modules'].items():
             with self.subTest(relative=relative):
                 before = (lineage.ROOT / row['predecessor_source']).read_bytes()
-                current = (lineage.ROOT / 'src/adaptive_inference' / relative).read_bytes()
+                current = old_source('src/adaptive_inference/' + relative)
                 self.assertEqual(row['predecessor_source'], lineage.OBSERVATION_BASE + relative)
                 self.assertEqual(lineage.observation_predecessor(relative, current), before)
                 self.assertEqual(lineage.observation_predecessor(relative, before), before)
@@ -35,7 +39,7 @@ class PauseObservationLineageTests(unittest.TestCase):
         names = set()
         for relative, row in lineage.observation_record()['modules'].items():
             before = ast.parse((lineage.ROOT / row['predecessor_source']).read_bytes())
-            current = ast.parse((lineage.ROOT / 'src/adaptive_inference' / relative).read_bytes())
+            current = ast.parse(old_source('src/adaptive_inference/' + relative))
             for key, pins in row['changed_methods'].items():
                 cls, current_method = method(current, key); _, old_method = method(before, key)
                 names.add(key)
@@ -50,7 +54,7 @@ class PauseObservationLineageTests(unittest.TestCase):
 
     def test_unreviewed_bytes_and_ast_are_refused(self):
         for relative in lineage.observation_record()['modules']:
-            data = (lineage.ROOT / 'src/adaptive_inference' / relative).read_bytes()
+            data = old_source('src/adaptive_inference/' + relative)
             with self.subTest(relative=relative):
                 with self.assertRaisesRegex(AssertionError, 'complete task-handover source'):
                     lineage.observation_predecessor(relative, data + b'\n# unreviewed\n')
@@ -64,7 +68,7 @@ class PauseObservationLineageTests(unittest.TestCase):
 
     def test_changed_predecessor_identity_and_path_are_refused(self):
         for relative in lineage.observation_record()['modules']:
-            current = (lineage.ROOT / 'src/adaptive_inference' / relative).read_bytes()
+            current = old_source('src/adaptive_inference/' + relative)
             for field in ('predecessor_source', 'predecessor_sha256', 'predecessor_ast_sha256'):
                 rows = lineage.observation_record(); rows['modules'][relative][field] = '0' * 64
                 with self.subTest(relative=relative, field=field), mock.patch.object(lineage, 'observation_record', return_value=rows):
@@ -74,7 +78,7 @@ class PauseObservationLineageTests(unittest.TestCase):
     def test_original_helper_and_test_assertions_restore_byte_exact(self):
         for relative, row in lineage.observation_record()['support'].items():
             with self.subTest(relative=relative):
-                current = (lineage.ROOT / relative).read_bytes()
+                current = old_source(relative)
                 before = (lineage.ROOT / row['predecessor_source']).read_bytes()
                 self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
                 self.assertEqual(hashlib.sha256(before).hexdigest(), row['predecessor_sha256'])
@@ -106,7 +110,7 @@ class PauseObservationLineageTests(unittest.TestCase):
         for relative in all_names - set(rows['modules']):
             row = expected['modules'].get(relative)
             pin = row['successor_sha256'] if row else {**expected['unchanged_runtime'], **expected['new_modules']}[relative]['sha256']
-            self.assertEqual(hashlib.sha256((lineage.ROOT / 'src/adaptive_inference' / relative).read_bytes()).hexdigest(), pin)
+            self.assertEqual(hashlib.sha256(old_source('src/adaptive_inference/' + relative)).hexdigest(), pin)
 
 
 if __name__ == '__main__':

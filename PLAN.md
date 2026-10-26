@@ -1246,20 +1246,30 @@ installation checks, but the next real IQ3_S trial exhausted the original
 900-second inventory budget before a second task could be selected. One model
 request and one input read completed; no output was written. Foreground activity
 kept the engine parked for most sampled observations. The worker then reported
-an active control-wait deadline, which has no verified safe-expiry receipt in the
-current lifecycle. The host correctly refused to call that a cooperative product
+an active control-wait deadline, which had no verified safe-expiry receipt in that
+installed lifecycle. The host correctly refused to call that a cooperative product
 stop, although the native owner independently confirmed release of all nine
 retained processes. Preserve this failed run and its missing acknowledgement;
 neither a clean OS process list nor intact saved state replaces the required
 worker receipt. See the [bounded failure evidence](docs/evidence.md#ordinary-task-handover-development).
 
-Before another full trial, reproduce expiry at a safe admission wait with the
-existing owner and SDK paths. Reuse their checkpoint, resource-close and
-execution-seal mechanisms to establish an explicit truthful outcome without
-dispatching the pending request, extending the budget, cancelling the objective
-or accepting uncertain effects. Keep paused-expiry semantics and earlier
-acceptance unchanged. Separately, M3 must qualify useful progress during light
-foreground work; merely parking correctly does not establish everyday coexistence.
+The [safe-wait repair](docs/admission-wait-recovery.md) is now implemented and
+independently checked at the source/component boundary. It reuses the checkpoint,
+resource-close and execution-seal mechanisms for a distinct expiry outcome. Two
+deadline crossings before dispatch carry an explicit expiry type; failures after
+an operation begins retain their reconciliation requirement. Explicit Continue
+preserves the old pending request and records its supersession before the pinned
+SDK rebuilds from saved conversation. Request and effect limits remain cumulative.
+
+Before another full trial, complete the assembled source, provenance and package
+gates, then qualify a fresh isolated installation with the same IQ3_S quality.
+Exercise ordinary-task waiting, truthful expiry, explicit continuation and Stop,
+with separate original-task acceptance before a second task can be admitted.
+Do not extend a budget silently, accept uncertain effects or reuse old installed
+receipts for the new package. Preserve the failed run, earlier paused-expiry
+acceptance and all source identities. Separately, M3 must qualify useful progress
+during light foreground work; merely parking correctly does not establish
+everyday coexistence.
 
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the

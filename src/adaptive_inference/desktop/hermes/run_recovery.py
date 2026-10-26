@@ -270,7 +270,8 @@ def _worker(args, *, selected=None):
     from adaptive_inference.control_mailbox import Mailbox,ACKS
     from adaptive_inference.desktop.hermes.control_bridge import Controls
     from adaptive_inference.desktop.hermes.service_stop import (
-        StopAtPause, ProductStop, STOP_EXIT, PAUSED_EXPIRY_EXIT, finalize_paused_expiry)
+        StopAtPause, ProductStop, STOP_EXIT, PAUSED_EXPIRY_EXIT, finalize_paused_expiry,
+        WAIT_EXPIRY_EXIT, finalize_admission_wait_expiry)
     from hermes_state import SessionDB
     from adaptive_inference.desktop.installation import verify_sdk_imports
     verify_sdk_imports(plan['sdk'])
@@ -375,11 +376,18 @@ def _worker(args, *, selected=None):
         try:
             yield
         except rec.ControlStop as exc:
-            if (exc.control_state != 'paused' or exc.reason != 'control_wait_deadline'
-                    or controller is None):
+            if exc.reason != 'control_wait_deadline' or controller is None:
                 raise
-            proof = finalize_paused_expiry(controller, agent=agent, db=db,
-                provider=provider, session_db_factory=SessionDB)
+            if exc.control_state == 'paused':
+                finalizer = finalize_paused_expiry
+            elif (exc.control_state == 'active'
+                    and owned.checkpoint.state.get('phase') == 'waiting_admission'):
+                finalizer = finalize_admission_wait_expiry
+            else:
+                raise
+            proof = finalizer(controller, agent=agent, db=db,
+                provider=provider, session_db_factory=SessionDB,
+                **({'selected': selected} if finalizer is finalize_admission_wait_expiry else {}))
             # The exact objects were successfully closed while owned. Outer
             # finally must not close them again after sealing the checkpoint.
             agent = db = provider = None
@@ -621,13 +629,18 @@ def _worker(args, *, selected=None):
             result.update(passed=False, completed=False, cleanup_errors=cleanup_errors)
             result.pop('service_stopped', None)
         if pending_expiry is not None:
+            from adaptive_inference.desktop.hermes.service_stop import WAIT_EXPIRY_RECEIPT_SCHEMA
+            waiting = pending_expiry['schema'] == WAIT_EXPIRY_RECEIPT_SCHEMA
             result.update(passed=False, controlled=True, completed=False,
-                control_state='paused', control_reason='paused_budget_expired',
-                paused_expiry=pending_expiry, provider_calls=len(boundary.rows)-starting_requests)
+                control_state='waiting_admission' if waiting else 'paused',
+                control_reason='admission_wait_budget_expired' if waiting else 'paused_budget_expired',
+                **({'admission_wait_expiry': pending_expiry} if waiting else {'paused_expiry': pending_expiry}),
+                provider_calls=len(boundary.rows)-starting_requests)
         if selected is not None:
             result['continuation_cleanup_verified'] = selected.cleanup_proof is not None and not cleanup_errors
         rec.save(diagnostics / f'result-{os.getpid()}.json', result)
     return (2 if result.get('cleanup_errors') else 0 if result['passed'] else STOP_EXIT if result.get('service_stopped') is True
+            else WAIT_EXPIRY_EXIT if result.get('admission_wait_expiry') is not None
             else PAUSED_EXPIRY_EXIT if result.get('paused_expiry') is not None
             else 3 if result.get('control_state')=='cancelled' else 2)
 

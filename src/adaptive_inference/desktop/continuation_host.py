@@ -15,7 +15,7 @@ from adaptive_inference.control_mailbox import Mailbox, execution_outcome
 from adaptive_inference.demand import DemandIdentity, DemandRegistry, Registration
 from adaptive_inference.desktop.control_transport import Refused
 from adaptive_inference.desktop.hermes import recovery as rec
-from adaptive_inference.desktop.hermes.continuation import ContinuationAuthority, require, AUTHORITY
+from adaptive_inference.desktop.hermes.continuation import ContinuationAuthority, require, AUTHORITY, LINK
 from adaptive_inference.desktop.hermes.continuation_worker import scope_for, read_json
 from adaptive_inference.desktop.hermes.service_stop import WorkerStopBinding, PAUSED_EXPIRY_EXIT
 from adaptive_inference.execution_clock import CLOCK_ID, execution_now
@@ -37,6 +37,18 @@ class SelectedWorkerStopBinding(WorkerStopBinding):
         require(self.original.task_id == grant['payload']['successor_id']
                 and self.deadline == grant['deadline_monotonic'], 'Selected Stop binding differs from grant')
 
+    def _admission_wait_identity(self, cp):
+        require(type(self) is SelectedWorkerStopBinding, 'Exact selected expiry binding required')
+        self._original(cp)
+        grant = self.grant
+        require(cp.task_id == grant['payload']['successor_id']
+                and self.deadline == grant['deadline_monotonic']
+                and cp.metadata.get(LINK) == {
+                    'logical_task_id': self.authority.logical_task_id, 'execution_id': cp.task_id,
+                    'execution_generation': grant['execution_generation'],
+                    'command_id': grant['payload']['command_id'], 'payload_sha256': grant['payload_sha256']},
+                'Admission expiry is not the current selected execution')
+
     def _verify_exit(self, code):
         # The base verifier retains all legacy Stop/expiry/native artifact rules.
         outcome = super()._verify_exit(code)
@@ -46,6 +58,10 @@ class SelectedWorkerStopBinding(WorkerStopBinding):
         authority = self.authority.store.load(self.authority.task_id)
         require(authority.owner_epoch is None and authority.operation is None
                 and not authority.requires_reconciliation, 'Selected worker authority is not released')
+        current = self.authority._authority(authority)
+        require(current['selected_execution'] == cp.task_id
+                and current['execution_generation'] == grant['execution_generation'],
+                'Exited worker is not the current selected execution')
         path = self.diagnostics/f'result-{self.worker.pid}.json'
         result = read_json(path)
         require(result.get('selected_execution') == {**selection(grant), 'logical_task_id': self.authority.logical_task_id}
@@ -263,7 +279,8 @@ class HostContinuation:
                         row['payload']['operation'].get('details',{}).get('payload_sha256')==grant['payload_sha256']
                         for row in authority.store.history(authority.task_id)), 'Unlaunched authority acquired a worker lifetime')
         old = record['release']
-        require(old['worker_joined'] is True and old['outcome']=='paused_budget_expired',
+        require(old['worker_joined'] is True
+                and old['outcome'] in ('paused_budget_expired', 'admission_wait_budget_expired'),
                 'Unlaunched selection lacks retained predecessor release')
         return {'worker_joined':True,'safe_checkpoint':True,'outcome':'selected_not_launched',
                 'exit_code':None,'uncertain':False,'fault':None}

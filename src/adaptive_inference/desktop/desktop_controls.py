@@ -405,7 +405,7 @@ class DesktopControlLifecycle:
                 and value.get('safe_checkpoint') is True and value.get('uncertain') is False
                 and value.get('fault') is None
                 and value.get('outcome') in ('service_stopped', 'task_completed', 'task_cancelled', 'paused_budget_expired',
-                                             'selected_not_launched'))
+                                             'admission_wait_budget_expired', 'selected_not_launched'))
 
     def _gui_safe(self):
         value = self.gui_receipt

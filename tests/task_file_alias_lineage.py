@@ -116,7 +116,7 @@ def observation_inputs(root=None):
     root = ROOT if root is None else root
     rows = observation_record(root)
     return [root / OBSERVATION_ARCHIVE / 'source-lineage.json',
-            *(root / row['predecessor_source'] for row in rows['modules'].values())]
+            *(root / row['predecessor_source'] for row in rows['modules'].values())] + safe_wait_inputs(root)
 
 
 def _observation_before(relative, root=None):
@@ -136,6 +136,7 @@ def _observation_before(relative, root=None):
 
 
 def observation_predecessor(relative, data, root=None):
+    data = safe_wait_predecessor('src/adaptive_inference/' + relative, data, root=root)
     row, before = _observation_before(relative, root)
     if row is None:
         return data
@@ -145,6 +146,7 @@ def observation_predecessor(relative, data, root=None):
 
 
 def restore_observation(tree, relative, root=None):
+    tree = restore_safe_wait(tree, 'src/adaptive_inference/' + relative, root=root)
     row, before = _observation_before(relative, root)
     if row is None:
         return tree
@@ -154,3 +156,83 @@ def restore_observation(tree, relative, root=None):
     if current != row['successor_ast_sha256']:
         raise AssertionError('Changed complete task-handover AST (pause-observation): ' + relative)
     return ast.parse(before)
+
+# Explicit safe-wait/Continue delta; earlier manifests and projections stay exact.
+SAFE_WAIT_ARCHIVE = 'provenance/task-handover/safe-admission-wait'
+
+
+def safe_wait_record(root=None):
+    root = ROOT if root is None else root
+    return json.loads((root / SAFE_WAIT_ARCHIVE / 'source-lineage.json').read_bytes())
+
+
+def safe_wait_inputs(root=None):
+    root = ROOT if root is None else root
+    rows = safe_wait_record(root)
+    return [root / SAFE_WAIT_ARCHIVE / 'source-lineage.json',
+            *(root / row['predecessor_source'] for row in rows['files'].values()),
+            *(root / row['source'] for group in rows['historical_views'].values() for row in group)]
+
+
+def _safe_wait_before(relative, root=None):
+    root = ROOT if root is None else root
+    row = safe_wait_record(root)['files'].get(relative)
+    if row is None:
+        return None, None
+    expected = SAFE_WAIT_ARCHIVE + '/predecessor/' + relative
+    if (not relative.startswith(('src/adaptive_inference/', 'tests/'))
+            or '\\' in relative or any(part in ('', '.', '..') for part in relative.split('/'))
+            or row['predecessor_source'] != expected):
+        raise AssertionError('Changed safe-wait predecessor path')
+    before = (root / expected).read_bytes()
+    if hashlib.sha256(before).hexdigest() != row['predecessor_sha256']:
+        raise AssertionError('Changed safe-wait predecessor bytes')
+    if fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']:
+        raise AssertionError('Changed safe-wait predecessor AST')
+    return row, before
+
+
+def safe_wait_predecessor(relative, data, root=None):
+    row, before = _safe_wait_before(relative, root)
+    if row is None:
+        return data
+    pin = hashlib.sha256(data).hexdigest()
+    if pin not in (row['predecessor_sha256'], row['successor_sha256']):
+        if _safe_wait_historical(relative, pin, fingerprint(ast.parse(data)), root):
+            return data
+        raise AssertionError('Changed complete task-handover source (safe-wait runtime source): ' + relative)
+    ast_pin = row['predecessor_ast_sha256'] if pin == row['predecessor_sha256'] else row['successor_ast_sha256']
+    if fingerprint(ast.parse(data)) != ast_pin:
+        raise AssertionError('Changed complete task-handover AST (safe-wait): ' + relative)
+    return before
+
+
+def restore_safe_wait(tree, relative, root=None):
+    row, before = _safe_wait_before(relative, root)
+    if row is None:
+        return tree
+    current = fingerprint(tree)
+    if current == row['predecessor_ast_sha256']:
+        return tree
+    if current != row['successor_ast_sha256']:
+        if _safe_wait_historical(relative, None, current, root):
+            return tree
+        raise AssertionError('Changed complete task-handover AST (safe-wait): ' + relative)
+    return ast.parse(before)
+
+
+def _safe_wait_historical(relative, byte_pin, ast_pin, root=None):
+    """Permit exact already-reconstructed history, never an unknown source edit."""
+    root = ROOT if root is None else root
+    for row in safe_wait_record(root)['historical_views'].get(relative, []):
+        if row['ast_sha256'] != ast_pin or byte_pin is not None and row['sha256'] != byte_pin:
+            continue
+        source = row['source']
+        if (not source.startswith('provenance/') or not source.endswith('/'+relative)
+                or '\\' in source or any(part in ('', '.', '..') for part in source.split('/'))):
+            raise AssertionError('Changed safe-wait historical source path')
+        data = (root/source).read_bytes()
+        if hashlib.sha256(data).hexdigest() != row['sha256'] or fingerprint(ast.parse(data)) != row['ast_sha256']:
+            raise AssertionError('Changed safe-wait historical source identity')
+        return True
+    return False

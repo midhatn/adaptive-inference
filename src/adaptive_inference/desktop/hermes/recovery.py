@@ -16,7 +16,7 @@ import time
 from adaptive_inference.task_store import ReconciliationRequired
 from adaptive_inference.feedback import Verdict
 from adaptive_inference.control_mailbox import execution_outcome
-from adaptive_inference.desktop.hermes.admission import AdmissionStop
+from adaptive_inference.desktop.hermes.admission import AdmissionStop, AdmissionWaitExpired
 
 
 class RecoveryStop(BaseException):
@@ -335,6 +335,16 @@ class Recovery:
                 return self.provider.execute(request,**callbacks)
             except RecoveryStop:
                 raise
+            except AdmissionWaitExpired as exc:
+                # Provider's second clock read can cross the deadline after
+                # Controls returned. Only this typed pre-begin path may reuse
+                # safe-wait finalization; an inflight/transport stop is unknown.
+                state = self.owned.checkpoint.state
+                if (self.controls is not None and self.owned.checkpoint.operation is None
+                        and state.get('phase') == 'waiting_admission'
+                        and state.get('pending_request') is not None):
+                    raise ControlStop('active', 'control_wait_deadline') from exc
+                raise RecoveryStop(str(exc)) from exc
             except AdmissionStop as exc:
                 raise RecoveryStop(str(exc)) from exc
             except Exception as exc:

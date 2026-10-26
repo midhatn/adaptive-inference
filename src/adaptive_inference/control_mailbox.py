@@ -26,6 +26,7 @@ COMMANDS = {'pause': 'paused', 'resume': 'waiting', 'cancel': 'cancelled'}
 EXECUTION_OUTCOME = 'adaptive_inference.execution_outcome.v1'
 EXPIRY_SCHEMA = 'adaptive.paused-budget-expiry.v1'
 CLOCK_EXPIRY_SCHEMA = 'adaptive.paused-budget-expiry.v2'
+WAIT_EXPIRY_SCHEMA = 'adaptive.admission-wait-budget-expiry.v1'
 
 
 class ControlBlocked(TaskStoreError):
@@ -47,6 +48,8 @@ def execution_outcome(state):
     if EXECUTION_OUTCOME not in state:
         return None
     value = state[EXECUTION_OUTCOME]
+    if type(value) is dict and value.get('schema') == WAIT_EXPIRY_SCHEMA:
+        return _admission_wait_outcome(state, value)
     keys = {'schema', 'deadline_monotonic', 'pause_observed_at_monotonic', 'sealed_at_monotonic',
             'owner_epoch', 'pre_seal_revision', 'pre_seal_state_sha256', 'pause_request_id',
             'pause_sequence', 'control_prefix_sha256'}
@@ -78,6 +81,65 @@ def execution_outcome(state):
     del before[EXECUTION_OUTCOME]
     if value['pre_seal_state_sha256'] != _execution_digest(before):
         raise ControlBlocked('Sealed execution state changed')
+    return deepcopy(value)
+
+
+def admission_wait_state(state):
+    """Validate the bounded saved, undispatched request without rebuilding it."""
+    request = state.get('pending_request')
+    if (state.get('status') != 'pending' or state.get('phase') != 'waiting_admission'
+            or state.get('deadline_clock') != CLOCK_ID
+            or type(request) is not dict or not request or request.get('stream', False) is not False
+            or type(request.get('model')) is not str or not request['model']
+            or type(request.get('messages')) is not list or not request['messages']
+            or type(state.get('native_history')) is not list or not state['native_history']):
+        raise ControlBlocked('Execution is not a saved admission wait')
+    try:
+        encoded = json.dumps(request, sort_keys=True, ensure_ascii=False, allow_nan=False).encode()
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ControlBlocked('Saved admission request is malformed') from exc
+    if len(encoded) > 512 * 1024:
+        raise ControlBlocked('Saved admission request exceeds its bound')
+    for name, maximum in (('requests', 8), ('attempts', 8), ('admission_attempts', 32)):
+        if type(state.get(name)) is not int or not 0 <= state[name] <= maximum:
+            raise ControlBlocked('Admission accounting is malformed')
+    if (type(state.get('admission_deferrals')) is not list
+            or state['requests'] != state['attempts']
+            or state['admission_attempts'] != state['requests'] + len(state['admission_deferrals'])):
+        raise ControlBlocked('Admission accounting differs')
+    return _execution_digest(request)
+
+
+def _admission_wait_outcome(state, value):
+    keys = {'schema', 'deadline_clock', 'deadline_monotonic', 'sealed_at_monotonic',
+            'owner_epoch', 'pre_seal_revision', 'pre_seal_state_sha256',
+            'pending_request_sha256', 'native_history_sha256', 'control_prefix_sha256',
+            'request_count', 'ack_count', 'demand_state'}
+    if set(value) != keys or value['deadline_clock'] != CLOCK_ID:
+        raise ControlBlocked('Admission expiry schema or clock changed')
+    request_hash = admission_wait_state(state)
+    times = [value['deadline_monotonic'], value['sealed_at_monotonic']]
+    try:
+        valid = all(type(t) in (int, float) and math.isfinite(t) and t > 0 for t in times)
+    except OverflowError:
+        valid = False
+    if (not valid or not times[0] <= times[1]
+            or type(state.get('deadline_monotonic')) not in (int, float)
+            or state['deadline_monotonic'] != times[0]
+            or type(value['owner_epoch']) is not str or not re.fullmatch('[0-9a-f]{32}', value['owner_epoch'])
+            or type(value['pre_seal_revision']) is not int or not 0 <= value['pre_seal_revision'] < MAX_REVISIONS - 1
+            or type(value['request_count']) is not int or not 0 <= value['request_count'] <= MAX_REQUESTS
+            or type(value['ack_count']) is not int or not 0 <= value['ack_count'] <= value['request_count']
+            or value['demand_state'] not in ('waiting', 'active')):
+        raise ControlBlocked('Admission expiry identity or time changed')
+    for name in ('pre_seal_state_sha256', 'pending_request_sha256', 'native_history_sha256', 'control_prefix_sha256'):
+        if type(value[name]) is not str or not re.fullmatch('[0-9a-f]{64}', value[name]):
+            raise ControlBlocked('Admission expiry digest is malformed')
+    before = deepcopy(state); del before[EXECUTION_OUTCOME]
+    if (value['pre_seal_state_sha256'] != _execution_digest(before)
+            or value['pending_request_sha256'] != request_hash
+            or value['native_history_sha256'] != _execution_digest(state['native_history'])):
+        raise ControlBlocked('Sealed admission wait changed')
     return deepcopy(value)
 
 
@@ -283,6 +345,77 @@ class Mailbox:
                     reconciliation=False, epoch=mailbox_owner._epoch, event='checkpoint')
             mailbox_owner.checkpoint = saved
         return self.status(request_id)
+
+    def admission_wait_candidate(self, snapshot, *, allow_sealed=False):
+        """Strict coherent state only; not proof of cleanup or a resource grant."""
+        if type(snapshot) is not MailboxSnapshot:
+            raise ControlBlocked('Exact mailbox snapshot required')
+        cp = snapshot.target
+        requests, receipts = list(snapshot.requests), list(snapshot.receipts)
+        demand = _record(cp, self.identity)
+        marker = execution_outcome(cp.state)
+        if (cp.task_id != self.identity.task_id or cp.operation is not None or cp.requires_reconciliation
+                or demand is None or demand['state'] not in ('waiting', 'active')
+                or demand != snapshot.demand or self._acks(cp, requests) != receipts
+                or any(row['command'] != 'pause' for row in requests[len(receipts):])
+                or marker is not None and (not allow_sealed or marker['schema'] != WAIT_EXPIRY_SCHEMA)):
+            raise ControlBlocked('Admission wait or unapplied control prefix is unsafe')
+        pending_hash = admission_wait_state(cp.state)
+        if marker is None:
+            if type(cp.owner_epoch) is not str or not re.fullmatch('[0-9a-f]{32}', cp.owner_epoch):
+                raise ControlBlocked('Admission wait has no exact current owner')
+        elif (marker['control_prefix_sha256'] != control_prefix_digest(requests, receipts)
+                or marker['request_count'] != len(requests) or marker['ack_count'] != len(receipts)
+                or marker['demand_state'] != demand['state']):
+            raise ControlBlocked('Sealed admission control prefix changed')
+        return {'owner_epoch': cp.owner_epoch, 'target_revision': cp.revision,
+                'state_sha256': _execution_digest(cp.state), 'pending_request_sha256': pending_hash,
+                'native_history_sha256': _execution_digest(cp.state['native_history']),
+                'demand_state': demand['state'], 'requests': requests, 'receipts': receipts}
+
+    def _owned_admission_wait(self, db, owned):
+        if (type(owned) is not OwnedTask or owned._store.path != self.store.path
+                or owned.checkpoint.task_id != self.identity.task_id):
+            raise OwnershipError('Admission expiry requires the exact target owner')
+        cp = owned._check(db, owned.checkpoint.revision)
+        mailbox, requests = self._request_checkpoint(self.store._read(db, self.task_id))
+        receipts = self._acks(cp, requests)
+        snapshot = MailboxSnapshot(cp, mailbox.revision, tuple(requests), tuple(receipts),
+                                  deepcopy(_record(cp, self.identity)))
+        return cp, self.admission_wait_candidate(snapshot)
+
+    def admission_wait_observation(self, owned):
+        with self.store._connection() as db:
+            return self._owned_admission_wait(db, owned)[1]
+
+    def seal_admission_wait(self, owned, *, observed_wait, deadline_monotonic,
+                            sealed_at_monotonic, deadline_clock):
+        """Preserve the saved request; only late unapplied Pause may extend controls."""
+        with self.store._connection(write=True) as db:
+            cp, current = self._owned_admission_wait(db, owned)
+            if (type(observed_wait) is not dict or set(observed_wait) != set(current)
+                    or any(type(observed_wait[k]) is not type(v) or observed_wait[k] != v
+                           for k, v in current.items() if k not in ('requests', 'receipts'))
+                    or observed_wait['receipts'] != current['receipts']
+                    or type(observed_wait['requests']) is not list
+                    or current['requests'][:len(observed_wait['requests'])] != observed_wait['requests']
+                    or deadline_clock != CLOCK_ID or cp.metadata.get('deadline_clock') != CLOCK_ID):
+                raise ControlBlocked('Observed admission checkpoint changed during cleanup')
+            marker = {'schema': WAIT_EXPIRY_SCHEMA, 'deadline_clock': CLOCK_ID,
+                'deadline_monotonic': deadline_monotonic, 'sealed_at_monotonic': sealed_at_monotonic,
+                'owner_epoch': cp.owner_epoch, 'pre_seal_revision': cp.revision,
+                'pre_seal_state_sha256': current['state_sha256'],
+                'pending_request_sha256': current['pending_request_sha256'],
+                'native_history_sha256': current['native_history_sha256'],
+                'control_prefix_sha256': control_prefix_digest(current['requests'], current['receipts']),
+                'request_count': len(current['requests']), 'ack_count': len(current['receipts']),
+                'demand_state': current['demand_state']}
+            state = deepcopy(cp.state); state[EXECUTION_OUTCOME] = marker
+            execution_outcome(state)
+            saved = self.store._write(db, cp, state=state, operation=None,
+                reconciliation=False, epoch=owned._epoch, event='checkpoint')
+        owned.checkpoint = saved
+        return deepcopy(marker)
 
     def _paused_execution(self, db, owned, *, allow_pending=False):
         if (type(owned) is not OwnedTask or owned._store.path != self.store.path

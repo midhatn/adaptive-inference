@@ -180,7 +180,12 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         c.runtime=SimpleNamespace(refresh=mock.AsyncMock(),_transitioning=False,_cache=SimpleNamespace(snapshot=
             SimpleNamespace(target=cp,demand={'state':'active'},requests=(),receipts=())))
         c.transport=SimpleNamespace(lifecycle=lambda:{'stop_requested':False})
-        with self.assertRaises(TimeoutError):await c.interact()
+        # A ready active checkpoint is not a supported admission wait. Detailed
+        # wait identity/prefix checks use real bindings in the safe-wait tests.
+        with mock.patch.object(c,'_admission_wait_expiry_candidate',
+                               new=mock.AsyncMock(return_value=False)) as wait_candidate:
+            with self.assertRaises(TimeoutError):await c.interact()
+        wait_candidate.assert_awaited_once()
 
     async def test_prepare_order_uses_one_job_and_real_initial_pause(self):
         await self._prepare_order()

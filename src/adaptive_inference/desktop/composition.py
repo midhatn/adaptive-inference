@@ -481,6 +481,25 @@ class DesktopComposition:
             and snapshot.requests[-1]['command'] == 'pause' and snapshot.receipts[-1]['outcome'] == 'applied'
             and (marker is None or marker['deadline_monotonic'] == self.deadline))
 
+    async def _admission_wait_expiry_candidate(self):
+        # Like the paused path this retains finalization, never authorizes work.
+        from adaptive_inference.control_mailbox import ControlBlocked
+        await self.runtime.refresh()
+        snapshot = self.runtime._cache.snapshot
+        cp = snapshot.target
+        if (cp.task_id != self.stop_binding.original.task_id
+                or cp.state.get('deadline_monotonic') != self.deadline
+                or cp.state.get('deadline_clock') != CLOCK_ID):
+            return False
+        # Pure immutable binding checks; durable selected lifetime verification
+        # still belongs to the exact exit verifier after the retained join.
+        self.stop_binding._admission_wait_identity(cp)
+        try:
+            self.stop_binding.mailbox.admission_wait_candidate(snapshot, allow_sealed=True)
+        except ControlBlocked:
+            return False
+        return True
+
     def assert_continuation_parked(self, release):
         controller,scheduler = self.host.controller,self.host.gateway.scheduler
         owner = None if controller.identity is None else controller.identity['owner_id']
@@ -495,7 +514,7 @@ class DesktopComposition:
 
     async def continuation_release(self, request, intent_valid, *, task_handover=False):
         from adaptive_inference.desktop.control_transport import Refused
-        from adaptive_inference.desktop.hermes.service_stop import PAUSED_EXPIRY_EXIT
+        from adaptive_inference.desktop.hermes.service_stop import PAUSED_EXPIRY_EXIT, WAIT_EXPIRY_EXIT
         child,binding = self.worker,self.stop_binding
         if request['execution_id'] != binding.original.task_id:
             raise Refused('stale_execution')
@@ -505,9 +524,12 @@ class DesktopComposition:
             if execution_now()>=limit:raise TimeoutError('Previous worker has not released')
             await asyncio.sleep(.05)
         code=await self.join_child(child)
-        if not task_handover and code!=PAUSED_EXPIRY_EXIT:raise Refused('continuation_unavailable')
+        if not task_handover and code not in (PAUSED_EXPIRY_EXIT, WAIT_EXPIRY_EXIT):
+            raise Refused('continuation_unavailable')
         outcome=await asyncio.to_thread(binding._verify_exit,code)
-        allowed = ('task_completed','task_cancelled') if task_handover else ('paused_budget_expired',)
+        expired = {PAUSED_EXPIRY_EXIT: 'paused_budget_expired',
+                   WAIT_EXPIRY_EXIT: 'admission_wait_budget_expired'}
+        allowed = ('task_completed','task_cancelled') if task_handover else (expired[code],)
         if outcome not in allowed:raise Refused('continuation_unavailable')
         while self.host.controller.state!='parked':
             if self.runtime._stopping or not intent_valid():raise Refused('continuation_blocked')
@@ -655,7 +677,8 @@ class DesktopComposition:
             code = self.worker.poll()
             if code is None:
                 if execution_now() >= self.deadline:
-                    if not await self._paused_expiry_candidate():
+                    if (not await self._paused_expiry_candidate()
+                            and not await self._admission_wait_expiry_candidate()):
                         self.remaining()
                 else:
                     self.remaining()
@@ -672,7 +695,7 @@ class DesktopComposition:
                     self.result.update(spec.completion(self.stop_binding.run/'work',cp.state['tools'],cp.state['output']))
                     self.result['task_spec_sha256'] = spec.sha256
                 self.result['task_completed'] = outcome == 'task_completed'
-                self.result['execution_expired'] = outcome == 'paused_budget_expired'
+                self.result['execution_expired'] = outcome in ('paused_budget_expired', 'admission_wait_budget_expired')
                 await self.runtime.refresh()
             if (selected is None and code is None and not self.first_ready.exists()
                     and (self.work/f'bootstrap-{self.worker.pid}.json').exists()

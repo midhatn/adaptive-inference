@@ -2,6 +2,27 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Safe resource-wait expiry and continuation development
+
+The [resource-wait recovery extension](admission-wait-recovery.md) handles a
+saved, undispatched request whose execution budget expires. Source and component
+checks cover its exact checkpoint and control prefix, verified cleanup, explicit
+continuation, repeated execution generations and preserved cumulative limits.
+The predecessor keeps the complete old request; the continuation grant records
+its digest, and the successor rebuilds through the supported saved-conversation
+entry. A later error after
+an operation starts still requires reconciliation.
+
+The public [saved-history SDK check](../examples/validation/hermes_saved_history/README.md)
+exercises the actual pinned Hermes conversation prologue, request builder and
+middleware with a scripted terminal response and checked import origins. It is
+not a full agent or model trial. The [source lineage](../provenance/task-handover/safe-admission-wait/README.md)
+preserves the narrow predecessor inputs needed to reproduce earlier acceptance.
+
+Installed IQ3_S qualification of this extension remains pending. These checks
+do not establish native resource release, GUI behavior, physical reboot recovery,
+performance, autonomous media completion or a pass for the failed trial below.
+
 ## Ordinary-task handover development
 
 The installed two-task IQ3_S scenario remains unqualified. On 26 October 2026,

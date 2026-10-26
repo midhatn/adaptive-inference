@@ -315,7 +315,8 @@ class TaskAdmission:
                 _require(type(code) is int, 'Continued child is not known to have exited')
                 outcome = type(verifier)._verify_exit(verifier, code)
                 allowed = ('task_completed', 'task_cancelled') if stop_binding is None else (
-                    'task_completed', 'task_cancelled', 'service_stopped', 'paused_budget_expired')
+                    'task_completed', 'task_cancelled', 'service_stopped', 'paused_budget_expired',
+                    'admission_wait_budget_expired')
                 _require(outcome in allowed,
                          'Continued task has not completed or been explicitly cancelled')
             yield cp

@@ -180,14 +180,20 @@ class ProtocolTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((await self.call(other))['error'],'stale_execution')
         self.assertEqual(self.runtime.selection_count,1)
     async def test_queued_old_control_is_rechecked_before_dispatch(self):
-        await self.host._serial.acquire()
         request=self.frame('pause',request_id='old')
-        task=asyncio.create_task(self.call(request))
-        await asyncio.sleep(.005)
-        self.runtime.selected=selected('new',1)
-        self.host._serial.release()
-        result=await task
-        self.assertEqual(result['error'],'stale_execution');self.assertEqual(self.runtime.commits,[])
+        # Hold dispatch until the bounded response proves this exact operation
+        # is retained; scheduler timing cannot turn the response into an error.
+        async with self.host._serial:
+            reply=await self.call(request)
+            self.assertEqual(reply,{'ok':True,'state':'pending','request_id':'old',
+                'recorded':None,'execution_id':'task','execution_generation':0})
+            operation=self.host._records['old']['task']
+            self.assertFalse(operation.done())
+            self.runtime.selected=selected('new',1)
+        with self.assertRaisesRegex(ct.Refused,'^stale_execution$'):
+            await asyncio.wait_for(asyncio.shield(operation),.5)
+        self.assertEqual(await self.call(request),{'ok':False,'error':'stale_execution'})
+        self.assertEqual(self.runtime.commits,[])
         self.assertEqual(self.host.lifecycle()['unknown_mutations'],0)
     async def test_inflight_old_control_reply_stamped_old_never_activates_new(self):
         self.runtime.release=asyncio.Event();request=self.frame('resume',request_id='old')

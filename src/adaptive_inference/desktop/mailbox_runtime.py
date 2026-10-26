@@ -12,7 +12,7 @@ import math
 import threading
 import time
 
-from adaptive_inference.control_mailbox import Mailbox, MailboxSnapshot, ControlNotRecorded, execution_outcome
+from adaptive_inference.control_mailbox import Mailbox, MailboxSnapshot, ControlNotRecorded, ControlBlocked, execution_outcome, WAIT_EXPIRY_SCHEMA
 from adaptive_inference.demand import _label
 from adaptive_inference.execution_clock import CLOCK_ID, execution_now
 from adaptive_inference.desktop.control_transport import PreparedTask, execution as checked_execution, Refused
@@ -276,7 +276,20 @@ class MailboxRuntime:
             reason = 'paused'
         phase, request = self._continuation_phase, self._continuation_request
         if not self._transitioning and self._continuation is not None and execution_outcome(target.state) is not None:
-            phase, request = ('blocked', request) if self._faults else ('available', None)
+            marker = execution_outcome(target.state)
+            available = not self._faults
+            if marker['schema'] == WAIT_EXPIRY_SCHEMA:
+                # Cached availability is not a grant. Selection verifies the
+                # joined worker and rechecks the predecessor in its transaction.
+                try:
+                    self.mailbox.admission_wait_candidate(snapshot, allow_sealed=True)
+                except ControlBlocked:
+                    available = False
+                else:
+                    available = (available and not self._stopping and not self._task_retired
+                        and target.owner_epoch is None and target.state['requests'] < 8
+                        and target.state['admission_attempts'] < 32)
+            phase, request = ('available', None) if available else ('blocked', request)
         return {'host_phase': host['host_phase'], 'task_status': target.state['status'],
                 'task_revision': target.revision, 'demand': None if demand is None else demand['state'],
                 'waiting_reason': reason,

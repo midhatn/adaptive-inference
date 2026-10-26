@@ -14,7 +14,7 @@ from pathlib import Path
 import threading
 import time
 
-from adaptive_inference.control_mailbox import Mailbox, ACKS, execution_outcome, control_prefix_digest
+from adaptive_inference.control_mailbox import Mailbox, ACKS, execution_outcome, control_prefix_digest, WAIT_EXPIRY_SCHEMA
 from adaptive_inference.demand import _label, _record
 from adaptive_inference.task_store import TerminalTaskError
 from adaptive_inference.desktop.hermes.recovery import ControlStop, RecoveryStop, digest, resumable, verify_artifacts, verify_tool_rows
@@ -24,6 +24,11 @@ SCHEMA = 'adaptive.cooperative-worker-stop.v1'
 PAUSED_EXPIRY_EXIT = 5
 EXPIRY_RECEIPT_SCHEMA = 'adaptive.cooperative-paused-expiry.v1'
 CLOCK_EXPIRY_RECEIPT_SCHEMA = 'adaptive.cooperative-paused-expiry.v2'
+WAIT_EXPIRY_EXIT = 6
+WAIT_EXPIRY_RECEIPT_SCHEMA = 'adaptive.cooperative-admission-wait-expiry.v1'
+WAIT_RECEIPT_BINDINGS = ('deadline_clock', 'deadline_monotonic', 'sealed_at_monotonic',
+    'pending_request_sha256', 'native_history_sha256', 'control_prefix_sha256',
+    'request_count', 'ack_count', 'demand_state')
 
 from adaptive_inference.execution_clock import CLOCK_ID, execution_now
 
@@ -81,6 +86,55 @@ def _finalize_paused_expiry_locked(recovery, *, agent, db, provider, session_db_
             'sealed_at_monotonic', 'pause_request_id', 'pause_sequence', 'control_prefix_sha256')},
         'task_completed': False,
         **({'deadline_clock': CLOCK_ID} if controls.deadline_clock else {})}
+
+
+def finalize_admission_wait_expiry(recovery, *, agent, db, provider, session_db_factory,
+                                   clock=None, pid=None, selected=None):
+    """Close and seal one owned execution's known, undispatched admission wait."""
+    controls = recovery.controls
+    activity = None if controls is None else controls.wait_activity
+    options = dict(agent=agent, db=db, provider=provider,
+                   session_db_factory=session_db_factory, clock=clock, pid=pid, selected=selected)
+    if activity is not None:
+        with activity.cleanup_scope(agent, verify=True):
+            return _finalize_admission_wait_locked(recovery, **options)
+    if not recovery.lock.acquire(blocking=False):
+        raise RecoveryStop('SDK callback still owns recovery; admission expiry is unconfirmed')
+    try:
+        return _finalize_admission_wait_locked(recovery, **options)
+    finally:
+        recovery.lock.release()
+
+
+def _finalize_admission_wait_locked(recovery, *, agent, db, provider, session_db_factory,
+                                    clock=None, pid=None, selected=None):
+    from adaptive_inference.desktop.hermes.continuation import LINK
+    owned, controls = recovery.owned, recovery.controls
+    if (controls is None or controls.deadline_clock != CLOCK_ID or db is not recovery.db
+            or owned.checkpoint.metadata.get('deadline_clock') != CLOCK_ID
+            or type(owned.checkpoint.state.get('pending_request')) is not dict
+            or owned.checkpoint.state['pending_request'].get('model') != owned.checkpoint.metadata.get('model')):
+        raise RecoveryStop('Owned clock-bound admission wait required')
+    if LINK in owned.checkpoint.metadata or selected is not None:
+        from adaptive_inference.desktop.hermes.continuation_worker import SelectedWorker
+        if type(selected) is not SelectedWorker:
+            raise RecoveryStop('Selected admission expiry requires its retained worker lifetime')
+        selected.verify_wait_expiry(recovery)
+    clock = clock or controls.clock
+    now = clock()
+    if type(now) not in (int, float) or not math.isfinite(now) or now < controls.deadline:
+        raise RecoveryStop('Admission execution budget has not expired')
+    observed = controls.mailbox.admission_wait_observation(owned)
+    close_safe_resources(recovery, agent=agent, db=db, provider=provider,
+                         session_db_factory=session_db_factory)
+    marker = controls.mailbox.seal_admission_wait(owned, observed_wait=observed,
+        deadline_monotonic=controls.deadline, sealed_at_monotonic=clock(), deadline_clock=controls.deadline_clock)
+    state = owned.checkpoint.state
+    return {'schema': WAIT_EXPIRY_RECEIPT_SCHEMA, 'task_id': owned.checkpoint.task_id,
+        'registration_id': controls.mailbox.identity.registration_id,
+        'pid': os.getpid() if pid is None else pid, 'owner_epoch': owned.checkpoint.owner_epoch,
+        'revision': owned.checkpoint.revision, 'state_sha256': digest(state),
+        **{key: marker[key] for key in WAIT_RECEIPT_BINDINGS}, 'task_completed': False}
 
 
 def close_safe_resources(recovery, *, agent, db, provider, session_db_factory):
@@ -265,6 +319,12 @@ class WorkerStopBinding:
                 or not deadline_ok):
             raise RecoveryStop('Original task identity/accounting binding changed')
 
+    def _admission_wait_identity(self, cp):
+        from adaptive_inference.desktop.hermes.continuation import LINK
+        if type(self) is not WorkerStopBinding or LINK in cp.metadata:
+            raise RecoveryStop('Original admission expiry binding required')
+        self._original(cp)
+
     def _verify_exit(self, code):
         snapshot = self.mailbox.snapshot()
         cp = snapshot.target
@@ -294,6 +354,38 @@ class WorkerStopBinding:
                     or snapshot.demand is None or snapshot.demand['state'] != 'cancelled'):
                 raise RecoveryStop('Cancellation exit lacks durable cancelled demand')
             return 'task_cancelled'
+        if code == WAIT_EXPIRY_EXIT:
+            self._admission_wait_identity(cp)
+            proof = result.get('admission_wait_expiry')
+            marker = execution_outcome(cp.state)
+            keys = {'schema', 'task_id', 'registration_id', 'pid', 'owner_epoch', 'revision',
+                    'state_sha256', 'task_completed'} | set(WAIT_RECEIPT_BINDINGS)
+            self.mailbox.admission_wait_candidate(snapshot, allow_sealed=True)
+            now = execution_now()
+            if (self.deadline_clock != CLOCK_ID or type(proof) is not dict or set(proof) != keys
+                    or marker is None or marker['schema'] != WAIT_EXPIRY_SCHEMA
+                    or proof['schema'] != WAIT_EXPIRY_RECEIPT_SCHEMA
+                    or proof['task_id'] != cp.task_id or proof['registration_id'] != self.mailbox.identity.registration_id
+                    or type(proof['pid']) is not int or proof['pid'] != self.worker.pid
+                    or type(proof['revision']) is not int or proof['revision'] != cp.revision
+                    or cp.revision != marker['pre_seal_revision'] + 1
+                    or proof['owner_epoch'] != marker['owner_epoch'] or result.get('owner_epoch') != marker['owner_epoch']
+                    or proof['state_sha256'] != digest(cp.state)
+                    or any(type(proof[key]) is not type(marker[key]) or proof[key] != marker[key]
+                           for key in WAIT_RECEIPT_BINDINGS)
+                    or not math.isfinite(now) or now < marker['sealed_at_monotonic']
+                    or marker['deadline_monotonic'] != self.deadline
+                    or result.get('passed') is not False or result.get('completed') is not False
+                    or result.get('controlled') is not True or result.get('control_state') != 'waiting_admission'
+                    or result.get('control_reason') != 'admission_wait_budget_expired'
+                    or proof['task_completed'] is not False
+                    or any(key in result for key in ('error', 'error_type', 'error_chain_types', 'error_chain_private',
+                        'traceback_private', 'cleanup_error', 'cleanup_errors', 'expiry_finalization_failed'))
+                    or (type(self) is WorkerStopBinding and 'selected_execution' in result)):
+                raise RecoveryStop('Admission expiry proof differs from its released checkpoint')
+            from adaptive_inference.desktop.hermes.recovery import verify_validation_rows
+            verify_validation_rows(cp.state['native_history'], cp.state, cp.metadata.get('pre_effect_validator'))
+            return 'admission_wait_budget_expired'
         if code == PAUSED_EXPIRY_EXIT:
             proof = result.get('paused_expiry')
             marker = execution_outcome(cp.state)

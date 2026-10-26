@@ -111,6 +111,20 @@ class SelectedWorker:
                 'Selected cleanup proof differs from the owned checkpoint')
         self.cleanup_proof = deepcopy(proof)
 
+    def verify_wait_expiry(self, recovery):
+        """Only the retained selected owner may seal its undispatched request."""
+        require(recovery.owned is self.owned and recovery.run == self.run
+                and recovery.work == self.run/'work', 'Selected expiry recovery scope changed')
+        self.exact_plan()
+        require(self.authority_owner.checkpoint.operation == self.lifecycle.operation
+                and self.lifecycle.operation['details'] == {
+                    'schema': 'adaptive.selected-worker-lifetime.v1',
+                    'execution_id': self.execution_id,
+                    'execution_generation': self.execution_generation,
+                    'payload_sha256': self.grant['payload_sha256']},
+                'Selected expiry lost its retained lifetime')
+        self.load_wire()
+
     def finish(self, returncode):
         self.exact_plan()
         require(self.cleanup_proof is not None, 'Selected worker cleanup is unconfirmed')
