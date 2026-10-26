@@ -1261,8 +1261,15 @@ an operation begins retain their reconciliation requirement. Explicit Continue
 preserves the old pending request and records its supersession before the pinned
 SDK rebuilds from saved conversation. Request and effect limits remain cumulative.
 
-Before another full trial, complete the assembled source, provenance and package
-gates, then qualify a fresh isolated installation with the same IQ3_S quality.
+The assembled Windows source, provenance and package gates passed. Hosted
+Linux/macOS checks then exposed a test-clock mismatch: the simulated expiry used
+900 seconds while receipt verification read the host's unrelated performance
+counter. The fixture now carries its simulated clock through verification;
+the runtime still rejects future seals and nonfinite observations. The affected
+34 tests pass on Python 3.11/3.12, including explicit invalid-clock cases.
+Confirm the corrected hosted checks, then qualify a fresh isolated installation
+with the same IQ3_S quality. This test correction changes no runtime module,
+installed deadline or previously recorded qualification result.
 Exercise ordinary-task waiting, truthful expiry, explicit continuation and Stop,
 with separate original-task acceptance before a second task can be admitted.
 Do not extend a budget silently, accept uncertain effects or reuse old installed

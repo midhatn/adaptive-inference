@@ -92,6 +92,17 @@ class WorkerWaitTests(unittest.TestCase):
         path.write_bytes(original)
         self.assertEqual(self.verify_exit(6), 'admission_wait_budget_expired')
 
+    def test_receipt_clock_refuses_before_seal_and_nonfinite_observations(self):
+        self.assertEqual(self.exercise('expiry'), 6, self.result)
+        for now in (899.999, float('nan'), float('inf'), float('-inf')):
+            self.fixture.now = now
+            with self.subTest(now=now), self.assertRaises(rec.RecoveryStop):
+                self.verify_exit(6)
+        for now in (900.0, 901.0):
+            self.fixture.now = now
+            with self.subTest(now=now):
+                self.assertEqual(self.verify_exit(6), 'admission_wait_budget_expired')
+
     def test_original_claim_exit_failure_cannot_publish_safe_wait(self):
         from adaptive_inference import task_store
         actual = task_store._FileLock.close

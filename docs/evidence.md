@@ -19,6 +19,16 @@ middleware with a scripted terminal response and checked import origins. It is
 not a full agent or model trial. The [source lineage](../provenance/task-handover/safe-admission-wait/README.md)
 preserves the narrow predecessor inputs needed to reproduce earlier acceptance.
 
+Hosted Linux/macOS checks on `0cacf969` exposed four fixture errors: a synthetic
+900-second expiry was checked against the host performance counter. Python
+documents that counter's [undefined reference point](https://docs.python.org/3.11/library/time.html#time.perf_counter).
+The same four errors were reproduced locally with a simulated host clock of
+100 seconds. The corrected fixture uses its existing synthetic clock for the
+receipt check too. All 34 affected tests then passed on Python 3.11/3.12; an
+additional long-host-clock run passed on 3.11. The added regression still rejects
+pre-seal and nonfinite observations. Runtime code and expiry guards are unchanged;
+the earlier hosted failures remain part of the history.
+
 Installed IQ3_S qualification of this extension remains pending. These checks
 do not establish native resource release, GUI behavior, physical reboot recovery,
 performance, autonomous media completion or a pass for the failed trial below.

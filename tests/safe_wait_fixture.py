@@ -206,7 +206,11 @@ class SafeWaitCases(unittest.TestCase):
             if request_before_verify:
                 binding._request()  # Actual host ordering: poll says alive, worker already relinquished.
             return binding._verify_exit(code)
-        return asyncio.run(run())
+        # The worker uses this synthetic clock; receipt verification must use it
+        # too. A host performance counter has an unrelated, undefined origin.
+        with mock.patch('adaptive_inference.desktop.hermes.service_stop.execution_now',
+                        side_effect=lambda: self.fixture.now):
+            return asyncio.run(run())
 
     def record(self, **details):
         snapshot = self.fixture.box.snapshot()
