@@ -1166,15 +1166,38 @@ hold until the remaining failure is understood.
 A deterministic SQLite probe also found a separate actionable control race:
 Resume can be recorded between the worker consuming Pause and reading its expiry
 observation. The observation then raises `ControlBlocked`, leaving a legitimate
-Resume pending. This reproduces a product defect; it does not yet identify the
-missing exception from the hosted child. Reuse the existing control loop to
-recheck a validated pending command, while keeping malformed state, ownership
-checks and atomic expiry sealing strict. The design follows SQLite's
+Resume pending. The diagnostic head `144a980d223d49bc5389a47d8ecec497d4ddeebd`
+finished with 13 successes and one Windows Python 3.11 failure. Its complete
+1,886-byte child traceback now shows that same `Controls.poll` →
+`paused_execution_observation` → `_paused_execution` failure. Both children
+joined normally, with exits 5 and 1; no watchdog or forced cleanup caused it.
+The earlier c104 run still lacks its original exception text.
+The repair now uses the existing control loop to recheck a validated pending
+command, while keeping malformed state, ownership checks and atomic expiry
+sealing strict. The design follows SQLite's
 [snapshot isolation](https://www.sqlite.org/isolation.html) and the existing
 wait-loop pattern described in Python's
 [condition-variable guidance](https://docs.python.org/3.12/library/threading.html#condition-objects).
-Validate deterministic Resume/Cancel arrivals, deadline behavior and corruption
-rejection before publishing the runtime repair or rebuilding the installed trial.
+The 83 targeted tests pass on both Python 3.11 and 3.12. Independent review
+repeated those tests and added two real-SQLite checks of the actual activity
+callback: no false activity stamp and no progress with interrupted authority.
+Both interpreters passed all 85 checks, with no skips. The two runtime modules
+and three changed methods are isolated; strict sealing is unchanged. All 60
+source-preservation checks also passed, with independent review. All 1,143
+combined source tests and all 81 provenance tests then passed on Windows Python
+3.11.9, with unchanged source bytes during both runs. Build and install a new
+wheel before the fresh IQ3_S trial. The prior installed wheel does not contain
+this repair.
+
+The first public reproduction prerequisite is now implemented in the existing
+distribution checker: `--output` writes a wheel-derived installed identity after
+complete module/RECORD/name/version and existing source/license checks. Eight
+archive/CLI regressions passed on Python 3.11 and 3.12, including the metadata
+version mismatch found in independent review. The existing release wheel also
+produced exactly the previously reviewed 60-module installation identity. This
+closes identity generation for the public installed SDK command; it does not
+complete the other deployment receipts or retroactively establish build-time
+source stability. See [reproduction instructions](docs/reproducing.md#expected-identity-for-installed-checks).
 
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
