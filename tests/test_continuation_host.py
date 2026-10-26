@@ -208,6 +208,22 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
                 row.update(exit_code=item['child'].returncode,joined=item['child'] in joined,
                            cleanup_killed=item['child'] in killed,
                            join_observed_utc=datetime.now(timezone.utc).isoformat())
+                # The existing opt-in CI receipt must outlive temporary logs.
+                # Capture only this exact retained label, after join and close.
+                log_path=c.root/(item['kind']+'.log')
+                try:
+                    matching=[stream for stream in c.logs if Path(stream.name)==log_path]
+                    if len(matching)!=1 or not matching[0].closed:
+                        raise ValueError('Retained child log handle differs or remains open')
+                    with log_path.open('rb') as stream:
+                        stream.seek(0,os.SEEK_END);total=stream.tell()
+                        stream.seek(max(0,total-65536));tail=stream.read(65536)
+                    row['output_log']={'name':log_path.name,'total_bytes':total,
+                        'captured_bytes':len(tail),'truncated':total>len(tail),
+                        'tail_sha256':hashlib.sha256(tail).hexdigest(),
+                        'tail_utf8':tail.decode('utf-8',errors='replace')}
+                except (OSError,ValueError) as exc:
+                    row['output_log']={'name':log_path.name,'capture_error':type(exc).__name__}
                 rows.append(row)
             output=Path(destination);output.mkdir(exist_ok=True)
             (output/(self._testMethodName+'.json')).write_text(json.dumps({'test':self.id(),'children':rows,

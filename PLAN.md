@@ -1149,6 +1149,33 @@ Three bounded local replays of the exact continuation test passed on Python
 That does not explain the hosted error. Keep it open for diagnostic evidence
 instead of changing the runtime or increasing waits without a reproduced cause.
 
+The corrected-path head `c1044ed42158182382576597892dae6da3d9d8f9` then passed
+13 hosted checks; the remaining Windows Python 3.12 job reproduced the same
+continuation error. The new artifact records the original child exiting with
+code 5 and the selected child with code 1, both joined without forced cleanup.
+The selected child ran for roughly half a second, ruling out its 15-second
+emergency watchdog in that occurrence. The merged child output was still removed
+with the temporary fixture directory. The existing optional receipt hook now
+retains up to 64 KiB of that output after the child is joined and its stream is
+closed. Six diagnostic regressions and the unchanged affected child test passed
+on Python 3.11 and 3.12; 13 source-preservation checks also passed on both.
+Independent review confirmed the bounded capture and unchanged runtime. All
+assertions and time limits remain in place. Keep the installed model trial on
+hold until the remaining failure is understood.
+
+A deterministic SQLite probe also found a separate actionable control race:
+Resume can be recorded between the worker consuming Pause and reading its expiry
+observation. The observation then raises `ControlBlocked`, leaving a legitimate
+Resume pending. This reproduces a product defect; it does not yet identify the
+missing exception from the hosted child. Reuse the existing control loop to
+recheck a validated pending command, while keeping malformed state, ownership
+checks and atomic expiry sealing strict. The design follows SQLite's
+[snapshot isolation](https://www.sqlite.org/isolation.html) and the existing
+wait-loop pattern described in Python's
+[condition-variable guidance](https://docs.python.org/3.12/library/threading.html#condition-objects).
+Validate deterministic Resume/Cancel arrivals, deadline behavior and corruption
+rejection before publishing the runtime repair or rebuilding the installed trial.
+
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
 [precision comparison](docs/precision-research.md#reversible-qualification).

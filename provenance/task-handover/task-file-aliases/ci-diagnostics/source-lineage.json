@@ -1,0 +1,29 @@
+{
+  "alias_lineage_sha256": "c99b9386c8426ff792bd078e643e110630a5cad7ae3c3cec7ba269556e1c07ba",
+  "files": {
+    "tests/test_continuation_host.py": {
+      "changed_method": {
+        "class": "HostTests",
+        "inserted_statements_ast_sha256": "b3cd0b19feaf397477cfc16a90f7b2744d088537678164cc06f6772046ffbf29",
+        "method": "cleanup_retained",
+        "predecessor_ast_sha256": "1ddc0c2430badca9b277bd42802d16bab6a9218c23426c7d01d6021b6cf69e60",
+        "successor_ast_sha256": "954be25c48c92100f942417bf90529004fb25a7391be117b60ac807bdcd708a5"
+      },
+      "predecessor_ast_sha256": "eba91802304e2500ce72bf53e5ab364f372cb1af5a983a1543aa2e901a453862",
+      "predecessor_sha256": "d1dae632a71d74e3dcb200b6050acf86e4a38be3907ed403af857cb9e3f8ce99",
+      "predecessor_source": "provenance/task-handover/task-file-aliases/ci-diagnostics/predecessor/tests/test_continuation_host.py",
+      "successor_ast_sha256": "bf8bb9c3e7503148ff87e08f2f3cb9a10f58543533d8985f52b90bbe190b0f37",
+      "successor_sha256": "9aba2b541f1b08bca5a07fe3283d887bd53d01e4d48ae2679986aa5a20a1504d"
+    },
+    "tests/test_task_file_alias_lineage.py": {
+      "predecessor_ast_sha256": "ac66095f505d6c85b273b00fea43117538e52ba441a24103f04bc59271ff68ce",
+      "predecessor_sha256": "00d387fbe21e3f3f3d2b45560d49e39e6c62d7525a4f1e389f41f78804f07377",
+      "predecessor_source": "provenance/task-handover/task-file-aliases/ci-diagnostics/predecessor/tests/test_task_file_alias_lineage.py",
+      "successor_ast_sha256": "9bae63624f2aa621c4b9a8a4962553d92c519963dbe94c8a4eb164d839b9e3ab",
+      "successor_sha256": "10ccd83542c03624f891389510400c777a4394b08e615ed262cf811b9acdacf3"
+    }
+  },
+  "runtime_changes": [],
+  "schema": "adaptive.continuation-ci-diagnostics.source-lineage.v1",
+  "scope": "Test-only opt-in joined-child log diagnostics; no product behavior, timeout or assertion change."
+}

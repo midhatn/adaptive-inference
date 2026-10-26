@@ -9,6 +9,7 @@ import unittest
 from unittest import mock
 
 import task_file_alias_lineage as lineage
+from continuation_diagnostics_lineage import predecessor as diagnostic_predecessor
 from paused_expiry_lineage import fingerprint
 
 
@@ -111,6 +112,7 @@ class TaskFileAliasLineageTests(unittest.TestCase):
         relative, row = next(iter(rows.items()))
         old = (lineage.ROOT / row['predecessor_source']).read_bytes()
         current = (lineage.ROOT / relative).read_bytes()
+        current = diagnostic_predecessor(current)
         self.assertEqual(hashlib.sha256(old).hexdigest(), row['predecessor_sha256'])
         self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
         tree = ast.parse(current)
