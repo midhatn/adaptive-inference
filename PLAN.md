@@ -967,6 +967,9 @@ Publication feedback: Python 3.12 represents unchanged function syntax with an
 additional empty field. Reuse the existing narrow source-preservation comparison
 in standalone workflows, retain historical hashes, and check both supported
 Python versions before publication; this repair does not change runtime behavior.
+One hosted Windows fixture also exceeded its combined startup/work wait. Give
+fixture imports their own bounded readiness handshake and register retained
+cleanup before setup can fail; keep the existing work guard and product budgets.
 
 **Next functional M2 gate:** accept a different user task in the same retained
 host, with explicit task identity, isolated task/effect records and clear completed,

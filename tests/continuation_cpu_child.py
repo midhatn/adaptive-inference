@@ -42,6 +42,12 @@ def main():
     args=parser.parse_args()
     timer=threading.Timer(15,lambda:os._exit(124));timer.daemon=True;timer.start()
     if args.original:
+        # A fixture-only readiness handshake separates import startup from the
+        # existing 15-second work guard. Atomic replacement avoids partial JSON.
+        ready=args.run/'original-fixture-ready.json'
+        pending=ready.with_suffix('.tmp')
+        pending.write_text(json.dumps({'pid':os.getpid(),'work_guard_s':15}),encoding='utf-8')
+        pending.replace(ready)
         f=original_fixture.WorkerExpiryTests()
         f.run=args.run;f.now=9.;f.opened=[]
         f.args=SimpleNamespace(run=args.run,mode='worker',deadline_monotonic=10.,

@@ -14,6 +14,7 @@ from pathlib import Path
 import sqlite3
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 from types import SimpleNamespace
@@ -42,6 +43,20 @@ from test_desktop_control_transport import Reader,Writer
 CHILD=Path(__file__).with_name('continuation_cpu_child.py')
 
 
+async def wait_original_ready(child,path,*,timeout_s=30,clock=time.monotonic):
+    """Bound only this CPU fixture's import/startup; never retry its work."""
+    deadline=clock()+timeout_s
+    while True:
+        if path.exists():
+            if json.loads(path.read_text(encoding='utf-8'))!={'pid':child.pid,'work_guard_s':15}:
+                raise AssertionError('CPU fixture readiness identity differs')
+            return
+        if child.poll() is not None:
+            raise AssertionError(f'CPU fixture exited before readiness: {child.returncode}')
+        if clock()>=deadline:raise TimeoutError('CPU fixture startup deadline exceeded')
+        await asyncio.sleep(.01)
+
+
 class Adapter:
     """Explicit native boundary fixture; status never represents a real engine."""
     def __init__(self):
@@ -65,7 +80,11 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         c=product.DesktopComposition.__new__(product.DesktopComposition);self.c=c
         c.work=f.run;c.root=f.run/'host';c.root.mkdir()
         c.handles=[];c.logs=[];c.waits={};c.result={};c.store=f.store;c.plan=f.plan
-        self.child_receipts=[]
+        self.child_receipts=[];self.patches=[]
+        # unittest skips asyncTearDown when asyncSetUp fails. Register retained
+        # process/stream cleanup before launch, ahead of the seed directory's
+        # cleanup (LIFO), just as in test_task_store_verification.py.
+        self.addCleanup(self.cleanup_retained)
         launch=c.launch
         def retained_launch(command,kind):
             before=len(c.handles)
@@ -89,7 +108,10 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         c.deadline=10.;c.stop_id='original-stop';c.worker_cap=object();c.worker_exit_verified=False
         c.host_epoch='same-host';c.qualification_hold_after_report=False;c.continuation=None
         c.worker=c.launch([sys.executable,str(CHILD),'--original','--run',str(c.work)],'worker')
-        self.assertEqual(await asyncio.to_thread(c.worker.wait,10),5)
+        await wait_original_ready(c.worker,c.work/'original-fixture-ready.json')
+        # Imports have completed and the existing 15-second emergency guard is
+        # armed. Its exit124 remains a failure; only the original exit5 passes.
+        self.assertEqual(await asyncio.to_thread(c.worker.wait,18),5)
         (c.work/'wire-observations.json').write_text('[]',encoding='utf-8')
         self.old=c.store.load('orders-report');self.old_hash=rec.digest(self.old.state)
         c.intent_cap=object()
@@ -130,7 +152,7 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         c.job=SimpleNamespace(_HANDLE=object())
         c.launch_api=SimpleNamespace(handle=lambda child:child,identity=lambda child:(child.pid,child.pid*10),
             in_job=lambda child,job:True)
-        self.behavior='complete';self.pause_delay=0.;self.patches=[];self.tasks=[];self.releases=[]
+        self.behavior='complete';self.pause_delay=0.;self.tasks=[];self.releases=[]
         self.actual_popen=subprocess.Popen
         def popen(command,**kwargs):
             self.assertNotIn('--qualification-hold-after-report',command)
@@ -159,19 +181,35 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
             await asyncio.gather(asyncio.shield(c.facade._stop),return_exceptions=True)
         for task in self.tasks:
             await asyncio.gather(asyncio.shield(task),return_exceptions=True)
-        for stream in c.logs:stream.close()
-        for patch in reversed(self.patches):patch.stop()
+
+    def cleanup_retained(self):
+        # This also runs after incomplete setup or an asyncTearDown exception.
+        # A forced stop cleans a failed fixture; it never turns it into a pass.
+        c=self.c;joined=set();killed=set();errors=[]
+        for child in c.handles:
+            try:
+                if child.poll() is None:child.kill();killed.add(child)
+                child.wait(timeout=10);joined.add(child)
+            except Exception as exc:errors.append(exc)
+        for stream in c.logs:
+            try:stream.close()
+            except Exception as exc:errors.append(exc)
+        for patch in reversed(self.patches):
+            try:patch.stop()
+            except Exception as exc:errors.append(exc)
         destination=os.environ.get('CONTINUATION_TEST_RECEIPTS')
         if destination:
             rows=[]
             for item in self.child_receipts:
                 row={key:value for key,value in item.items() if key!='child'}
-                row.update(exit_code=item['child'].returncode,joined=True,
+                row.update(exit_code=item['child'].returncode,joined=item['child'] in joined,
+                           cleanup_killed=item['child'] in killed,
                            join_observed_utc=datetime.now(timezone.utc).isoformat())
                 rows.append(row)
             output=Path(destination);output.mkdir(exist_ok=True)
             (output/(self._testMethodName+'.json')).write_text(json.dumps({'test':self.id(),'children':rows,
                 'scope':'CPU Python child and actual SQLite; injected native/window/job boundaries; no SDK/model'},indent=2),encoding='utf-8')
+        if errors:raise ExceptionGroup('CPU fixture cleanup failed',errors)
 
     def request(self,ident='continue-1'):
         return {'host_epoch':'same-host','task_id':'orders-report','session_id':'session','method':'continue',
@@ -510,6 +548,51 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         with sqlite3.connect(c.store.path) as db:
             db.execute('UPDATE history SET payload=? WHERE task_id=? AND revision=?',
                 (json.dumps(completed['payload']),authority.task_id,completed['revision']))
+
+
+class FixtureStartupTests(unittest.TestCase):
+    def test_delayed_import_readiness_has_its_own_bound(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'ready.json'
+            child=SimpleNamespace(pid=123,poll=lambda:None)
+            async def release(_):
+                path.write_text(json.dumps({'pid':123,'work_guard_s':15}),encoding='utf-8')
+            # Deterministically simulate 11 seconds before ready, without wall
+            # clock sleeps or a tiny scheduling threshold on the CI runner.
+            clock=mock.Mock(side_effect=[0.,11.])
+            with mock.patch.object(asyncio,'sleep',side_effect=release) as paused:
+                asyncio.run(wait_original_ready(child,path,clock=clock))
+            self.assertEqual(paused.call_count,1)
+
+    def test_readiness_timeout_wrong_identity_and_emergency_exit_refuse(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'ready.json'
+            child=SimpleNamespace(pid=123,poll=lambda:None)
+            with self.assertRaisesRegex(TimeoutError,'startup deadline'):
+                asyncio.run(wait_original_ready(child,path,clock=mock.Mock(side_effect=[0.,31.])))
+            path.write_text(json.dumps({'pid':999,'work_guard_s':15}),encoding='utf-8')
+            with self.assertRaisesRegex(AssertionError,'identity differs'):
+                asyncio.run(wait_original_ready(child,path))
+            path.unlink();child.poll=lambda:124;child.returncode=124
+            with self.assertRaisesRegex(AssertionError,'before readiness: 124'):
+                asyncio.run(wait_original_ready(child,path))
+
+    @unittest.skipUnless(os.name=='nt','Windows retained-process setup fixture')
+    def test_async_setup_failure_still_joins_child_and_closes_streams(self):
+        class FailedSetup(HostTests):
+            async def test_injected_setup_failure(self):
+                self.fail('Test body must not run')
+        case=FailedSetup('test_injected_setup_failure')
+        result=unittest.TestResult()
+        with mock.patch.object(sys.modules[__name__],'wait_original_ready',
+                               side_effect=RuntimeError('injected readiness failure')):
+            case.run(result)
+        self.assertEqual(len(result.errors),1)
+        self.assertIn('injected readiness failure',result.errors[0][1])
+        self.assertFalse(result.failures)
+        self.assertIsNotNone(case.c.worker.returncode)
+        self.assertTrue(all(stream.closed for stream in case.c.logs))
+        self.assertFalse(case.c.work.exists())
 
 
 if __name__=='__main__':unittest.main()
