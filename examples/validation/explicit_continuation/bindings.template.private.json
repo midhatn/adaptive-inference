@@ -1,0 +1,19 @@
+{
+  "schema": "private.continuation.installed-inputs.v1",
+  "enabled": false,
+  "case": null,
+  "harness_manifest": null,
+  "inputs": {
+    "profile": null,
+    "wheel": null,
+    "source_freeze": null,
+    "source_review": null,
+    "package_review": null,
+    "deployment_gate": null,
+    "host_install": null,
+    "worker_install": null,
+    "installed_identity": null,
+    "clock_probe": null,
+    "installed_sdk": null
+  }
+}

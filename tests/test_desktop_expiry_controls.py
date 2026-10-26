@@ -43,7 +43,7 @@ class ExpiryRuntimeTests(runtime_fixture.DataFixture, unittest.IsolatedAsyncioTe
         reply=await self.completed_control('resume',request_id='too-late')
         # A pending handler is allowed; resolve the same retained request again.
         reply=await self.request('resume',request_id='too-late')
-        self.assertEqual(reply,{'ok':True,'refusal':{'request_id':'too-late','command':'resume',
+        self.assertEqual(reply,{'ok':True,**self.runtime.selected_execution(),'refusal':{'request_id':'too-late','command':'resume',
             'reason':'execution_budget_expired','recorded':False}})
         self.assertEqual(self.box.snapshot(),before)
         self.assertFalse(self.matches());self.assertFalse(self.runtime._faults)
@@ -94,7 +94,7 @@ class ExpiryClientTests(unittest.TestCase):
     client=client_fixture.ControllerTests.client
 
     def refusal(self,request):
-        return {'ok':True,'refusal':{'request_id':request.request_id,'command':request.method,
+        return {'ok':True,**request.execution(),'refusal':{'request_id':request.request_id,'command':request.method,
             'reason':'execution_budget_expired','recorded':False}}
 
     def test_refusal_is_known_not_recorded_and_never_fabricates_owner_ack(self):
@@ -106,7 +106,7 @@ class ExpiryClientTests(unittest.TestCase):
             self.assertIsNone(c.cleanup_error);self.assertTrue(c.buttons()['stop'])
 
     def test_exact_refusal_schema_rejects_unknown_ids_extra_ack_and_wrong_types(self):
-        request=cc.Request('resume','one');good=self.refusal(request)
+        request=cc.Request('resume','one','task',0);good=self.refusal(request)
         cc.validate_reply(good,request,client_fixture.bootstrap())
         for changes in ({'recorded':0},{'recorded':True},{'sequence':1},{'owner_acknowledged':False},
                         {'request_id':'other'},{'command':'pause'},{'reason':'unknown'}):

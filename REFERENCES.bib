@@ -361,7 +361,7 @@
   title = {{SQLite transaction control and atomic commit}},
   author = {{SQLite authors}},
   url = {https://www.sqlite.org/lang_transaction.html},
-  note = {Inspected with https://www.sqlite.org/atomiccommit.html on 2026-10-24. Existing TaskStore transactions are reused; control transition and acknowledgement remain separate commits. No SQLite implementation copied or new database introduced}
+  note = {Inspected with https://www.sqlite.org/atomiccommit.html on 2026-10-24. Existing TaskStore transactions are reused; control transition and acknowledgement remain separate commits. Rechecked 2026-10-26 for the atomic continuation grant/successor selection while preserving the old sealed row. No SQLite implementation copied or new database introduced}
 }
 
 @misc{sqliteTaskVerification,
@@ -382,7 +382,7 @@
   title = {{Installed Python package and retained asynchronous control lifecycle}},
   author = {{Python Packaging Authority and Python Software Foundation}},
   url = {https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/},
-  note = {Inspected 2026-10-25 with the PyPA entry-points specification and Python 3.11 isolated mode, asyncio shield and StreamWriter.wait\_closed documentation. Existing control components are promoted with one qualified module identity and validated from a regular installed wheel. Retained task and stream lifecycles are reused; no new task owner, launcher, native policy or upstream implementation is introduced}
+  note = {Inspected 2026-10-25 with the PyPA entry-points specification and Python 3.11 isolated mode, asyncio shield and StreamWriter.wait\_closed documentation. Existing control components are promoted with one qualified module identity and validated from a regular installed wheel. Retained task and stream lifecycles are reused, including the explicit continuation transition and bounded pending response while Stop joins retained work. No new task owner, launcher, native policy or upstream implementation is introduced}
 }
 
 @misc{temporalControlAcknowledgement,
@@ -530,4 +530,18 @@
   author = {{midhatn and gpu-unlock-ada contributors}},
   url = {https://github.com/midhatn/gpu-unlock-ada/blob/440d22f9c84ddcf3aad41db1b5c181cf3c1321dd/docs/ad106m-windows-secure-boot.md},
   note = {Inspected 2026-10-26 at PR 64 head 440d22f9c84ddcf3aad41db1b5c181cf3c1321dd, including windows/validation/gemm_probe.py. Records a user-reported hardware environment change and bounded dense-GEMM evidence, not IQ3_S application performance. No implementation copied or driver modification performed}
+}
+
+@misc{temporalContinueAsNew,
+  title = {{Temporal Python Continue-As-New}},
+  author = {{Temporal Technologies and contributors}},
+  url = {https://docs.temporal.io/develop/python/workflows/continue-as-new},
+  note = {MIT documentation, inspected revision 013b6f8b13f0613056250b17a5034960b3a440ae, docs/develop/python/workflows/continue-as-new.mdx, blob a1f8fe2b0b44a923375375eb6bd85ce0def73e41; official page rechecked 2026-10-26. Stable logical identity, new execution identity and handler-drain guidance adapted to existing TaskStore. No successful-workflow closure semantics, Temporal dependency or implementation copied}
+}
+
+@misc{langgraphExplicitInterruptResume,
+  title = {{LangGraph interrupts and explicit saved-state resumption}},
+  author = {{LangChain and contributors}},
+  url = {https://docs.langchain.com/oss/python/langgraph/interrupts},
+  note = {MIT documentation, inspected revision 4506df5fb4105a39b84c2b7390d21bed89e28668, src/oss/langgraph/interrupts.mdx, blob 32b562c8c91387fc5aa274700d98181cbcadbf54; official page rechecked 2026-10-26. Saved-state resume and repeated-effect hazards inform preserved effect/history checks. No dependency, copied implementation or inherited exactly-once guarantee}
 }

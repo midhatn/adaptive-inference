@@ -63,6 +63,31 @@ def _finalize_paused_expiry_locked(recovery, *, agent, db, provider, session_db_
             or owned.checkpoint.state.get('pending_request') is not None
             or owned.checkpoint.state.get('phase') not in ('ready', 'waiting_admission')):
         raise RecoveryStop('Expiry lacks its original safe paused observation')
+    close_safe_resources(recovery, agent=agent, db=db, provider=provider,
+                         session_db_factory=session_db_factory)
+    marker = controls.mailbox.seal_paused_execution(owned,
+        deadline_monotonic=controls.deadline,
+        pause_observed_at_monotonic=observation['observed_at'],
+        observed_pause=observation['pause'], sealed_at_monotonic=clock(),
+        deadline_clock=controls.deadline_clock)
+    state = owned.checkpoint.state
+    return {'schema': CLOCK_EXPIRY_RECEIPT_SCHEMA if controls.deadline_clock else EXPIRY_RECEIPT_SCHEMA,
+        'task_id': controls.mailbox.identity.task_id,
+        'registration_id': controls.mailbox.identity.registration_id,
+        'pid': os.getpid() if pid is None else pid, 'owner_epoch': owned.checkpoint.owner_epoch,
+        'revision': owned.checkpoint.revision, 'state_sha256': digest(state),
+        'native_history_sha256': digest(state['native_history']),
+        **{key: marker[key] for key in ('deadline_monotonic', 'pause_observed_at_monotonic',
+            'sealed_at_monotonic', 'pause_request_id', 'pause_sequence', 'control_prefix_sha256')},
+        'task_completed': False,
+        **({'deadline_clock': CLOCK_ID} if controls.deadline_clock else {})}
+
+
+def close_safe_resources(recovery, *, agent, db, provider, session_db_factory):
+    """Reuse the qualified bounded cleanup and native-history readback sequence."""
+    from adaptive_inference.desktop.hermes.pause_activity import reject_aborted_agent
+    reject_aborted_agent(agent)
+    owned = recovery.owned
     resumable(owned, db, recovery.work)
     flushed_tools(owned.checkpoint.state)
     # Retain before any cleanup can clear/replace this SDK field.
@@ -100,22 +125,8 @@ def _finalize_paused_expiry_locked(recovery, *, agent, db, provider, session_db_
         reader.close()
     if provider is not None:
         provider.close()
-    marker = controls.mailbox.seal_paused_execution(owned,
-        deadline_monotonic=controls.deadline,
-        pause_observed_at_monotonic=observation['observed_at'],
-        observed_pause=observation['pause'], sealed_at_monotonic=clock(),
-        deadline_clock=controls.deadline_clock)
-    state = owned.checkpoint.state
-    return {'schema': CLOCK_EXPIRY_RECEIPT_SCHEMA if controls.deadline_clock else EXPIRY_RECEIPT_SCHEMA,
-        'task_id': controls.mailbox.identity.task_id,
-        'registration_id': controls.mailbox.identity.registration_id,
-        'pid': os.getpid() if pid is None else pid, 'owner_epoch': owned.checkpoint.owner_epoch,
-        'revision': owned.checkpoint.revision, 'state_sha256': digest(state),
-        'native_history_sha256': digest(state['native_history']),
-        **{key: marker[key] for key in ('deadline_monotonic', 'pause_observed_at_monotonic',
-            'sealed_at_monotonic', 'pause_request_id', 'pause_sequence', 'control_prefix_sha256')},
-        'task_completed': False,
-        **({'deadline_clock': CLOCK_ID} if controls.deadline_clock else {})}
+    return {'resources_closed': True, 'state_sha256': digest(owned.checkpoint.state),
+            'native_history_sha256': digest(owned.checkpoint.state['native_history'])}
 
 
 def flushed_tools(state):
@@ -181,7 +192,7 @@ class WorkerStopBinding:
     """
     def __init__(self, worker, run, mailbox, *, requester_capability, capability,
                  stop_request_id, original, deadline_monotonic, model, quality, fence,
-                 deadline_clock=None):
+                 deadline_clock=None, diagnostics=None):
         if (type(mailbox) is not Mailbox or type(requester_capability) is not object
                 or requester_capability is not mailbox._capability or type(capability) is not object
                 or original.task_id != mailbox.identity.task_id or not callable(fence)):
@@ -196,6 +207,9 @@ class WorkerStopBinding:
             raise ValueError('Original execution clock required')
         self.deadline_clock = deadline_clock
         self.worker, self.run, self.mailbox = worker, Path(run).resolve(strict=True), mailbox
+        self.diagnostics = self.run if diagnostics is None else Path(diagnostics).resolve(strict=True)
+        if not self.diagnostics.is_relative_to(self.run):
+            raise ValueError('Worker diagnostics must remain within its original run')
         self.request_id = _label(stop_request_id, 'stop_request_id')
         self._requester, self._capability, self.fence = requester_capability, capability, fence
         self.original, self.deadline = original, deadline_monotonic
@@ -261,7 +275,7 @@ class WorkerStopBinding:
             raise RecoveryStop('Worker application checkpoint is not resumable')
         flushed_tools(cp.state)
         verify_artifacts(cp.state, self.run/'work')
-        path = self.run/f'result-{self.worker.pid}.json'
+        path = self.diagnostics/f'result-{self.worker.pid}.json'
         raw = path.read_bytes()
         if len(raw) > 1024 * 1024:
             raise RecoveryStop('Worker result exceeds its bounded receipt')

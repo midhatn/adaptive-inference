@@ -68,17 +68,29 @@ class Runtime:
         self.projection = {"host_phase": "ready", "task_status": "pending", "task_revision": 1,
                            "demand": "waiting", "waiting_reason": None}
 
+    def selected_execution(self):
+        return {"execution_id":"task","execution_generation":0}
+
+    async def select_continuation(self, request, *, intent_valid):
+        raise Refused("continuation_unavailable")
+
+    async def continue_selected(self, grant, *, intent_valid):
+        raise AssertionError("No continuation in baseline fixture")
+
+    async def lookup_continuation(self, request):
+        return None
+
     def session_is_live(self, session):
         return session in self.live
 
     def status(self):
-        return {**self.projection, "controls": [dict(value) for value in self.controls.values()]}
+        return {**self.projection, **self.selected_execution(), "continuation":{"phase":"unavailable","request_id":None}, "controls": [dict(value) for value in self.controls.values()]}
 
     def deactivate_intent(self):
         self.calls.append("deactivate")
         self.intent = False
 
-    def activate_intent(self, session):
+    def activate_intent(self, session, *, execution=None):
         self.calls.append(("activate", session))
         self.intent = True
 
@@ -93,7 +105,7 @@ class Runtime:
         self.calls.append("fence")
         self.fenced = True
 
-    async def submit_control(self, request_id, command):
+    async def submit_control(self, request_id, command, *, execution=None):
         self.entered.set()
         if self.release is not None:
             await self.release.wait()
@@ -112,7 +124,7 @@ class Runtime:
         await self.join.wait()
         return deepcopy(self.stop_value)
 
-    async def resume_authority(self, request_id):
+    async def resume_authority(self, request_id, *, execution=None):
         self.authority_entered.set()
         if self.authority_release is not None:
             await self.authority_release.wait()
@@ -149,6 +161,7 @@ class TransportTests(unittest.IsolatedAsyncioTestCase):
                    "token": self.token, "method": method}
         if method in {"pause", "resume", "cancel"}:
             request["request_id"] = "request-1"
+            request.update(execution_id="task",execution_generation=0)
         request.update(changes)
         return (json.dumps(request, separators=(",", ":")) + "\n").encode()
 
@@ -264,7 +277,7 @@ class TransportTests(unittest.IsolatedAsyncioTestCase):
     async def test_real_offloaded_thread_commit_survives_stream_timeout(self):
         started, release = threading.Event(), threading.Event()
         original = self.runtime.submit_control
-        async def offloaded(request_id, command):
+        async def offloaded(request_id, command, **kwargs):
             def blocking():
                 started.set()
                 if not release.wait(2):
@@ -518,7 +531,7 @@ class TransportTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("stream_close_failed", state["faults"])
 
     async def test_resume_authority_requires_exact_true(self):
-        async def wrong_type(request_id):
+        async def wrong_type(request_id, **kwargs):
             return {"allowed": True}
         self.runtime.resume_authority = wrong_type
         self.assertTrue((await self.request("resume"))["ok"])

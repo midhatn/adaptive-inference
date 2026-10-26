@@ -127,7 +127,7 @@ class HarnessTests(unittest.IsolatedAsyncioTestCase):
         c=self.case;c.handles=[c.worker]
         wait=asyncio.create_task(c.join_child(c.worker));await asyncio.sleep(.02);wait.cancel()
         with self.assertRaises(asyncio.CancelledError):await wait
-        self.assertFalse(c.waits[c.worker.pid].done());c.worker.finish(4)
+        self.assertFalse(c.waits[c.worker].done());c.worker.finish(4)
         self.assertEqual(await c.join_child(c.worker),4);self.assertEqual(c.worker.wait_calls,1)
 
     async def test_retained_join_collects_failed_sibling_without_abandoning_other(self):
@@ -152,7 +152,7 @@ class HarnessTests(unittest.IsolatedAsyncioTestCase):
         async def join(*,timeout):return {'worker_joined':True,'safe_checkpoint':True}
         c.stop_binding=SimpleNamespace(request_stop=request,join=join,_work=None);c.worker_cap=object()
         async def close(*,timeout_s):
-            self.assertEqual(c.worker.poll(),4);self.assertTrue(c.waits[c.worker.pid].done())
+            self.assertEqual(c.worker.poll(),4);self.assertTrue(c.waits[c.worker].done())
             events.append('host_close');return {'closed':True}
         c.host.close=close
         await c.dispose(True)

@@ -2,8 +2,9 @@
 
 Assessment date: 26 October 2026. This is a source assessment and experiment
 plan. No new precision mode is enabled and no IQ3_S speedup is established.
-The current [Continue saved task milestone](../PLAN.md#next-execution-packet)
-keeps priority.
+The [Continue saved task milestone](../PLAN.md#next-execution-packet) has now
+passed its installed acceptance gate with unchanged precision. The separate
+comparison below remains unrun.
 
 ## Decision
 
@@ -79,7 +80,7 @@ bottleneck of the actual workload before selecting an optimization.
 
 ## Reversible qualification
 
-1. Finish and preserve the current installed continuation qualification first.
+1. Preserve the accepted installed continuation qualification as the baseline.
    Use new experiment runs, the same IQ3_S assets, exact native build/libraries,
    request bodies and independent task validators. Preserve context 65,536,
    output allowance 10,923, high/8,192 reasoning and disabled speed projection.

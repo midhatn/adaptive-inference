@@ -419,6 +419,11 @@ class TaskStore:
             raise InvalidStoreError("Task checkpoint data is invalid") from exc
 
     def create(self, task_id, prompt, *, max_attempts=3, metadata=None, state=None):
+        with self._connection(write=True) as db:
+            return self._create_in_transaction(db, task_id, prompt, max_attempts=max_attempts,
+                                               metadata=metadata, state=state)
+
+    def _create_in_transaction(self, db, task_id, prompt, *, max_attempts=3, metadata=None, state=None):
         _task_id(task_id)
         if type(prompt) is not str or not prompt.strip() or len(prompt.encode("utf-8")) > 256 * 1024:
             raise ValueError("An original prompt of at most 256 KiB is required")
@@ -433,15 +438,14 @@ class TaskStore:
         }, prompt, max_attempts)
         payload = _json({"prompt": prompt, "max_attempts": max_attempts, "metadata": metadata,
                          "state": state, "operation": None})
-        with self._connection(write=True) as db:
-            if db.execute("SELECT 1 FROM tasks WHERE task_id=?", (task_id,)).fetchone():
-                raise RevisionConflict("Task already exists; load it instead of replacing its original objective")
-            if db.execute("SELECT COUNT(*) FROM tasks").fetchone()[0] >= MAX_TASKS:
-                raise TaskStoreError("Task count limit reached")
-            db.execute("INSERT INTO tasks VALUES (?,?,?,?,?,?,?,?,?)",
-                       (task_id, prompt, max_attempts, _json(metadata), 0, _json(state), None, None, 0))
-            db.execute("INSERT INTO history VALUES (?,?,?,?)", (task_id, 0, "created", payload))
-            return self._read(db, task_id)
+        if db.execute("SELECT 1 FROM tasks WHERE task_id=?", (task_id,)).fetchone():
+            raise RevisionConflict("Task already exists; load it instead of replacing its original objective")
+        if db.execute("SELECT COUNT(*) FROM tasks").fetchone()[0] >= MAX_TASKS:
+            raise TaskStoreError("Task count limit reached")
+        db.execute("INSERT INTO tasks VALUES (?,?,?,?,?,?,?,?,?)",
+                   (task_id, prompt, max_attempts, _json(metadata), 0, _json(state), None, None, 0))
+        db.execute("INSERT INTO history VALUES (?,?,?,?)", (task_id, 0, "created", payload))
+        return self._read(db, task_id)
 
     def load(self, task_id):
         with self._connection() as db:

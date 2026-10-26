@@ -14,6 +14,25 @@ python provenance/check_distribution.py
 
 The demo starts its own loopback simulated backend and gateway on temporary ports, exercises real HTTP, and closes both. It needs no model/GPU/account. The JSON result labels simulation explicitly. Tests cover observable contracts and failure cases; they do not claim native engine performance.
 
+## Explicit continuation qualification
+
+The [standalone workflow sources](../examples/validation/explicit_continuation/README.md)
+provide the fresh-trial entrypoints, explicit local bindings, real-window steps
+and terminal audit. Their public helper-path adaptation has source/fixture
+validation, distinct from the original installed trial.
+
+The [Continue saved task guide](explicit-continuation.md#reproduction-and-evidence)
+uses the existing software suites above and the full-interpreter
+[installed desktop profile](installed-desktop.md). Both host and worker need the
+same reviewed regular wheel, pinned SDK and fresh same-boot execution-clock
+checks. Model qualification uses IQ3_S and the unchanged quality contract.
+
+The [accepted continuation record and replay instructions](../provenance/explicit-continuation/acceptance/README.md)
+bind one actual installed case. Custodian replay needs the retained private
+terminal inputs; public synthetic checks do not repeat the model/GUI trial.
+Do not substitute the historical expiry replay for this result. The exact tested
+qualification source/wheel are distinguished from later release documentation.
+
 ## Real engine
 
 1. Install and start the desired backend according to its official documentation in [integrations.md](integrations.md).

@@ -66,10 +66,21 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         task=asyncio.create_task(c.join_child(child));await asyncio.sleep(.02)
         task.cancel()
         with self.assertRaises(asyncio.CancelledError):await task
-        self.assertFalse(c.waits[child.pid].done())
+        self.assertFalse(c.waits[child].done())
         child.finish(0)
         self.assertEqual(await c.join_child(child),0)
         self.assertEqual(child.waits,1)
+
+    async def test_reused_pid_cannot_borrow_another_retained_child_wait(self):
+        c=self.case;old=Child(41,5);new=Child(41)
+        c.handles.extend((old,new))
+        self.assertEqual(await c.join_child(old),5)
+        task=asyncio.create_task(c.join_child(new))
+        try:
+            await asyncio.sleep(.02);self.assertFalse(task.done())
+            self.assertIsNot(c.waits[old],c.waits[new])
+        finally:new.finish(0)
+        self.assertEqual(await task,0);self.assertEqual(old.waits,1);self.assertEqual(new.waits,1)
 
     async def test_join_retained_collects_sibling_error_and_waits_other(self):
         release=asyncio.Event()
@@ -116,7 +127,7 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         c.stop_binding=SimpleNamespace(_verify_exit=lambda code:'task_completed')
         async def refresh():pass
         async def stopped():return dict(worker_joined=True,host_closed=True,uncertain=False,fault=None)
-        c.runtime=SimpleNamespace(refresh=refresh)
+        c.runtime=SimpleNamespace(refresh=refresh,_transitioning=False)
         c.facade=SimpleNamespace(cooperative_stop=stopped)
         c.host=SimpleNamespace(controller=SimpleNamespace(fault=None))
         c.gui=SimpleNamespace(process=Child(42))
@@ -140,7 +151,7 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         cp=SimpleNamespace(state={'status':'pending','phase':'ready',
             'deadline_monotonic':c.deadline,'pending_request':None},operation=None,
             requires_reconciliation=False)
-        c.runtime=SimpleNamespace(refresh=mock.AsyncMock(),_cache=SimpleNamespace(snapshot=
+        c.runtime=SimpleNamespace(refresh=mock.AsyncMock(),_transitioning=False,_cache=SimpleNamespace(snapshot=
             SimpleNamespace(target=cp,demand={'state':'active'},requests=(),receipts=())))
         c.transport=SimpleNamespace(lifecycle=lambda:{'stop_requested':False})
         with self.assertRaises(TimeoutError):await c.interact()
@@ -198,6 +209,7 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         class Runtime:
             def __init__(self,*a,**kw):pass
             async def refresh(self):pass
+            def configure_continuation(self,value):pass
         class Transport:
             _ready=True
             def __init__(self,*a,**kw):pass

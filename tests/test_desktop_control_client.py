@@ -23,7 +23,8 @@ def life(**changes):
     value.update(changes);return value
 def status(**changes):
     value=dict(host_phase='parked',task_status='pending',task_revision=1,demand='waiting',waiting_reason='foreground',
-        controls=[],objective=bootstrap().objective,**life())
+        controls=[],objective=bootstrap().objective,execution_id='task',execution_generation=0,
+        continuation={'phase':'unavailable','request_id':None},**life())
     value.update(changes);return {'ok':True,'status':value}
 def receipt(request,**changes):
     value=dict(request_id=request.request_id,command=request.method,sequence=1,outcome='pending',owner_acknowledged=False,recorded=True)
@@ -92,16 +93,16 @@ class WireTests(unittest.TestCase):
 
     def test_clock_regression_and_close_error_remain_unknown(self):
         clock=iter([10,9]);sock=Socket(close_error=True)
-        result=cc.WireExchange(bootstrap(),lambda:sock,clock=lambda:next(clock))(cc.Request('resume','one'))
+        result=cc.WireExchange(bootstrap(),lambda:sock,clock=lambda:next(clock))(cc.Request('resume','one','task',0))
         self.assertEqual(result.error,'outcome_unconfirmed');self.assertEqual(result.cleanup_error,'socket_close_unconfirmed')
         self.assertNotIn('private',repr(result));self.assertIsNone(sock.sent)
 
     def test_recorded_pending_and_unconfirmed_are_distinct(self):
-        req=cc.Request('pause','id')
-        for response in ({'ok':True,'control':receipt(req)}, {'ok':True,'state':'pending','request_id':'id','recorded':None}):
+        req=cc.Request('pause','id','task',0)
+        for response in ({'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(req)}, {'ok':True,'execution_id':'task','execution_generation':0,'state':'pending','request_id':'id','recorded':None}):
             result=cc.WireExchange(bootstrap(),lambda:Socket(encoded(response)))(req)
             self.assertIsNone(result.error);self.assertEqual(result.reply,response)
-        invalid={'ok':True,'control':receipt(req,outcome='applied')}
+        invalid={'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(req,outcome='applied')}
         self.assertIsNotNone(cc.WireExchange(bootstrap(),lambda:Socket(encoded(invalid)))(req).error)
 
     def test_failed_socket_close_is_retained_and_fences_new_connections(self):
@@ -116,7 +117,7 @@ class WireTests(unittest.TestCase):
         self.assertEqual(sum(call[0]=='close' for call in sock.calls),1)
 
     def test_status_original_objective_and_stop_proof(self):
-        for response in (status(objective='changed'),status(stop_confirmed=True),status(stop_requested=True,stop_confirmed=True,unknown_mutations=1),status(controls=[receipt(cc.Request('pause','a')),receipt(cc.Request('resume','b'))])):
+        for response in (status(objective='changed'),status(stop_confirmed=True),status(stop_requested=True,stop_confirmed=True,unknown_mutations=1),status(controls=[receipt(cc.Request('pause','a','task',0)),receipt(cc.Request('resume','b','task',0))])):
             with self.assertRaises(cc.ClientError):cc.validate_reply(response,cc.Request('status'),bootstrap())
         self.assertEqual(cc.validate_reply(status(),cc.Request('status'),bootstrap()),status())
 
@@ -140,7 +141,7 @@ class WireTests(unittest.TestCase):
                         await host.aclose(timeout=1)
                 self.parts=[asyncio.run(serve()),b'']
         cap=object();peer=Peer()
-        result=cc.WireExchange(bootstrap(),lambda:peer)(cc.Request('pause','actual-id'))
+        result=cc.WireExchange(bootstrap(),lambda:peer)(cc.Request('pause','actual-id','task',0))
         self.assertIsNone(result.error);self.assertTrue(result.reply['control']['recorded'])
         self.assertFalse(result.reply['control']['owner_acknowledged'])
 
@@ -159,9 +160,9 @@ class WorkerTests(unittest.TestCase):
             return cc.Result(request,error='outcome_unconfirmed')
         worker=cc.NetworkWorker(exchange);worker.start()
         try:
-            self.assertFalse(worker._thread.daemon);self.assertTrue(worker.submit(cc.Request('resume','id')))
+            self.assertFalse(worker._thread.daemon);self.assertTrue(worker.submit(cc.Request('resume','id','task',0)))
             self.assertTrue(entered.wait(1));worker.close();worker.close()
-            self.assertFalse(worker.joined());self.assertFalse(worker.submit(cc.Request('pause','later')))
+            self.assertFalse(worker.joined());self.assertFalse(worker.submit(cc.Request('pause','later','task',0)))
         finally:release.set();self.finish(worker)
         self.assertEqual(calls,['resume','window_closed'])
         results=[worker.take(),worker.take()];self.assertEqual([x.request.method for x in results],calls)
@@ -169,7 +170,7 @@ class WorkerTests(unittest.TestCase):
     def test_unsent_action_is_explicitly_discarded_not_recorded(self):
         calls=[];worker=cc.NetworkWorker(lambda request:(calls.append(request.method)or cc.Result(request,error='outcome_unconfirmed')))
         with worker._condition:
-            worker.start();self.assertTrue(worker.submit(cc.Request('resume','id')));worker.close()
+            worker.start();self.assertTrue(worker.submit(cc.Request('resume','id','task',0)));worker.close()
         self.finish(worker);first=worker.take()
         self.assertTrue(first.discarded);self.assertEqual(first.error,'not_sent');self.assertEqual(calls,['window_closed'])
 
@@ -217,14 +218,14 @@ class ControllerTests(unittest.TestCase):
     def test_click_recorded_and_ack_are_three_visible_states(self):
         c,w,b,v=self.client();c.action('pause');req=c.latest
         self.assertIn('not yet confirmed',c.action_text);self.assertFalse(c.buttons()['resume'])
-        w.respond({'ok':True,'control':receipt(req)});c.tick();self.assertIn('Recorded;',c.action_text)
+        w.respond({'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(req)});c.tick();self.assertIn('Recorded;',c.action_text)
         c.poll_status();w.respond(status(task_revision=2,controls=[receipt(req,outcome='applied',owner_acknowledged=True)]));c.tick()
         self.assertEqual(c.latest_stage,'applied');self.assertIn('acknowledged',c.action_text)
 
     def test_retry_preserves_id_and_old_resume_not_replayed_after_pause(self):
         c,w,b,v=self.client();c.action('resume');old=c.latest
         w.respond(error='outcome_unconfirmed');c.tick();self.assertTrue(c.retry());self.assertEqual(w.sent[-1],old)
-        w.respond({'ok':True,'control':receipt(old)});c.tick()
+        w.respond({'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(old)});c.tick()
         self.assertTrue(c.action('pause'));new=c.latest;self.assertNotEqual(new.request_id,old.request_id)
         w.respond(error='outcome_unconfirmed');c.tick();self.assertTrue(c.retry());self.assertEqual(w.sent[-1],new)
         self.assertEqual(sum(r==old for r in w.sent),2)
@@ -236,7 +237,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_status_poll_does_not_retry_pending_command(self):
         c,w,b,v=self.client();c.action('resume');request=c.latest
-        w.respond({'ok':True,'state':'pending','request_id':request.request_id,'recorded':None});c.tick()
+        w.respond({'ok':True,'execution_id':'task','execution_generation':0,'state':'pending','request_id':request.request_id,'recorded':None});c.tick()
         for _ in range(3):c.poll_status();w.respond(status());c.tick()
         self.assertEqual(sum(r.method=='resume'for r in w.sent),1);self.assertEqual(c.latest_stage,'unconfirmed')
 
@@ -323,21 +324,21 @@ class ControllerTests(unittest.TestCase):
         c,w,b,v=self.client();c._id_factory=lambda:f'command-{len(c._ids)}'
         for index in range(32):
             self.assertTrue(c.action('pause'))
-            w.respond({'ok':True,'control':receipt(c.latest,sequence=index+1)});c.tick()
+            w.respond({'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(c.latest,sequence=index+1)});c.tick()
         self.assertEqual(len(c._ids),32)
         self.assertFalse(c.action('resume'));self.assertFalse(c.action('cancel'))
         self.assertTrue(c.buttons()['stop']);self.assertEqual(len(w.sent),34)
 
     def test_reused_id_is_refused_before_dispatch(self):
         c,w,b,v=self.client();c._id_factory=lambda:'same'
-        c.action('resume');w.respond({'ok':True,'control':receipt(c.latest)});c.tick()
+        c.action('resume');w.respond({'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(c.latest)});c.tick()
         before=list(w.sent)
         with self.assertRaisesRegex(cc.ClientError,'request_identity_reused'):c.action('pause')
         self.assertEqual(w.sent,before)
 
     def test_socket_cleanup_error_remains_visible_and_fences_actions(self):
         c,w,b,v=self.client();c.action('pause')
-        w.respond({'ok':True,'control':receipt(c.latest)},cleanup_error='socket_close_unconfirmed');c.tick()
+        w.respond({'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(c.latest)},cleanup_error='socket_close_unconfirmed');c.tick()
         self.assertEqual(c.latest_stage,'pending')
         self.assertTrue(v.states[-1]['cleanup_unconfirmed']);self.assertFalse(any(c.buttons().values()))
 
@@ -350,7 +351,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_applied_receipt_cannot_regress_to_pending(self):
         c,w,b,v=self.client();c.action('pause');request=c.latest
-        w.respond({'ok':True,'control':receipt(request,outcome='applied',owner_acknowledged=True)});c.tick()
+        w.respond({'ok':True,'execution_id':'task','execution_generation':0,'control':receipt(request,outcome='applied',owner_acknowledged=True)});c.tick()
         c.poll_status();w.respond(status(task_revision=2,controls=[receipt(request)]));c.tick()
         self.assertEqual(c.latest_stage,'applied');self.assertFalse(c.status_valid)
         self.assertIn('stale',c.connection)

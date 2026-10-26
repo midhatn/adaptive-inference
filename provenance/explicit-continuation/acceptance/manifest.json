@@ -1,0 +1,9 @@
+{
+  "files": {
+    "result.json": "864f5ec86da1b6f2af403d909cf14d1129257937d8aa41e3cd0ae78bc4534c5f"
+  },
+  "reused_helper_sha256": "12004621166522cb80682e2bf1e4bc6d19e2ca72aeb585d21ce6408c2a965b33",
+  "sanitizer_sha256": "1bf1eefdc90919c3bc746bf0ade44c8e52df1ed278641fd08553d193efda820f",
+  "schema": "adaptive.public-evidence-files.v1",
+  "source_selection": "Fixed input roles and explicit fields only"
+}

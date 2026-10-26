@@ -30,6 +30,14 @@ preserved alongside the corrections. Earlier cold/full acceptance records remain
 evidence for their exact predecessor builds. The acceptance package also preserves
 the pre-acceptance version of this document used in the frozen source review.
 
+The later [Continue saved task](explicit-continuation.md) implementation adds a
+separately authorized successor in the same live host. It preserves this expired
+execution and seal; it does not rewrite expiry as task completion. Its
+[separate installed result](../provenance/explicit-continuation/acceptance/README.md)
+passed 70 independent terminal checks, completing the original task after one
+Continue. The accepted expiry result, historical source snapshots and replay
+below remain unchanged.
+
 ## What must be proved
 
 The owner must have observed the exact applied Pause **before** the saved

@@ -116,6 +116,7 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
                  'token': 'a' * 64, 'method': method}
         if method in ('pause', 'resume', 'cancel'):
             value['request_id'] = 'one'
+            value.update(self.runtime.selected_execution())
         value.update(changes)
         return (json.dumps(value) + '\n').encode()
 
@@ -257,9 +258,9 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
         actual_authority = self.runtime.resume_authority
         actual_request = self.request
         responded = asyncio.get_running_loop().create_future()
-        async def held_authority(request_id):
+        async def held_authority(request_id,**kwargs):
             with mock.patch.object(self.box, 'snapshot', side_effect=blocked):
-                return await actual_authority(request_id)
+                return await actual_authority(request_id,**kwargs)
         async def observed_request(*args, **kwargs):
             reply = await actual_request(*args, **kwargs)
             responded.set_result(reply)
@@ -273,7 +274,7 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
                 # Observe the actual response before releasing authority; no sleep
                 # or assumption about SQLite/CI scheduling establishes this order.
                 reply = await asyncio.wait_for(asyncio.shield(responded), 2)
-                self.assertEqual(reply, {'ok': True, 'state': 'pending', 'request_id': 'resume', 'recorded': None})
+                self.assertEqual(reply, {'ok': True, **self.runtime.selected_execution(), 'state': 'pending', 'request_id': 'resume', 'recorded': None})
                 self.assertFalse(operation.done())
                 self.assertFalse(completed.done())
                 self.assertFalse(self.matches())
@@ -486,9 +487,9 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
     async def test_pause_during_real_authority_read_prevents_late_activation(self):
         entered, release, blocked = self.block_observation()
         actual_authority = self.runtime.resume_authority
-        async def held_authority(request_id):
+        async def held_authority(request_id,**kwargs):
             with mock.patch.object(self.box, 'snapshot', side_effect=blocked):
-                return await actual_authority(request_id)
+                return await actual_authority(request_id,**kwargs)
         with mock.patch.object(self.runtime, 'resume_authority', side_effect=held_authority):
             first = self.transport.admit(Reader(self.frame('resume', request_id='resume')), Writer())
             await self.signal(entered)
@@ -503,9 +504,9 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
     async def test_rotation_during_real_authority_read_prevents_late_activation(self):
         entered, release, blocked = self.block_observation()
         actual_authority = self.runtime.resume_authority
-        async def held_authority(request_id):
+        async def held_authority(request_id,**kwargs):
             with mock.patch.object(self.box, 'snapshot', side_effect=blocked):
-                return await actual_authority(request_id)
+                return await actual_authority(request_id,**kwargs)
         with mock.patch.object(self.runtime, 'resume_authority', side_effect=held_authority):
             first = self.transport.admit(Reader(self.frame('resume', request_id='resume')), Writer())
             await self.signal(entered)

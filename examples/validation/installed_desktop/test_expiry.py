@@ -333,9 +333,9 @@ class ExpiryProofTests(unittest.IsolatedAsyncioTestCase):
         q.rec.save(path,saved)
 
     async def test_result_file_or_exit_without_retained_join_cannot_qualify(self):
-        await self.sealed();c=self.case;joined=c.waits.pop(c.worker.pid)
+        await self.sealed();c=self.case;joined=c.waits.pop(c.worker)
         with self.assertRaisesRegex(RuntimeError,'retained join'):c.verify_expired_progress()
-        c.waits[c.worker.pid]=joined
+        c.waits[c.worker]=joined
         for key,value in (('execution_expired',False),('task_completed',True),('worker_outcome','task_completed')):
             old=c.result[key];c.result[key]=value
             with self.subTest(key=key),self.assertRaisesRegex(RuntimeError,'retained join'):c.verify_expired_progress()

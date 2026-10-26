@@ -32,6 +32,7 @@ class ControlledDesktopHost(PersistentDesktopHost):
         self.control_runtime = None
         self._control_thread = threading.current_thread()
         self._control_loop = asyncio.get_running_loop()
+        self._control_rebinding = False
 
     def attach_control_runtime(self, runtime):
         if (threading.current_thread() is not self._control_thread
@@ -51,10 +52,13 @@ class ControlledDesktopHost(PersistentDesktopHost):
     async def _observe_demand(self):
         try:
             while not self.closing:
+                if self._control_rebinding:
+                    await asyncio.sleep(.05)
+                    continue
                 await self.controller.refresh_demand()
                 if self.closing:
                     break
-                if self.control_runtime is not None:
+                if self.control_runtime is not None and not self._control_rebinding:
                     await self.control_runtime.refresh()
                 if not self.closing:
                     await asyncio.sleep(.1)
@@ -62,6 +66,43 @@ class ControlledDesktopHost(PersistentDesktopHost):
             self.demand_error = type(exc).__name__
             self.controller._demand_valid = False
             raise
+
+    def commit_selected_runtime(self, runtime, record, staged, continuation):
+        """Synchronous complete rebind while both existing controller locks hold."""
+        if (runtime is not self.control_runtime or runtime._continuation is not continuation
+                or continuation.composition.host is not self or runtime._pending
+                or threading.current_thread() is not self._control_thread
+                or asyncio.get_running_loop() is not self._control_loop
+                or not self._control_rebinding or not self.controller.lock.locked()
+                or not self.controller._demand_lock.locked() or not record['committed']):
+            raise RuntimeError('Selected rebind lacks exact quiescent host authority')
+        from adaptive_inference.desktop.continuation_host import selection
+        registry,mailbox,capability,observation = staged
+        selected = selection(record['grant'])
+        if (mailbox.registry is not registry or mailbox._capability is not capability
+                or observation.snapshot.target.task_id != selected['execution_id']
+                or observation.snapshot.target.prompt != runtime.prepared.objective):
+            raise RuntimeError('Selected binding does not describe its actual successor')
+        continuation.composition.assert_continuation_parked(record['release'])
+        runtime._check_observation(observation,execution=selected)
+        controller = self.controller
+        controller.demand = registry
+        controller._demand_rows = ()
+        controller._demand_stamp = None
+        controller._demand_valid = False
+        controller._demand_revisions = {}
+        controller._idle_since = None
+        runtime.mailbox,runtime._requester = mailbox,capability
+        runtime._selection = selected
+        runtime._cache = observation
+        composition = continuation.composition
+        composition.registry,composition.box,composition.capability = registry,mailbox,capability
+        composition.identity = record['identity']
+        composition.original = observation.snapshot.target
+        composition.deadline = record['grant']['deadline_monotonic']
+        composition.worker_exit_verified = False
+        record['registry'],record['mailbox'],record['requester'] = registry,mailbox,capability
+        record['original'] = observation.snapshot.target
 
 
 class DesktopControlLifecycle:
@@ -95,6 +136,8 @@ class DesktopControlLifecycle:
         self._worker_bindings = [(worker_stop, worker_capability)]
         self._replacement_pending = False
         self.worker_replacements = []
+        self.selected_transitions = []
+        self._selected = self._selection_coordinator = None
 
     def _owner(self):
         if threading.current_thread() is not self._thread or asyncio.get_running_loop() is not self._loop:
@@ -183,6 +226,29 @@ class DesktopControlLifecycle:
                 or self.gui.verifier is not verifier):
             raise RuntimeError('Retained launcher/session binding mismatch')
         self.binding = binding
+
+    def select_execution(self, record, coordinator):
+        """Retain committed/no-child obligation before any fallible staging."""
+        self._owner()
+        if not record['committed'] or record['grant'] is None or record in self.selected_transitions:
+            raise RuntimeError('Exact new committed selection required')
+        self.selected_transitions.append(record)
+        self._selected,self._selection_coordinator = record,coordinator
+        self.worker_receipt = None
+
+    def bind_selected_worker(self, record, binding, capability):
+        self._owner()
+        from adaptive_inference.desktop.continuation_host import SelectedWorkerStopBinding
+        if (record is not self._selected or type(binding) is not SelectedWorkerStopBinding
+                or binding.worker is not record['child'] or binding.mailbox is not record['mailbox']
+                or binding.grant != record['grant'] or binding._capability is not capability
+                or binding._loop is not self._loop or binding._thread is not self._thread
+                or any(binding.worker is previous.worker for previous,_ in self._worker_bindings)):
+            raise RuntimeError('Selected binding does not own its retained child')
+        record['binding'],record['capability'] = binding,capability
+        self._worker_bindings.append((binding,capability))
+        self.worker_stop,self._worker_capability = binding,capability
+        self.worker_receipt = None
 
     def session_is_live(self, session_id):
         self._owner()
@@ -291,7 +357,8 @@ class DesktopControlLifecycle:
         return (not self._replacement_pending and type(value) is dict and value.get('worker_joined') is True
                 and value.get('safe_checkpoint') is True and value.get('uncertain') is False
                 and value.get('fault') is None
-                and value.get('outcome') in ('service_stopped', 'task_completed', 'task_cancelled', 'paused_budget_expired'))
+                and value.get('outcome') in ('service_stopped', 'task_completed', 'task_cancelled', 'paused_budget_expired',
+                                             'selected_not_launched'))
 
     def _gui_safe(self):
         value = self.gui_receipt
@@ -324,9 +391,13 @@ class DesktopControlLifecycle:
                 return self._receipt()
             # MailboxRuntime invokes us only after already accepted DB work;
             # appending this final Pause earlier would race a pending Resume.
-            self.worker_stop.request_stop(self._worker_capability)
-            self._joins = [self._loop.create_task(self._wait_worker(deadline)),
-                           self._loop.create_task(self._wait_gui(deadline))]
+            if self._selected is not None and self._selected['binding'] is None:
+                self.worker_receipt = await asyncio.to_thread(self._selection_coordinator.verify_unlaunched,self._selected)
+                self._joins = [self._loop.create_task(self._wait_gui(deadline))]
+            else:
+                self.worker_stop.request_stop(self._worker_capability)
+                self._joins = [self._loop.create_task(self._wait_worker(deadline)),
+                               self._loop.create_task(self._wait_gui(deadline))]
             await asyncio.gather(*(asyncio.shield(task) for task in self._joins), return_exceptions=False)
             if not self._worker_safe():
                 self._faults.add('worker_stop_unconfirmed')

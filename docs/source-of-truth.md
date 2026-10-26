@@ -39,6 +39,14 @@ The current [Hermes source supplement](../integrations/hermes/current-source/REA
 
 The SDK and native-schema fixtures also retain the particular licensed source files they execute, exact revisions, dependency locks and receipts. These bounded closures are identified as such; they are not complete snapshots of all eighteen upstream repositories. The [delivery ledger](upstream-delivery.md) links each public proposal back to canonical code and evidence. If an upstream PR disappears, the shared implementation, scoped test and preserved proposal remain reviewable here.
 
+The [explicit-continuation work](explicit-continuation.md) preserves the older
+sealed execution and historical expiry evidence instead of relabelling them as
+successor acceptance. The [accepted continuation package](../provenance/explicit-continuation/acceptance/README.md)
+binds the tested 57-module qualification wheel to its reviewed source and actual
+terminal result. Later documentation and evidence additions belong to the
+publication overlay, not to the earlier qualification wheel. Sharing a version
+string is not proof that two artifacts contain the same bytes.
+
 ## Dependencies and the meaning of standalone
 
 The project owns its adaptation and task-continuation logic. Using the gateway does not require installing Strata, Hermes, CoS, Jev or Laya. It does require Python and the pinned Python libraries; a real inference run also requires a compatible model server and separately acquired model assets. Optional native builds require a suitable compiler, SDK and their declared dependencies. This repository does not include a full inference model, proprietary SDK or user credentials.

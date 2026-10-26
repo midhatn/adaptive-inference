@@ -13,6 +13,16 @@ existing host, GUI and bounded Hermes orders-report worker through the explicit
 interrupt a native process or establish computer-reboot recovery. Fresh
 installed cold/full qualification remains distinct from component tests.
 
+The Windows composition adds [Continue saved task](explicit-continuation.md) for
+an eligible, safely expired pending execution. Continue is a host authorization
+of a successor execution, not another mailbox command or a way to reopen an
+accepted/cancelled task. The logical task/window stay the same; Pause, Resume and
+Cancel bind the selected execution ID and generation. Matching Continue retries
+reuse the recorded grant. Stop remains scoped to the whole retained host.
+The [installed continuation result](../provenance/explicit-continuation/acceptance/README.md)
+records its separate real IQ3_S acceptance; these portable controls do not by
+themselves establish that result for another installation.
+
 ## Why this uses the existing task store
 
 The reviewed Hermes recovery adapter holds a thread lock throughout provider
