@@ -593,9 +593,18 @@ four-hour bounds are separate from the smaller M2 examples. This canonical
 integration is planned, not passed. Preserve bounded self-correction, but do not
 manually steer the agent through a running attempt to produce a success.
 
-At that milestone's preflight, refresh to the latest stable Strata (at least
-0.2.6), Hermes, ComfyUI, required nodes and quality tools; then freeze exact
-versions for the attempt while keeping the same IQ3_S, Turbo Q8_0 and H3 assets.
+At that milestone's preflight, apply the newest stable supported version
+requirement to the **entire participating software stack**: Adaptive Inference,
+every engine and agent, orchestration/delegation plugins, custom nodes, tool
+servers, runtimes and resolved dependencies, benchmark/quality tools, and the
+supported host/driver environment. Strata 0.2.6 is only a minimum; any alternative
+engine or agent actually used follows the same test-time rule. Record official
+sources, check dates, chosen and available versions, exact identities and any
+compatibility exceptions. An older component cannot silently count as an
+all-latest result. Freeze the resolved versions for comparable tuning and the
+attempt while keeping the same IQ3_S, Turbo Q8_0 and H3 model assets. Recheck before
+the final attempt and requalify affected checks if a newer release is adopted;
+historical pinned replays remain explicitly labeled reproductions.
 Compare ancestry first: retain and explicitly identify a verified newer upstream
 revision when needed for required adapter capabilities, rather than silently
 downgrading it to an older release tag.

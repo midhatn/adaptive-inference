@@ -25,11 +25,44 @@ video, sampled frames, diagnostics and concise final report.
 
 ### Test-time software refresh and performance qualification
 
-When this milestone is ready, resolve the latest stable official releases again:
-Strata **0.2.6 or newer**, Hermes, ComfyUI, required custom nodes and media-test
-tools. The date of this plan is not a version freeze. Record application and
-actual engine/library versions separately, with source revisions, executable
-hashes, plugin revisions and the effective configuration. Strata's
+**The newest-version requirement applies to the entire software stack used by
+the test, not only Strata.** At each new qualification campaign's preflight,
+check the official release sources for every participating component and select
+its newest stable supported release available then. This is an open-ended
+requirement: adding or substituting a component adds it to the same version
+inventory; the examples below do not limit its scope.
+
+| Software included when used | Required preflight scope |
+| --- | --- |
+| Adaptive Inference | Canonical controller, gateway, broker, adapters, launchers and test harness; record the candidate revision separately from the accepted control |
+| All agents and orchestration | Hermes and any other participating agent or orchestrator, such as OpenClaw or Laya; include delegation plugins, skills, tool servers and integration packages |
+| All inference and media engines | Strata, its actual bundled inference/vision engines, llama.cpp, SGLang, vLLM, ComfyUI and any other backend actually used; include media implementations, custom nodes and extensions |
+| Runtimes and dependencies | Python or other language runtimes, package/build tools, SDKs, PyTorch, CUDA runtime/toolkit, attention/quantization kernels, encoders/decoders and other direct or transitive dependencies in the resolved environment |
+| Measurement and quality tools | Benchmark/load tools, resource monitors, FFmpeg/ffprobe, image/video/audio analyzers, synchronization evaluators and any automatic quality or listening tools actually used |
+| Host compatibility | Supported OS/build updates, GPU/chipset drivers and any GPU-unlock component; record their identities and validate changes that affect execution or measurements |
+
+Strata **0.2.6 is a minimum, not a target to keep after a newer release exists**.
+The same newest-version rule applies independently to every other component;
+this document does not freeze Hermes, ComfyUI or any alternative at today's
+version. Alternative engines or agents listed above need not all be installed or
+run in this Hermes baseline; each must satisfy this rule if it participates in
+a declared test variant. The agreed model weights remain the explicit exception
+described below.
+
+Use each upstream project's supported compatibility constraints when resolving
+dependencies. Record the newest available release, chosen version, source URL,
+check date, revision/hash and reason for any difference. A bundled engine needs
+its own identity even when the application is current. Do not replace a pinned
+internal library with an unsupported release just to obtain a newer number.
+If a dependency constraint prevents the newest release, make that exception
+visible and investigate an upgrade or compatibility repair; a run with an older
+component must not be reported as an unqualified all-latest result. Prereleases,
+nightly builds and experimental drivers are separate declared variants unless
+an already-qualified newer source revision is needed as described below.
+
+Record application and actual engine/library versions separately, with source
+revisions, executable hashes, plugin revisions, a resolved dependency lock or
+equivalent full inventory, and the effective configuration. Strata's
 [0.2.6 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.6), for example,
 identifies different app, control and Qwen-engine versions. Check the official
 [Strata](https://github.com/Niko1221/Strata/releases),
@@ -46,10 +79,18 @@ release state and the chosen revision at test time. "Latest" must identify the
 actual tested source and compatibility, not just a displayed version string.
 
 Prepare updates in an isolated candidate installation and preserve the validated
-control. A latest-version incompatibility must be diagnosed and repaired or
-explicitly reported as blocking qualification; do not quietly run an older
-engine and label it the requested latest-version test. Once preflight passes,
-freeze the exact selected versions for the attempt. No mid-run updates.
+control. Record host-level changes separately because drivers and OS updates
+are shared rather than isolated by an application environment. Revalidate any
+affected baseline after such a change. A latest-version incompatibility must be
+diagnosed and repaired or explicitly reported as blocking the requested
+latest-version qualification; do not quietly run an older engine, agent, plugin,
+dependency or test tool and label it the requested all-latest test. Once
+preflight passes, freeze the exact selected versions for comparable tuning
+runs and the autonomous attempt. No mid-run updates. Recheck release availability
+before the final attempt; if a newer release is adopted after tuning, repeat the
+affected component and integration checks before accepting it. A fresh campaign
+resolves current versions again, while an exact replay keeps its historical pins
+and is labeled a reproduction rather than a new latest-version qualification.
 
 Keep the same IQ3_S LLM, Turbo Q8_0 reference-image model, H3 model and support
 weights by actual file identity. Software updates must not silently select a new
