@@ -26,6 +26,15 @@ The [local reference index](../third_party/reference-sources/README.md) explains
 
 Historical integration exports have explicit scope: the Strata overlay retains selected runtime/build/test work, while excluding old private hooks, workstation configuration and historical report files. Preserving that reproducible input does not make those excluded artifacts part of a release. Earlier measurements whose complete environment is not distributed remain historical observations in the evidence ledger.
 
+The [paused-expiry historical view](../provenance/paused-budget-expiry/historical-view/README.md)
+preserves the exact 123-file, 1,594,016-byte source closure used by that accepted
+result. Its fixed mapping and checksums keep the original exporter reproducible
+as the current runtime changes. The old result, manifest, selectors and tests
+remain unchanged. Ordinary provenance discovery runs those same 21 exporter
+checks through a wrapper; separate tests check the historical copying and cleanup
+boundaries. Replaying this evidence validates the historical result, while current
+runtime changes still need their own tests and qualification.
+
 The current [Hermes source supplement](../integrations/hermes/current-source/README.md) separately preserves commit `14e1e43a23761b369641208e204365cd6cb9399d`, used for the public-hook plugin and real IQ3_S task. Its 47,850,166-byte Git object delta reuses the existing Hermes archive and restores the complete 20,897-file target snapshot, including its license. It retains original commit/tree identities and checks each tracked file; it does not promise complete upstream history. Run `python integrations/hermes/current-source/restore_delta.py --repository . --output ../hermes-current-proof-01` with a new output directory. Both Git transports and Python network calls are denied, with positive controls. This supplement is newer than v0.2.0 and is included in subsequent source builds from `main`.
 
 The SDK and native-schema fixtures also retain the particular licensed source files they execute, exact revisions, dependency locks and receipts. These bounded closures are identified as such; they are not complete snapshots of all eighteen upstream repositories. The [delivery ledger](upstream-delivery.md) links each public proposal back to canonical code and evidence. If an upstream PR disappears, the shared implementation, scoped test and preserved proposal remain reviewable here.
