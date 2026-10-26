@@ -137,10 +137,11 @@ class SelectedWorker:
 @contextmanager
 def selected_worker(run, grant, *, host_generation, deadline, clock=None):
     """Both claims enclose SDK setup, all cleanup, restoration and result persistence."""
-    from adaptive_inference.desktop.hermes.run_recovery import MODEL, QUALITY, SDK_REV
+    from adaptive_inference.desktop.hermes.run_recovery import MODEL, QUALITY, SDK_REV, prepared_contract
     run = Path(run).resolve(strict=True)
     raw = (run/'plan.json').read_bytes(); original = read_json(run/'plan.json')
-    require(original.get('task_id') == 'orders-report' and original.get('max_requests') == 8
+    prepared_contract(original)
+    require(original.get('max_requests') == 8
             and original.get('model') == MODEL and rec.digest(original.get('quality')) == rec.digest(QUALITY)
             and original.get('sdk_revision') == SDK_REV and type(original.get('fixture')) is bool,
             'Original selected-worker plan differs')

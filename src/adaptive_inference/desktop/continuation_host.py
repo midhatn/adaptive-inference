@@ -166,7 +166,7 @@ class HostContinuation:
                         require(marker is not None and old.revision == request['expected_task_revision'],
                                 'Continue expected predecessor revision changed')
                         suffix = rec.digest({'host': runtime.prepared.host_epoch, 'command': request['request_id']})[:24]
-                        successor = 'orders-report.'+suffix
+                        successor = 'execution-'+suffix
                         identity = DemandIdentity('continue-'+suffix,successor,composition.identity.owner_id,
                             datetime.now(timezone.utc).isoformat().replace('+00:00','Z'))
                         payload = authority.request(command_id=request['request_id'],predecessor_id=old.task_id,

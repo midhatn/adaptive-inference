@@ -29,6 +29,14 @@ and progress contracts for that integration. Importing the library starts no
 GUI, agent or engine. The explicit `desktop` command composes those lifecycles
 using the [installed profile](docs/installed-desktop.md).
 
+Development now also includes an explicit [user task contract](docs/task-spec.md):
+each task supplies its original prompt, pinned inputs, allowed outputs, checks
+and supported budget. The desktop entry can prepare these tasks instead of the
+fixed orders example. CPU/SQLite tests cover isolated progress, correction and
+write receipts. Installed IQ3_S validation of these new tasks and submission of
+another task into the same running host remain outstanding; the existing
+installed qualification does not cover this new source.
+
 This repository is the **canonical source of truth** for the implementation, contracts, documentation, tests and evidence. The portable package works independently of Strata or Hermes. Optional native integrations preserve pinned source baselines, patches and licenses locally; reproducing their source does not depend on an old PR or upstream repository remaining available. See the [source preservation contract](docs/source-of-truth.md).
 
 Upstream PRs are delivery and discussion records. New shared development happens here, then focused adapters and fixes can be offered to engine and agent projects.

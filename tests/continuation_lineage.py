@@ -30,6 +30,12 @@ def retained(relative, row):
 
 def predecessor(relative, data):
     row = record()['modules'].get(relative)
+    # Keep the already-supported exact immediate predecessor idempotent. Every
+    # current source takes the fully pinned newer outer projection first.
+    if row is not None and hashlib.sha256(data).hexdigest() == row['predecessor_sha256']:
+        return retained(relative, row)
+    from task_contract_lineage import predecessor as task_contract_predecessor
+    data = task_contract_predecessor(relative, data)
     if row is None:
         return data
     prior = retained(relative, row)
@@ -41,6 +47,11 @@ def predecessor(relative, data):
 
 def restore_continuation(tree, relative):
     row = record()['modules'].get(relative)
+    if row is not None and fingerprint(tree) == row['predecessor_ast_sha256']:
+        retained(relative, row)
+        return tree
+    from task_contract_lineage import restore_task_contract
+    tree = restore_task_contract(tree, relative)
     if row is None:
         return tree
     before = ast.parse(retained(relative, row))

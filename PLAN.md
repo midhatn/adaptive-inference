@@ -973,10 +973,21 @@ cleanup before setup can fail; keep the existing work guard and product budgets.
 
 **Next functional M2 gate:** accept a different user task in the same retained
 host, with explicit task identity, isolated task/effect records and clear completed,
-waiting and stopped states. First inspect existing TaskStore and pinned Hermes
-session/task facilities and current upstream guidance; reuse the installed
-controller and adapters. Qualify two distinct useful tasks without restarting the
-host or confusing old controls with the new objective. Reboot recovery remains M5.
+waiting and stopped states. The session research is now recorded in the
+[task contract](docs/task-spec.md). Reuse TaskStore and the pinned Hermes adapter.
+The first implementation slice removes the fixed orders objective: an explicit
+TaskSpec supplies the prompt, pinned inputs, create-only outputs, checks and
+supported budget. The ordinary desktop entry accepts this specification while
+retaining the original example for compatibility. Contract and CPU fixture
+checks do not qualify a new installed task or complete this milestone.
+
+Next, wire durable new-task admission into the retained host, keeping each
+task's records and completed effects separate. Reuse the existing private GUI
+bootstrap for a fresh task view; do not weaken session identity to claim the
+same window. Qualify two distinct useful tasks without restarting the host or
+confusing old controls with the new objective. The examples must remain
+qualification cases for the generic contract, not a hardcoded task menu.
+Reboot recovery remains M5.
 
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
@@ -986,6 +997,13 @@ verify actual dispatch and compare correct completed tasks and resource use.
 The reported GPU unlock is a changed environment, not a measured application
 speedup. Keep one owner of heavy model experiments and retain an ineffective or
 slower result. No precision setting has been enabled by the continuation trial.
+The first instrumented startup failed before native launch; an OS permission
+prompt also obstructed the later unprofiled control. The original worker expired
+while paused and the unchanged outer diagnostic limit eventually terminated the
+host. Both unsuccessful runs remain failures. No FP16 dispatch, quality or speed
+claim follows from them. Resolve the capture environment and use a narrower
+trace only after validating its existing stdin/cleanup contract; this optional
+experiment does not displace functional M2 work.
 
 The continuation implementation reuses the existing TaskStore, installed adapter
 and retained lifecycle; it does not reopen the sealed execution or reset the

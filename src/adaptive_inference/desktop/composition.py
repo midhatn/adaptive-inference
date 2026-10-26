@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """One installed Windows host/worker/GUI composition of the accepted lifecycle.
 
-Dedicated process only. No work occurs on import. The first profile prepares one
-bounded orders-report task, starts paused, and requires genuine GUI Resume.
+Dedicated process only. No work occurs on import. An explicit bounded file task
+(or the retained orders example) starts paused and requires genuine GUI Resume.
 Unknown child/pipe obligations remain retained; exit124 is an emergency failure,
 never a clean Stop or completed task.
 """
@@ -85,7 +85,10 @@ def no_work(cp,original,deadline,host,work):
             or gateway._runtime_context is not None or gateway.history or scheduler.active is not None
             or scheduler.pending or scheduler.uncertain or host.controller.fault is not None):
         raise RuntimeError('Cold zero-work runtime evidence differs')
-    for filename in ('effect-receipts.jsonl','wire-observations.json','work/report.json'):
+    from adaptive_inference.task_spec import TaskSpec
+    spec = TaskSpec.from_metadata(cp.metadata)
+    outputs = ['report.json'] if spec is None else [row['name'] for row in spec.data['outputs']]
+    for filename in ('effect-receipts.jsonl','wire-observations.json', *(f'work/{name}' for name in outputs)):
         path=work/filename
         if path.exists() and path.read_bytes().strip() not in (b'',b'[]'):
             raise RuntimeError('Unexpected provider/effect artifact in cold trial')
@@ -99,13 +102,31 @@ async def join_retained(tasks):
 
 class DesktopComposition:
     """Shared lifecycle; qualification scenarios may extend its existing seams."""
-    def __init__(self, profile_path, run, *, qualification_hold_after_report=False):
+    def __init__(self, profile_path, run, *, qualification_hold_after_report=False,
+                 task_spec=None, task_inputs=None):
         self.profile_path = Path(profile_path).resolve(strict=True)
         self.profile_sha256 = sha(self.profile_path)
         self.profile = WindowsProfile.load(self.profile_path)
         if type(qualification_hold_after_report) is not bool:
             raise TypeError('Qualification hold must be an explicit boolean')
         self.qualification_hold_after_report = qualification_hold_after_report
+        if (task_spec is None) != (task_inputs is None):
+            raise ValueError('Task specification and input directory must be supplied together')
+        self.task_spec_path = self.task_inputs = self.task_spec_sha256 = None
+        if task_spec is not None:
+            from adaptive_inference.task_spec import TaskSpec, MAX_SPEC_BYTES
+            self.task_spec_path = Path(task_spec).resolve(strict=True)
+            self.task_inputs = Path(task_inputs).resolve(strict=True)
+            if not self.task_spec_path.is_file() or not self.task_inputs.is_dir():
+                raise ValueError('Explicit task specification file and input directory required')
+            with self.task_spec_path.open('rb') as stream:
+                raw = stream.read(MAX_SPEC_BYTES + 1)
+            # Decode now, before retaining any process. Preparation independently
+            # verifies these same bytes and stages the declared input files.
+            TaskSpec.from_bytes(raw)
+            self.task_spec_sha256 = rec.digest(raw)
+            if qualification_hold_after_report:
+                raise ValueError('The orders report qualification hold cannot select another task')
         self.root = Path(run).absolute()
         if self.root.exists() or not self.root.parent.is_dir() or self.root.parent.resolve() != self.root.parent:
             raise ValueError('Use a fresh run directory under an existing non-redirected parent')
@@ -116,6 +137,8 @@ class DesktopComposition:
         self.result={'schema':'adaptive.desktop.windows-orders.result.v1', 'clean_stop':False,
                      'task_completed':False, 'execution_expired':False,
                      'model':MODEL, 'quality':deepcopy(QUALITY)}
+        if self.task_spec_path is not None:
+            self.result['schema'] = 'adaptive.desktop.windows-file-task.result.v1'
         self.worker_exit_verified=False
         self.continuation = None
 
@@ -335,11 +358,18 @@ class DesktopComposition:
         self.job = owned_job
         self.job.contain_current_process()
         self.work = self.root/'hermes-task'
-        child = self.launch([str(profile.worker_python), '-I', '-B', '-m',
+        prepare_command = [str(profile.worker_python), '-I', '-B', '-m',
             'adaptive_inference.desktop.hermes.run_recovery', 'prepare', '--run', str(self.work),
             '--profile', str(self.profile_path), '--profile-sha256', self.profile_sha256,
             '--package-identity', str(self.root/'installed-package.private.json'),
-            '--control-case', 'complete', '--validate-report-before-write'], 'prepare')
+            '--control-case', 'complete']
+        if self.task_spec_path is None:
+            prepare_command.append('--validate-report-before-write')
+        else:
+            prepare_command.extend(['--task-spec', str(self.task_spec_path),
+                '--task-spec-sha256', self.task_spec_sha256, '--task-inputs', str(self.task_inputs),
+                '--task-id', 'task-'+uuid.uuid4().hex, '--session-id', 'adaptive-'+uuid.uuid4().hex])
+        child = self.launch(prepare_command, 'prepare')
         await self.until(lambda:child.poll() is not None, timeout=60)
         if await self.join_child(child) != 0:
             raise RuntimeError('Fresh paused-task preparation failed; see prepare.log')
@@ -398,7 +428,7 @@ class DesktopComposition:
         paused = await self.until(self.paused_ack, self.worker, timeout=60)
         rec.save(self.root/'paused-before-gui.private.json', paused)
         self.gui = OwnedUILaunch(api=self.launch_api)
-        prepared = PreparedTask(self.host_epoch,self.identity.task_id,PROMPT)
+        prepared = PreparedTask(self.host_epoch,self.identity.task_id,self.original.prompt)
         self.facade = DesktopControlLifecycle(self.host,prepared,worker_stop=self.stop_binding,
             worker_capability=self.worker_cap,gui=self.gui,shutdown_timeout_s=120)
         self.runtime = MailboxRuntime(prepared,self.box,requester_capability=self.capability,
@@ -412,7 +442,7 @@ class DesktopComposition:
             runner_credential='local-no-key',cooperative_progress=self.progress)
         self.listener = SerialListener(self.transport)
         endpoint = self.listener.start()
-        bootstrap = Bootstrap(self.host_epoch,'session-'+uuid.uuid4().hex,self.identity.task_id,PROMPT,
+        bootstrap = Bootstrap(self.host_epoch,'session-'+uuid.uuid4().hex,self.identity.task_id,self.original.prompt,
             credential(),endpoint[0],endpoint[1],'AdaptiveInference.'+uuid.uuid4().hex,secrets.randbelow(2**31-1)+1)
         spec = LaunchSpec(profile.host_python,profile.host_python_sha256,HERE/'run_gui.py',
             tuple((name,sha(HERE.parent/name)) for name in sorted(CHILD_SOURCES)))
@@ -425,7 +455,7 @@ class DesktopComposition:
         self.result['retained_gui_binding'] = asdict(self.gui.binding)
         rec.save(self.root/'ready.private.json',{'ready':True,'gui_pid':self.gui.process.pid,
             'worker_pid':self.worker.pid,'task_id':self.identity.task_id,'paused_owner_acknowledged':True,
-            'model_started':False,'instructions':'Resume to run the report. Pause pauses at a safe boundary. Stop closes this session.'})
+            'model_started':False,'instructions':'Resume to run the task. Pause pauses at a safe boundary. Stop closes this session.'})
 
     async def _paused_expiry_candidate(self):
         # Reuse the runtime's retained off-loop coherent read; no new database
@@ -623,6 +653,13 @@ class DesktopComposition:
                 outcome = self.stop_binding._verify_exit(code)
                 self.worker_exit_verified = True
                 self.result['worker_outcome'] = outcome
+                if outcome == 'task_completed' and self.task_spec_path is not None:
+                    cp = self.stop_binding.mailbox.snapshot().target
+                    spec = rec.task_contract(cp)
+                    if spec is None:
+                        raise RuntimeError('Completed user task lost its declared contract')
+                    self.result.update(spec.completion(self.stop_binding.run/'work',cp.state['tools'],cp.state['output']))
+                    self.result['task_spec_sha256'] = spec.sha256
                 self.result['task_completed'] = outcome == 'task_completed'
                 self.result['execution_expired'] = outcome == 'paused_budget_expired'
                 await self.runtime.refresh()
@@ -732,7 +769,7 @@ class DesktopComposition:
         return self.result
 
 
-def execute(profile_path, run, *, qualification_timeout_s=None):
+def execute(profile_path, run, *, qualification_timeout_s=None, task_spec=None, task_inputs=None):
     # Ordinary host lifetime is persistent, as in PersistentDesktopHost. Only a
     # caller explicitly running a qualification may arm its emergency bound.
     # Unknown ordinary cleanup remains retained; it is never reported clean.
@@ -740,7 +777,8 @@ def execute(profile_path, run, *, qualification_timeout_s=None):
         if type(qualification_timeout_s) is not int or qualification_timeout_s != 1800:
             raise ValueError('The accepted qualification guard is exactly 1800 seconds')
         threading.Thread(target=hard_deadline,args=(qualification_timeout_s,),daemon=True).start()
-    result = asyncio.run(DesktopComposition(profile_path,run).run())
+    options = {} if task_spec is None and task_inputs is None else {'task_spec':task_spec,'task_inputs':task_inputs}
+    result = asyncio.run(DesktopComposition(profile_path,run,**options).run())
     result['asyncio_teardown_completed'] = True
     rec.save(Path(run)/'result.private.json',result)
     return result

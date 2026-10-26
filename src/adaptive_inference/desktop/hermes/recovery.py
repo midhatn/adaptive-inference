@@ -108,16 +108,38 @@ def resumable(owned, db, work):
         raise ReconciliationRequired('Native state differs from the durable safe checkpoint')
     verify_tool_rows(history, state['tools'])
     verify_validation_rows(history,state,checkpoint.metadata.get('pre_effect_validator'))
-    verify_artifacts(state, work)
+    verify_artifacts(state, work, task_spec=task_contract(checkpoint))
     return history
 
 
-def verify_artifacts(state, work):
+def task_contract(checkpoint):
+    """Legacy rows stay legacy; explicit contracts must retain their exact identity."""
+    from adaptive_inference.task_spec import TaskSpec
+    try:
+        spec = TaskSpec.from_metadata(getattr(checkpoint, 'metadata', {}))
+        if spec is not None and (checkpoint.prompt != spec.prompt or checkpoint.max_attempts != 8
+                or checkpoint.metadata.get('pre_effect_validator') != spec.validator_identity()):
+            raise ValueError('Task prompt, budget or validator differs from its immutable specification')
+        return spec
+    except (ValueError, TypeError, KeyError) as exc:
+        raise ReconciliationRequired('Stored task contract changed') from exc
+
+
+def verify_artifacts(state, work, *, task_spec=None):
     """Same bounded artifact check reused before accepting controls after flush."""
+    if task_spec is not None:
+        try:
+            task_spec.verify_inputs(work)
+        except (ValueError, OSError) as exc:
+            raise ReconciliationRequired('Immutable task inputs changed') from exc
     for tool in state['tools']:
         if tool['name'] == 'write_file':
-            path = (Path(work).resolve() / tool['args']['path']).resolve()
-            if (path != Path(work).resolve() / 'report.json' or not path.is_file()
+            try:
+                path = ((Path(work).resolve() / tool['args']['path']).resolve() if task_spec is None
+                        else task_spec.file_path(work, tool['args']['path'], write=True))
+            except (ValueError, OSError) as exc:
+                raise ReconciliationRequired('Completed artifact is outside the task contract') from exc
+            if ((task_spec is None and path != Path(work).resolve() / 'report.json') or not path.is_file()
                     or digest(path.read_bytes()) != tool['artifact_sha256']):
                 raise ReconciliationRequired('A completed artifact changed after its durable receipt')
 
@@ -125,12 +147,24 @@ def verify_artifacts(state, work):
 class Recovery:
     """One cooperating task owner; native tool effects are serialized by this lock.
 
-    Only the declared CSV read and report write are admitted by this bounded
-    adapter. A file-write receipt is durable before a later model call; a replay
-    of an identical completed write returns its prior result without dispatch.
+    Explicit task specifications admit only their declared input/output files.
+    Legacy records retain their original CSV/report capability. A write receipt
+    is durable before a later model call; identical completed writes reuse that
+    receipt without dispatch.
     """
     def __init__(self, owned, db, work, run, *, pause=None, max_requests=8, controls=None,
                  pre_effect_validator=None, validator_identity=None):
+        self.task_spec = task_contract(owned.checkpoint)
+        if self.task_spec is not None:
+            if pre_effect_validator is not None and (
+                    getattr(pre_effect_validator, '__self__', None) != self.task_spec
+                    or getattr(pre_effect_validator, '__func__', None) is not type(self.task_spec).validate_write):
+                raise ReconciliationRequired('Explicit task uses only its declared trusted validator')
+            if pre_effect_validator is None and validator_identity is None:
+                pre_effect_validator = self.task_spec.validate_write
+                validator_identity = self.task_spec.validator_identity()
+            if max_requests != 8 or validator_identity != self.task_spec.validator_identity():
+                raise ReconciliationRequired('Task contract budget or validator changed')
         if ((pre_effect_validator is None)!=(validator_identity is None)
                 or pre_effect_validator is not None and not callable(pre_effect_validator)):
             raise ValueError('Validator callback and identity must be configured together')
@@ -174,7 +208,7 @@ class Recovery:
             assert_prefix(state['native_history'], history)
             verify_tool_rows(history, state['tools'])
             verify_validation_rows(history,state,self.validator_identity)
-            verify_artifacts(state, self.work)
+            verify_artifacts(state, self.work, task_spec=self.task_spec)
             if state['phase'] == 'awaiting_native_flush' and len(history) <= len(state['native_history']):
                 raise ReconciliationRequired('Native completion has not reached durable history')
             if history != state['native_history'] or state['phase'] == 'awaiting_native_flush':
@@ -322,10 +356,17 @@ class Recovery:
                     raise ReconciliationRequired('Wrong tool identity or unfinished operation')
                 if not isinstance(args, dict) or not isinstance(args.get('path'), str):
                     raise ReconciliationRequired('Malformed file arguments')
-                path = (self.work / args['path']).resolve()
-                read_ok = tool_name == 'read_file' and path in (self.work / 'orders.csv', self.work / 'report.json')
-                write_ok = (tool_name == 'write_file' and path == self.work / 'report.json'
-                            and isinstance(args.get('content'), str) and len(args['content']) <= 4096)
+                if self.task_spec is None:
+                    path = (self.work / args['path']).resolve()
+                    read_ok = tool_name == 'read_file' and path in (self.work / 'orders.csv', self.work / 'report.json')
+                    write_ok = (tool_name == 'write_file' and path == self.work / 'report.json'
+                                and isinstance(args.get('content'), str) and len(args['content']) <= 4096)
+                else:
+                    self.task_spec.verify_inputs(self.work)
+                    path = self.task_spec.file_path(self.work, args['path'], write=tool_name == 'write_file')
+                    read_ok = tool_name == 'read_file'
+                    write_ok = (tool_name == 'write_file' and isinstance(args.get('content'), str)
+                                and len(args['content']) <= 4096)
                 if not (read_ok or write_ok):
                     raise ReconciliationRequired('Tool is outside this adapter capability')
                 history = native_history(self.db, session_id)
@@ -429,7 +470,7 @@ class Recovery:
         verify_tool_rows(history, state['tools'])
         verify_validation_rows(history,state,self.validator_identity)
         if self.controls is not None:
-            verify_artifacts(state, self.work)
+            verify_artifacts(state, self.work, task_spec=self.task_spec)
             if state['phase'] not in ('ready','waiting_admission','awaiting_native_flush'):
                 raise ReconciliationRequired('Completion has an unknown application phase')
             if state['phase'] == 'awaiting_native_flush' and len(history) <= len(state['native_history']):
@@ -440,6 +481,8 @@ class Recovery:
             self.checkpoint(state)
             self.control_safe_point()
             state = self.state()
+        if self.task_spec is not None:
+            self.task_spec.completion(self.work, state['tools'], outcome.get('final_response', ''))
         state.update(status='accepted', phase='accepted', native_history=history,
                      output=str(outcome.get('final_response', '')))
         self.checkpoint(state)
@@ -460,8 +503,12 @@ def reconcile_write(owned, db, work, receipt, *, expected_operation_id):
     for key in ('name', 'tool_call_id', 'args', 'fingerprint', 'session_id'):
         if receipt.get(key) != detail.get(key):
             raise ReconciliationRequired('Receipt differs from recorded intent')
-    path = (Path(work).resolve() / detail['args']['path']).resolve()
-    if (detail['name'] != 'write_file' or path != Path(work).resolve() / 'report.json'
+    spec = task_contract(cp)
+    if spec is not None:
+        spec.verify_inputs(work)
+    path = ((Path(work).resolve() / detail['args']['path']).resolve() if spec is None
+            else spec.file_path(work, detail['args']['path'], write=True))
+    if (detail['name'] != 'write_file' or spec is None and path != Path(work).resolve() / 'report.json'
             or not path.is_file() or digest(path.read_bytes()) != receipt.get('artifact_sha256')
             or path.read_text(encoding='utf-8') != detail['args']['content']):
         raise ReconciliationRequired('Current artifact does not prove this exact recorded write')

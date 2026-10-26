@@ -274,7 +274,8 @@ class WorkerStopBinding:
         if cp.state['phase'] not in ('ready', 'waiting_admission', 'accepted'):
             raise RecoveryStop('Worker application checkpoint is not resumable')
         flushed_tools(cp.state)
-        verify_artifacts(cp.state, self.run/'work')
+        from adaptive_inference.desktop.hermes.recovery import task_contract
+        verify_artifacts(cp.state, self.run/'work', task_spec=task_contract(cp))
         path = self.diagnostics/f'result-{self.worker.pid}.json'
         raw = path.read_bytes()
         if len(raw) > 1024 * 1024:
