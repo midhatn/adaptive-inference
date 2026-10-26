@@ -1047,6 +1047,24 @@ describes the first-use prompt and the different consequences of allowing or
 cancelling it. Handling the dialog is an installation prerequisite; it does not
 change the model, task contract or acceptance gate.
 
+**Verifier feedback from the fresh trial:** after the operator handled the OS
+dialog, the same installed runtime completed the inventory worker's three model
+requests and produced the expected 23-unit result. The qualification nevertheless
+stopped before the second task because its prompt fingerprint comparison used
+raw UTF-8 bytes, while the existing worker records the hash of a JSON-encoded
+string. The worker's recorded value matches its existing serialization contract.
+Python's [JSON documentation](https://docs.python.org/3/library/json.html) explains
+the string encoding; the installed worker and retained source are authoritative
+for the exact representation used here.
+
+Correct the verifier to use that existing representation, retaining strict
+prompt, metadata, session and quality comparisons. Add a regression against the
+actual worker's formatter and reject the former raw-text fingerprint and changed
+prompts. Preserve the original verifier and failed trial. A corrected replay can
+explain this failure, but cannot turn it into a two-task success: the next case
+must still perform both real tasks and normal GUI Stop. The runtime, model,
+installation and time allowances do not need to change for this verifier repair.
+
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
 [precision comparison](docs/precision-research.md#reversible-qualification).
