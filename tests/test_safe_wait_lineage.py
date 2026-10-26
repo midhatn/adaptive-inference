@@ -6,7 +6,12 @@ import unittest
 from unittest import mock
 
 import task_file_alias_lineage as lineage
+from continuation_diagnostics_lineage import readiness_support_predecessor
 from paused_expiry_lineage import fingerprint
+
+
+def current_source(relative):
+    return readiness_support_predecessor(relative, (lineage.ROOT / relative).read_bytes())
 
 
 class SafeWaitLineageTests(unittest.TestCase):
@@ -22,7 +27,7 @@ class SafeWaitLineageTests(unittest.TestCase):
             self.assertEqual(hashlib.sha256(data).hexdigest(), pin['sha256'])
             self.assertEqual(fingerprint(ast.parse(data)), pin['ast_sha256'])
         for relative, row in rows['files'].items():
-            current = (lineage.ROOT / relative).read_bytes()
+            current = current_source(relative)
             before = (lineage.ROOT / row['predecessor_source']).read_bytes()
             self.assertEqual(lineage.safe_wait_predecessor(relative, current), before)
             self.assertEqual(lineage.safe_wait_predecessor(relative, before), before)
@@ -32,7 +37,7 @@ class SafeWaitLineageTests(unittest.TestCase):
 
     def test_unreviewed_successor_bytes_and_inside_outside_ast_refuse(self):
         for relative in lineage.safe_wait_record()['files']:
-            data = (lineage.ROOT / relative).read_bytes()
+            data = current_source(relative)
             with self.subTest(relative=relative):
                 with self.assertRaisesRegex(AssertionError, 'complete task-handover source'):
                     lineage.safe_wait_predecessor(relative, data+b'\n# unreviewed\n')
@@ -50,7 +55,7 @@ class SafeWaitLineageTests(unittest.TestCase):
 
     def test_predecessor_paths_bytes_and_ast_pins_refuse(self):
         for relative in lineage.safe_wait_record()['files']:
-            data = (lineage.ROOT / relative).read_bytes()
+            data = current_source(relative)
             for field in ('predecessor_source','predecessor_sha256','predecessor_ast_sha256'):
                 rows = lineage.safe_wait_record(); rows['files'][relative][field] = '0'*64
                 with self.subTest(relative=relative, field=field), mock.patch.object(lineage, 'safe_wait_record', return_value=rows):
@@ -77,7 +82,7 @@ class SafeWaitLineageTests(unittest.TestCase):
     def test_support_edits_restore_original_assertions_byte_exact(self):
         rows = lineage.safe_wait_record()
         for relative, rules in rows['support_edits'].items():
-            data = (lineage.ROOT / relative).read_bytes()
+            data = current_source(relative)
             row = rows['files'][relative]
             self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
             if rules.get('appended_marker'):

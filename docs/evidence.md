@@ -36,6 +36,11 @@ retains the original child and time limits. Its deterministic denial reproductio
 and actual Windows sharing-handle regression pass; all 50 focused Python 3.12
 source/CPU-child checks passed without skips. The exact earlier fixture and
 historical manifests remain preserved. This is a test-only change.
+The first readiness publication, `c3d99c1`, then failed an older test-reader
+identity check omitted from the focused selection. The follow-up preserves the
+three dependent test sources and their exact assertions; all 69 lineage and
+readiness cases pass on Python 3.12. The earlier focused review was insufficient
+for that dependency, and its failure remains recorded in the readiness packet.
 
 The new wheel `e8dd65996661c470e0f4be8ad8d5eccea1e0674a3126c1e3d295e1f3ec2d89c7`
 has now passed its actual isolated host/worker installation sequence: both

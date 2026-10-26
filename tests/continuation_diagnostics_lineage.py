@@ -31,6 +31,29 @@ def readiness_predecessor(data, root=None):
     return data
 
 
+def readiness_support_predecessor(relative, data, root=None):
+    """Keep the three declared historical test readers on their exact inputs."""
+    root = ROOT if root is None else root
+    rows = json.loads((root / READINESS / 'support-source-lineage.json').read_bytes())
+    row = rows['files'].get(relative)
+    if row is None:
+        return data
+    expected = READINESS + '/support-predecessor/' + relative
+    if row['predecessor_source'] != expected:
+        raise AssertionError('Changed readiness support predecessor path')
+    before = (root / expected).read_bytes()
+    if (hashlib.sha256(before).hexdigest() != row['predecessor_sha256']
+            or fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']):
+        raise AssertionError('Changed readiness support predecessor identity')
+    pin = hashlib.sha256(data).hexdigest()
+    if pin not in (row['predecessor_sha256'], row['successor_sha256']):
+        raise AssertionError('Changed complete readiness support source')
+    ast_pin = row['predecessor_ast_sha256'] if pin == row['predecessor_sha256'] else row['successor_ast_sha256']
+    if fingerprint(ast.parse(data)) != ast_pin:
+        raise AssertionError('Changed complete readiness support AST')
+    return before
+
+
 def record(root=None):
     root = ROOT if root is None else root
     return json.loads((root / ARCHIVE / 'source-lineage.json').read_bytes())

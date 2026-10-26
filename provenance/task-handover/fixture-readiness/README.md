@@ -28,10 +28,26 @@ by bytes and AST. The diagnostic lineage first verifies this outer change,
 then runs its existing historical checks on the exact prior source. Old
 provenance manifests are unchanged; every runtime module matches `24713ab3`.
 
+The first publication at `c3d99c1` missed a historical test-reader dependency.
+Hosted [job 121783343642](https://github.com/midhatn/adaptive-inference/actions/runs/40382845538/job/121783343642)
+correctly rejected the changed diagnostic test's source identity. The earlier
+50-case run and independent focused review did not cover that consumer. Preserve
+those results at their original scope; they did not establish complete CI.
+
+`support-source-lineage.json` now records the exact dependency chain through
+the diagnostic, pause-observation and safe-wait tests, retaining all three prior
+files and their explicit source-reader transformations. Existing assertions and
+historical manifests remain unchanged. A regression restores each complete
+prior test byte-for-byte and rejects unknown edits. All 69 source-lineage and
+readiness checks passed on Python 3.12 with no skips; this broader selection
+includes the previously omitted consumers. The runtime and actual-child helper
+are unchanged by this follow-up.
+
 Reproduce with the repository installed and `tests` on the Python module path:
 
 ```text
 python -m unittest test_continuation_readiness test_continuation_diagnostics_lineage test_task_file_alias_lineage test_continuation_host -v
+python -m unittest discover -s tests -p "test_*lineage.py" -v
 ```
 
 Actual retained-child host cases and the file-sharing check require Windows.

@@ -18,6 +18,26 @@ from paused_expiry_lineage import fingerprint
 
 
 class ReadinessLineageTests(unittest.TestCase):
+    def test_support_readers_restore_original_assertions_and_reject_unknown_edits(self):
+        root=diagnostics.ROOT
+        rows=json.loads((root/diagnostics.READINESS/'support-source-lineage.json').read_bytes())
+        self.assertEqual(set(rows['files']),{'tests/test_continuation_diagnostics_lineage.py',
+            'tests/test_pause_observation_lineage.py','tests/test_safe_wait_lineage.py'})
+        self.assertEqual(rows['runtime_changes'],[])
+        for relative,row in rows['files'].items():
+            with self.subTest(relative=relative):
+                current=(root/relative).read_bytes()
+                before=(root/row['predecessor_source']).read_bytes()
+                self.assertEqual(diagnostics.readiness_support_predecessor(relative,current),before)
+                self.assertEqual(diagnostics.readiness_support_predecessor(relative,before),before)
+                for rule in reversed(row['replacements']):
+                    new=rule['new'].encode();old=rule['old'].encode()
+                    self.assertEqual(current.count(new),rule['count'])
+                    current=current.replace(new,old)
+                self.assertEqual(current,before)
+                with self.assertRaisesRegex(AssertionError,'complete readiness support source'):
+                    diagnostics.readiness_support_predecessor(relative,current+b'\n# unreviewed\n')
+
     def test_only_readiness_observation_changed_and_old_fixture_is_exact(self):
         root=diagnostics.ROOT
         row=json.loads((root/diagnostics.READINESS/'source-lineage.json').read_bytes())

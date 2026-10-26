@@ -1276,7 +1276,10 @@ The next hosted Windows run exposed an unreadable CPU-fixture readiness marker
 in setup. The [bounded observation correction](provenance/task-handover/fixture-readiness/README.md)
 handles transient missing/denied reads without changing the same-child identity,
 startup deadline or work guard. Fifty focused Python 3.12 source/actual-child
-checks passed; exact-head hosted CI remains a separate gate. Neither fixture
+checks passed. A subsequent hosted run caught an omitted historical test-reader
+dependency; the explicit three-file support projection now preserves those
+assertions too, and all 69 lineage/readiness checks pass. Exact-head hosted CI
+remains a separate gate. Neither fixture
 correction changes runtime modules, installed deadlines or previous results.
 
 The fresh isolated package installation has now passed both import audits,

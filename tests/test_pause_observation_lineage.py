@@ -6,11 +6,13 @@ import unittest
 from unittest import mock
 
 import task_file_alias_lineage as lineage
+from continuation_diagnostics_lineage import readiness_support_predecessor
 from paused_expiry_lineage import fingerprint
 
 
 def old_source(relative):
-    return lineage.safe_wait_predecessor(relative, (lineage.ROOT / relative).read_bytes())
+    data = readiness_support_predecessor(relative, (lineage.ROOT / relative).read_bytes())
+    return lineage.safe_wait_predecessor(relative, data)
 
 
 def method(tree, key):
