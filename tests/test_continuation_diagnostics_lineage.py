@@ -59,6 +59,9 @@ class ContinuationDiagnosticLineageTests(unittest.TestCase):
     def test_old_lineage_assertions_are_byte_exact_after_two_explicit_insertions(self):
         relative = 'tests/test_task_file_alias_lineage.py'
         current = (diagnostics.ROOT / relative).read_bytes()
+        fixture_input = b'            sources += lineage.observation_inputs()\n'
+        self.assertEqual(current.count(fixture_input), 1)
+        current = current.replace(fixture_input, b'', 1)
         row = diagnostics.record()['files'][relative]
         self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
         first = b'from continuation_diagnostics_lineage import predecessor as diagnostic_predecessor\n'

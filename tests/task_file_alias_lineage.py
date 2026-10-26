@@ -32,6 +32,7 @@ def retained(relative, row, root=None):
 
 
 def predecessor(relative, data, root=None):
+    data = observation_predecessor(relative, data, root=root)
     row = record(root)['modules'].get(relative)
     if row is None:
         return data
@@ -42,6 +43,7 @@ def predecessor(relative, data, root=None):
 
 
 def restore_file_aliases(tree, relative, root=None):
+    tree = restore_observation(tree, relative, root=root)
     row = record(root)['modules'].get(relative)
     if row is None:
         return tree
@@ -84,6 +86,7 @@ def runtime_view(root=None):
     result = {}
     for relative in sorted(actual):
         data = (runtime / relative).read_bytes()
+        data = observation_predecessor(relative, data, root=root)
         changed = relative in rows['modules']
         row = rows['modules'][relative] if changed else {
             **rows['unchanged_runtime'], **rows['new_modules']}[relative]
@@ -96,3 +99,58 @@ def runtime_view(root=None):
     if len(result) != rows['baseline_runtime_count']:
         raise AssertionError('Changed task-file-alias baseline closure')
     return result
+
+
+# Current pause-observation delta; reuse the already retained bf70 predecessors.
+OBSERVATION_ARCHIVE = 'provenance/task-handover/pause-observation'
+OBSERVATION_BASE = 'provenance/paused-budget-expiry/reviewed-repository-bf70a2ac/src/adaptive_inference/'
+
+
+def observation_record(root=None):
+    root = ROOT if root is None else root
+    return json.loads((root / OBSERVATION_ARCHIVE / 'source-lineage.json').read_bytes())
+
+
+def observation_inputs(root=None):
+    """Exact extra source files needed by the existing disposable-root tests."""
+    root = ROOT if root is None else root
+    rows = observation_record(root)
+    return [root / OBSERVATION_ARCHIVE / 'source-lineage.json',
+            *(root / row['predecessor_source'] for row in rows['modules'].values())]
+
+
+def _observation_before(relative, root=None):
+    root = ROOT if root is None else root
+    row = observation_record(root)['modules'].get(relative)
+    if row is None:
+        return None, None
+    expected = OBSERVATION_BASE + relative
+    if row['predecessor_source'] != expected:
+        raise AssertionError('Changed pause-observation predecessor path')
+    before = (root / expected).read_bytes()
+    if hashlib.sha256(before).hexdigest() != row['predecessor_sha256']:
+        raise AssertionError('Changed pause-observation predecessor bytes')
+    if fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']:
+        raise AssertionError('Changed pause-observation predecessor AST')
+    return row, before
+
+
+def observation_predecessor(relative, data, root=None):
+    row, before = _observation_before(relative, root)
+    if row is None:
+        return data
+    if hashlib.sha256(data).hexdigest() not in (row['predecessor_sha256'], row['successor_sha256']):
+        raise AssertionError('Changed complete task-handover source (pause-observation): ' + relative)
+    return before
+
+
+def restore_observation(tree, relative, root=None):
+    row, before = _observation_before(relative, root)
+    if row is None:
+        return tree
+    current = fingerprint(tree)
+    if current == row['predecessor_ast_sha256']:
+        return tree
+    if current != row['successor_ast_sha256']:
+        raise AssertionError('Changed complete task-handover AST (pause-observation): ' + relative)
+    return ast.parse(before)

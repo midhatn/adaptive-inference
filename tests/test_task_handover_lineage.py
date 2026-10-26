@@ -72,6 +72,7 @@ class TaskHandoverLineageTests(unittest.TestCase):
             sources.append(lineage.ROOT / aliases.ARCHIVE_RELATIVE / 'source-lineage.json')
             sources += [lineage.ROOT / row['predecessor_source']
                         for row in aliases.record().get('modules', {}).values()]
+            sources += aliases.observation_inputs()
             for path in sources:
                 target = root / path.relative_to(lineage.ROOT)
                 target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(path.read_bytes())

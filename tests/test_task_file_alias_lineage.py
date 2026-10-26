@@ -74,6 +74,7 @@ class TaskFileAliasLineageTests(unittest.TestCase):
             sources = list((lineage.ROOT / 'src/adaptive_inference').rglob('*.py'))
             sources += [lineage.ROOT / row['predecessor_source'] for row in rows['modules'].values()]
             sources.append(lineage.ROOT / lineage.ARCHIVE_RELATIVE / 'source-lineage.json')
+            sources += lineage.observation_inputs()
             for source in sources:
                 target = root / source.relative_to(lineage.ROOT)
                 target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(source.read_bytes())

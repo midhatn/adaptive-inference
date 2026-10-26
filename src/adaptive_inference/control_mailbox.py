@@ -284,7 +284,7 @@ class Mailbox:
             mailbox_owner.checkpoint = saved
         return self.status(request_id)
 
-    def _paused_execution(self, db, owned):
+    def _paused_execution(self, db, owned, *, allow_pending=False):
         if (type(owned) is not OwnedTask or owned._store.path != self.store.path
                 or owned.checkpoint.task_id != self.identity.task_id):
             raise OwnershipError('Execution seal requires the exact target owner')
@@ -295,15 +295,24 @@ class Mailbox:
         if (execution_outcome(cp.state) is not None or cp.state['status'] != 'pending'
                 or cp.operation is not None or cp.requires_reconciliation
                 or demand is None or demand['state'] != 'paused'
-                or not requests or len(receipts) != len(requests)
-                or requests[-1]['command'] != 'pause' or receipts[-1]['outcome'] != 'applied'):
+                or not requests or not receipts
+                or receipts[-1]['command'] != 'pause' or receipts[-1]['outcome'] != 'applied'):
+            raise ControlBlocked('Execution expiry lacks its complete applied Pause prefix')
+        if len(receipts) != len(requests):
+            # A host append after consume is ordinary observation progress.
+            # Ownership/schema/ACK checks above still precede this classification.
+            if allow_pending is True:
+                return None
             raise ControlBlocked('Execution expiry lacks its complete applied Pause prefix')
         return cp, requests, receipts
 
     def paused_execution_observation(self, owned):
-        """Owner-safe caller supplies time; this coherent read binds the Pause."""
+        """Bind a coherent applied Pause, or return None for validated new controls."""
         with self.store._connection() as db:
-            cp, requests, receipts = self._paused_execution(db, owned)
+            observed = self._paused_execution(db, owned, allow_pending=True)
+            if observed is None:
+                return None
+            cp, requests, receipts = observed
             return {'owner_epoch': cp.owner_epoch, 'target_revision': cp.revision,
                     'pause_request_id': requests[-1]['request_id'],
                     'pause_sequence': requests[-1]['sequence'],

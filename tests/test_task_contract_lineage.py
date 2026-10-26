@@ -74,6 +74,11 @@ class TaskContractLineageTests(unittest.TestCase):
                     target = root / path.relative_to(lineage.ROOT)
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_bytes(path.read_bytes())
+            import task_file_alias_lineage as aliases
+            for path in aliases.observation_inputs():
+                target = root / path.relative_to(lineage.ROOT)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(path.read_bytes())
             with mock.patch.object(lineage, 'ROOT', root), mock.patch.object(lineage, 'record', return_value=rows):
                 lineage.runtime_view()
                 extra = root / 'src/adaptive_inference/unreviewed.py'; extra.write_text('pass\n')
