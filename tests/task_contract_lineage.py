@@ -31,6 +31,10 @@ def retained(relative, row):
 
 def predecessor(relative, data):
     row = record()['modules'].get(relative)
+    if row is not None and hashlib.sha256(data).hexdigest() == row['predecessor_sha256']:
+        return retained(relative, row)
+    from task_handover_lineage import predecessor as handover_predecessor
+    data = handover_predecessor(relative, data, root=ROOT)
     if row is None:
         return data
     prior = retained(relative, row)
@@ -41,6 +45,11 @@ def predecessor(relative, data):
 
 def restore_task_contract(tree, relative):
     row = record()['modules'].get(relative)
+    if row is not None and fingerprint(tree) == row['predecessor_ast_sha256']:
+        retained(relative, row)
+        return tree
+    from task_handover_lineage import restore_task_handover
+    tree = restore_task_handover(tree, relative, root=ROOT)
     if row is None:
         return tree
     before = ast.parse(retained(relative, row))
@@ -58,14 +67,15 @@ def runtime_view():
     groups = [set(rows[key]) for key in ('modules', 'unchanged_runtime', 'new_modules')]
     if any(groups[i] & groups[j] for i in range(3) for j in range(i + 1, 3)):
         raise AssertionError('Overlapping task-contract source groups')
-    runtime = ROOT / 'src/adaptive_inference'
-    actual = {path.relative_to(runtime).as_posix() for path in runtime.rglob('*.py')}
+    from task_handover_lineage import runtime_view as handover_view
+    current = handover_view(root=ROOT)
+    actual = set(current)
     expected = set.union(*groups)
     if actual != expected:
         raise AssertionError('Changed complete task-contract runtime closure')
     result = {}
     for relative in sorted(actual):
-        data = (runtime / relative).read_bytes()
+        data = current[relative]
         changed = relative in rows['modules']
         row = rows['modules'][relative] if changed else {
             **rows['unchanged_runtime'], **rows['new_modules']}[relative]

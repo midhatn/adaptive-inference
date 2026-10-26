@@ -58,3 +58,5 @@ provenance/explicit-continuation/acceptance/** -text whitespace=cr-at-eol
 examples/validation/explicit_continuation/** -text whitespace=cr-at-eol
 # Preserve the reviewed task-contract source projection and its manifest bytes.
 provenance/task-contract/** -text whitespace=cr-at-eol
+# Retain the preceding task-contract sources and reviewed handover projection.
+provenance/task-handover/** -text whitespace=cr-at-eol

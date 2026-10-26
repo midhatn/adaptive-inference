@@ -4,6 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
+from types import SimpleNamespace
 
 from adaptive_inference.demand import DemandIdentity, NAMESPACE, DemandRegistry, Registration
 from adaptive_inference.task_store import TaskStore, OwnedTask, TaskBusyError, RevisionConflict, ReconciliationRequired
@@ -134,6 +135,43 @@ class AdmissionTests(unittest.TestCase):
             with self.assertRaises(ReconciliationRequired):
                 self.admission.prepared(owner, grant, operation_id=operation)
 
+    def test_source_paths_and_raw_digest_remain_bound_after_lost_return(self):
+        source={'task_spec_path':str(self.root/'task.json'),
+                'task_spec_sha256':'2'*64,'task_inputs':str(self.root/'inputs')}
+        args={'command_id':'source-command','expected_selection_revision':0,
+              'predecessor_execution_id':self.old.task_id,'predecessor_revision':self.old.revision,
+              'spec':spec(),'arrived_at_utc':UTC}
+        request=self.admission.request(**args,source=source)
+        original=OwnedTask.save_checkpoint
+        def lost(owner,*values,**options):
+            original(owner,*values,**options);raise OSError('lost source-bound return')
+        with self.claim() as owner:
+            with patch.object(OwnedTask,'save_checkpoint',lost),self.assertRaises(OSError):
+                self.reserve(owner,request)
+        grant=self.admission.lookup(request)
+        self.assertEqual(grant['payload']['source'],source)
+        # Lookup is durable even if the original input paths are unavailable.
+        self.assertFalse(Path(source['task_spec_path']).exists())
+        for key,value in (('task_spec_path',str(self.root/'other.json')),
+                          ('task_spec_sha256','3'*64),('task_inputs',str(self.root/'other-inputs'))):
+            with self.subTest(key=key):
+                changed={**source,key:value}
+                with self.assertRaises(RevisionConflict):
+                    self.admission.lookup(self.admission.request(**args,source=changed))
+        with self.assertRaises(RevisionConflict):
+            self.admission.lookup(self.admission.request(**args))
+
+    def test_source_paths_are_bounded_absolute_and_strict(self):
+        request=self.request()
+        for source in ({}, {'task_spec_path':'relative.json','task_spec_sha256':'2'*64,
+                           'task_inputs':str(self.root)},
+                       {'task_spec_path':str(self.root/('x'*1025)),
+                        'task_spec_sha256':'2'*64,'task_inputs':str(self.root)},
+                       {'task_spec_path':str(self.root/'task.json'),
+                        'task_spec_sha256':'not-a-digest','task_inputs':str(self.root)}):
+            with self.subTest(source=source),self.assertRaises(ValueError):
+                self.admission.lookup({**request,'source':source})
+
     def test_lost_reserve_return_is_resolved_by_exact_lookup(self):
         original = OwnedTask.save_checkpoint
         def lost(owner, *args, **kwargs):
@@ -187,6 +225,69 @@ class AdmissionTests(unittest.TestCase):
             self.assertFalse(self.admission.status()['stop_fenced'])
             next_grant = self.reserve(owner, self.request('next-command'))
             self.assertNotEqual(next_grant['payload']['task_id'], cp.task_id)
+
+    def test_stop_before_launch_preserves_pending_task_and_closes_host_admission(self):
+        with self.claim() as owner:
+            grant,(store,cp,identity)=self.prepare(owner)
+            history=store.history(cp.task_id)
+            receipt=self.admission.stop(owner,grant,cleanup_sha256=PROOF)
+            self.assertEqual(receipt['outcome'],'not_launched')
+            self.assertEqual(store.load(cp.task_id).state['status'],'pending')
+            self.assertEqual(store.history(cp.task_id),history)
+            status=self.admission.status()
+            self.assertTrue(status['host_stopped']);self.assertFalse(status['stop_fenced'])
+            self.assertFalse(status['requires_reconciliation']);self.assertIsNone(status['operation'])
+            with self.assertRaises(ReconciliationRequired):
+                self.reserve(owner,self.request('after-stop'))
+            with self.assertRaises(ReconciliationRequired):
+                self.admission.begin(owner,grant,action='launch')
+
+    def test_stop_cannot_relabel_changed_preparation_as_not_launched(self):
+        with self.claim() as owner:
+            grant,(store,cp,identity)=self.prepare(owner)
+            self.complete_task(store,cp,identity)
+            with self.assertRaises(ReconciliationRequired):
+                self.admission.stop(owner,grant,cleanup_sha256=PROOF)
+            self.assertTrue(self.admission.status()['stop_fenced'])
+
+    def test_known_worker_stop_settles_lifetime_without_cancelling_pending_task(self):
+        # This is an admission-component test with an explicitly injected
+        # WorkerStopBinding verifier. It establishes no child/native exit.
+        from adaptive_inference.desktop.hermes.service_stop import WorkerStopBinding
+        from adaptive_inference.control_mailbox import Mailbox
+        with self.claim() as owner:
+            grant,(store,cp,identity)=self.prepare(owner)
+            operation=self.admission.begin(owner,grant,action='launch')
+            registry=DemandRegistry([Registration(store,identity)])
+            with store.claim(cp.task_id,expected_revision=cp.revision) as worker:
+                registry.transition(identity.registration_id,worker,'paused',
+                    expected_revision=worker.checkpoint.revision,updated_at_utc=UTC,
+                    reason='Safe worker Stop fixture')
+            binding=WorkerStopBinding.__new__(WorkerStopBinding)
+            binding.run=Path(grant['payload']['run']);binding.original=cp
+            binding.mailbox=Mailbox(registry,identity.registration_id,requester_capability=object())
+            binding.worker=SimpleNamespace(poll=lambda:4)
+            history=store.history(cp.task_id)
+            with patch.object(WorkerStopBinding,'_verify_exit',side_effect=ReconciliationRequired('unverified exit')):
+                with self.assertRaisesRegex(ReconciliationRequired,'unverified exit'):
+                    self.admission.stop(owner,grant,cleanup_sha256=PROOF,operation_id=operation,binding=binding)
+            self.assertIsNotNone(self.admission.status()['operation'])
+            with patch.object(WorkerStopBinding,'_verify_exit',return_value='service_stopped') as verifier:
+                receipt=self.admission.stop(owner,grant,cleanup_sha256=PROOF,operation_id=operation,binding=binding)
+            self.assertTrue(verifier.called);self.assertEqual(receipt['outcome'],'service_stopped')
+            self.assertEqual(store.history(cp.task_id),history)
+            self.assertEqual(store.load(cp.task_id).state['status'],'pending')
+            status=self.admission.status()
+            self.assertTrue(status['host_stopped']);self.assertFalse(status['requires_reconciliation'])
+            self.assertIsNone(status['operation']);self.assertFalse(status['stop_fenced'])
+
+    def test_unknown_running_lifetime_cannot_be_settled_as_no_child(self):
+        with self.claim() as owner:
+            grant,unused=self.prepare(owner)
+            operation=self.admission.begin(owner,grant,action='launch')
+            with self.assertRaises(ReconciliationRequired):
+                self.admission.stop(owner,grant,cleanup_sha256=PROOF,operation_id=operation)
+            self.assertIsNotNone(self.admission.status()['operation'])
 
     def test_stop_before_staging_abandons_without_replaying_or_selecting(self):
         with self.claim() as owner:

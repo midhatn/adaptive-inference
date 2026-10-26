@@ -70,7 +70,7 @@ def complete_ledger(events,prefix):
         raise RuntimeError('Controller ledger prefix missing or bounded buffer full')
     return rows
 
-def no_work(cp,original,deadline,host,work):
+def no_work(cp,original,deadline,host,work, *, cold=True):
     """Read-only actual checkpoint/runtime gate, used before GUI and at terminal."""
     if (cp.prompt!=original.prompt or cp.metadata!=original.metadata or cp.max_attempts!=original.max_attempts
             or cp.state['messages']!=original.state['messages']
@@ -81,7 +81,7 @@ def no_work(cp,original,deadline,host,work):
             or cp.state['admission_deferrals'] or cp.state[NAMESPACE]['state']!='paused'):
         raise RuntimeError('Paused original task contains new/unknown work or changed accounting')
     gateway=host.gateway;scheduler=gateway.scheduler
-    if (host.adapter.launch_intent is not None or host.adapter.started_owner
+    if cold and (host.adapter.launch_intent is not None or host.adapter.started_owner
             or gateway._runtime_context is not None or gateway.history or scheduler.active is not None
             or scheduler.pending or scheduler.uncertain or host.controller.fault is not None):
         raise RuntimeError('Cold zero-work runtime evidence differs')
@@ -141,6 +141,7 @@ class DesktopComposition:
             self.result['schema'] = 'adaptive.desktop.windows-file-task.result.v1'
         self.worker_exit_verified=False
         self.continuation = None
+        self.handover = None
 
     def launch(self, command, label):
         stream=(self.root/(label+'.log')).open('wb'); self.logs.append(stream)
@@ -306,6 +307,8 @@ class DesktopComposition:
 
     async def dispose(self,failed):
         """Cooperative cleanup only. Live/unknown obligations stay retained."""
+        if getattr(self,'handover',None) is not None:
+            return await self.handover.dispose(failed)
         self.fence()
         if self.worker is not None and self.stop_binding is None:self.bind_worker_stop()
         if self.transport is not None:
@@ -437,11 +440,15 @@ class DesktopComposition:
         self.host.attach_control_runtime(self.runtime)
         from adaptive_inference.desktop.continuation_host import HostContinuation
         self.continuation = HostContinuation(self,self.runtime)
+        from adaptive_inference.desktop.task_handover import HostTaskHandover
+        self.handover = HostTaskHandover(self)
         self.transport_cap = object()
         self.transport = ControlTransport(prepared,self.runtime,capability=self.transport_cap,
-            runner_credential='local-no-key',cooperative_progress=self.progress)
+            runner_credential='local-no-key',cooperative_progress=self.progress,
+            handover=self.handover.adapter(self.runtime))
         self.listener = SerialListener(self.transport)
         endpoint = self.listener.start()
+        self.handover.capture_initial()
         bootstrap = Bootstrap(self.host_epoch,'session-'+uuid.uuid4().hex,self.identity.task_id,self.original.prompt,
             credential(),endpoint[0],endpoint[1],'AdaptiveInference.'+uuid.uuid4().hex,secrets.randbelow(2**31-1)+1)
         spec = LaunchSpec(profile.host_python,profile.host_python_sha256,HERE/'run_gui.py',
@@ -486,7 +493,7 @@ class DesktopComposition:
         if owner is not None and self.host.adapter._released != release['native']['release']:
             raise RuntimeError('Parked release identity changed before selection')
 
-    async def continuation_release(self, request, intent_valid):
+    async def continuation_release(self, request, intent_valid, *, task_handover=False):
         from adaptive_inference.desktop.control_transport import Refused
         from adaptive_inference.desktop.hermes.service_stop import PAUSED_EXPIRY_EXIT
         child,binding = self.worker,self.stop_binding
@@ -498,9 +505,10 @@ class DesktopComposition:
             if execution_now()>=limit:raise TimeoutError('Previous worker has not released')
             await asyncio.sleep(.05)
         code=await self.join_child(child)
-        if code!=PAUSED_EXPIRY_EXIT:raise Refused('continuation_unavailable')
+        if not task_handover and code!=PAUSED_EXPIRY_EXIT:raise Refused('continuation_unavailable')
         outcome=await asyncio.to_thread(binding._verify_exit,code)
-        if outcome!='paused_budget_expired':raise Refused('continuation_unavailable')
+        allowed = ('task_completed','task_cancelled') if task_handover else ('paused_budget_expired',)
+        if outcome not in allowed:raise Refused('continuation_unavailable')
         while self.host.controller.state!='parked':
             if self.runtime._stopping or not intent_valid():raise Refused('continuation_blocked')
             if self.host.controller.fault or execution_now()>=limit:
@@ -635,6 +643,9 @@ class DesktopComposition:
         # No invented admission or automatic Resume: the worker's saved demand,
         # host capacity and authenticated GUI intent must agree first.
         while not self.transport.lifecycle()['stop_requested']:
+            if getattr(self,'handover',None) is not None and self.handover.transitioning:
+                await asyncio.sleep(.05)
+                continue
             selected = None if self.continuation is None else self.continuation.current
             if self.runtime._transitioning or selected is not None and selected['child'] is None:
                 if self.gui.process.poll() is not None:
@@ -681,6 +692,8 @@ class DesktopComposition:
             raise RuntimeError('Cooperative Stop lacks exact verified closure')
 
     def validate_cleanup(self):
+        if getattr(self,'handover',None) is not None:
+            self.handover.validate_cleanup()
         selected = None if self.continuation is None else self.continuation.current
         if selected is not None and selected['child'] is None:
             self.continuation.verify_unlaunched(selected)
@@ -689,7 +702,7 @@ class DesktopComposition:
         if (self.result.get('joined_obligation_errors')
                 or self.result.get('retained_obligations_joined') is not True
                 or self.result.get('gui_cleanup',{}).get('closed') is not True
-                or self.result.get('gui_cleanup',{}).get('faults') != []
+                or getattr(self,'handover',None) is None and self.result.get('gui_cleanup',{}).get('faults') != []
                 or not self.result.get('listener_cleanup',{}).get('clean_close')
                 or not self.result.get('transport_cleanup',{}).get('closed')):
             raise RuntimeError('Child, pipe or control ownership is not cleanly joined')
@@ -724,6 +737,8 @@ class DesktopComposition:
             except BaseException as failure:
                 self.result['diagnostic_write_error'] = diagnostic(failure)
             try:
+                if getattr(self,'handover',None) is not None:
+                    await self.handover.failure_cleanup()
                 await self.join_gui_resources()
                 if self.listener is not None:
                     self.listener.close()

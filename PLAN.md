@@ -989,6 +989,42 @@ confusing old controls with the new objective. The examples must remain
 qualification cases for the generic contract, not a hardcoded task menu.
 Reboot recovery remains M5.
 
+**Retained-host implementation feedback:** preserve a separate control binding
+for each task and overlap the old and new windows until the new one is ready.
+Retiring a task view must not invoke whole-service Stop or let a late old-window
+callback revoke the new task's intent. Reuse the existing private bootstrap and
+one shared cleanup owner for all retained task lifetimes. Keep preparation and
+readiness waits outside the control-command serial section so Status and Stop
+remain available. A Stop closes the host lifetime while leaving a known pending
+task saved; it must not manufacture task cancellation.
+
+The first admission review found a race when the continuation authority did not
+yet exist: locking only an existing row allowed a first Continue authorization
+to appear during handover. Lock the authority's deterministic identity before
+checking for the row, followed by the selected execution lock. The original
+failure and unchanged regression are retained; the corrected component passes
+the review. A separate Windows Python 3.12 failure showed that a response timeout
+can coincide with a completed operation failure. Recheck the retained operation
+before returning a pending grant, without cancelling it or enlarging the timeout.
+Neither repair changes the installed-evidence boundary. Next qualify ordinary
+A-to-B tasks, continued-A-to-B, a late old-window close and Stop during preparation
+with the same host/gateway identity, followed by the real IQ3_S two-task gate.
+
+Independent review also found that exceptional cleanup could keep retrying an
+old window's uncertain handle closure before requesting Stop for a later task.
+Retain the failure case. Start each retained task's independent cleanup before
+waiting for any one uncertain sibling, using the existing owned asynchronous
+operations. Each task must progress through its own worker, window and endpoint
+cleanup; an unresolved old handle must remain unresolved without preventing
+other tasks from stopping. Require the unchanged reproducer to pass before the
+candidate advances, and rerun the complete source checks after that repair.
+
+Installation review found two additional imports used by the new task chooser.
+Extend the existing child-source pins and import-origin checks to those modules
+before the installed trial. A complete host package inventory does not replace
+the GUI child's own launch checks. Preserve the accepted installation and test
+the candidate in separate full interpreter copies with the same native profile.
+
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
 [precision comparison](docs/precision-research.md#reversible-qualification).

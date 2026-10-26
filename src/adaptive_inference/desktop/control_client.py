@@ -6,6 +6,7 @@ Importing this file opens no Tk window, socket, file or Windows API. See DESIGN.
 from dataclasses import dataclass, field
 import json
 import math
+from pathlib import Path
 import queue
 import re
 import secrets
@@ -16,15 +17,16 @@ import time
 
 REQUEST_LIMIT, RESPONSE_LIMIT, BOOTSTRAP_LIMIT = 4096, 65536, 24576
 COMMANDS = frozenset(('pause', 'resume', 'cancel'))
-MUTATIONS = COMMANDS | {'continue'}
+MUTATIONS = COMMANDS | {'continue', 'new_task'}
 METHODS = MUTATIONS | {'status', 'window_ready', 'window_closed', 'stop'}
 PHASES = {'unavailable','available','selected','preparing','ready','running','blocked'}
 ERROR_CODES = {'invalid_request', 'unauthorized', 'projection_refused', 'stopping',
                'conflicting_request_id', 'capacity_exhausted', 'session_not_ready',
                'runtime_error', 'request_timeout', 'stale_execution',
-               'continuation_unavailable', 'continuation_blocked'}
+               'continuation_unavailable', 'continuation_blocked', 'task_unavailable', 'task_blocked'}
 FAULTS = {'handler_failed','stream_close_failed','intent_revocation_failed',
-          'admission_fence_failed','stop_unresolved','stop_failed','continuation_failed'}
+          'admission_fence_failed','stop_unresolved','stop_failed','continuation_failed','task_handover_failed'}
+HANDOVER_PHASES = {'unavailable','available','reserved','preparing','opened','blocked','abandoned'}
 LIFECYCLE = {'stop_requested','stop_confirmed','pending_mutations','unknown_mutations',
              'handlers','pending_connections','stream_close_failures','faults'}
 
@@ -122,6 +124,10 @@ class Request:
     execution_id: str | None = None
     execution_generation: int | None = None
     expected_task_revision: int | None = None
+    expected_selection_revision: int | None = None
+    task_spec_path: str | None = field(default=None, repr=False)
+    task_spec_sha256: str | None = None
+    task_inputs: str | None = field(default=None, repr=False)
 
     def __post_init__(self):
         if type(self.method) is not str or self.method not in METHODS: raise ClientError('invalid_method')
@@ -130,10 +136,21 @@ class Request:
             execution(self.execution())
         elif any(value is not None for value in (self.request_id,self.execution_id,self.execution_generation)):
             raise ClientError('invalid_request_id')
-        if self.method == 'continue':
+        if self.method in {'continue','new_task'}:
             if type(self.expected_task_revision) is not int or not 0 <= self.expected_task_revision < 256:
                 raise ClientError('invalid_expected_revision')
         elif self.expected_task_revision is not None: raise ClientError('invalid_expected_revision')
+        if self.method == 'new_task':
+            if (type(self.expected_selection_revision) is not int or not 0 <= self.expected_selection_revision < 16
+                    or type(self.task_spec_sha256) is not str or not re.fullmatch('[0-9a-f]{64}',self.task_spec_sha256)):
+                raise ClientError('invalid_task_selection')
+            for path in (self.task_spec_path,self.task_inputs):
+                if (type(path) is not str or not 0 < len(path.encode('utf-8')) <= 1024
+                        or not Path(path).is_absolute() or any(ord(c)<32 for c in path)):
+                    raise ClientError('invalid_task_selection')
+        elif any(value is not None for value in (self.expected_selection_revision,self.task_spec_path,
+                                                 self.task_spec_sha256,self.task_inputs)):
+            raise ClientError('invalid_task_selection')
 
     def execution(self):
         return {'execution_id':self.execution_id,'execution_generation':self.execution_generation}
@@ -151,6 +168,27 @@ def grant(value, request):
     selected=execution({key:value[key] for key in ('execution_id','execution_generation')})
     if (selected['execution_generation'] != request.execution_generation+1
             or selected['execution_id'] == request.execution_id): raise ClientError('invalid_reply')
+    return dict(value)
+
+
+def handover_phase(value):
+    if (type(value) is not dict or set(value)!={'phase','request_id','selection_revision'}
+            or value['phase'] not in HANDOVER_PHASES or type(value['selection_revision']) is not int
+            or not 0 <= value['selection_revision'] <= 16):
+        raise ClientError('invalid_reply')
+    if value['phase'] in {'unavailable','available'}:
+        if value['request_id'] is not None: raise ClientError('invalid_reply')
+    else: label(value['request_id'])
+
+
+def handover_grant(value, request, bootstrap):
+    if (type(value) is not dict or set(value)!={'request_id','predecessor_task_id','task_id','selection_revision','phase'}
+            or value['request_id']!=request.request_id or value['predecessor_task_id']!=bootstrap.task_id
+            or value['task_id']==bootstrap.task_id or type(value['selection_revision']) is not int
+            or value['selection_revision']!=request.expected_selection_revision+1
+            or value['phase'] not in HANDOVER_PHASES-{'unavailable','available'}):
+        raise ClientError('invalid_reply')
+    label(value['task_id'])
     return dict(value)
 
 
@@ -192,7 +230,7 @@ def validate_reply(value, request, bootstrap):
         s = value['status']
         keys = {'host_phase','task_status','task_revision','demand','waiting_reason','controls','objective',
                 'execution_id','execution_generation','continuation'} | LIFECYCLE
-        if (set(s) != keys or s['objective'] != bootstrap.objective
+        if (set(s) not in (keys,keys|{'handover','task_view_retired'}) or s['objective'] != bootstrap.objective
                 or s['host_phase'] not in {'starting','ready','parked','restoring','stopping','closed','fault'}
                 or s['task_status'] not in {'pending','accepted','exhausted'}
                 or type(s['task_revision']) is not int or not 0 <= s['task_revision'] < 256
@@ -202,6 +240,9 @@ def validate_reply(value, request, bootstrap):
             raise ClientError('invalid_reply')
         execution({key:s[key] for key in ('execution_id','execution_generation')})
         phase(s['continuation'])
+        if 'handover' in s:
+            handover_phase(s['handover'])
+            if type(s['task_view_retired']) is not bool: raise ClientError('invalid_reply')
         ids, sequences = set(), set()
         for row in s['controls']:
             control(row)
@@ -210,6 +251,9 @@ def validate_reply(value, request, bootstrap):
             ids.add(row['request_id']);sequences.add(row['sequence'])
         lifecycle(s)
     elif method in MUTATIONS:
+        if method=='new_task' and set(value)=={'ok','handover'}:
+            handover_grant(value['handover'],request,bootstrap)
+            return value
         if method=='continue' and set(value)=={'ok','continuation'}:
             grant(value['continuation'],request)
             return value
@@ -273,7 +317,10 @@ class WireExchange:
         data={'host_epoch':b.host_epoch,'session_id':b.session_id,'task_id':b.task_id,'token':b.token,'method':request.method}
         if request.request_id is not None:data['request_id']=request.request_id
         if request.method in MUTATIONS:data.update(request.execution())
-        if request.method=='continue':data['expected_task_revision']=request.expected_task_revision
+        if request.method in {'continue','new_task'}:data['expected_task_revision']=request.expected_task_revision
+        if request.method=='new_task':
+            data.update({key:getattr(request,key) for key in
+                         ('expected_selection_revision','task_spec_path','task_spec_sha256','task_inputs')})
         encoded=(json.dumps(data,ensure_ascii=False,allow_nan=False,separators=(',',':'))+'\n').encode()
         if len(encoded)>REQUEST_LIMIT:raise ClientError('request_too_large')
         sock=None;reply=None;error=None;cleanup=None
@@ -433,7 +480,7 @@ class ClientController:
             self.close()
         self.render()
 
-    def action(self,method):
+    def action(self,method,*,task_selection=None):
         self._main()
         if method not in MUTATIONS|{'stop'}:raise ClientError('invalid_action')
         if not self.buttons()[method]:return False
@@ -443,7 +490,12 @@ class ClientController:
             identity=label(self._id_factory())
             if identity in self._ids:raise ClientError('request_identity_reused')
             fields=dict(self.selected)
-            if method=='continue':fields['expected_task_revision']=self.status['task_revision']
+            if method in {'continue','new_task'}:fields['expected_task_revision']=self.status['task_revision']
+            if method=='new_task':
+                if type(task_selection) is not dict or set(task_selection)!={'task_spec_path','task_spec_sha256','task_inputs'}:
+                    raise ClientError('invalid_task_selection')
+                fields.update(task_selection)
+                fields['expected_selection_revision']=self.status['handover']['selection_revision']
             request=Request(method,identity,**fields)
         else:request=Request(method)
         if request.request_id:self._ids.add(request.request_id)
@@ -462,13 +514,19 @@ class ClientController:
             return (not self.stop_requested if not retry else self.latest is not None
                     and self.latest.method=='stop' and self.latest_stage=='unconfirmed')
         if self.stop_requested:return False
-        if retry and method=='continue':
-            return self.latest is not None and self.latest.method=='continue' and self.latest_stage=='unconfirmed'
+        if retry and method in {'continue','new_task'}:
+            return self.latest is not None and self.latest.method==method and self.latest_stage=='unconfirmed'
         known=(self.status is not None and self.selected is not None
                  and {key:self.status[key] for key in self.selected}==self.selected)
         current=self.status_valid and known
         terminal=self.status is not None and (self.status['task_status']!='pending'
             or self.status['demand'] in {'cancelled','fulfilled'})
+        if method=='new_task':
+            return (current and terminal and not self.status.get('task_view_retired',False)
+                    and self.status.get('handover',{}).get('phase')=='available'
+                    and not self.status['unknown_mutations'] and not self.status['faults']
+                    and (reserved or len(self._ids)<32))
+        if self.status is not None and self.status.get('task_view_retired',False):return False
         controls=(known and not terminal and self.status['waiting_reason']!='budget_expired'
                   and self.status['continuation']['phase'] not in {'selected','preparing','ready','blocked'})
         if method=='continue':
@@ -497,7 +555,7 @@ class ClientController:
         request,retry=self._local_intent
         self._local_intent=None
         prefix='Retry not sent; ' if retry else 'Not sent; '
-        stale=(request.method in MUTATIONS and not (retry and request.method=='continue')
+        stale=(request.method in MUTATIONS and not (retry and request.method in {'continue','new_task'})
                and request.execution()!=self.selected)
         if stale or not self._eligible(request.method,retry=retry,reserved=True) or retry and request!=self.latest:
             reason=('connection cleanup is unconfirmed.' if self.cleanup_error is not None
@@ -582,6 +640,10 @@ class ClientController:
                 self.continuation=dict(new['continuation'])
                 self.latest_stage=new['continuation']['phase']
                 self.action_text='Continuation '+self.latest_stage+'; task completion remains separately checked.'
+            if (self.latest is not None and self.latest.method=='new_task'
+                    and new.get('handover',{}).get('request_id')==self.latest.request_id):
+                self.latest_stage=new['handover']['phase']
+                self.action_text=self._handover_text(self.latest_stage)
             if self.latest is not None and self.latest.method=='stop' and new['stop_requested']:
                 self.latest_stage='applied' if new['stop_confirmed'] else 'pending'
                 self.action_text='Engine stopped safely.' if new['stop_confirmed'] else 'Stop requested; waiting for safe shutdown.'
@@ -600,6 +662,10 @@ class ClientController:
                 if request==self.latest:
                     self.latest_stage=value['phase']
                     self.action_text='Continuation '+value['phase']+'; waiting for verified task progress.'
+        elif 'handover' in reply:
+            value=handover_grant(reply['handover'],request,self.bootstrap)
+            if request==self.latest:
+                self.latest_stage=value['phase'];self.action_text=self._handover_text(value['phase'])
         elif 'control' in reply:
             self._apply_control(reply['control'],request.execution())
         elif 'refusal' in reply and request==self.latest and request.execution()==self.selected:
@@ -608,6 +674,18 @@ class ClientController:
         elif request==self.latest:
             self.latest_stage='unconfirmed';self.action_text='The engine is checking this request; recording is not confirmed.'
         if self._close_on_stop_recorded and self.stop_recorded:self.close()
+        elif (self.latest is not None and self.latest.method=='new_task' and self.latest_stage=='opened'
+                and self._local_intent is None and not self.stop_requested):
+            self.close()  # B is authenticated/ready; detach only this old view.
+
+    @staticmethod
+    def _handover_text(phase):
+        return {'reserved':'New task recorded; preparing its own workspace.',
+                'preparing':'Preparing a new task window. Stop engine remains available.',
+                'opened':'The new task has its own window. Select Resume there to start it.',
+                'blocked':'The new task needs its retained operation checked before proceeding.',
+                'abandoned':'The new task was not started; its request is preserved.'}.get(phase,
+                    'The engine is checking the new task request.')
 
     def tick(self):
         self._main()
@@ -671,27 +749,29 @@ class ClientController:
 
 class TkView:
     """Lazy ttk adapter for an externally created root. Tests supply fake widgets."""
-    def __init__(self,root,*,ttk_module=None,minimize_on_close=False):
+    def __init__(self,root,*,ttk_module=None,minimize_on_close=False,task_chooser=None):
         if type(minimize_on_close) is not bool:
             raise TypeError('Window minimize behavior must be an explicit boolean')
         if ttk_module is None:
             from tkinter import ttk as ttk_module
         self.root=root;self.owner=threading.current_thread();self.controller=None
         self.minimize_on_close=minimize_on_close
+        if task_chooser is not None and not callable(task_chooser):raise TypeError('Explicit task chooser required')
+        self.task_chooser=task_chooser
         self._rendered_options={}
         self.frame=ttk_module.Frame(root,padding=20);self.frame.grid(sticky='nsew')
         self.labels={}
         for row,name in enumerate(('objective','connection','task','waiting','action')):
             widget=ttk_module.Label(self.frame,text='',wraplength=600,justify='left')
-            widget.grid(row=row,column=0,columnspan=6,sticky='w',pady=6);self.labels[name]=widget
+            widget.grid(row=row,column=0,columnspan=7,sticky='w',pady=6);self.labels[name]=widget
         self.buttons={}
-        for column,(name,title) in enumerate((('pause','Pause'),('resume','Resume'),('continue','Continue saved task'),('cancel','Cancel task'),('stop','Stop engine'),('retry','Retry request'))):
+        for column,(name,title) in enumerate((('pause','Pause'),('resume','Resume'),('continue','Continue saved task'),('cancel','Cancel task'),('stop','Stop engine'),('retry','Retry request'),('new_task','New task'))):
             widget=ttk_module.Button(self.frame,text=title,command=lambda name=name:self._click(name))
             widget.grid(row=5,column=column,padx=4,pady=12);self.buttons[name]=widget
         self._normal_footer=('X minimizes this window to the taskbar. Select it there to restore it. Use Stop engine to shut down.'
                 if minimize_on_close else 'Closing this window leaves the task and engine running.')
         self.footnote=ttk_module.Label(self.frame,text=self._normal_footer,wraplength=600)
-        self.footnote.grid(row=6,column=0,columnspan=6,sticky='w')
+        self.footnote.grid(row=6,column=0,columnspan=7,sticky='w')
 
     def _main(self):
         if threading.current_thread() is not self.owner:raise PermissionError('Tk view belongs to creator thread')
@@ -712,6 +792,14 @@ class TkView:
         self._main()
         if self.controller:
             if name=='retry':self.controller.retry()
+            elif name=='new_task':
+                if not self.controller.buttons()['new_task'] or self.task_chooser is None:return
+                try:
+                    selection=self.task_chooser()
+                    if selection is not None:self.controller.action(name,task_selection=selection)
+                except Exception:
+                    self.controller.action_text='The selected task or input folder could not be read. No new request was sent.'
+                    self.controller.render()
             else:self.controller.action(name)
 
     def _tick(self):
@@ -735,7 +823,9 @@ class TkView:
             widget.configure(**{option:value})
             self._rendered_options[key]=value
         for name,widget in self.labels.items():configure(widget,'text',state[name])
-        for name,widget in self.buttons.items():configure(widget,'state','normal' if state['buttons'][name] else 'disabled')
+        for name,widget in self.buttons.items():
+            enabled=state['buttons'].get(name,False) if name=='new_task' else state['buttons'][name]
+            configure(widget,'state','normal' if enabled else 'disabled')
         configure(self.footnote,'text','Window cleanup is unconfirmed.' if state['cleanup_unconfirmed'] else
             self._normal_footer)
 

@@ -41,9 +41,9 @@ class ContinuationLineageTests(unittest.TestCase):
         for relative in lineage.record()['modules']:
             data = (lineage.ROOT / 'src/adaptive_inference' / relative).read_bytes()
             with self.subTest(relative=relative):
-                with self.assertRaisesRegex(AssertionError, 'complete (?:task-contract|continuation) source'):
+                with self.assertRaisesRegex(AssertionError, 'complete (?:task-handover|task-contract|continuation) source'):
                     lineage.predecessor(relative, data + b'\n# unreviewed whitespace-only change\n')
-                with self.assertRaisesRegex(AssertionError, 'complete (?:task-contract|continuation) AST'):
+                with self.assertRaisesRegex(AssertionError, 'complete (?:task-handover|task-contract|continuation) AST'):
                     lineage.restore_continuation(ast.parse(data + b'\nunreviewed = True\n'), relative)
 
     def test_changed_guard_inside_declared_seam_is_not_hidden(self):
@@ -55,7 +55,7 @@ class ContinuationLineageTests(unittest.TestCase):
             for name in edit['path']:
                 node = lineage.mapping(node)[name]
             node.body.insert(0, ast.Return(value=ast.Constant(value=None)))
-            with self.subTest(relative=relative), self.assertRaisesRegex(AssertionError, 'complete (?:task-contract|continuation) AST'):
+            with self.subTest(relative=relative), self.assertRaisesRegex(AssertionError, 'complete (?:task-handover|task-contract|continuation) AST'):
                 lineage.restore_continuation(tree, relative)
 
     def test_missing_and_tampered_declared_seams_fail_closed(self):

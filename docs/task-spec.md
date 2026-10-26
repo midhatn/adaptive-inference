@@ -102,13 +102,55 @@ but unknown preparation or launch outcomes are retained for reconciliation.
 The caller must supply verified process-cleanup evidence: a stored digest alone
 does not prove that a worker or engine exited.
 
-The first admission component accepts completed or explicitly cancelled original
-task executions. Handover after a **Continue saved task** successor still needs
-integration with the existing continuation authority's release verifier. The
-component refuses that unsupported case. Host authentication, submission into
-the running service, demand rebinding and fresh task-window launch are also
-outstanding. Sequential SQLite tests do not establish any of those installed
-behaviors.
+The admission component accepts completed or explicitly cancelled executions,
+including a **Continue saved task** successor when the host retains its exact
+worker binding. It reuses the continuation authority's existing result and
+lifetime verifier. The authority lock is taken before the execution lock, even
+when a continuation authority has not yet been created. This prevents a first
+Continue authorization from racing the handover. The host must separately join
+the actual child and prove native resources have been released.
+
+The command also binds the original specification path, its raw-byte digest and
+the input directory. A retry cannot silently change any of those fields while
+keeping the same prompt or command ID. Historical lookup does not require the
+source files still to exist; new preparation checks their actual bytes.
+
+Service **Stop** closes the host's admission lifetime without changing a pending
+task into a cancelled task. The existing safe worker-exit verifier must confirm
+a running task's saved state. A prepared task that was never launched keeps its
+original pending state. A committed but unlaunched continuation uses its existing
+no-launch verifier. An unknown launch or cleanup outcome remains unresolved.
+No further task can be admitted through a stopped host authority; reopening work
+after a process or computer restart still needs the separate recovery milestone.
+
+## Retained-host handover candidate
+
+The source implementation connects the new-task UI and host composition around
+these contracts. The interaction is **New task**, choose a specification and its input
+directory, then Resume in the new task window. The new window starts paused and
+has its own credentials. The controller, inference gateway and native resource
+owner stay in the same host. The previous task's records remain separate and its
+window retains Status and service Stop until the new window is ready.
+
+Each task keeps an immutable control endpoint. A late close or failed status
+request from an old window must not revoke the new task's permission to work.
+The shared Stop path retains every task worker, window, preparation operation
+and connection until cleanup is known. This uses the existing private GUI
+bootstrap and retained process lifecycles rather than an additional executor.
+The installed launch also pins the task chooser's TaskSpec and feedback modules.
+The chooser checks their installed origins before opening a dialog or reading
+task data; the existing startup checks still run before GUI resources are acquired.
+This extends the existing check of Python's
+[loaded-module registry](https://docs.python.org/3.11/library/sys.html#sys.modules),
+and uses its standard [file and directory dialogs](https://docs.python.org/3.11/library/dialog.html#module-tkinter.filedialog).
+
+Component tests, including actual SQLite stores and bounded CPU child processes,
+exercise admission and continuation release. The assembled A-to-B-to-C handover
+test exercises the real preparation, mailbox, runtime selection and cleanup
+orchestration with explicit substitutes for windows, children and native
+resources. These tests do not establish a successful installed GUI handover or
+a two-task IQ3_S result. Those remain acceptance gates before this path is
+described as a usable installed feature.
 
 The integration assessment checked Hermes'
 [session guidance](https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/sessions.md)
@@ -119,3 +161,21 @@ to task admission. The adapter remains on the pinned Hermes source revision
 `14e1e43a23761b369641208e204365cd6cb9399d`; this research does not upgrade it.
 No upstream implementation was copied for TaskSpec. Existing Hermes MIT and
 project Apache-2.0 notices remain in their source-preservation records.
+
+The handover assessment also checked Python's
+[retained-task and shielding guidance](https://docs.python.org/3.11/library/asyncio-task.html#shielding-from-cancellation)
+and [stream shutdown contract](https://docs.python.org/3.11/library/asyncio-stream.html#asyncio.StreamWriter.wait_closed),
+plus Microsoft's [process handle lifetime](https://learn.microsoft.com/en-us/windows/win32/procthread/process-handles-and-identifiers)
+and [redirected child I/O](https://learn.microsoft.com/en-us/windows/win32/procthread/creating-a-child-process-with-redirected-input-and-output)
+documentation. Those contracts support retaining each transition, child and pipe
+until it is joined; a timeout or a process number alone is not a cleanup receipt.
+The implementation reuses the project's existing lifecycle helpers. No additional
+upstream code was copied from these documentation sources.
+
+The response-timeout repair was checked against the exact CPython
+[3.11.9](https://github.com/python/cpython/blob/v3.11.9/Lib/asyncio/tasks.py)
+and [3.12.9](https://github.com/python/cpython/blob/v3.12.9/Lib/asyncio/tasks.py)
+implementations. If a shielded operation has already failed when its caller's
+timeout fires, its completed result must be inspected before returning a stored
+grant. This reuses `Task.result()` and preserves the original bounded wait and
+historical lookup behavior; it introduces no replacement timeout scheduler.

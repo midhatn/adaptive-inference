@@ -449,6 +449,100 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(c.handles),2)
         receipt=await c.runtime.cooperative_stop();self.assertTrue(receipt['host_closed']);self.assertFalse(receipt['uncertain'])
 
+    async def test_new_task_admission_reuses_exact_completed_successor_verifier(self):
+        from adaptive_inference.desktop.task_admission import TaskAdmission
+        from adaptive_inference.task_store import TaskStore, TaskBusyError
+        from adaptive_inference.task_spec import TaskSpec, BUDGET
+        from adaptive_inference.demand import DemandIdentity
+        from test_task_admission import create_task
+        c=self.c
+        original_binding=c.stop_binding
+        grant=await self.select();await self.continue_task(grant)
+        record=c.continuation.current
+        self.assertEqual(await c.join_child(record['child']),0)
+        cp=record['mailbox'].snapshot().target
+        history=c.store.history(cp.task_id)
+        tasks=c.root/'new-tasks';tasks.mkdir()
+        admission=TaskAdmission(TaskStore(c.root/'admission.sqlite3'),host_generation=c.host_epoch,
+            tasks_root=tasks,initial_task_id='orders-report',initial_run=c.work)
+        with self.assertRaisesRegex(ReconciliationRequired,'Original worker no longer'):
+            with admission._released_checkpoint(admission.initial,'orders-report',self.old.revision,
+                                                stop_binding=original_binding):pass
+        task_spec=TaskSpec({'schema':'adaptive.task-spec.v1','prompt':'Explain one idea.',
+            'inputs':[],'outputs':[],'budget':BUDGET,'validation':{'validator':None}})
+        payload=admission.request(command_id='new-task',expected_selection_revision=0,
+            predecessor_execution_id=cp.task_id,predecessor_revision=cp.revision,spec=task_spec,
+            arrived_at_utc='2026-10-26T12:00:00Z')
+        authority_cp=admission.store.load(admission.task_id)
+        with admission.store.claim(admission.task_id,expected_revision=authority_cp.revision) as owner:
+            with self.assertRaisesRegex(ReconciliationRequired,'Unverified successor'):
+                admission.reserve(owner,payload,predecessor_cleanup_sha256='1'*64)
+            admission.retain_execution_binding(record['binding'])
+            # The continuation authority cannot be claimed while admission holds
+            # its stable lock; this prevents a concurrent selection during write.
+            saved=owner.save_checkpoint
+            def guarded_save(*args,**kwargs):
+                authority=record['authority'];current=c.store.load(authority.task_id)
+                with self.assertRaises(TaskBusyError):
+                    with c.store.claim(current.task_id,expected_revision=current.revision):pass
+                return saved(*args,**kwargs)
+            with mock.patch.object(owner,'save_checkpoint',side_effect=guarded_save):
+                reservation=admission.reserve(owner,payload,predecessor_cleanup_sha256='1'*64)
+            operation=admission.begin(owner,reservation,action='prepare')
+            run=Path(payload['run']);run.mkdir();(run/'work').mkdir()
+            identity=DemandIdentity(**{key:payload['demand_identity'][key] for key in
+                ('registration_id','task_id','owner_id','arrived_at_utc')})
+            create_task(TaskStore(run/'task.sqlite3'),identity,task_spec,payload['session_id'])
+            result_path=record['diagnostics']/f"result-{record['child'].pid}.json"
+            original=result_path.read_bytes()
+            try:
+                changed=json.loads(original);changed['continuation_cleanup_verified']=False
+                result_path.write_text(json.dumps(changed),encoding='utf-8')
+                with self.assertRaisesRegex(ReconciliationRequired,'Selected result'):
+                    admission.prepared(owner,reservation,operation_id=operation)
+            finally:
+                result_path.write_bytes(original)
+            admission.prepared(owner,reservation,operation_id=operation)
+            self.assertEqual(admission.status()['selected']['task_id'],payload['task_id'])
+        self.assertEqual(c.store.history(cp.task_id),history)
+
+    async def test_new_task_stop_reuses_committed_unlaunched_verifier(self):
+        from adaptive_inference.desktop.task_admission import TaskAdmission
+        from adaptive_inference.task_store import TaskStore, TaskBusyError
+        c=self.c;grant=await self.select();record=c.continuation.current
+        tasks=c.root/'new-tasks';tasks.mkdir()
+        admission=TaskAdmission(TaskStore(c.root/'admission.sqlite3'),host_generation=c.host_epoch,
+            tasks_root=tasks,initial_task_id='orders-report',initial_run=c.work)
+        history=c.store.history(grant['execution_id'])
+        with admission._unlaunched_checkpoint(admission.initial,c.continuation) as (cp,outcome):
+            self.assertEqual(cp.task_id,grant['execution_id'])
+            self.assertEqual(outcome,'selected_not_launched')
+            for ident in (record['authority'].task_id,cp.task_id):
+                current=c.store.load(ident)
+                with self.assertRaises(TaskBusyError):
+                    with c.store.claim(ident,expected_revision=current.revision):pass
+        self.assertEqual(c.store.history(grant['execution_id']),history)
+        record['launch_attempted']=True
+        try:
+            with self.assertRaisesRegex(ReconciliationRequired,'known unstarted'):
+                with admission._unlaunched_checkpoint(admission.initial,c.continuation):pass
+        finally:record['launch_attempted']=False
+
+    async def test_new_task_release_locks_first_continuation_authority_before_row_exists(self):
+        from adaptive_inference.desktop.task_admission import TaskAdmission
+        from adaptive_inference.task_store import TaskStore, TaskBusyError
+        from adaptive_inference.desktop.hermes.continuation_worker import scope_for
+        c=self.c;tasks=c.root/'new-tasks';tasks.mkdir()
+        admission=TaskAdmission(TaskStore(c.root/'admission.sqlite3'),host_generation=c.host_epoch,
+            tasks_root=tasks,initial_task_id='orders-report',initial_run=c.work)
+        with admission._released_checkpoint(admission.initial,'orders-report',self.old.revision,
+                                            stop_binding=c.stop_binding):
+            authority=ContinuationAuthority(c.store,'orders-report',
+                scope_for(c.work,c.plan,(c.work/'plan.json').read_bytes()),host_generation=c.host_epoch)
+            cp=c.store.load(authority.task_id)
+            with self.assertRaises(TaskBusyError):
+                with c.store.claim(cp.task_id,expected_revision=cp.revision):pass
+
     async def test_stop_before_initial_pause_ack_joins_new_child_without_resume(self):
         self.pause_delay=.5;self.behavior='hold';c=self.c
         grant=await self.select()

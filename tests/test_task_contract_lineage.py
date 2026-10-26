@@ -35,9 +35,9 @@ class TaskContractLineageTests(unittest.TestCase):
         for relative in lineage.record()['modules']:
             data = (lineage.ROOT / 'src/adaptive_inference' / relative).read_bytes()
             with self.subTest(relative=relative):
-                with self.assertRaisesRegex(AssertionError, 'complete task-contract source'):
+                with self.assertRaisesRegex(AssertionError, 'complete (?:task-handover|task-contract) source'):
                     lineage.predecessor(relative, data + b'\n# unreviewed byte edit\n')
-                with self.assertRaisesRegex(AssertionError, 'complete task-contract AST'):
+                with self.assertRaisesRegex(AssertionError, 'complete (?:task-handover|task-contract) AST'):
                     lineage.restore_task_contract(ast.parse(data + b'\nunreviewed = True\n'), relative)
 
     def test_mutation_inside_a_function_is_not_hidden(self):
@@ -45,7 +45,7 @@ class TaskContractLineageTests(unittest.TestCase):
             tree = ast.parse((lineage.ROOT / 'src/adaptive_inference' / relative).read_bytes())
             function = next(n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)))
             function.body.insert(0, ast.Return(value=ast.Constant(value=None)))
-            with self.subTest(relative=relative), self.assertRaisesRegex(AssertionError, 'complete task-contract AST'):
+            with self.subTest(relative=relative), self.assertRaisesRegex(AssertionError, 'complete (?:task-handover|task-contract) AST'):
                 lineage.restore_task_contract(tree, relative)
 
     def test_changed_predecessor_pin_or_path_is_refused(self):
@@ -68,6 +68,12 @@ class TaskContractLineageTests(unittest.TestCase):
                 target = root / row['predecessor_source']
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes((lineage.ROOT / row['predecessor_source']).read_bytes())
+            # The current source must first pass its exact outer handover view.
+            for path in (lineage.ROOT / 'provenance/task-handover').rglob('*'):
+                if path.is_file():
+                    target = root / path.relative_to(lineage.ROOT)
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(path.read_bytes())
             with mock.patch.object(lineage, 'ROOT', root), mock.patch.object(lineage, 'record', return_value=rows):
                 lineage.runtime_view()
                 extra = root / 'src/adaptive_inference/unreviewed.py'; extra.write_text('pass\n')

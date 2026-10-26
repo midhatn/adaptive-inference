@@ -9,6 +9,7 @@ by a trusted runtime; no new durable store/operation semantics are implemented.
 import asyncio
 from dataclasses import dataclass
 import json
+from pathlib import Path
 import re
 import secrets
 import threading
@@ -16,12 +17,33 @@ from adaptive_inference.control_mailbox import ControlNotRecorded
 
 REQUEST_LIMIT, RESPONSE_LIMIT = 4096, 65536
 COMMANDS = frozenset(("pause", "resume", "cancel"))
-MUTATIONS = COMMANDS | {"continue"}
+MUTATIONS = COMMANDS | {"continue", "new_task"}
 METHODS = MUTATIONS | {"status", "window_ready", "window_closed", "stop"}
 PHASES = {"unavailable", "available", "selected", "preparing", "ready", "running", "blocked"}
 ERRORS = {"invalid_request", "unauthorized", "projection_refused", "stopping",
           "conflicting_request_id", "capacity_exhausted", "session_not_ready",
-          "stale_execution", "continuation_unavailable", "continuation_blocked"}
+          "stale_execution", "continuation_unavailable", "continuation_blocked",
+          "task_unavailable", "task_blocked"}
+HANDOVER_PHASES = {"unavailable", "available", "reserved", "preparing", "opened", "blocked", "abandoned"}
+
+
+def task_path(value):
+    if (type(value) is not str or not 0 < len(value.encode('utf-8')) <= 1024
+            or not Path(value).is_absolute() or any(ord(c) < 32 for c in value)):
+        raise ValueError('Bounded absolute local task path required')
+    return value
+
+
+def handover_phase(value):
+    if (type(value) is not dict or set(value) != {'phase', 'request_id', 'selection_revision'}
+            or value['phase'] not in HANDOVER_PHASES or type(value['selection_revision']) is not int
+            or not 0 <= value['selection_revision'] <= 16):
+        raise Refused('projection_refused')
+    if value['phase'] in {'unavailable', 'available'}:
+        if value['request_id'] is not None: raise Refused('projection_refused')
+    else:
+        label(value['request_id'])
+    return dict(value)
 
 
 def label(value):
@@ -94,7 +116,7 @@ class ControlTransport:
     """
     def __init__(self, prepared, runtime, *, capability, runner_credential,
                  io_timeout=2.0, max_handlers=8, max_mutations=4, max_ids=32, max_sessions=32,
-                 cooperative_progress=None):
+                 cooperative_progress=None, handover=None):
         if type(prepared) is not PreparedTask or type(capability) is not object:
             raise TypeError("Trusted prepared task and host capability required")
         if (type(runner_credential) is not str or not runner_credential.isascii()
@@ -133,6 +155,13 @@ class ControlTransport:
         self._selection = execution(runtime.selected_execution())
         self._seen_executions = {self._selection["execution_generation"]: self._selection["execution_id"]}
         self._continuing = None
+        if handover is not None and any(not callable(getattr(handover, name, None)) for name in
+                ('projection', 'select_task', 'open_selected_task', 'lookup_task')):
+            raise TypeError('Explicit trusted task handover hooks required')
+        self.handover = handover
+        self._opening = None
+        self._task_retired = False
+        self._retired_request = None
 
     def _owner(self):
         if threading.current_thread() is not self._thread or asyncio.get_running_loop() is not self._loop:
@@ -181,12 +210,14 @@ class ControlTransport:
 
     def _deactivate(self):
         self._intent_revision += 1
+        if self._task_retired:
+            return  # A late A close/status failure must not clear B's shared intent.
         self.invalidate_progress('transport_intent_changed')
         self.runtime.deactivate_intent()
 
     def invalidate_progress(self, reason):
         self._owner()
-        if self.cooperative_progress is not None:
+        if self.cooperative_progress is not None and not self._task_retired:
             self.cooperative_progress.invalidate(reason)
 
     def reaped_status(self, task):
@@ -201,7 +232,8 @@ class ControlTransport:
                 self.cooperative_progress.complete(task.result())
 
     def _progress_available(self):
-        return (self._accepting and self._ready and not self._stop_requested and not self._faults
+        return (self._accepting and self._ready and not self._task_retired and self._opening is None
+                and not self._stop_requested and not self._faults
                 and self._session is not None and self.runtime.session_is_live(self._session) is True)
 
     def admit(self, reader, writer):
@@ -275,9 +307,11 @@ class ControlTransport:
         keys = {"host_epoch", "session_id", "task_id", "token", "method"}
         if request["method"] in MUTATIONS:
             keys.update(("request_id", "execution_id", "execution_generation"))
-        if request["method"] == "continue":
+        if request["method"] in {"continue", "new_task"}:
             keys.add("expected_task_revision")
-        integer_keys = {"execution_generation", "expected_task_revision"}
+        if request['method'] == 'new_task':
+            keys.update(('expected_selection_revision', 'task_spec_path', 'task_spec_sha256', 'task_inputs'))
+        integer_keys = {"execution_generation", "expected_task_revision", "expected_selection_revision"}
         if set(request) != keys or any(type(value) is not str for key, value in request.items() if key not in integer_keys):
             raise Refused("invalid_request")
         try:
@@ -291,6 +325,12 @@ class ControlTransport:
             if "expected_task_revision" in request and (type(request["expected_task_revision"]) is not int
                     or not 0 <= request["expected_task_revision"] < 256):
                 raise ValueError("Invalid expected revision")
+            if request['method'] == 'new_task':
+                if (type(request['expected_selection_revision']) is not int
+                        or not 0 <= request['expected_selection_revision'] < 16
+                        or not re.fullmatch('[0-9a-f]{64}', request['task_spec_sha256'])):
+                    raise ValueError('Invalid task selection')
+                task_path(request['task_spec_path']); task_path(request['task_inputs'])
         except ValueError:
             raise Refused("invalid_request") from None
         if not re.fullmatch(r"[0-9a-f]{64}", request["token"]):
@@ -332,7 +372,9 @@ class ControlTransport:
             ids.add(request_id)
             controls.append(self._control_result(row, request_id, command))
         value["controls"] = controls
-        return {**value, "objective": self.prepared.objective, **self.lifecycle()}
+        extra = {} if self.handover is None else {
+            'handover': handover_phase(self.handover.projection()), 'task_view_retired': self._task_retired}
+        return {**value, "objective": self.prepared.objective, **self.lifecycle(), **extra}
 
     def lifecycle(self):
         self._owner()
@@ -409,6 +451,7 @@ class ControlTransport:
         if record is not None and record["payload"] != payload:
             raise Refused("conflicting_request_id")
         if self._stop_requested: raise Refused("stopping")
+        if self._task_retired or self._opening is not None: raise Refused('task_blocked')
         selected = self._request_execution(request)
         self._require_execution(selected)
         if "continuation_failed" in self._faults:
@@ -512,6 +555,7 @@ class ControlTransport:
             if record["payload"] != payload: raise Refused("conflicting_request_id")
             return record  # Same command is lookup only, including a stale predecessor.
         if self._stop_requested: raise Refused("stopping")
+        if self._task_retired or self._opening is not None: raise Refused('task_blocked')
         if "continuation_failed" in self._faults: raise Refused("continuation_blocked")
         self._require_execution(self._request_execution(request))
         if self._continuing is not None: raise Refused("continuation_unavailable")
@@ -546,9 +590,132 @@ class ControlTransport:
         try:
             await asyncio.wait_for(asyncio.shield(operation), self.io_timeout)
         except asyncio.TimeoutError:
-            pass
+            # The response deadline may win while the retained task has already
+            # failed. Preserve that known failure instead of returning its grant.
+            if operation.done(): operation.result()
         if record["grant"] is not None:
             return {"ok": True, "continuation": dict(record["grant"])}
+        return self._pending_reply(request)
+
+    def retire_task(self, capability, request_id):
+        """Trusted handover only: keep A authenticated for Status/Stop/lookup.
+
+        Call before binding B to the shared intent gate. This does not close A's
+        listener/window or mutate its PreparedTask/runtime/session identity.
+        """
+        self._owner()
+        if capability is not self._capability: raise PermissionError('Host capability required')
+        if self._task_retired:
+            if request_id != self._retired_request: raise Refused('task_blocked')
+            return
+        record = self._records.get(request_id)
+        if (record is None or record['command'] != 'new_task' or record['grant'] is None
+                or self._opening is not record or self._stop_requested
+                or any(row is not record and (row['outcome'] == 'unknown' or
+                    any(task is not None and not task.done() for task in (row['task'], row.get('lookup_task'))))
+                    for row in self._records.values())):
+            raise Refused('task_blocked')
+        self.invalidate_progress('task_view_retired')
+        self._task_retired, self._retired_request = True, request_id
+
+    def _handover_grant(self, value, request):
+        keys = {'request_id', 'predecessor_task_id', 'task_id', 'selection_revision', 'phase'}
+        if (type(value) is not dict or set(value) != keys or value['request_id'] != request['request_id']
+                or value['predecessor_task_id'] != self.prepared.task_id
+                or value['task_id'] == self.prepared.task_id or type(value['selection_revision']) is not int
+                or value['selection_revision'] != request['expected_selection_revision'] + 1
+                or value['phase'] not in HANDOVER_PHASES - {'unavailable', 'available'}):
+            raise Refused('projection_refused')
+        label(value['task_id'])
+        return dict(value)
+
+    def _handover_intent(self, record):
+        # Retirement of A is part of this same authorization. It is not fresh
+        # intent for B, which starts paused and requires its own genuine Resume.
+        return (not self._stop_requested and self._ready and record['session'] == self._session
+                and record['intent_revision'] == self._intent_revision
+                and record['runtime'] is self.runtime
+                and self.runtime.session_is_live(record['session']) is True)
+
+    async def _apply_handover(self, record):
+        try:
+            async with self._serial:
+                if not self._handover_intent(record):
+                    record['outcome'] = 'known'; raise Refused('task_blocked')
+                self._require_execution(record['execution'])
+                value = await self.handover.select_task(dict(record['payload']),
+                    intent_valid=lambda: self._handover_intent(record))
+                grant = self._handover_grant(value, record['payload'])
+                if grant['phase'] != 'reserved': raise Refused('projection_refused')
+                record['grant'] = grant
+            value = await self.handover.open_selected_task(dict(grant),
+                intent_valid=lambda: self._handover_intent(record))
+            result = self._handover_grant(value, record['payload'])
+            if {k:v for k,v in result.items() if k != 'phase'} != {k:v for k,v in grant.items() if k != 'phase'}:
+                raise Refused('projection_refused')
+            record['grant'], record['outcome'] = result, 'known'
+            return result
+        except BaseException:
+            if record['outcome'] != 'known':
+                record['outcome'] = 'unknown'; self._faults.add('task_handover_failed')
+            raise
+        finally:
+            if self._opening is record: self._opening = None
+
+    async def _lookup_handover(self, record):
+        value = await self.handover.lookup_task(dict(record['payload']))
+        if value is not None:
+            record['grant'] = self._handover_grant(value, record['payload'])
+        return value
+
+    def _retain_handover(self, request):
+        if self.handover is None: raise Refused('task_unavailable')
+        payload = self._record_request(request)
+        record = self._records.get(request['request_id'])
+        if record is not None:
+            if record['payload'] != payload: raise Refused('conflicting_request_id')
+            return record  # Exact same command is lookup only, including retired A.
+        if self._stop_requested: raise Refused('stopping')
+        if (self._task_retired or self._opening is not None or self._continuing is not None
+                or self._faults or any(row['outcome'] == 'unknown' for row in self._records.values())):
+            raise Refused('task_blocked')
+        self._require_execution(self._request_execution(request))
+        projected = handover_phase(self.handover.projection())
+        current = self.runtime.status()
+        if (projected['phase'] != 'available' or projected['selection_revision'] != request['expected_selection_revision']
+                or current['task_revision'] != request['expected_task_revision']
+                or not (current['task_status'] == 'accepted' or current['demand'] == 'cancelled')):
+            raise Refused('task_unavailable')
+        self._capacity(True); self._deactivate()
+        record = {'command': 'new_task', 'payload': payload, 'execution': self._request_execution(request),
+                  'runtime': self.runtime, 'session': self._session, 'intent_revision': self._intent_revision,
+                  'outcome': 'pending', 'grant': None}
+        self._records[request['request_id']] = record; self._opening = record
+        task = self._loop.create_task(self._apply_handover(record)); record['task'] = task
+        task.add_done_callback(lambda done: self._completed_mutation(record, done))
+        return record
+
+    async def _handover_reply(self, request):
+        existing = request['request_id'] in self._records
+        record = self._retain_handover(request)
+        operation = record['task']
+        if existing and record['outcome'] == 'unknown':
+            operation = record.get('lookup_task')
+            if operation is None or operation.done():
+                self._capacity(False)
+                operation = self._loop.create_task(self._lookup_handover(record))
+                record['lookup_task'] = operation
+                operation.add_done_callback(lambda done: self._completed_mutation(record, done))
+        elif record['grant'] is not None:
+            return {'ok': True, 'handover': dict(record['grant'])}
+        elif existing and not operation.done():
+            return self._pending_reply(request)
+        try:
+            await asyncio.wait_for(asyncio.shield(operation), self.io_timeout)
+        except asyncio.TimeoutError:
+            if operation.done(): operation.result()  # A known failure is never a pending grant.
+        if record['grant'] is not None:
+            return {'ok': True, 'handover': dict(record['grant'])}
         return self._pending_reply(request)
 
     def _pending_reply(self, request):
@@ -601,9 +768,13 @@ class ControlTransport:
             session, self._session, self._ready = self._session, None, False
             self.runtime.window_closed(session)
             return {"ok": True, "state": "window_closed", "task_cancelled": False}
+        if method == 'new_task':
+            # Exact historical request lookup remains usable while stopping.
+            return await self._handover_reply(request)
         if self._stop_requested:
             raise Refused("stopping")
         if method == "window_ready":
+            if self._task_retired: raise Refused('task_blocked')
             if not self._ready:
                 if self.runtime.window_ready(self._session) is not True:
                     raise Refused("session_not_ready")

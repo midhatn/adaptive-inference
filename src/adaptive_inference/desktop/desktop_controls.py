@@ -33,6 +33,7 @@ class ControlledDesktopHost(PersistentDesktopHost):
         self._control_thread = threading.current_thread()
         self._control_loop = asyncio.get_running_loop()
         self._control_rebinding = False
+        self.retired_control_runtimes = []
 
     def attach_control_runtime(self, runtime):
         if (threading.current_thread() is not self._control_thread
@@ -60,12 +61,48 @@ class ControlledDesktopHost(PersistentDesktopHost):
                     break
                 if self.control_runtime is not None and not self._control_rebinding:
                     await self.control_runtime.refresh()
+                for runtime in tuple(self.retired_control_runtimes):
+                    if not self.closing and not runtime._stopping:
+                        await runtime.refresh()
                 if not self.closing:
                     await asyncio.sleep(.1)
         except BaseException as exc:
             self.demand_error = type(exc).__name__
             self.controller._demand_valid = False
             raise
+
+    def commit_task_runtime(self, previous, runtime, record, coordinator):
+        """Select a new immutable logical task under the existing two locks."""
+        if (previous is not self.control_runtime or type(runtime) is not MailboxRuntime
+                or runtime is previous or runtime.lifecycle.host is not self
+                or previous._pending or not previous._task_retired
+                or runtime.prepared.host_epoch != previous.prepared.host_epoch
+                or runtime.prepared.task_id == previous.prepared.task_id
+                or threading.current_thread() is not self._control_thread
+                or asyncio.get_running_loop() is not self._control_loop
+                or not self._control_rebinding or not self.controller.lock.locked()
+                or not self.controller._demand_lock.locked()
+                or not record['prepared'] or self.closing or self.closed):
+            raise RuntimeError('Task rebind lacks exact quiescent host authority')
+        coordinator.composition.assert_continuation_parked(record['release'])
+        observation = record['observation']
+        snapshot = runtime._check_observation(observation)
+        if (snapshot.target.task_id != record['reservation']['payload']['task_id']
+                or runtime.mailbox.registry is not record['episode']['registry']
+                or runtime.selected_execution() != {'execution_id': snapshot.target.task_id,
+                                                     'execution_generation': 0}):
+            raise RuntimeError('Fresh task projection differs from its actual store')
+        controller = self.controller
+        controller.demand = runtime.mailbox.registry
+        controller._demand_rows = ()
+        controller._demand_stamp = None
+        controller._demand_valid = False
+        controller._demand_revisions = {}
+        controller._idle_since = None
+        runtime._cache = observation
+        self.retired_control_runtimes.append(previous)
+        self.control_runtime = runtime
+        coordinator.commit_episode(record)
 
     def commit_selected_runtime(self, runtime, record, staged, continuation):
         """Synchronous complete rebind while both existing controller locks hold."""
@@ -138,6 +175,9 @@ class DesktopControlLifecycle:
         self.worker_replacements = []
         self.selected_transitions = []
         self._selected = self._selection_coordinator = None
+        self.service = None
+        self._gui_optional_unstarted = False
+        self._gui_stop_aborted = False
 
     def _owner(self):
         if threading.current_thread() is not self._thread or asyncio.get_running_loop() is not self._loop:
@@ -312,6 +352,11 @@ class DesktopControlLifecycle:
 
     def fence_admission(self):
         self._owner()
+        if self.service is not None:
+            return self.service.fence()
+        self._fence_local()
+
+    def _fence_local(self):
         if self._fenced:
             return
         self._fenced = True
@@ -325,6 +370,8 @@ class DesktopControlLifecycle:
 
     async def cooperative_stop(self):
         self._owner()
+        if self.service is not None:
+            return await self.service.cooperative_stop()
         if self._stop is None:
             self.fence_admission()
             self._stop = self._loop.create_task(self._finish_stop())
@@ -362,6 +409,27 @@ class DesktopControlLifecycle:
 
     def _gui_safe(self):
         value = self.gui_receipt
+        if (self._gui_optional_unstarted and self.gui._start_task is None
+                and self.gui.process is None and type(value) is dict):
+            return (value.get('closed') is True and value.get('faults') == []
+                    and value.get('child_retained') is False
+                    and value.get('pending_pipe_operations') == 0)
+        if self._gui_stop_aborted and type(value) is dict:
+            from adaptive_inference.desktop.gui_launch import StartupError
+            error = self.gui.primary_error
+            known = (type(error) is StartupError and str(error) in (
+                'Cold host/containing-job launch prerequisite failed',
+                'Launch completed after startup was fenced', 'Startup was fenced before readiness',
+                'Startup was fenced before session binding', 'Startup was fenced during session binding',
+                'Readiness completed after startup was fenced'))
+            if (known and self.gui.cleanup_error is None and value.get('closed') is True
+                    and value.get('startup_complete') is True and value.get('startup_aborted') is True
+                    and set(value.get('faults',())) <= {'startup_failed'}
+                    and value.get('pending_pipe_operations') == 0
+                    and all(value.get(key) is True for key in ('pipe_threads_joined','pipe_handles_closed',
+                        'verifier_handle_closed','process_handle_closed'))
+                    and (value.get('child_retained') is False or value.get('child_exit_observed') is True)):
+                return True
         return (type(value) is dict and value.get('closed') is True and value.get('faults') == []
                 and value.get('startup_complete') is True and value.get('startup_aborted') is False
                 and value.get('child_retained') is True and value.get('child_exit_observed') is True
@@ -379,7 +447,7 @@ class DesktopControlLifecycle:
                 'uncertain': not (self._worker_safe() and self._gui_safe() and closed) or bool(self._faults),
                 'fault': sorted(self._faults)[0] if self._faults else None}
 
-    async def _finish_stop(self):
+    async def _finish_stop(self, *, close_host=True):
         deadline = self.clock() + self.timeout
         try:
             await asyncio.shield(self._wake)
@@ -404,6 +472,8 @@ class DesktopControlLifecycle:
             if not self._gui_safe():
                 self._faults.add('gui_close_unconfirmed')
             if self._faults:
+                return self._receipt()
+            if not close_host:
                 return self._receipt()
             remaining = deadline - self.clock()
             if remaining < 1:

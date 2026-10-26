@@ -78,6 +78,17 @@ class MailboxRuntime:
         self._continuation = None
         self._continuation_tasks = set()
         self._continuation_phase, self._continuation_request = 'unavailable', None
+        self._task_retired = False
+
+    def _owns_intent(self):
+        binding = self.gate._binding
+        return binding is not None and binding.task_id == self.prepared.task_id
+
+    def retire_task(self):
+        """Trusted handover fence; retain reads/Status/Stop for this exact task."""
+        self._owner()
+        self.deactivate_intent()
+        self._task_retired = True
 
     def _owner(self):
         if threading.current_thread() is not self._thread or asyncio.get_running_loop() is not self._loop:
@@ -120,10 +131,11 @@ class MailboxRuntime:
                 or latest is not None and latest['command'] in ('pause', 'cancel')
                 or snapshot.demand is None
                 or snapshot.demand['state'] == 'paused' and not resume_pending):
-            self.gate.deactivate(self._intent)
+            self.deactivate_intent()
         if (self._binding is not None and (snapshot.target.state['status'] != 'pending'
                 or snapshot.demand is not None and snapshot.demand['state'] in ('cancelled', 'fulfilled'))):
-            self.gate.terminal(self._intent, self.prepared.task_id)
+            if self._owns_intent():
+                self.gate.terminal(self._intent, self.prepared.task_id)
             self._binding = None
         return snapshot
 
@@ -152,7 +164,7 @@ class MailboxRuntime:
                     self._faults.add('database_operation_failed')
                     self._cache = None
                     try:
-                        self.gate.deactivate(self._intent)
+                        self.deactivate_intent()
                     except Exception:
                         self._faults.add('intent_revocation_failed')
             finally:
@@ -190,6 +202,8 @@ class MailboxRuntime:
 
     async def submit_control(self, request_id, command, *, execution=None, _transition=False):
         selected = self._require_execution(execution)
+        if self._task_retired:
+            raise Refused('task_retired')
         if self._transitioning and not _transition:
             raise Refused('continuation_unavailable')
         mailbox, requester = self.mailbox, self._requester
@@ -211,6 +225,8 @@ class MailboxRuntime:
 
     async def resume_authority(self, request_id, *, execution=None):
         self._require_execution(execution)
+        if self._task_retired:
+            return False
         mailbox = self.mailbox
         _label(request_id, 'request_id')
 
@@ -233,7 +249,7 @@ class MailboxRuntime:
         self._owner()
         # A retained transition projects its exact captured snapshot explicitly;
         # this branch does not grant admission from an expired observation.
-        snapshot = (self._cache.snapshot if self._transitioning and self._cache is not None
+        snapshot = (self._cache.snapshot if (self._transitioning or self._stopping) and self._cache is not None
                     else self._check_observation(self._cache))
         host = self.lifecycle.status()
         if (type(host) is not dict or set(host) != {'host_phase', 'waiting_reason'}
@@ -273,7 +289,7 @@ class MailboxRuntime:
 
     def window_ready(self, session_id):
         self._owner()
-        if self._stopping:
+        if self._stopping or self._task_retired:
             return False
         binding = self.lifecycle.window_ready(session_id)
         if (type(binding) is not UIBinding or binding.host_epoch != self.prepared.host_epoch
@@ -286,18 +302,19 @@ class MailboxRuntime:
 
     def deactivate_intent(self):
         self._owner()
-        self.gate.deactivate(self._intent)
+        if self._owns_intent():
+            self.gate.deactivate(self._intent)
 
     def activate_intent(self, session_id, *, execution=None):
         self._owner()
         self._require_execution(execution)
-        if self._stopping or not self.session_is_live(session_id):
+        if self._stopping or self._task_retired or not self.session_is_live(session_id):
             raise RuntimeUnavailable('Session cannot activate during close or identity loss')
         # Authority was read asynchronously. A seal may follow that read, but
         # cannot precede this original deadline; no loop-thread DB read needed.
         snapshot = self._check_observation(self._cache)
         if execution_outcome(snapshot.target.state) is not None or not self._execution_live(snapshot.target.state):
-            self.gate.deactivate(self._intent)
+            self.deactivate_intent()
             return False
         self.gate.activate(self._intent, session_id=session_id, task_id=self.prepared.task_id)
         return True
@@ -315,9 +332,10 @@ class MailboxRuntime:
 
     def window_closed(self, session_id):
         self._owner()
-        self.gate.deactivate(self._intent)
+        self.deactivate_intent()
         if self._binding is not None and self._binding.session_id == session_id:
-            self.gate.revoke(self._intent, session_id)
+            if self._owns_intent():
+                self.gate.revoke(self._intent, session_id)
             self._binding = None
         self.lifecycle.window_closed(session_id)
 
@@ -380,19 +398,25 @@ class MailboxRuntime:
                 if done.cancelled() or done.exception() is not None and not isinstance(done.exception(), Refused):
                     self._faults.add('continuation_failed')
                     self._continuation_phase = 'blocked'
-                    self.gate.deactivate(self._intent)
+                    self.deactivate_intent()
             finally:
                 self._continuation_tasks.discard(done)
         task.add_done_callback(completed)
         return await asyncio.shield(task)
 
     async def select_continuation(self, request, *, intent_valid):
+        if self._task_retired:
+            raise Refused('task_retired')
         return await self._retain_continuation(lambda: self._continuation.select(request, intent_valid=intent_valid))
 
     async def continue_selected(self, grant, *, intent_valid):
+        if self._task_retired:
+            raise Refused('task_retired')
         return await self._retain_continuation(lambda: self._continuation.continue_selected(grant, intent_valid=intent_valid))
 
     async def lookup_continuation(self, request):
+        if self._task_retired:
+            raise Refused('task_retired')
         return await self._retain_continuation(lambda: self._continuation.lookup(request))
 
     def diagnostics(self):

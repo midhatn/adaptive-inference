@@ -11,7 +11,7 @@ Reuse: TaskStore's existing BEGIN IMMEDIATE/revision/operation mechanism and
 ContinuationAuthority's immutable command lookup pattern. See TaskStore for
 the retained Strata attribution, and docs/task-spec.md for Hermes lifecycle work.
 """
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 from copy import deepcopy
 import hashlib
 import json
@@ -84,6 +84,9 @@ class TaskAdmission:
         _task_id(initial_task_id)
         _task_store(initial_run).load(initial_task_id)
         self.initial = {'task_id': initial_task_id, 'run': str(initial_run)}
+        # Same-host bindings only. Keeping the verifier does not establish child
+        # exit or native release: the composition still owns those obligations.
+        self._execution_bindings = {}
         self.task_id = 'admission.' + _digest(host_generation)
         self.prompt = 'Record explicit tasks for host ' + host_generation + '.'
         self.declaration = {AUTHORITY: {'host_generation': host_generation,
@@ -102,7 +105,7 @@ class TaskAdmission:
         self._state(cp)
 
     def request(self, *, command_id, expected_selection_revision, predecessor_execution_id,
-                predecessor_revision, spec, arrived_at_utc):
+                predecessor_revision, spec, arrived_at_utc, source=None):
         """Build once and retain this exact payload for all retries of a command."""
         _task_id(command_id); _task_id(predecessor_execution_id)
         if (type(expected_selection_revision) is not int or not 0 <= expected_selection_revision < MAX_ADMISSIONS
@@ -112,22 +115,39 @@ class TaskAdmission:
         suffix = _digest({'host': self.host_generation, 'command': command_id})
         task_id = 'task.' + suffix
         demand = DemandIdentity('demand.' + suffix, task_id, self.host_generation, arrived_at_utc)
-        return {'command_id': command_id, 'host_generation': self.host_generation,
+        payload = {'command_id': command_id, 'host_generation': self.host_generation,
             'expected_selection_revision': expected_selection_revision,
             'predecessor_execution_id': predecessor_execution_id, 'predecessor_revision': predecessor_revision,
             'task_id': task_id, 'session_id': 'session.' + suffix, 'run': str(self.tasks_root / task_id),
             'task_spec': spec.data, 'task_spec_sha256': spec.sha256, 'demand_identity': demand.metadata()}
+        if source is not None:
+            if type(source) is not dict or set(source) != {'task_spec_path', 'task_spec_sha256', 'task_inputs'}:
+                raise ValueError('Exact task source paths and raw specification digest required')
+            _sha(source['task_spec_sha256'])
+            for key in ('task_spec_path', 'task_inputs'):
+                path = source[key]
+                if (type(path) is not str or not path or '\0' in path
+                        or len(path.encode('utf-8')) > 1024 or not Path(path).is_absolute()):
+                    raise ValueError('Bounded absolute task source paths required')
+            # Paths are part of command identity, not proof of file contents.
+            # Do not reopen them during historical lookup; preparation pins and
+            # stages the actual spec/input bytes before a worker may launch.
+            payload['source'] = deepcopy(source)
+        return payload
 
     def _payload(self, payload):
-        _require(type(payload) is dict and set(payload) == {'command_id', 'host_generation',
+        required = {'command_id', 'host_generation',
             'expected_selection_revision', 'predecessor_execution_id', 'predecessor_revision', 'task_id',
-            'session_id', 'run', 'task_spec', 'task_spec_sha256', 'demand_identity'}, 'Admission fields changed')
+            'session_id', 'run', 'task_spec', 'task_spec_sha256', 'demand_identity'}
+        _require(type(payload) is dict and set(payload) in (required, required | {'source'}),
+                 'Admission fields changed')
+        _require('source' not in payload or payload['source'] is not None, 'Task source cannot be null')
         spec = TaskSpec(payload['task_spec'])
         restored = self.request(command_id=payload['command_id'],
             expected_selection_revision=payload['expected_selection_revision'],
             predecessor_execution_id=payload['predecessor_execution_id'],
             predecessor_revision=payload['predecessor_revision'], spec=spec,
-            arrived_at_utc=payload['demand_identity']['arrived_at_utc'])
+            arrived_at_utc=payload['demand_identity']['arrived_at_utc'], source=payload.get('source'))
         _require(restored == payload, 'Admission identity changed')
         return _copy(payload)
 
@@ -155,7 +175,7 @@ class TaskAdmission:
                 'Admission chain or command changed')
             commands.add(payload['command_id'])
             phase = row['phase']
-            _require(phase in ('reserved', 'preparing', 'prepared', 'running', 'released', 'abandoned'),
+            _require(phase in ('reserved', 'preparing', 'prepared', 'running', 'released', 'abandoned', 'stopped'),
                      'Unknown admission phase')
             if phase in ('reserved', 'preparing', 'abandoned'):
                 _require((phase == 'abandoned' or index == len(state['admissions']) - 1) and row['prepared'] is None,
@@ -163,7 +183,7 @@ class TaskAdmission:
             else:
                 _require(type(row['prepared']) is dict, 'Selected admission lacks preparation receipt')
                 revision += 1; selected = {'task_id': payload['task_id'], 'run': payload['run']}
-            _require((phase in ('released', 'abandoned')) == (row['release'] is not None), 'Release state changed')
+            _require((phase in ('released', 'abandoned', 'stopped')) == (row['release'] is not None), 'Release state changed')
             if index < len(state['admissions']) - 1:
                 _require(phase in ('released', 'abandoned'), 'Prior task was not released')
         _require(type(state['selection_revision']) is int and state['selection_revision'] == revision
@@ -199,22 +219,85 @@ class TaskAdmission:
         return {'selection_revision': state['selection_revision'], 'selected': state['selected'],
                 'admissions': state['admissions'], 'operation': cp.operation,
                 'requires_reconciliation': cp.requires_reconciliation,
+                'host_stopped': bool(state['admissions'] and state['admissions'][-1]['phase'] == 'stopped'),
                 'stop_fenced': bool(cp.operation or cp.requires_reconciliation or
-                    (state['admissions'] and state['admissions'][-1]['phase'] not in ('released', 'abandoned')))}
+                    (state['admissions'] and state['admissions'][-1]['phase'] not in ('released', 'abandoned', 'stopped')))}
+
+    def retain_execution_binding(self, binding):
+        """Retain the existing continuation verifier, never a caller boolean.
+
+        The caller joins its retained child and verifies native release before
+        reserve/finish. We independently recheck the exact released continuation
+        authority and result using that binding while both store locks are held.
+        """
+        from adaptive_inference.desktop.continuation_host import SelectedWorkerStopBinding
+        if type(binding) is not SelectedWorkerStopBinding:
+            raise TypeError('Exact retained selected-worker binding required')
+        _require(binding.authority.host_generation == self.host_generation,
+                 'Continued execution belongs to another host')
+        key = binding.original.task_id
+        previous = self._execution_bindings.get(key)
+        _require(previous is None or previous is binding, 'Retained execution binding changed')
+        self._execution_bindings[key] = binding
 
     @contextmanager
-    def _released_checkpoint(self, selected, execution_id, revision):
-        # A continued execution requires the continuation authority's own exact
-        # lineage/release verifier at integration. Same prompt/spec is not a
-        # substitute for identity; this first component admits original tasks.
-        _require(execution_id == selected['task_id'], 'Unverified successor execution is unsupported')
+    def _released_checkpoint(self, selected, execution_id, revision, *, stop_binding=None):
         run = _directory(selected['run'])
         store = _task_store(run)
         # Reuse TaskStore.claim's exact stable sidecar without changing the
         # released checkpoint's revision. Held through the host write, this
         # prevents a cooperating claim from changing cancelled A during select.
-        lock = _FileLock(str(store.path) + '.task-' + hashlib.sha256(execution_id.encode()).hexdigest() + '.lock')
-        try:
+        with ExitStack() as locks:
+            def hold(task_id):
+                lock = _FileLock(str(store.path) + '.task-' + hashlib.sha256(task_id.encode()).hexdigest() + '.lock')
+                locks.callback(lock.close)
+            binding = None
+            if stop_binding is not None:
+                from adaptive_inference.desktop.hermes.service_stop import WorkerStopBinding
+                from adaptive_inference.desktop.continuation_host import SelectedWorkerStopBinding
+                _require(type(stop_binding) in (WorkerStopBinding, SelectedWorkerStopBinding)
+                    and stop_binding.run == run and stop_binding.original.task_id == execution_id
+                    and stop_binding.mailbox.store.path == store.path,
+                    'Exact stopped task worker binding required')
+            if execution_id != selected['task_id']:
+                from adaptive_inference.desktop.continuation_host import SelectedWorkerStopBinding
+                binding = stop_binding or self._execution_bindings.get(execution_id)
+                _require(type(binding) is SelectedWorkerStopBinding,
+                         'Unverified successor execution is unsupported')
+                authority = binding.authority
+                _require(binding.run == run and authority.store.path == store.path
+                    and authority.logical_task_id == selected['task_id']
+                    and authority.host_generation == self.host_generation,
+                    'Continued execution does not belong to the selected task')
+                # Same order as ContinuationAuthority.claim_selected: authority
+                # first, execution second. Keep both through the admission write.
+                hold(authority.task_id)
+                authority_cp = authority.store.load(authority.task_id)
+                authority_state = authority._authority(authority_cp)
+                _require(authority_cp.owner_epoch is None
+                    and authority_state['selected_execution'] == execution_id,
+                    'Continued execution authority is owned or selects another execution')
+            else:
+                # An old original-worker binding must not close the lifetime
+                # after Continue selected another execution (even before launch).
+                from adaptive_inference.desktop.hermes.continuation import (
+                    ContinuationAuthority, AUTHORITY as CONTINUATION, digest as continuation_digest)
+                authority_id = 'continue.' + continuation_digest(selected['task_id'])
+                # The authority may be created for the first time concurrently.
+                # Lock its deterministic identity even before a row exists.
+                hold(authority_id)
+                try:
+                    authority_cp = store.load(authority_id)
+                except KeyError:
+                    authority_cp = None
+                if authority_cp is not None:
+                    authority = ContinuationAuthority(store, selected['task_id'],
+                        authority_cp.metadata[CONTINUATION]['scope'], host_generation=self.host_generation)
+                    authority_state = authority._authority(authority_cp)
+                    _require(authority_cp.owner_epoch is None
+                        and authority_state['selected_execution'] == execution_id,
+                        'Original worker no longer represents the selected execution')
+            hold(execution_id)
             cp = store.load(execution_id)
             store._revision(cp, revision)
             _require(cp.owner_epoch is None and cp.operation is None and not cp.requires_reconciliation,
@@ -223,11 +306,19 @@ class TaskAdmission:
             identity = DemandIdentity(**{k: declaration[k] for k in
                 ('registration_id', 'task_id', 'owner_id', 'arrived_at_utc')})
             demand = _record(cp, identity)
-            _require(cp.state['status'] == 'accepted' or (demand is not None and demand['state'] == 'cancelled'),
-                     'Previous task must complete or be cancelled explicitly')
+            if stop_binding is None:
+                _require(cp.state['status'] == 'accepted' or (demand is not None and demand['state'] == 'cancelled'),
+                         'Previous task must complete or be cancelled explicitly')
+            verifier = stop_binding or binding
+            if verifier is not None:
+                code = verifier.worker.poll()
+                _require(type(code) is int, 'Continued child is not known to have exited')
+                outcome = type(verifier)._verify_exit(verifier, code)
+                allowed = ('task_completed', 'task_cancelled') if stop_binding is None else (
+                    'task_completed', 'task_cancelled', 'service_stopped', 'paused_budget_expired')
+                _require(outcome in allowed,
+                         'Continued task has not completed or been explicitly cancelled')
             yield cp
-        finally:
-            lock.close()
 
     def reserve(self, owned, payload, *, predecessor_cleanup_sha256):
         payload = self._payload(payload); _sha(predecessor_cleanup_sha256)
@@ -362,5 +453,85 @@ class TaskAdmission:
             if operation_id is None:
                 owned.save_checkpoint(new_state, expected_revision=cp.revision)
             else:
+                owned.complete_operation(operation_id, result=release, state=new_state, expected_revision=cp.revision)
+        return deepcopy(release)
+
+    @contextmanager
+    def _unlaunched_checkpoint(self, selected, continuation):
+        from adaptive_inference.desktop.continuation_host import HostContinuation
+        _require(type(continuation) is HostContinuation, 'Exact unlaunched continuation coordinator required')
+        record = continuation.current
+        _require(type(record) is dict, 'No committed continuation can stop')
+        authority, grant = record['authority'], record['grant']
+        run = _directory(selected['run']); store = _task_store(run)
+        _require(authority.store.path == store.path
+            and authority.host_generation == self.host_generation
+            and authority.logical_task_id == selected['task_id']
+            and continuation.runtime.prepared.host_epoch == self.host_generation
+            and continuation.runtime.prepared.task_id == selected['task_id'],
+            'Unlaunched continuation does not belong to the selected task')
+        with ExitStack() as locks:
+            for task_id in (authority.task_id, grant['payload']['successor_id']):
+                lock = _FileLock(str(store.path) + '.task-' + hashlib.sha256(task_id.encode()).hexdigest() + '.lock')
+                locks.callback(lock.close)
+            authority_cp = store.load(authority.task_id)
+            _require(authority._authority(authority_cp)['selected_execution'] == grant['payload']['successor_id'],
+                     'Unlaunched continuation is no longer selected')
+            proof = HostContinuation.verify_unlaunched(continuation, record)
+            _require(proof['outcome'] == 'selected_not_launched', 'Unlaunched verification failed')
+            yield store.load(grant['payload']['successor_id']), proof['outcome']
+
+    def stop(self, owned, reservation, *, cleanup_sha256, operation_id=None, binding=None, continuation=None):
+        """Close this host's known lifetime without cancelling its pending task.
+
+        Call only after actual child joins and native cleanup. A prepared task
+        with no launch remains pending. A running task must pass its existing
+        safe-exit verifier. Neither case may admit another task in this host;
+        reboot/restart recovery requires its own authority and qualification.
+        """
+        _sha(cleanup_sha256)
+        cp, state, row = self._current(owned, reservation)
+        _require(row['phase'] in ('prepared', 'running'), 'No known task lifetime can stop')
+        payload = reservation['payload']
+        if row['phase'] == 'prepared':
+            _require(operation_id is None and binding is None and continuation is None and cp.operation is None
+                and not cp.requires_reconciliation, 'Unknown launch cannot be treated as no child')
+            store = _task_store(_directory(payload['run']))
+            lock = _FileLock(str(store.path) + '.task-' + hashlib.sha256(payload['task_id'].encode()).hexdigest() + '.lock')
+            try:
+                task = store.load(payload['task_id'])
+                _require(task.owner_epoch is None and _snapshot(task) == row['prepared']['checkpoint_sha256'],
+                         'Prepared task changed before host Stop')
+                release = {'execution_id': task.task_id, 'revision': task.revision,
+                    'checkpoint_sha256': _snapshot(task), 'cleanup_sha256': cleanup_sha256,
+                    'outcome': 'not_launched'}
+                row['phase'], row['release'] = 'stopped', release
+                new_state = deepcopy(cp.state); new_state[AUTHORITY] = state
+                owned.save_checkpoint(new_state, expected_revision=cp.revision)
+            finally:
+                lock.close()
+        else:
+            from adaptive_inference.desktop.hermes.service_stop import WorkerStopBinding
+            from adaptive_inference.desktop.continuation_host import SelectedWorkerStopBinding
+            self._operation(cp, reservation, operation_id, 'launch')
+            @contextmanager
+            def verified():
+                if continuation is None:
+                    _require(type(binding) in (WorkerStopBinding, SelectedWorkerStopBinding),
+                             'Running host Stop requires its exact retained worker binding')
+                    task = binding.mailbox.snapshot().target
+                    with self._released_checkpoint(state['selected'], task.task_id, task.revision,
+                                                   stop_binding=binding) as task:
+                        yield task, type(binding)._verify_exit(binding, binding.worker.poll())
+                    return
+                _require(binding is None, 'Unlaunched continuation cannot borrow a worker binding')
+                with self._unlaunched_checkpoint(state['selected'], continuation) as value:
+                    yield value
+            with verified() as (task, outcome):
+                release = {'execution_id': task.task_id, 'revision': task.revision,
+                    'checkpoint_sha256': _snapshot(task), 'cleanup_sha256': cleanup_sha256,
+                    'outcome': outcome}
+                row['phase'], row['release'] = 'stopped', release
+                new_state = deepcopy(cp.state); new_state[AUTHORITY] = state
                 owned.complete_operation(operation_id, result=release, state=new_state, expected_revision=cp.revision)
         return deepcopy(release)
