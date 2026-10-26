@@ -1126,6 +1126,29 @@ prepare fresh task identities, and repeat the complete two-task IQ3_S workflow
 using the reviewed logical-write/physical-effect verifier. Preserve the original
 failed trials and their source identities; normal Stop remains a required gate.
 
+Fresh CI at `232519048fe81371c383840b7933482cae681931` completed with ten
+successes and four Windows failures. All Windows jobs exposed an assumption in
+the added native-path comparison: the runner's temporary directory used a short
+Windows name while the adapter resolved the full name. Inspection confirmed that
+the actual worker resolves its run directory before supplying the agent's working
+directory; the test now uses that exact resolved working directory. An actual
+Windows short-name reproduction produced the original six failures and four
+errors on Python 3.11.9 and 3.12.9, then all seven corrected tests passed on each.
+The product source and access rules remain unchanged. One Python 3.12 job also
+reported failure to observe a continuation Resume
+acknowledgement. That exception can mean a worker exit or an elapsed deadline;
+the log alone cannot distinguish them. The cleanup correction let the original
+traceback appear and the job finish, but does not resolve that underlying cause.
+Retain the existing CPU fixture's child receipts in CI so the next occurrence
+reports actual exit, join and forced-cleanup information. Reuse GitHub's pinned
+[artifact upload action](https://github.com/actions/upload-artifact/blob/ea165f8d65b6e75b540449e92b4886f43607fa02/action.yml)
+and documented [post-failure step condition](https://docs.github.com/en/actions/reference/workflows-and-actions/expressions#always),
+without extending any product deadline, child watchdog or job time limit.
+Three bounded local replays of the exact continuation test passed on Python
+3.12.9, with six retained CPU children joined normally and no forced cleanup.
+That does not explain the hosted error. Keep it open for diagnostic evidence
+instead of changing the runtime or increasing waits without a reproduced cause.
+
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
 [precision comparison](docs/precision-research.md#reversible-qualification).

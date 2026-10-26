@@ -26,6 +26,15 @@ jobs:
       - run: python -m pip install -r requirements.lock
       - run: python -m pip install --no-deps -e .
       - run: python -m unittest discover -s tests -v
+        env:
+          CONTINUATION_TEST_RECEIPTS: ${{ runner.temp }}/continuation-child-receipts
+      - name: Preserve continuation child diagnostics
+        if: always() && runner.os == 'Windows'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: continuation-children-${{ matrix.os }}-py${{ matrix.python }}
+          path: ${{ runner.temp }}/continuation-child-receipts/*.json
+          if-no-files-found: warn
       - run: python -m unittest discover -s provenance -p "test_*.py" -v
       - run: python -m pip install httpx==0.28.1
       - run: python examples/validation/hermes_tool_task/test_boundary.py

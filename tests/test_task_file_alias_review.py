@@ -43,15 +43,19 @@ class IndependentAliasTests(unittest.TestCase):
     @unittest.skipUnless(os.name == 'nt', 'Native Windows path resolution comparison')
     def test_native_windows_lexical_resolution_matches_admitted_paths(self):
         self.prepare()
+        # The worker resolves its run directory before supplying Hermes cwd.
+        # TemporaryDirectory may retain a Windows 8.3 spelling on CI.
+        work = self.controller.work
+        self.assertEqual(work, self.work.resolve(strict=True))
         for name in ('notes.txt', 'answer.txt'):
-            aliases = [name, './' + name, '.\\' + name, str(self.work / name),
-                absolute_alias(self.work, name), str(self.work / name).replace('\\', '/')]
+            aliases = [name, './' + name, '.\\' + name, str(work / name),
+                absolute_alias(work, name), str(work / name).replace('\\', '/')]
             for raw in aliases:
                 with self.subTest(raw=raw):
-                    actual = self.spec.file_path(self.work, raw, write=name == 'answer.txt')
+                    actual = self.spec.file_path(work, raw, write=name == 'answer.txt')
                     # Exact retained native _anchor win32 operation, without
                     # importing/constructing Hermes or executing a tool.
-                    text = raw if ntpath.isabs(raw) else ntpath.join(str(self.work), raw)
+                    text = raw if ntpath.isabs(raw) else ntpath.join(str(work), raw)
                     self.assertEqual(Path(ntpath.normpath(text)), actual)
 
     def test_trailing_directory_syntax_and_noncanonical_capabilities_refuse(self):

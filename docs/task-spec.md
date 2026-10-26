@@ -62,7 +62,9 @@ adapter's current capability, not a limit on the project's long-term goal.
 Tool arguments may name a declared file by its basename, a relative alias such
 as `./answer.txt`, or an absolute path to that same task workspace file. The
 adapter checks the workspace and filesystem identity before treating those
-spellings as the same capability. It refuses parent traversal, paths outside
+spellings as the same capability. Absolute paths must use the worker's resolved
+workspace path; alternate directory aliases, including a Windows short-name
+parent, are outside this bounded capability. It refuses parent traversal, paths outside
 the workspace, links, and undeclared names. On Windows it also refuses ambiguous
 drive-relative paths, network/device paths and alternate data streams.
 
