@@ -42,6 +42,7 @@ jobs:
       - run: python -m unittest discover -s examples/validation/windows_handoff/native -v
       - run: python -m unittest discover -s examples/validation/windows_handoff -p test_arithmetic_feedback.py -v
       - run: python -m unittest discover -s examples/validation/windows_handoff -p test_shutdown_receipts.py -v
+      - run: python -m unittest discover -s examples/validation/windows_handoff -p test_historical_native_sources.py -v
       - run: python -m unittest discover -s provenance/windows-handoff/sanitizer -p "test_*.py" -v
       - run: python third_party/reference-sources/verify.py
       - run: python provenance/client-config-transports/verify-sources.py

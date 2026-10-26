@@ -12,6 +12,7 @@ import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest import mock
+from historical_native_sources import historical_native_source
 
 HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('shutdown_harness_v6', HERE / 'run_validation.py')
@@ -214,7 +215,7 @@ class ShutdownReceiptTests(unittest.IsolatedAsyncioTestCase):
             expected = row['predecessor_sha256']
             self.assertEqual(inventory[row['path']], expected)
             self.assertEqual(hashlib.sha256((helper_root/row['path']).read_bytes()).hexdigest(), expected)
-            self.assertEqual(hashlib.sha256((HERE/row['path']).read_bytes()).hexdigest(), expected)
+            self.assertEqual(hashlib.sha256(historical_native_source(row['path']).read_bytes()).hexdigest(), expected)
 
 
 if __name__ == '__main__':
