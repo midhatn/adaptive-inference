@@ -2,6 +2,50 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Ordinary-task handover development
+
+The installed two-task IQ3_S scenario remains unqualified. On 26 October 2026,
+the candidate built from source head `841989abfcc442f9615a0d1390670a4de8e5c0bd`
+used wheel SHA-256
+`d2a10deb4a1eb6b911988357b2f8838dd62afe805402ace2367b3ed84b0b5e61`.
+Its source tests, provenance checks, fourteen hosted checks and isolated
+installation gates passed. The following real run, retained as case06, failed
+the original 900-second task budget before completing inventory or selecting
+the welcome task. Those earlier passes do not establish end-to-end completion.
+
+One real model request and one inventory read completed, with no output write.
+Of 895 valid external observations, 784 showed the engine parked and 720 reported
+foreground activity; no controller fault was reported. These are sample counts,
+not exact durations or desktop-responsiveness measurements. The original task,
+session, three native-history messages, completed read and pending next request
+survived, and both terminal databases passed integrity checks.
+
+The worker returned `active / control_wait_deadline` through its generic failure
+path. It did not produce a safe-expiry or service-stop receipt, and the shutdown
+Pause remained unacknowledged. The product therefore correctly refused to claim
+cooperative cleanup. Separate native evidence confirmed all nine retained native
+process exits and listener release; the GUI and gateway listener also recorded
+closure. The retained parent exited with code 1 after about 912 seconds without
+an outer timeout or emergency termination. Both parent and observer were joined.
+Observer connection loss alone is not cleanup evidence.
+
+The unchanged acceptance auditor rejected `normal_parent`. An independent
+fourteen-check diagnostic review confirmed this failure classification; it did
+not pass the task. Two distinct Resume acknowledgements exist, while the root
+record shows one successful automated Resume and an earlier rejected input.
+The source of the second acknowledgement is unknown; no total physical-click
+count is inferred. There is no second task, manual Stop, FP16 result or performance
+claim. The installed pause-observation race did not appear in the recorded
+exception chain, but this is not proof of absence of all races.
+
+Private terminal result SHA-256:
+`881a62f79e60ebe93d7a822a05886f44aee41bb0ea271a46aa83396cf37a7187`.
+Independent failure-review SHA-256:
+`c1e77836463bd623710f85077754e97a945365113ed4410aeb3bfc5db5823202`.
+These identify retained evidence rather than a public reproducible acceptance
+receipt. The [roadmap](../PLAN.md) records the safe-wait expiry lifecycle gap and
+the separate foreground-coexistence work that this outcome prioritizes.
+
 ## Explicit continuation after safe expiry
 
 The [source-bound continuation record](../provenance/explicit-continuation/acceptance/README.md)

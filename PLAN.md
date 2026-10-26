@@ -584,6 +584,15 @@ emitted output or tool effects. Lowering model quality is not the remedy.
 **User result:** an agent can compile code or run a supported GPU step, then
 continue its original task automatically.
 
+The named end-to-end media gate is the
+[Adaptive-Hermes-Media-Autonomous Test](docs/adaptive-hermes-media-autonomous-test.md).
+It preserves the autonomous Hermes supervisor/worker, IQ3_S, Turbo Q8_0 reference,
+H3 Ref2VA Q8 video, verified cleanup and independent output-review requirements
+from the retained media experiment. Its two-image/two-video/four-worker and
+four-hour bounds are separate from the smaller M2 examples. This canonical
+integration is planned, not passed. Preserve bounded self-correction, but do not
+manually steer the agent through a running attempt to produce a success.
+
 Connect actual agent tool dispatch to the existing ownership and handoff
 contract. The current supervisor-chosen video test is a starting point; the
 agent-host integration must declare and request the tool's needs.
@@ -652,6 +661,9 @@ named tests; a normal reboot does not establish them.
 working day, with understandable limits and a reliable recovery path.
 
 Combine the accepted M2–M5 capabilities into one product acceptance suite.
+Include the named autonomous media test, then separately declared foreground
+activity and restart variants of that workflow. A quiet successful render alone
+does not demonstrate the combined always-on requirement.
 Exercise backend/controller/agent death, stale sensors, lost admission proof,
 port or process-identity changes, allocation failure, interrupted tool execution,
 disk-full writes, changed artifacts and failed startup.
@@ -1198,6 +1210,26 @@ produced exactly the previously reviewed 60-module installation identity. This
 closes identity generation for the public installed SDK command; it does not
 complete the other deployment receipts or retroactively establish build-time
 source stability. See [reproduction instructions](docs/reproducing.md#expected-identity-for-installed-checks).
+
+**26 October ordinary-task trial feedback:** the repaired wheel passed isolated
+installation checks, but the next real IQ3_S trial exhausted the original
+900-second inventory budget before a second task could be selected. One model
+request and one input read completed; no output was written. Foreground activity
+kept the engine parked for most sampled observations. The worker then reported
+an active control-wait deadline, which has no verified safe-expiry receipt in the
+current lifecycle. The host correctly refused to call that a cooperative product
+stop, although the native owner independently confirmed release of all nine
+retained processes. Preserve this failed run and its missing acknowledgement;
+neither a clean OS process list nor intact saved state replaces the required
+worker receipt. See the [bounded failure evidence](docs/evidence.md#ordinary-task-handover-development).
+
+Before another full trial, reproduce expiry at a safe admission wait with the
+existing owner and SDK paths. Reuse their checkpoint, resource-close and
+execution-seal mechanisms to establish an explicit truthful outcome without
+dispatching the pending request, extending the budget, cancelling the objective
+or accepting uncertain effects. Keep paused-expiry semantics and earlier
+acceptance unchanged. Separately, M3 must qualify useful progress during light
+foreground work; merely parking correctly does not establish everyday coexistence.
 
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
