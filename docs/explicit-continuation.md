@@ -110,8 +110,12 @@ exactly-once guarantee for arbitrary external tools or distributed services.
 The [public qualification workflow](../examples/validation/explicit_continuation/README.md)
 includes the execution scripts, source lineage, input templates, genuine window
 sequence and terminal auditor for a fresh local trial. Its public helper-path
-adaptation passed 43 portable checks; it was not rerun with a model. The accepted
-installed run and fixed-evidence replay retain their original source identities.
+adaptation initially passed 43 portable checks. Publication CI exposed Python
+3.12's added empty AST field; reusing the existing preservation comparison and
+adding two refusal/nonmutation regressions gives 45 passing checks on both
+Python 3.11 and 3.12. Historical source digests stay unchanged. This adaptation
+was not rerun with a model; the accepted installed run and fixed-evidence replay
+retain their original source identities.
 
 The [installed desktop guide](installed-desktop.md) describes the full host and
 worker interpreters, regular wheel installation, pinned Hermes SDK, explicit

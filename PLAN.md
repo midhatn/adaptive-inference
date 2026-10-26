@@ -963,6 +963,11 @@ workers, native engine and window and closed the service controls. See the
 Preserve the earlier 46-check paused-expiry acceptance and both failed expiry
 predecessors as separate historical results.
 
+Publication feedback: Python 3.12 represents unchanged function syntax with an
+additional empty field. Reuse the existing narrow source-preservation comparison
+in standalone workflows, retain historical hashes, and check both supported
+Python versions before publication; this repair does not change runtime behavior.
+
 **Next functional M2 gate:** accept a different user task in the same retained
 host, with explicit task identity, isolated task/effect records and clear completed,
 waiting and stopped states. First inspect existing TaskStore and pinned Hermes
