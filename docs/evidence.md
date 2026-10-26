@@ -80,6 +80,14 @@ Installed IQ3_S qualification of this extension remains pending. These checks
 do not establish native resource release, GUI behavior, physical reboot recovery,
 performance, autonomous media completion or a pass for the failed trial below.
 
+The acknowledgement-read successor uses wheel SHA-256
+`18469c0cf967f391cbb23433e6496e48756645d8dfb880352936a336413857a4`.
+All seven isolated installation steps and independent review passed for that
+exact wheel. All fourteen hosted checks passed on source head
+`5fd3d7a66590effa3b85d6bcf0d02c6b8f9b0c8c`, including the retry of a Windows job
+that had exceeded its whole-job time limit. The original timeout remains a
+separate unsuccessful attempt. These are preparation results for case07 below.
+
 ## Ordinary-task handover development
 
 The installed two-task IQ3_S scenario remains unqualified. On 26 October 2026,
@@ -123,6 +131,47 @@ Independent failure-review SHA-256:
 These identify retained evidence rather than a public reproducible acceptance
 receipt. The [roadmap](../PLAN.md) records the safe-wait expiry lifecycle gap and
 the separate foreground-coexistence work that this outcome prioritizes.
+
+The next installed run, **case07**, also failed. Its first real IQ3_S request
+completed, and foreground activity triggered admission closure and native drain.
+The native owner then reported `TerminateProcess` error 5, six retained processes
+and only five confirmed exits, although its visible active list was empty.
+Server exit zero and an empty list did not satisfy complete release; the adapter
+correctly refused it. The worker preserved its pending request and returned its
+cooperative service-stop outcome, exit 4. It did not reach verified expiry exit 6,
+explicit continuation, task acceptance or a second task.
+
+The host's terminal retention-failure loop cannot retry cleanup or produce a
+successful result. Root explicitly terminated that exact runner after checking
+its creation identity, executable, command and parent, then confirmed exit using
+the same retained handle. Its original supervisor observed runner exit 125. The separate
+root receipt records external emergency termination; the supervisor's own
+`emergency_termination_attempted=false` describes only its unused timeout handler.
+It is not a clean Stop. Both test listeners and observed test processes were
+absent afterward, which establishes containment rather than product release.
+The external observer recorded 473 valid responses and three connection errors;
+connection loss does not establish successful shutdown.
+
+The exact kernel timing was not captured. The receipt is consistent with a
+documented Windows exit race, and the [roadmap](../PLAN.md) now prioritizes a
+bounded same-handle termination check. Neither error 5 nor PID absence may be
+accepted as exit without that signal and complete retained-process accounting.
+The original failed case and native source remain preserved; a changed owner
+requires its own deployment identity and fresh installed qualification.
+
+The [native-owner correction](../examples/validation/windows_handoff/native/README.md#termination-denial-during-exit)
+passes 30 focused source checks on each of Python 3.11 and 3.12. Two independent
+checks cover the shared cleanup deadline across handles and unchanged complete
+release requirements. An additional Windows CPU-child probe uses actual retained
+handles, job membership and waits, with only termination denial and release
+coordination injected. The predecessor retains its error; the candidate signals
+and collects every owned process. Both children exit normally and are joined.
+The reviewer's first collector incorrectly assumed one owned process; Windows
+also created a console host. That failed review attempt remains preserved, and
+the fresh replay checks complete owned-descendant accounting. These results
+qualify the narrow source behavior, not a fresh native-model release or full
+task handover. Independent review SHA-256:
+`9e3d3ecd621b3e9b74b0ea0c3d79a31df9c3dcd0bcf43e788f60534d0f32b1b1`.
 
 ## Explicit continuation after safe expiry
 

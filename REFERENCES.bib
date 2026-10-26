@@ -561,3 +561,17 @@
   url = {https://github.com/thu-nics/AKV/tree/c567a429a058f1abce3b2879e69978b09e0fda4c},
   note = {Root Apache-2.0 with SGLang attribution; inspected reposition kernel has an MIT notice. Revision c567a429a058f1abce3b2879e69978b09e0fda4c, inspected 2026-10-26. Reuse candidate; no implementation copied or enabled. Current Drop/Reposition architecture support does not qualify our hybrid IQ3_S Windows composition}
 }
+
+@misc{windowsTerminationExitRace,
+  title = {TerminateProcess and WaitForSingleObject process completion contracts},
+  author = {{Microsoft}},
+  url = {https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess},
+  note = {Inspected 2026-10-26 with https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject. Termination is asynchronous and may return access denied after termination; only a signalled retained handle proves exit. Informs the existing owner cleanup correction with no additional process rights or cleanup budget. API semantics adapted; no documentation text copied}
+}
+
+@misc{cpythonWindowsTerminationVerification,
+  title = {CPython 3.11.9 Windows multiprocessing termination and wait verification},
+  author = {{Python Software Foundation and contributors}},
+  url = {https://github.com/python/cpython/blob/v3.11.9/Lib/multiprocessing/popen_spawn_win32.py},
+  note = {PSF license, inspected 2026-10-26. Reuses the principle of verification through the retained handle following termination denial, alongside the project's existing bounded wait. No CPython implementation copied; exit-code observations alone are not treated as wait-confirmed release}
+}

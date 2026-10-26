@@ -82,13 +82,25 @@ class ProcessHandle:
             raise RuntimeError(f'Unexpected process wait result {value}, pid={self.pid}, access_mask={self.access_mask:#x}')
         return value==0
 
-    def terminate(self):
+    def terminate(self, *, deadline=None):
         if not self.exited() and not self.k.TerminateProcess(self.handle,125):
-            # Preserve this API's error before a confirming wait changes it.
-            # CPython uses the same retained-process verification principle:
-            # https://github.com/python/cpython/blob/main/Lib/multiprocessing/popen_spawn_win32.py
-            error = C.get_last_error()
-            if not self.exited(): raise win_error('TerminateProcess',self.pid,self.access_mask,error)
+            # Termination is asynchronous; ERROR_ACCESS_DENIED can race exit.
+            # Preserve the API error, then use only this retained handle and
+            # at most one existing 50ms polling interval inside cleanup's budget.
+            # https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess
+            # https://github.com/python/cpython/blob/v3.11.9/Lib/multiprocessing/popen_spawn_win32.py
+            error = win_error('TerminateProcess',self.pid,self.access_mask)
+            if error.winerror != 5:
+                raise error
+            wait_ms = (min(50, max(0, int((deadline-time.monotonic())*1000)))
+                       if deadline is not None else 0)
+            try:
+                confirmed = self.exited(wait_ms=wait_ms)
+            except BaseException as wait_error:
+                error.add_note(f'Same-handle exit check failed: {type(wait_error).__name__}: {wait_error}')
+                raise error
+            if not confirmed:
+                raise error
 
     def close(self):
         if self.handle: self.k.CloseHandle(self.handle); self.handle=None
@@ -176,7 +188,7 @@ class Identities:
                 # Collection failure must not prevent safe attempts on handles
                 # whose identity and job membership were already verified.
                 for handle in self.active.values():
-                    try: handle.terminate()
+                    try: handle.terminate(deadline=deadline)
                     except BaseException as exc:
                         if failure is None: failure=exc
                         else: failure.add_note(f'Retained handle termination also failed: {type(exc).__name__}: {exc}')

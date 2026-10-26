@@ -199,3 +199,37 @@ The native job mechanism follows Microsoft's [Job Objects documentation](https:/
 The capacity reader follows NVIDIA's [NVML device-query API](https://docs.nvidia.com/deploy/nvml-api/latest/api/group__nvmlDeviceQueries.html).
 The original local adapter and owner code use the canonical project's Apache-2.0
 license; imported Strata code retains its existing license and source pins.
+
+## Termination denial during exit
+
+The retained-handle owner now handles one documented Windows exit race. A
+`TerminateProcess` access-denied result can occur after termination has begun.
+The owner preserves that exact error, then checks the same retained handle for
+at most one existing 50-ms polling interval, capped by the remaining cleanup
+deadline. Only a positive signal permits the normal collection loop to count
+the exit. A live process, timeout or failed wait preserves the original failure;
+other termination errors receive no extra wait. Calls outside cleanup retain
+their zero-time observation. No process is reopened by PID and no additional
+access rights are requested.
+
+This reuses the existing bounded exit-wait mechanism and the documented
+[Windows termination](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess)
+and [wait](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject)
+contracts. [CPython 3.11.9](https://github.com/python/cpython/blob/v3.11.9/Lib/multiprocessing/popen_spawn_win32.py)
+also distinguishes termination observations from wait-confirmed completion.
+No CPython implementation was copied. Project code remains Apache-2.0.
+
+From this directory, the CPU-only regressions run with:
+
+```console
+python -m unittest -v test_owner_failure test_termination_race
+```
+
+These execute the actual owner definitions with controlled Windows API/job/clock
+responses and temporary receipt files. They demonstrate complete six-process
+accounting after a late exit, genuine live-denial failure, preserved original
+errors, and the unchanged cleanup deadline. They do not launch a model or
+measure native performance. The exact predecessor and a single-case failing
+replay are [preserved in this repository](../../../../provenance/windows-handoff/termination-race-predecessor/README.md).
+Fresh installed IQ3_S qualification remains required. See the
+[evidence ledger](../../../../docs/evidence.md#ordinary-task-handover-development).

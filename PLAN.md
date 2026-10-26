@@ -1303,6 +1303,48 @@ The recovery harness also passed independent component review: 38 supplied and
 three additional actual-SQLite cases. Keep these preparation results separate
 from real IQ3_S task acceptance. Confirm the corrected hosted checks before the
 fresh task trial, retaining the same model and quality.
+**Next installed trial, 26 October:** all 14 hosted checks passed on
+`5fd3d7a66590effa3b85d6bcf0d02c6b8f9b0c8c`; retain the earlier whole-job timeout
+and its successful retry separately. The fresh IQ3_S trial completed its first
+model request, then failed native release after real foreground activity closed
+admission. Windows denied a termination call on a retained process handle. The
+owner recorded six retained processes but only five confirmed exits, so the
+adapter correctly refused release even though its final active-process list was
+empty. The worker saved its pending request and acknowledged service Stop; it did
+not produce the distinct safe-expiry outcome or complete the task. The host
+remained in its terminal retention-failure loop. An explicit external emergency
+termination ended that exact runner, and its original supervisor observed runner
+exit 125.
+This is emergency containment of a failed run, not normal Stop or installed
+acceptance. Preserve
+the failed case, its unchanged package/native sources and the separate external
+termination receipt.
+
+The next repair belongs in the existing native retained-handle termination path.
+[Microsoft documents](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess)
+asynchronous termination and access denied for an already terminated process;
+[CPython checks that same retained handle](https://github.com/python/cpython/blob/v3.11.9/Lib/multiprocessing/popen_spawn_win32.py)
+before treating a denial as completed exit. Reuse the owner's existing bounded
+exit wait, capped by its remaining cleanup deadline, only for this documented
+denial. Require a positive exit signal and the normal collection pass to account
+for every retained process. Preserve the original error on a live process,
+timeout or failed wait; do not reopen a PID, broaden access rights, or weaken the
+adapter's release/parking predicates. The failed receipt supports this race as
+a diagnosis to test; it does not establish the exact kernel timing. Require a
+deterministic predecessor-fails/successor-passes regression, negative cases and
+independent review before a separately identified deployment and fresh trial.
+
+The narrow source repair has now passed that component gate: 30 checks on each
+of Python 3.11 and 3.12, two additional independent deadline/release-proof checks,
+and an owned Windows CPU-child probe using actual retained handles and waits.
+Only termination denial and release coordination were injected in that probe;
+it does not reproduce a spontaneous kernel race. The original source fails the
+same deterministic regression. The corrected source preserves six-of-six exit
+accounting, while a live denial remains failed. The next step is a fresh sealed
+native-owner package and relevant input/clock verification, retaining the
+unchanged installed wheel and quality, followed by the complete IQ3_S scenario.
+The failed case07 and the earlier qualified packages remain immutable.
+
 Exercise ordinary-task waiting, truthful expiry, explicit continuation and Stop,
 with separate original-task acceptance before a second task can be admitted.
 Do not extend a budget silently, accept uncertain effects or reuse old installed
