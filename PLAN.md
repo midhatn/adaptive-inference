@@ -1065,6 +1065,40 @@ explain this failure, but cannot turn it into a two-task success: the next case
 must still perform both real tasks and normal GUI Stop. The runtime, model,
 installation and time allowances do not need to change for this verifier repair.
 
+The following fresh trial passed the inventory check and opened the second task,
+but stopped before its Resume on another verifier assumption. The native Windows
+folder picker returned the intended input directory with forward slashes; the
+verifier expected backslashes. Independent inspection confirmed the same resolved
+directory and filesystem identity, unchanged task file/hash and input contents,
+and preserved task A. Task B made no model requests before failure cleanup.
+
+Use the existing [pathlib path and filesystem identity semantics](https://docs.python.org/3.11/library/pathlib.html)
+for this folder comparison. Preserve the exact selected source payload used by
+the command, and retain exact task-file/hash checks. Exercise the actual picker
+representation and reject a different directory, altered specification or changed
+source fields. Share the source check between live qualification and terminal
+replay. Preserve this failed attempt and require another complete real two-task
+run; neither the correction nor successful preparation of B proves its completion.
+
+The next actual IQ3_S attempt exposed the documented file-alias limitation. Its
+first model response requested the correct inventory input using its absolute
+Windows path. The adapter required the exact relative basename, refused the
+read, and recorded no tool receipt or output. The task therefore failed its
+completion check, and the unresolved native tool continuation prevented a clean
+product Stop claim. Preserve this failed attempt; repeating it until the model
+chooses a different spelling would not resolve the adapter mismatch.
+
+Before the next installed trial, reuse the pinned
+[Hermes file-tool path contract](https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/file_tools.py)
+and Python's existing path resolution to recognize an allowed file consistently
+across dispatch, validation, completion and recovery. Keep the exact original
+tool arguments in native history and intent verification. A basename, relative
+alias or absolute path may denote the same declared workspace file; a matching
+basename outside that workspace must not authorize access. Test original-intent
+preservation, write deduplication, completion and refusal boundaries through the
+existing adapter before rebuilding and qualifying the changed installation.
+The Stop and task-acceptance checks remain unchanged.
+
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
 [precision comparison](docs/precision-research.md#reversible-qualification).

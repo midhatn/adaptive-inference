@@ -172,7 +172,7 @@
           "mergeable": "mergeable",
           "merge_state": "blocked",
           "review_decision": "REVIEW_REQUIRED",
-          "checked_at": "2026-10-24T01:41:05.421965+00:00",
+          "checked_at": "2026-10-26T13:21:39Z",
           "checks": {
             "counts": {
               "failure": 5,
@@ -207,7 +207,7 @@
                 "url": "https://github.com/sgl-project/sglang/actions/runs/40049198877/job/120737943513"
               }
             ],
-            "scope": "Snapshot includes historical same-head runs; earlier draft gates do not describe current ready status."
+            "scope": "All 121 check entries returned across two pages at 2026-10-26T13:21:39Z; historical failures remain on this unchanged head. Skipped or absent checks are not passes."
           },
           "labels": [
             "documentation"
@@ -218,7 +218,7 @@
       "outstanding": [
         "Ready for review; fixture-only evidence does not qualify native inference.",
         "Fork preview awaits maintainer approval.",
-        "Corrected title check passed; new ready-event CI queued. Older failed gates explicitly blocked the prior draft state."
+        "All 121 returned checks on the unchanged head include 33 successes, 82 skips, five failures and one neutral result. The latest processor workflow succeeded; prior draft/title/aggregate failures remain visible on this same head. Fork preview still requires maintainer approval; this is not a fully green or native-qualified result."
       ],
       "history": [
         {
@@ -233,7 +233,7 @@
           "transition": "marked ready without source changes"
         }
       ],
-      "last_checked": "2026-10-24T01:41:05.421965+00:00"
+      "last_checked": "2026-10-26T13:21:39Z"
     },
     {
       "id": "ollama",
@@ -459,7 +459,7 @@
           "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/plugin-catalog/README.md"
         }
       ],
-      "status": "submitted-open",
+      "status": "merged",
       "public_links": [
         "https://github.com/NousResearch/hermes-agent/pull/143827"
       ],
@@ -470,18 +470,21 @@
           "number": 143827,
           "url": "https://github.com/NousResearch/hermes-agent/pull/143827",
           "title": "feat(catalog): add opt-in Adaptive Inference routing plugin",
-          "state": "open",
+          "state": "merged",
           "draft": false,
           "head_sha": "2c1411b3b12a36ac740a734f345e289faf077c3d",
           "base_sha": "5894e750c3dba980d43b25aa29e3958149ba2c61",
-          "mergeable": "mergeable",
-          "merge_state": "blocked",
+          "mergeable": "not_applicable",
+          "merge_state": "merged",
           "review_decision": "not_reported",
-          "checked_at": "2026-10-24T01:38:43.1288595Z",
+          "checked_at": "2026-10-26T13:21:39Z",
           "checks": {
-            "counts": {},
+            "counts": {
+              "skipped": 23,
+              "success": 17
+            },
             "notable_checks": [],
-            "scope": "Snapshot of reported checks, including historical runs on the same head; skipped or absent checks are not passes."
+            "scope": "Exact-head check snapshot at 2026-10-26T13:21:39Z; includes historical runs on the unchanged head. Skipped or absent checks are not passes."
           },
           "labels": [
             "type/feature",
@@ -489,21 +492,28 @@
             "P3",
             "area/profiles"
           ],
-          "evidence_scope": "Public plugin hooks, actual SDK serialization and admission checks with fixtures; separate exact IQ3_S task receipt."
+          "evidence_scope": "Public plugin hooks, actual SDK serialization and admission checks with fixtures; separate exact IQ3_S task receipt.",
+          "merged_at": "2026-10-24T20:23:02Z",
+          "merge_commit_sha": "e7b15ab1532f5449ad70f7ddd3c3a936826d2e91"
         }
       ],
       "outstanding": [
         "Catalog-entry-only PR pins canonical d6f4e201ba28602189872746922e527c58ed0cbd/plugins/hermes.",
-        "No hosted check result reported. Local public-hook/admission fixtures and separate bounded real-Hermes evidence do not imply catalog approval."
+        "Merged catalog entry only; this does not constitute upstream acceptance of the desktop controller or new native/agent qualification."
       ],
       "history": [
         {
           "checked_date": "2026-10-24",
           "status": "prepared-not-submitted",
           "superseded_by_snapshot": "2026-10-24T01:38:43.1288595Z"
+        },
+        {
+          "checked_date": "2026-10-24",
+          "status": "submitted-open",
+          "superseded_by_snapshot": "2026-10-26T13:21:39Z"
         }
       ],
-      "last_checked": "2026-10-24T01:38:43.1288595Z"
+      "last_checked": "2026-10-26T13:21:39Z"
     },
     {
       "id": "openclaw",
@@ -544,12 +554,12 @@
           "mergeable": "mergeable",
           "merge_state": "unstable",
           "review_decision": "not_reported",
-          "checked_at": "2026-10-24T01:38:43.1288595Z",
+          "checked_at": "2026-10-26T13:21:39Z",
           "checks": {
             "counts": {
               "cancelled": 1,
               "failure": 3,
-              "skipped": 57,
+              "skipped": 67,
               "success": 9
             },
             "notable_checks": [
@@ -569,20 +579,26 @@
                 "url": "https://github.com/openclaw/openclaw/actions/runs/40050225134/job/120741035893"
               }
             ],
-            "scope": "Snapshot of reported checks, including historical runs on the same head; skipped or absent checks are not passes."
+            "scope": "Exact-head check snapshot at 2026-10-26T13:21:39Z; includes historical runs on the unchanged head. Skipped or absent checks are not passes."
           },
           "labels": [
             "docs",
             "gateway",
             "size: XS"
           ],
-          "evidence_scope": "Preserved exact agent-defaults schema and configuration helper; docs MDX sanity; no full app/model."
+          "evidence_scope": "Preserved exact agent-defaults schema and configuration helper; docs MDX sanity; no full app/model.",
+          "automated_review": {
+            "url": "https://github.com/openclaw/openclaw/pull/182080#issuecomment-6378362783",
+            "reviewed_head": "f64d74b04b90dd123c5a1bf7cf36de7543a74309",
+            "updated_at": "2026-10-24T01:47:15Z",
+            "scope": "ClawSweeper automated review found no actionable defect and marked the unchanged head ready for maintainer review. Proof confidence is limited; the PR remains draft and no human approval is claimed."
+          }
         }
       ],
       "outstanding": [
         "Draft docs-only PR linked to issue #182077; exact source/schema checks do not qualify full OpenClaw transport or agent execution.",
         "Auto-response workflow fails in unchanged barnacle-auto-response.mjs:712 with undefined.owner. Draft docs CI is skipped.",
-        "Required hosted autoreview was not run under the task model restriction. No human review or maintainer approval is claimed."
+        "ClawSweeper automated review found no actionable defect and marked the unchanged head ready for maintainer review. Proof confidence is limited; the PR remains draft and no human approval is claimed."
       ],
       "history": [
         {
@@ -591,7 +607,7 @@
           "superseded_by_snapshot": "2026-10-24T01:38:43.1288595Z"
         }
       ],
-      "last_checked": "2026-10-24T01:38:43.1288595Z",
+      "last_checked": "2026-10-26T13:21:39Z",
       "proposals": [
         {
           "kind": "issue",
@@ -1123,12 +1139,21 @@
   "publication_summary": {
     "new_pull_requests": 11,
     "updated_existing_pull_requests": 1,
-    "open_pull_requests_in_refresh": 12,
-    "merged_pull_requests_in_refresh": 0,
+    "open_pull_requests_in_refresh": 11,
+    "merged_pull_requests_in_refresh": 1,
     "related_issues": 3,
     "feature_discussions": 1,
     "targets": 18,
     "scope": "Counts describe this delivery refresh, not every historical PR or native qualification."
   },
-  "qualification_gateway_release": "https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0"
+  "qualification_gateway_release": "https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0",
+  "status_refresh": {
+    "checked_at": "2026-10-26T13:21:39Z",
+    "targets": [
+      "hermes",
+      "openclaw",
+      "sglang"
+    ],
+    "scope": "Focused status update; other target entries retain their individual timestamps. The original twelve-PR refresh now contains eleven open PRs and one merged catalog PR. Strata #3399 corroboration is recorded separately in the historical registry."
+  }
 }
