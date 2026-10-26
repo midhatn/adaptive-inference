@@ -25,7 +25,8 @@ class ContinuationDiagnosticLineageTests(unittest.TestCase):
     def test_only_pinned_opt_in_diagnostic_statements_changed(self):
         row = diagnostics.record()['files'][diagnostics.FIXTURE]
         old = ast.parse(diagnostics.retained(diagnostics.FIXTURE))
-        current = ast.parse((diagnostics.ROOT / diagnostics.FIXTURE).read_bytes())
+        current = ast.parse(diagnostics.readiness_predecessor(
+            (diagnostics.ROOT / diagnostics.FIXTURE).read_bytes()))
         host, method = cleanup(current); _, old_method = cleanup(old)
         self.assertEqual(fingerprint(method), row['changed_method']['successor_ast_sha256'])
         self.assertEqual(fingerprint(old_method), row['changed_method']['predecessor_ast_sha256'])

@@ -11,6 +11,24 @@ from paused_expiry_lineage import ROOT, fingerprint
 
 ARCHIVE = 'provenance/task-handover/task-file-aliases/ci-diagnostics'
 FIXTURE = 'tests/test_continuation_host.py'
+READINESS = 'provenance/task-handover/fixture-readiness'
+
+
+def readiness_predecessor(data, root=None):
+    """Project only the pinned readiness observation change to the old fixture."""
+    root = ROOT if root is None else root
+    row = json.loads((root / READINESS / 'source-lineage.json').read_bytes())
+    before = (root / READINESS / 'predecessor-test_continuation_host.py').read_bytes()
+    if (hashlib.sha256(before).hexdigest() != row['predecessor_sha256']
+            or fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']):
+        raise AssertionError('Changed CI diagnostic readiness predecessor')
+    pin = hashlib.sha256(data).hexdigest()
+    if pin == row['successor_sha256']:
+        if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:
+            raise AssertionError('Changed complete CI diagnostic fixture readiness AST')
+        return before
+    # The existing diagnostic layer still rejects every unknown complete file.
+    return data
 
 
 def record(root=None):
@@ -34,6 +52,7 @@ def retained(relative, root=None):
 
 def predecessor(data, root=None):
     """Validate the complete diagnostic fixture before the old d1 assertions."""
+    data = readiness_predecessor(data, root)
     row = record(root)['files'][FIXTURE]
     before = retained(FIXTURE, root)
     digest = hashlib.sha256(data).hexdigest()

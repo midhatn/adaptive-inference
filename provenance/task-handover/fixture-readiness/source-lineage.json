@@ -1,0 +1,11 @@
+{
+  "schema": "adaptive.continuation-fixture-readiness.v1",
+  "baseline_revision": "24713ab3bf3e0a632f08b0aa9fdcd1a6aa05f3a6",
+  "predecessor_sha256": "9aba2b541f1b08bca5a07fe3283d887bd53d01e4d48ae2679986aa5a20a1504d",
+  "predecessor_ast_sha256": "bf8bb9c3e7503148ff87e08f2f3cb9a10f58543533d8985f52b90bbe190b0f37",
+  "successor_sha256": "d8ccb7da6e874392d29e8f622e3626528cbadeac814eecb68e8aae33a5d2a589",
+  "successor_ast_sha256": "a9d0088e79becf49734ccbc0ea2c7fda7f0ef88bcb4208f05ea89070023459fd",
+  "changed_helper_ast_sha256": "ea51a0eedd20b25dad04ebd99fee5fbf1f7a7fa8370820937f8b59f4dad979f5",
+  "runtime_changes": [],
+  "scope": "CPU test fixture observation only. Same retained child, startup deadline and work guard; no runtime, SDK or model change."
+}

@@ -29,6 +29,26 @@ additional long-host-clock run passed on 3.11. The added regression still reject
 pre-seal and nonfinite observations. Runtime code and expiry guards are unchanged;
 the earlier hosted failures remain part of the history.
 
+The following Windows Python 3.12 check on `24713ab3` failed while opening a
+CPU-fixture readiness marker in setup. The bounded
+[readiness correction](../provenance/task-handover/fixture-readiness/README.md)
+retains the original child and time limits. Its deterministic denial reproduction
+and actual Windows sharing-handle regression pass; all 50 focused Python 3.12
+source/CPU-child checks passed without skips. The exact earlier fixture and
+historical manifests remain preserved. This is a test-only change.
+
+The new wheel `e8dd65996661c470e0f4be8ad8d5eccea1e0674a3126c1e3d295e1f3ec2d89c7`
+has now passed its actual isolated host/worker installation sequence: both
+offline installs, both import audits, three installed SDK dispatcher cases,
+three shared-clock comparisons, and native-input/resource checks. All seven
+steps joined successfully. Independent review confirmed the exact installed
+60-module map in both environments, unchanged SDK identities, signed driver
+621.01 and preserved prior installations. Private gate SHA-256:
+`a07b2b1ece6fb98f86e68a485eff9ca0668effa4190e839f23e3cf2ffc24a888`.
+These installation checks do not execute the model task. The new recovery
+harness separately passed 41 independently replayed component cases; that is
+preparation evidence rather than an observed installed recovery outcome.
+
 Installed IQ3_S qualification of this extension remains pending. These checks
 do not establish native resource release, GUI behavior, physical reboot recovery,
 performance, autonomous media completion or a pass for the failed trial below.

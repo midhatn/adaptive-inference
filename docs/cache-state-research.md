@@ -1,6 +1,6 @@
 # Cache state: endurance, reuse and task recovery
 
-Assessment date: 25 October 2026. This is an adopted design and qualification
+Assessment dates: 25–26 October 2026. This is an adopted design and qualification
 plan, not an enabled cache backend or a performance result. The active
 [continuation milestone](../PLAN.md#next-execution-packet) keeps priority.
 
@@ -28,6 +28,55 @@ quality evidence; matching tensor dimensions alone is insufficient.
 
 Both papers are version 1 preprints and identify CC BY 4.0 licenses. We cite
 their ideas; no paper text, figures, weights or implementation have been copied.
+
+## AKV: agent-directed cache operations
+
+**Useful for a later cache-capable adapter; not enabled in the current runtime.**
+The user-supplied [AKV implementation](https://github.com/thu-nics/AKV/tree/c567a429a058f1abce3b2879e69978b09e0fda4c)
+was inspected at `c567a429a058f1abce3b2879e69978b09e0fda4c` on 26 October 2026.
+Its root license is Apache-2.0 with SGLang attribution; the inspected reposition
+kernel has a separate MIT notice that must also survive any reuse. Fu et al.'s
+[Cache Engineering for Agents](https://arxiv.org/html/2610.28577v1)
+introduces selective KV removal and position compaction while keeping the text
+trajectory. Retained cache can be reused, but removal changes future attention;
+this is not lossless context retention. Cache identity must include the ordered
+operation history, not merely the tokens and final positions. The paper's serving
+experiment uses GPT-OSS-120B in BF16 on eight A800 80-GB GPUs with trajectory
+replay; its reported gains are not our laptop measurements or autonomous media
+qualification. The paper and software have separate licenses; no source or
+paper material is copied here.
+
+The current [system contract](https://github.com/thu-nics/AKV/blob/c567a429a058f1abce3b2879e69978b09e0fda4c/akv/system/README.md)
+requires its modified SGLang backend, one-token pages and a supported attention
+backend. Its Drop/Reposition architecture list omits our hybrid
+Qwen3.8-Flash-Next; ordinary Qwen3 support does not imply that hybrid support.
+These requests also exclude HiCache and external/session caches. Forwarding the
+new JSON fields to Strata would not implement their semantics. The public
+interface uses `drop_message` and `reposition`; the paper's illustrative nested
+`cache` field is not a substitute for the implementation's API.
+
+The [actual capability gate](https://github.com/thu-nics/AKV/blob/c567a429a058f1abce3b2879e69978b09e0fda4c/akv/system/sglang/srt/context_system/capabilities.py)
+confirms those architecture limits and requires FP16/BF16 execution and
+unquantized KV; those dtype checks alone do not prohibit every form of quantized
+weights. The supplied [build path](https://github.com/thu-nics/AKV/blob/c567a429a058f1abce3b2879e69978b09e0fda4c/akv/system/_build.py)
+imports Unix-only `fcntl`/`flock`, so it is not a native Windows installation path
+as written. These are source findings, not a completed portability test.
+
+Adopt two requirements for a future adapter: preserve the complete conversation
+and cache-operation history beside the existing task checkpoint, and advertise
+cache operations only after exact backend/model capability checks. TaskStore
+remains authoritative for completed effects, budgets and the original objective.
+A cache reconstruction must reproduce the declared operation history; silently
+reverting to ordinary full-context prefill is a different policy. An incompatible
+cache must never cause a tool effect to be replayed.
+
+Treat cache relief as one optional action alongside existing release/restore.
+Measure actual RAM/VRAM returned, temporary-copy peaks, restoration cost and
+completed-task quality. A smaller attention context does not prove that model
+weights were unloaded or enough memory was released for H3. First resolve native
+support for the unchanged IQ3_S assets, then compare a frozen full-workflow
+baseline with the declared cache policy. Qualification must retain IQ3_S quality;
+M2 recovery remains the immediate priority.
 
 ## Existing mechanisms to reuse
 

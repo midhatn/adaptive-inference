@@ -808,6 +808,11 @@ efficiency path from the user-supplied Gandalf and cross-model KV papers:
   do not validate the hybrid IQ3_S baseline. Reuse existing implementations only
   after a compatible, separately authorized model-pair evaluation; do not change
   the current model merely to demonstrate a speedup.
+- Evaluate [AKV's agent-directed cache operations](docs/cache-state-research.md#akv-agent-directed-cache-operations)
+  only through an explicitly capable backend. Preserve cache-operation history
+  as well as conversation history, measure actual released memory and task
+  quality, and retain the full-workflow baseline. Its current model support does
+  not qualify our hybrid IQ3_S stack; no cache operation is enabled by this plan.
 
 These are adopted requirements and acceptance steps, not enabled runtime
 capabilities. They do not block M2 or weaken its recovery and cleanup gates.
@@ -1267,9 +1272,20 @@ Linux/macOS checks then exposed a test-clock mismatch: the simulated expiry used
 counter. The fixture now carries its simulated clock through verification;
 the runtime still rejects future seals and nonfinite observations. The affected
 34 tests pass on Python 3.11/3.12, including explicit invalid-clock cases.
-Confirm the corrected hosted checks, then qualify a fresh isolated installation
-with the same IQ3_S quality. This test correction changes no runtime module,
-installed deadline or previously recorded qualification result.
+The next hosted Windows run exposed an unreadable CPU-fixture readiness marker
+in setup. The [bounded observation correction](provenance/task-handover/fixture-readiness/README.md)
+handles transient missing/denied reads without changing the same-child identity,
+startup deadline or work guard. Fifty focused Python 3.12 source/actual-child
+checks passed; exact-head hosted CI remains a separate gate. Neither fixture
+correction changes runtime modules, installed deadlines or previous results.
+
+The fresh isolated package installation has now passed both import audits,
+the installed SDK dispatcher, shared-clock checks and resource-input audit;
+all seven installation steps joined successfully and passed independent review.
+The recovery harness also passed independent component review: 38 supplied and
+three additional actual-SQLite cases. Keep these preparation results separate
+from real IQ3_S task acceptance. Confirm the corrected hosted checks before the
+fresh task trial, retaining the same model and quality.
 Exercise ordinary-task waiting, truthful expiry, explicit continuation and Stop,
 with separate original-task acceptance before a second task can be admitted.
 Do not extend a budget silently, accept uncertain effects or reuse old installed

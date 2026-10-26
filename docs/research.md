@@ -11,6 +11,11 @@ keeps approximate cross-model transfer unenabled, and records existing native
 and LMCache mechanisms to reuse. This is design integration, not a new runtime
 benchmark or a reproduced paper result.
 
+The 26 October [AKV assessment](cache-state-research.md#akv-agent-directed-cache-operations)
+adds agent-directed cache relief as a later capability-gated option. It records
+the inspected implementation, current hybrid-model compatibility gap and the
+need to preserve cache-operation history. No AKV runtime integration is enabled.
+
 The [precision assessment](precision-research.md), added 26 October 2026,
 identifies the mixed precision already present in the retained IQ3_S engine
 and an existing optional FP16 expert-prompt path to evaluate after the current

@@ -47,8 +47,14 @@ async def wait_original_ready(child,path,*,timeout_s=30,clock=time.monotonic):
     """Bound only this CPU fixture's import/startup; never retry its work."""
     deadline=clock()+timeout_s
     while True:
-        if path.exists():
-            if json.loads(path.read_text(encoding='utf-8'))!={'pid':child.pid,'work_guard_s':15}:
+        try:
+            readiness=path.read_text(encoding='utf-8')
+        except (FileNotFoundError,PermissionError):
+            # Publication/Windows sharing can briefly prevent observation.
+            # The same child and original startup bound still govern the wait.
+            pass
+        else:
+            if json.loads(readiness)!={'pid':child.pid,'work_guard_s':15}:
                 raise AssertionError('CPU fixture readiness identity differs')
             return
         if child.poll() is not None:
