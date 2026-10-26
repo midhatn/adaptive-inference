@@ -1,0 +1,13 @@
+{
+  "sdk_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+  "files": {
+    "agent/turn_facade.py": "e9176a8ae1d7822fa45c75b680d5ae4be7c949e49c877673aea867cc146856a0",
+    "agent/turn_facade_lease.py": "67c0aa57a489f3b587697c9217422a67d88620ff0afaed1e6838e0e15a461885",
+    "agent/turn_liveness.py": "1577203f3c2b8f19c42103e2f310b1e147d9eaadab14759d12cb7e4ea30b2f84",
+    "agent/interrupt_control.py": "aee497b902f3cc6daa69021fb698382cc97d678a4fb749ab4c2a64309817c58f",
+    "agent/activity_tracking.py": "4b21eef1aa2656ee89ce0b4213bcb4c300edbc654d3cc19e9b27ee25e36f889a",
+    "agent/conversation_loop.py": "36dd6f02b169a544a95598dee74cb775914420dc700cc88cc946effd103b72bc",
+    "hermes_state_compression.py": "b41cb7af654c38db96b91d8bb39ea0736ab25fe638c81d100d28e663a0a34798"
+  },
+  "scope": "Read-only pinned-source design review; no SDK execution or runtime edit"
+}

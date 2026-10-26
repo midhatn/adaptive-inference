@@ -1,0 +1,342 @@
+{
+  "schema": "adaptive.paused-budget-expiry.clock-successor.v1",
+  "failed_predecessor_wheel_sha256": "74aa5c1be1214a0dd79b589fffdef78440af996785581af71b2d0610bd01c74e",
+  "failed_predecessor_source_manifest_sha256": "8d635a64912a04514333dc6a70e0f65be9450aebc78128c2e0247c7cc175d11b",
+  "license": "Apache-2.0",
+  "modules": {
+    "control_mailbox.py": {
+      "predecessor_source": "sources/control_mailbox.py",
+      "predecessor_sha256": "6f4176dc36a7dadb185fbb9d62339b5a1a2d2801e218025ddd4bef1527c666a0",
+      "successor_sha256": "b317f39a527acb7e17edfe20f17a0377aa189a6d4e6ba583dd4ace9151d47cc8",
+      "edits": [
+        {
+          "path": [
+            "from:0:adaptive_inference.execution_clock"
+          ],
+          "predecessor_ast_sha256": null,
+          "successor_ast_sha256": "836e11169809b7239f417d40695ed36e2766afbebf6e075844dac37d0c62f165"
+        },
+        {
+          "path": [
+            "assign:CLOCK_EXPIRY_SCHEMA"
+          ],
+          "predecessor_ast_sha256": null,
+          "successor_ast_sha256": "5cd1b2762c5fe1511a4e32f0d0fcdc656d26b039214035f2c934e43d8a2a5567"
+        },
+        {
+          "path": [
+            "function:execution_outcome"
+          ],
+          "predecessor_ast_sha256": "76b0286fc76e34511acda2ffdbaade585da5a447edd8c43d37d3d9a3df4564aa",
+          "successor_ast_sha256": "a602d08bb3c14fea91881ec625bf75ab1f6683b53a37f7ec7ccb13052cce03b7"
+        },
+        {
+          "path": [
+            "class:Mailbox",
+            "function:seal_paused_execution"
+          ],
+          "predecessor_ast_sha256": "d66097badd01bb0f23c0d368a4635e8b693d63b7fe944c022e8eb0943180799c",
+          "successor_ast_sha256": "be9975246517bee4e56f1c09d084e5c2569a62bfc287fbb1c696ffd0c9d9e644"
+        }
+      ]
+    },
+    "desktop/composition.py": {
+      "predecessor_source": "sources/desktop/composition.py",
+      "predecessor_sha256": "f7e109625878a5105608e188c904c1672cd6a6cbaac3b7486e1fb7222de8fc42",
+      "successor_sha256": "fad9bb4e2d4a1dacfe88c0be2da06fceebe72968b754caad230d7b0f726f6093",
+      "edits": [
+        {
+          "path": [
+            "from:0:adaptive_inference.execution_clock"
+          ],
+          "predecessor_ast_sha256": null,
+          "successor_ast_sha256": "ebabbeea81d912d2575be059aa5a94cb25dc80b89f27368bd5a9d26f5acba22a"
+        },
+        {
+          "path": [
+            "class:DesktopComposition",
+            "function:until"
+          ],
+          "predecessor_ast_sha256": "af7e3998d882db410c22c156f7582ca3c6520ba516d08f5d1d52375a10a80743",
+          "successor_ast_sha256": "c6f8c41b9fb0083e672ac701565e1543b01e5c12935cdbd2a696c945af7f059e"
+        },
+        {
+          "path": [
+            "class:DesktopComposition",
+            "function:remaining"
+          ],
+          "predecessor_ast_sha256": "45bcc93609c3b3c0379457e6cc76624ede835416834402ba0bcb06f2783cc472",
+          "successor_ast_sha256": "d4fc2821b0432c080338a2d12a9f3e6d01ce699718c4d5514ad46a0eea5adea5"
+        },
+        {
+          "path": [
+            "class:DesktopComposition",
+            "function:assert_original"
+          ],
+          "predecessor_ast_sha256": "2dc5dc4f8d0d3f8a8aad521999a6ba8fa4fbcb31b3a9f35ff2e432412d1876b8",
+          "successor_ast_sha256": "f7132a11c6961361cf6d89de0df2d742ea8f24ded25165e7697cad30bcceb37d"
+        },
+        {
+          "path": [
+            "class:DesktopComposition",
+            "function:ready"
+          ],
+          "predecessor_ast_sha256": "20aff1b3bff0754bf139a1230fdb193b6a1b2e24ac2274822bf084afcc1c23b0",
+          "successor_ast_sha256": "9f0d8eb415e466a5a4a37a2a9da6a5f02c963741f893cdef1be86c26f48158b4"
+        },
+        {
+          "path": [
+            "class:DesktopComposition",
+            "function:bind_worker_stop"
+          ],
+          "predecessor_ast_sha256": "de81189a5175b4bcf87358645d334e56d0beb2e696e3a1bd8d23fda09425ffaa",
+          "successor_ast_sha256": "63682c9d8a428b182f745dfd94a9cf01de4336f6bf5fb383a21e4f43fa841ca6"
+        },
+        {
+          "path": [
+            "class:DesktopComposition",
+            "function:prepare"
+          ],
+          "predecessor_ast_sha256": "578f4d9d4d129f1bf573c927bd5781dc0b48ecf8c37a962e821de54727b86716",
+          "successor_ast_sha256": "0a9e9172eeeee6a4e600c02b81c54cda0c8887aa29a319e627b5bd5fcea22fb3"
+        },
+        {
+          "path": [
+            "class:DesktopComposition",
+            "function:_paused_expiry_candidate"
+          ],
+          "predecessor_ast_sha256": "eab79a38eeef3f543db3ce33d01c7365a9e36069730b58faa8302d62ff9794fe",
+          "successor_ast_sha256": "46c1d9f3677eb4c25db887eaaf4083dbe6dbcaaf5b83c1dab0aac5a5300aecaf"
+        },
+        {
+          "path": [
+            "class:DesktopComposition",
+            "function:interact"
+          ],
+          "predecessor_ast_sha256": "d8e4c44067381d113c2e21008c92afc1a6d9250122ee94a56c42812925d7eccc",
+          "successor_ast_sha256": "791f022f4947695ed86f6539065dda3ee4963efdb984a894662580621cbbcfd3"
+        }
+      ]
+    },
+    "desktop/hermes/control_bridge.py": {
+      "predecessor_source": "sources/desktop/hermes/control_bridge.py",
+      "predecessor_sha256": "2019ac8c13e2ed474ccc741e20016ae0eff64c4013870ddfd4d9ccf39d66376d",
+      "successor_sha256": "36865ccfecda2821fab12e9bcc32eaa6010d638b3ed47873bcaa4d45304b2780",
+      "edits": [
+        {
+          "path": [
+            "from:0:adaptive_inference.execution_clock"
+          ],
+          "predecessor_ast_sha256": null,
+          "successor_ast_sha256": "101b2961df1f99e34d1b34ed3a2e963a4d686d59603cf0308e0b42976bf60952"
+        },
+        {
+          "path": [
+            "function:prepare_task"
+          ],
+          "predecessor_ast_sha256": "2b222cdcf0de0a82f81e88eb7b590f60aea1f556855407c91ce2400c899f0a06",
+          "successor_ast_sha256": "fdd3664f86ce65c9546f4dea6d4c337f4fb77f95899084ac98b08328988d635a"
+        },
+        {
+          "path": [
+            "class:Controls",
+            "function:__init__"
+          ],
+          "predecessor_ast_sha256": "1fabe1bff3cafa74ff6cb95d29edef1ab02ef19a2ae185bd16893921ac5d30eb",
+          "successor_ast_sha256": "4faee8375e02d3b4ae2bff1c6422177440fae72bff9c1e92f1bd14f85afb055f"
+        },
+        {
+          "path": [
+            "class:Controls",
+            "function:bootstrap"
+          ],
+          "predecessor_ast_sha256": "cc143bf6d121cee49262c6d68ca4dbb03e0d850b7b4c8010c66a833140b7e6e2",
+          "successor_ast_sha256": "d192a9a0fbdb799d4ea19c5fc49837f772153774efabe0b21ebe1bb7aa2cf131"
+        },
+        {
+          "path": [
+            "class:Controls",
+            "function:poll"
+          ],
+          "predecessor_ast_sha256": "73668cd77d261ec1bbb8035162f2c8b50d99b6cb3de22e248758804692864995",
+          "successor_ast_sha256": "f56aead94c56ec50cb0f9ef7c331f0e976b41eef1a71227fd0c1edaf03ce9a99"
+        },
+        {
+          "path": [
+            "class:Controls",
+            "function:_clock_binding"
+          ],
+          "predecessor_ast_sha256": null,
+          "successor_ast_sha256": "024d86e97c8b794d1b3c7b004eae164591d5a0b291b0cf6a89849e6fc36c7f6b"
+        }
+      ]
+    },
+    "desktop/hermes/run_recovery.py": {
+      "predecessor_source": "sources/desktop/hermes/run_recovery.py",
+      "predecessor_sha256": "03c95b5d975d4373af1d94fa7923c9a87b226a3759c77832ef96ca5ec2c8595d",
+      "successor_sha256": "8da75d92dbbc00bde51e7c89dcc9e0636d1e42944566b70c9822c417fc385da9",
+      "edits": [
+        {
+          "path": [
+            "from:0:adaptive_inference.execution_clock"
+          ],
+          "predecessor_ast_sha256": null,
+          "successor_ast_sha256": "ebabbeea81d912d2575be059aa5a94cb25dc80b89f27368bd5a9d26f5acba22a"
+        },
+        {
+          "path": [
+            "function:prepare"
+          ],
+          "predecessor_ast_sha256": "430fff5147b735a471a6441aa8560bc0771da83189a142ec075343b2868144fb",
+          "successor_ast_sha256": "da2e0b9165d396fa7238d9403e3545ba3c17760189b43c1bdaa21dc640a8c6bc"
+        },
+        {
+          "path": [
+            "function:worker"
+          ],
+          "predecessor_ast_sha256": "02017eb2a0cf23653d066e3e9cc3fb09d20ab4f666e69a5922904ebc8672a9d2",
+          "successor_ast_sha256": "ae092694b8b911a17caff06f79fdcadc7c737064e90047f40191ec2d41598539"
+        }
+      ]
+    },
+    "desktop/hermes/sdk_pins.py": {
+      "predecessor_source": "sources/desktop/hermes/sdk_pins.py",
+      "predecessor_sha256": "938a95f474715cf460e15f6e8c0ad1dcfef3f947c08a85a579bac0922229a3fd",
+      "successor_sha256": "76f4d6a7c78c5317dfae4de6eb7a74336f4fd3981e2d09b2e17ee1a2172aeba7",
+      "edits": [
+        {
+          "path": [
+            "statement:6998217eebaa99b76a554dd853eb3288d892f8eb9e7b21b7d8a1b9e61d671e4a"
+          ],
+          "predecessor_ast_sha256": null,
+          "successor_ast_sha256": "6998217eebaa99b76a554dd853eb3288d892f8eb9e7b21b7d8a1b9e61d671e4a"
+        }
+      ]
+    },
+    "desktop/hermes/service_stop.py": {
+      "predecessor_source": "sources/desktop/hermes/service_stop.py",
+      "predecessor_sha256": "af00799acb7e1f62f9603c609663111837dc24c4a8604e1ecc3dc1c4732cca47",
+      "successor_sha256": "da733199b4772d20a1b681ef34641bdcecc7462f58455d506b678dd090055f48",
+      "edits": [
+        {
+          "path": [
+            "assign:CLOCK_EXPIRY_RECEIPT_SCHEMA"
+          ],
+          "predecessor_ast_sha256": null,
+          "successor_ast_sha256": "6fdc20b696f2e3dede9d062de035a209149535d60a7d535cd6fa4ca8df1248a9"
+        },
+        {
+          "path": [
+            "from:0:adaptive_inference.execution_clock"
+          ],
+          "predecessor_ast_sha256": null,
+          "successor_ast_sha256": "101b2961df1f99e34d1b34ed3a2e963a4d686d59603cf0308e0b42976bf60952"
+        },
+        {
+          "path": [
+            "function:finalize_paused_expiry"
+          ],
+          "predecessor_ast_sha256": "a5e323b3df2cd99c084c26a0034cf98a9867d25b44d0dc225bb52c619f9ccec2",
+          "successor_ast_sha256": "4a20876698a3206d8973f47454db14b4c699febb5c58b367464185b8063ba93a"
+        },
+        {
+          "path": [
+            "class:WorkerStopBinding",
+            "function:__init__"
+          ],
+          "predecessor_ast_sha256": "39a709ca9ecbebc2eeff53dc1f2a02d33bdceaf6c641bbf908902413dd877382",
+          "successor_ast_sha256": "369ecc0983e7edb84e6288300395f963a89ba027f421cbdb9cb9f74d1deff374"
+        },
+        {
+          "path": [
+            "class:WorkerStopBinding",
+            "function:_original"
+          ],
+          "predecessor_ast_sha256": "d37fa890642bcd373ac3e726208b11c9d58ac3e8561ab33e30a81cfafa2b0cbc",
+          "successor_ast_sha256": "cbf06a9cf13d1f28b904ac168750d563c9b4c034a93916bedb33e459c6672f27"
+        },
+        {
+          "path": [
+            "class:WorkerStopBinding",
+            "function:_verify_exit"
+          ],
+          "predecessor_ast_sha256": "185a3ae45cdba38700c05d2e37496653b341446176fa37cbbbde10c9c3360268",
+          "successor_ast_sha256": "3944975f50ea2e51d2e796ba2134a5a02291f6dddb356a15be6aef9c8ab9fb2f"
+        }
+      ]
+    },
+    "desktop/mailbox_runtime.py": {
+      "predecessor_source": "sources/desktop/mailbox_runtime.py",
+      "predecessor_sha256": "ca2d2393d441842a2bb8c6392a4c3bfd5c6d15fca022bad0f43f2925df674b64",
+      "successor_sha256": "8dc3375c7e40205056c19dd8ca960a78e6c2e1c85eb431e943fcb37327fa699b",
+      "edits": [
+        {
+          "path": [
+            "from:0:adaptive_inference.execution_clock"
+          ],
+          "predecessor_ast_sha256": null,
+          "successor_ast_sha256": "101b2961df1f99e34d1b34ed3a2e963a4d686d59603cf0308e0b42976bf60952"
+        },
+        {
+          "path": [
+            "class:MailboxRuntime",
+            "function:_execution_live"
+          ],
+          "predecessor_ast_sha256": "f856a4583cfe183a7117398ce91a1aea7266f4ae716ef1481cfd382525ba8377",
+          "successor_ast_sha256": "a3df15d9318ffb3e279e380de4d8afea723f95117307d091452ac3bd4702c457"
+        }
+      ]
+    }
+  },
+  "unchanged_runtime": {
+    "__init__.py": "5d4569a00e03c044ec5d9ad0b19a5a58c67c27c2f0cb51d94e4e968eb4d8d023",
+    "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "adapters.py": "378ee41c1bdbb16873e31752d704e656a70009862d41b36898d30f57a36dfc58",
+    "cli.py": "0cf22a429a145bda7d1cc9548c1b79b4aebf02edb56687800704113e4adbf649",
+    "client_routing.py": "d57178cfbd5666e75aef311f1362cf8486f48085c6f4995861b4fbd0cb7e41d1",
+    "config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+    "context_budget.py": "cd16b57bc105a179e94dbc9e429c02b901bcd8602cfaf04c9cf8776e9d799ccf",
+    "costs.py": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1",
+    "demand.py": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+    "demo.py": "5a3b1ff743bee6c45f85df8417bedbc18657f2c59f3e894f1f3298a480b22b93",
+    "desktop/__init__.py": "6169073159f3c0e506752f54aa51b40b058f71ed058d5272e160aa4a61ee7daa",
+    "desktop/activity.py": "3282dc37b493ba3fd347e279b074fa3dfd5d2c1ea5eaba8131dc568d97ec0750",
+    "desktop/cold_start.py": "1264f34910a0d619c6502c7565e66abbfe7ec642391a461390271b8e0799bf68",
+    "desktop/control_client.py": "4c01068ae26d7c31e821ee6703804d3ded92193aeb1806b60f482836cf61a0bd",
+    "desktop/control_transport.py": "3d321207d2b48eb0b08450f766f4736921d56873f50e3e817b2de894cafe9357",
+    "desktop/desktop_controls.py": "ff5df7c3e6f94131edded67442bab1539ca39f78e8c57fc1fad7e32a19ab17a3",
+    "desktop/foreground_policy.py": "35781fb869c03220c6f48c3e138083b15bbcf7e40187edbfe546ad4da09b7faa",
+    "desktop/gui_launch.py": "882e58cb7fd365d220ca2d768469057d752dced758f3dbbdd691eff13f8abbd2",
+    "desktop/gui_session.py": "f232609a01f11977d7f011a8b1c7f2b7c2a0c3ca697766b63ec0873ec9f4cc64",
+    "desktop/hermes/__init__.py": "43830f7aa3deb6001eb8aa8646fc515f5d8d74a26f50590984c8278e4db67532",
+    "desktop/hermes/admission.py": "dd076cee1bcddd9577de853d292ac368c5a6d94e0c478fda2c3e5b3cafb3f6d9",
+    "desktop/hermes/recovery.py": "e41faf620f59a5772c65f5a1f155faa3d640f93f28225f38ed4138bab8bf87dd",
+    "desktop/hermes/report_contract.py": "9c30978a14192f055f9e618ae2eec76ae683305c4c27462370f3cb4694adb1fe",
+    "desktop/hermes/report_validator.py": "378dd445a088a075d300fc85b86160f3b96790ee046adecf926f9e59e8e7d9af",
+    "desktop/installation.py": "13e13d532bedb68f150d1096767c98796de83f74dce54021d286c6c18c521e85",
+    "desktop/load_feasibility.py": "23e94f3ee770b065fb323f30bb104d8d5732bf710bd3cc9b2a27daa746014dda",
+    "desktop/native_owner_adapter.py": "5a79c48911c798310104be07ebb978f9ad9fe4f7ab000c328afd992f75415977",
+    "desktop/owned_job.py": "90b59dbdae226419fc9680c961c21dfa9e061df08512a7a8089d6f6d11b2ccc4",
+    "desktop/persistent_host.py": "acff567d5eb6f2c569588bfa684363907897bdb66be8008bc20c10d3ca7c0011",
+    "desktop/profile.py": "93618a9e3c078d163d6e15fae2cc06e1fd16b85962fd8a164492992515227551",
+    "desktop/retained_ui.py": "749b947510377518c452ae7a70fa21c32f27c3f10225f6eb90d87ef03406f5cb",
+    "desktop/run_gui.py": "c41ba305654f17ac03700b061b81e08223a2cbe2d7b154407df6c021ba80f173",
+    "desktop/serial_listener.py": "048e8ab061e175a978f755801b9a27e3daa292c1dc7dabe3c8a8763be81199b2",
+    "desktop/startup_pipe.py": "0617c527461b4c437474a947a497300e4c28c06d11f8bb43f1e67fc51a159fae",
+    "desktop/ui_intent.py": "ff67208a3890656bc76717ac18c8d0c02a19dc2e09b11b81d88fc1f63c0a29d1",
+    "desktop/ui_progress.py": "466deda7ba15d73ea779abf3b1b2e690e92217950b15afdbdf8acf9cda3d2de9",
+    "desktop/window_marker.py": "e2613ef662993be88c332657e4e53c598fdc006634bf8fabf9e0d0a9765c0d36",
+    "desktop/windows_host_base.py": "ad08c31435bc4da77b43c68321a7c08130ab1c4f7bc688c71191c6497abc97bd",
+    "feedback.py": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+    "gateway.py": "b2009a8a776bcea4dfc3bedac5296c930ae2211bb8e29d7ccdf76a227fefdef8",
+    "handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+    "resource_policy.py": "53768d4b95b589bb76d1788a9ccceefe60c05b332b1b1f43dece6b04bfec212a",
+    "resources.py": "a72e376e4dfc6021e61756812f93275af20c28ec1438faf5eb381a491d3db4d9",
+    "scheduler.py": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f",
+    "task_store.py": "b9978bb70844aecc8c2d1846ae5bc12abab38abb3d2782909def654a86255ee9"
+  },
+  "new_modules": {
+    "desktop/hermes/pause_activity.py": "2ad62a1ac0f7610fbdbf6ae9ecf3dfeacba17e88af5c9d9e4527133e9b6fa795",
+    "execution_clock.py": "f90fbeccaf87d06319a20216057fcd4000ee78dd207ed0a9caa53f102bab28df"
+  }
+}
