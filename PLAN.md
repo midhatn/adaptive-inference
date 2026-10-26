@@ -1025,6 +1025,28 @@ before the installed trial. A complete host package inventory does not replace
 the GUI child's own launch checks. Preserve the accepted installation and test
 the candidate in separate full interpreter copies with the same native profile.
 
+**Installed preparation and first trial, 26 October:** both isolated installations
+match the reviewed 60-module wheel. The installed SDK's three dispatch checks and
+three shared-clock comparisons pass with the unchanged IQ3_S profile. The first
+real GUI trial remained paused behind a Windows Security permission dialog.
+No Resume or model request occurred. Its original 900-second worker allowance
+expired with the task saved; the dialog also intercepted the attempted Stop input.
+The runner and observer were then forcibly stopped, and the retained processes
+were joined. This is an interrupted, unaccepted trial, not normal GUI shutdown
+or two-task handover evidence. An independent interruption audit found no task
+effects and verified that the accepted and isolated installation files remained
+unchanged.
+
+Before another trial, resolve the first-run OS dialog for the same isolated test
+installation and confirm that its controls are usable. Reuse that installation
+only after its existing identity checks, then start a fresh case with the original
+budgets. Do not renew an expired execution, rewrite the interrupted result, or
+infer public-network permission from successful local status requests. Microsoft's
+[firewall rule guidance](https://learn.microsoft.com/en-us/windows/security/operating-system-security/network-security/windows-firewall/rules)
+describes the first-use prompt and the different consequences of allowing or
+cancelling it. Handling the dialog is an installation prerequisite; it does not
+change the model, task contract or acceptance gate.
+
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
 [precision comparison](docs/precision-research.md#reversible-qualification).
