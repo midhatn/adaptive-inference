@@ -11,6 +11,12 @@ keeps approximate cross-model transfer unenabled, and records existing native
 and LMCache mechanisms to reuse. This is design integration, not a new runtime
 benchmark or a reproduced paper result.
 
+The [precision assessment](precision-research.md), added 26 October 2026,
+identifies the mixed precision already present in the retained IQ3_S engine
+and an existing optional FP16 expert-prompt path to evaluate after the current
+continuation milestone. It separates the user-reported GPU environment change
+and dense matrix measurements from unmeasured application performance.
+
 ## Direct implementation lineage
 
 | Source | Use here | Attribution and boundary |
