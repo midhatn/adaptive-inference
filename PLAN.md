@@ -1099,6 +1099,33 @@ preservation, write deduplication, completion and refusal boundaries through the
 existing adapter before rebuilding and qualifying the changed installation.
 The Stop and task-acceptance checks remain unchanged.
 
+The documentation-only PR refresh also exposed an independent Windows CI
+cleanup defect: three jobs printed a continuation-test error, then stalled in
+asynchronous teardown before their original error tracebacks could be reported.
+Eleven checks passed; the cancelled jobs remain incomplete evidence. A bounded
+CPU-child reproduction shows that a test-side restore callback can wait forever
+after an error before Resume when teardown does not fence admission. Fix the
+fixture cleanup so the callback exits and retained resources are joined while
+the original test error is still reported. Keep the existing CI time limit and
+product Stop requirements. The original hosted error remains unknown until a
+fresh run can report it; successful cleanup alone does not resolve that error.
+
+The file-alias repair is now integrated at the source level. Independent checks
+on Python 3.11 and 3.12 passed all 65 task-contract/recovery cases, including
+real SQLite receipts, exact original intent, equivalent paths, deduplicated
+writes and refusal of paths outside the declared workspace. The seven independent
+regressions are included in the ordinary public test suite. The fixture cleanup
+repair separately passed 30 relevant tests on each interpreter and independent
+error-preservation checks: retained CPU children exit, logs close, and the
+original injected error remains visible. These component results do not establish
+installed task completion or resolve the unknown primary error in cancelled CI.
+The integrated Windows Python 3.11.9 run passed all 1,110 source tests and 81
+provenance tests with unchanged source hashes and no skips. Rebuild and check
+the distribution, and obtain fresh exact-head CI. Then install and verify the changed package,
+prepare fresh task identities, and repeat the complete two-task IQ3_S workflow
+using the reviewed logical-write/physical-effect verifier. Preserve the original
+failed trials and their source identities; normal Stop remains a required gate.
+
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
 [precision comparison](docs/precision-research.md#reversible-qualification).

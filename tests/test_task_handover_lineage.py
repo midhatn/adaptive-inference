@@ -67,6 +67,11 @@ class TaskHandoverLineageTests(unittest.TestCase):
             sources = list((lineage.ROOT / 'src/adaptive_inference').rglob('*.py'))
             sources += [lineage.ROOT / row['predecessor_source'] for row in rows['modules'].values()]
             sources.append(lineage.ROOT / lineage.ARCHIVE_RELATIVE / 'source-lineage.json')
+            # The alias projection needs only its manifest and two exact predecessors.
+            import task_file_alias_lineage as aliases
+            sources.append(lineage.ROOT / aliases.ARCHIVE_RELATIVE / 'source-lineage.json')
+            sources += [lineage.ROOT / row['predecessor_source']
+                        for row in aliases.record().get('modules', {}).values()]
             for path in sources:
                 target = root / path.relative_to(lineage.ROOT)
                 target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(path.read_bytes())

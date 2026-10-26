@@ -174,7 +174,10 @@ class Recovery:
             raise ValueError('Validator identity must be a bounded versioned string mapping')
         if getattr(getattr(owned,'checkpoint',None),'metadata',{}).get('pre_effect_validator')!=validator_identity:
             raise ReconciliationRequired('Prepared validator identity differs; explicit migration required')
-        self.pre_effect_validator=pre_effect_validator
+        # The caller may hold a separately reconstructed equal TaskSpec. Only
+        # after all existing admission checks, bind our own immutable contract.
+        self.pre_effect_validator=(self.task_spec.validate_write if self.task_spec is not None
+                                   else pre_effect_validator)
         self.validator_identity=copy.deepcopy(validator_identity)
         self.owned, self.db = owned, db
         self.work, self.run = Path(work).resolve(), Path(run).resolve()
@@ -382,17 +385,23 @@ class Recovery:
                     receipt = previous[-1]
                     if not path.is_file() or digest(path.read_bytes()) != receipt['artifact_sha256']:
                         raise ReconciliationRequired('Completed write artifact changed')
-                    reused = {**receipt, 'tool_call_id': tool_call_id, 'reused': True}
+                    reused = {**receipt, 'tool_call_id': tool_call_id, 'args': copy.deepcopy(args), 'reused': True}
                     state['tools'].append(reused)
                     state['phase'] = 'awaiting_native_flush'
                     self.checkpoint(state)
                     return receipt['result']
                 if write_ok and path.exists():
                     raise ReconciliationRequired('Unreceipted destination exists; no overwrite/replay')
-                if write_ok and self.pre_effect_validator is not None:
+                if write_ok and (self.task_spec is not None or self.pre_effect_validator is not None):
                     candidate=copy.deepcopy(args)
                     original_fingerprint=digest(candidate)
-                    verdict=self.pre_effect_validator(tool_name,candidate)
+                    if self.task_spec is not None:
+                        if (getattr(self.pre_effect_validator, '__self__', None) is not self.task_spec
+                                or getattr(self.pre_effect_validator, '__func__', None) is not type(self.task_spec).validate_write):
+                            raise ReconciliationRequired('Task validator binding changed')
+                        verdict=self.pre_effect_validator(tool_name,candidate,work=self.work)
+                    else:
+                        verdict=self.pre_effect_validator(tool_name,candidate)
                     if (digest(candidate)!=original_fingerprint or type(verdict) is not Verdict
                             or type(verdict.accepted) is not bool or type(verdict.feedback) is not str
                             or len(verdict.feedback)>2048 or not verdict.accepted and not verdict.feedback):

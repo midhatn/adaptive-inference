@@ -66,9 +66,10 @@ class TaskSpecTests(unittest.TestCase):
         (self.source/'notes.txt').write_text('changed')
         with self.assertRaises(ValueError): self.spec.stage_inputs(self.source, self.work)
 
-    def test_declared_file_scope_rejects_absolute_and_other_tasks(self):
+    def test_declared_file_scope_accepts_same_work_absolute_and_rejects_other_tasks(self):
         self.spec.stage_inputs(self.source, self.work)
-        for name in (str(self.work/'notes.txt'), 'other.txt', '../source/notes.txt', 'notes.txt/child'):
+        self.assertEqual(self.spec.file_path(self.work, str(self.work.resolve()/'notes.txt')), self.work.resolve()/'notes.txt')
+        for name in (str(self.source/'notes.txt'), 'other.txt', '../source/notes.txt', 'notes.txt/child'):
             with self.subTest(name=name), self.assertRaises(ValueError): self.spec.file_path(self.work, name)
         with self.assertRaises(ValueError): self.spec.file_path(self.work, 'notes.txt', write=True)
 

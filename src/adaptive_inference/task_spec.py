@@ -9,7 +9,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import re
 import stat
 
@@ -189,20 +189,50 @@ class TaskSpec:
 
     def file_path(self, work, name, *, write=False):
         declarations = self.data['outputs'] if write else self.data['inputs'] + self.data['outputs']
-        if type(name) is not str or name not in {row['name'] for row in declarations}:
+        if type(name) is not str or not name or '\x00' in name or name.endswith(('/', '\\')):
             raise ValueError('File is outside the declared task capability')
+        # Inspect syntax before resolving: resolution must never erase traversal,
+        # Windows drive-relative, device/UNC or alternate-stream intent.
+        windows = PureWindowsPath(name)
+        if (name.startswith(('//', '\\\\')) or '..' in re.split(r'[/\\]+', name)
+                or windows.drive and (os.name != 'nt' or re.fullmatch('[A-Za-z]:', windows.drive) is None
+                                      or not windows.is_absolute())
+                or ':' in (name[2:] if windows.drive else name)):
+            raise ValueError('File is outside the declared task capability')
+        work_info = Path(work).lstat()
+        if (not stat.S_ISDIR(work_info.st_mode) or getattr(work_info, 'st_file_attributes', 0) & 0x400):
+            raise ValueError('Task workspace must be a real directory')
         root = Path(work).resolve(strict=True)
-        path = root / name
-        if path.resolve().parent != root or path.is_symlink():
+        candidate = Path(name)
+        names = {row['name'] for row in declarations}
+        if candidate.is_absolute():
+            path = candidate
+        elif (not candidate.drive and not candidate.root and
+              (name in names or re.fullmatch(r'\.[/\\]+[^/\\]+', name) is not None)):
+            path = root / candidate.name
+        else:
+            raise ValueError('File is outside the declared task capability')
+        if (path.name not in names or path.parent != root or not path.parent.samefile(root)
+                or path.resolve().parent != root or path.is_symlink()):
             raise ValueError('Declared file escaped task workspace')
-        if path.exists():
+        try:
+            path.lstat()
+        except FileNotFoundError:
+            pass
+        else:
             _file(path, MAX_INPUT_BYTES)
-        return path
+        return root / path.name
 
-    def validate_write(self, name, args):
+    def validate_write(self, name, args, *, work=None):
         if name != 'write_file' or type(args) is not dict:
             raise ValueError('Unexpected validation capability')
-        row = next((row for row in self.data['outputs'] if row['name'] == args.get('path')), None)
+        proposed = args.get('path')
+        if work is not None:
+            try:
+                proposed = self.file_path(work, proposed, write=True).name
+            except (ValueError, OSError):
+                return Verdict(False, 'Use a declared output in this task workspace. No file was written.')
+        row = next((row for row in self.data['outputs'] if row['name'] == proposed), None)
         if row is None or type(args.get('content')) is not str or len(args['content']) > row['max_chars']:
             return Verdict(False, 'Use a declared output name and stay within its text length limit. No file was written.')
         try:
@@ -216,10 +246,15 @@ class TaskSpec:
 
     def completion(self, work, tools, final_response):
         self.verify_inputs(work)
+        writes_by_name = {}
+        for tool in tools:
+            if tool['name'] == 'write_file':
+                name = self.file_path(work, tool['args'].get('path'), write=True).name
+                writes_by_name.setdefault(name, []).append(tool)
         artifacts = {}
         for row in self.data['outputs']:
             path = self.file_path(work, row['name'], write=True)
-            writes = [tool for tool in tools if tool['name'] == 'write_file' and tool['args'].get('path') == row['name']]
+            writes = writes_by_name.get(row['name'], [])
             if not path.exists() and not row['required'] and not writes:
                 continue
             if not path.is_file() or not writes:
@@ -228,7 +263,7 @@ class TaskSpec:
             if any(tool['artifact_sha256'] != digest(raw) for tool in writes):
                 raise ValueError('Output differs from its durable write receipt')
             content = raw.decode('utf-8')
-            if not self.validate_write('write_file', {'path': row['name'], 'content': content}).accepted:
+            if not self.validate_write('write_file', {'path': row['name'], 'content': content}, work=work).accepted:
                 raise ValueError('Completed output failed its declared validation')
             artifacts[row['name']] = digest(raw)
         if type(final_response) is not str or not final_response.strip() and not artifacts:

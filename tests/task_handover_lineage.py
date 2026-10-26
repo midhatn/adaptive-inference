@@ -32,6 +32,8 @@ def retained(relative, row, root=None):
 
 
 def predecessor(relative, data, root=None):
+    from task_file_alias_lineage import predecessor as alias_predecessor
+    data = alias_predecessor(relative, data, root=root)
     row = record(root)['modules'].get(relative)
     if row is None:
         return data
@@ -42,6 +44,8 @@ def predecessor(relative, data, root=None):
 
 
 def restore_task_handover(tree, relative, root=None):
+    from task_file_alias_lineage import restore_file_aliases
+    tree = restore_file_aliases(tree, relative, root=root)
     row = record(root)['modules'].get(relative)
     if row is None:
         return tree
@@ -77,13 +81,14 @@ def runtime_view(root=None):
     groups = [set(rows[key]) for key in ('modules', 'unchanged_runtime', 'new_modules')]
     if any(groups[i] & groups[j] for i in range(3) for j in range(i + 1, 3)):
         raise AssertionError('Overlapping task-handover source groups')
-    runtime = root / 'src/adaptive_inference'
-    actual = {path.relative_to(runtime).as_posix() for path in runtime.rglob('*.py')}
+    from task_file_alias_lineage import runtime_view as alias_view
+    current = alias_view(root=root)
+    actual = set(current)
     if actual != set.union(*groups):
         raise AssertionError('Changed complete task-handover runtime closure')
     result = {}
     for relative in sorted(actual):
-        data = (runtime / relative).read_bytes()
+        data = current[relative]
         changed = relative in rows['modules']
         row = rows['modules'][relative] if changed else {
             **rows['unchanged_runtime'], **rows['new_modules']}[relative]

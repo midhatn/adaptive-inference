@@ -59,13 +59,22 @@ The first file capability accepts at most 16 input/output declarations combined,
 portable basenames; inputs and outputs cannot overlap. Existing outputs cannot
 be overwritten without a matching durable receipt. These bounds describe this
 adapter's current capability, not a limit on the project's long-term goal.
-The current tool boundary also requires those exact relative names in tool
-arguments: `answer.txt`, rather than `./answer.txt` or an absolute alias. Hermes'
-general file-tool schema is broader. An alias can therefore stop this bounded
-adapter even if it would name the same file. Normalizing aliases consistently
-across intent, validation, receipts and recovery is a follow-up, not an implied
-capability of this version. A task may declare no outputs and return a textual
-answer; that answer is still not independently checked for correctness.
+Tool arguments may name a declared file by its basename, a relative alias such
+as `./answer.txt`, or an absolute path to that same task workspace file. The
+adapter checks the workspace and filesystem identity before treating those
+spellings as the same capability. It refuses parent traversal, paths outside
+the workspace, links, and undeclared names. On Windows it also refuses ambiguous
+drive-relative paths, network/device paths and alternate data streams.
+
+The original tool arguments remain unchanged in native history and intent
+verification. Each retry keeps its own call identity and raw arguments, while a
+verified repeated write can reuse the original durable effect receipt. Completion
+checks group accepted writes by the declared output and verify the artifact.
+The changed validator identity requires a newly prepared task; it does not
+silently migrate older task records. Source/component checks cover these rules;
+the complete installed two-task IQ3_S trial remains outstanding. A task may
+declare no outputs and return a textual answer; that answer is still not
+independently checked for correctness.
 
 JSON outputs reject duplicate keys and nonfinite values. A format check can
 establish that an output is readable JSON; it cannot establish that its content
@@ -87,6 +96,15 @@ still applies. Accepted writes keep their receipts, and recovery verifies the
 actual files against those receipts before deciding whether more work is safe.
 
 ## Existing mechanisms reused
+
+File alias handling follows the pinned Hermes
+[file tools](https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/file_tools.py)
+and [path anchoring](https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/file_tools_paths.py),
+with Python's existing [path and filesystem identity operations](https://docs.python.org/3.11/library/pathlib.html).
+The adapter applies its narrower declared-file capability before dispatch. It
+reuses the existing receipt and recovery implementation; no upstream tool
+implementation was copied. The exact predecessor source and preservation checks
+are retained in the [alias repair record](../provenance/task-handover/task-file-aliases/README.md).
 
 The contract reuses this repository's TaskStore, capability boundary, durable
 tool receipts, pre-effect feedback and explicit continuation. It does not add a

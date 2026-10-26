@@ -162,6 +162,9 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         patch=mock.patch.object(product.subprocess,'Popen',side_effect=popen);patch.start();self.patches.append(patch)
 
     async def asyncTearDown(self):
+        # A completed failed transition is already removed from its set,
+        # but the fixture restore loop still needs its Stop fence.
+        self.c.runtime.fence_admission()
         for release in self.releases:release.set()
         c=self.c
         if c.runtime._continuation_tasks:
@@ -685,6 +688,39 @@ class FixtureStartupTests(unittest.TestCase):
         self.assertIn('injected readiness failure',result.errors[0][1])
         self.assertFalse(result.failures)
         self.assertIsNotNone(case.c.worker.returncode)
+        self.assertTrue(all(stream.closed for stream in case.c.logs))
+        self.assertFalse(case.c.work.exists())
+
+
+    @unittest.skipUnless(os.name=='nt','Windows retained-process body failure fixture')
+    def test_async_body_error_still_finishes_restore_and_retained_cleanup(self):
+        class FailedBody(HostTests):
+            async def test_injected_body_failure(self):
+                grant=await self.select();launch=self.c.launch_continuation
+                async def fail_after_pause(record,coordinator,intent_valid):
+                    await launch(record,coordinator,intent_valid)
+                    raise RuntimeError('injected failure after initial Pause before Resume')
+                self.c.launch_continuation=fail_after_pause
+                await self.continue_task(grant)
+
+            async def asyncTearDown(self):
+                try:
+                    # Bound this regression itself if the old teardown bug
+                    # returns; original production/fixture budgets stay intact.
+                    await asyncio.wait_for(super().asyncTearDown(),20)
+                finally:
+                    self.c.runtime.fence_admission()
+                    await asyncio.gather(*self.tasks,return_exceptions=True)
+        case=FailedBody('test_injected_body_failure');result=unittest.TestResult()
+        case.run(result)
+        self.assertEqual(len(result.errors),1)
+        self.assertIn('injected failure after initial Pause before Resume',result.errors[0][1])
+        self.assertFalse(result.failures)
+        self.assertTrue(case.c.runtime._stopping)
+        self.assertTrue(all(task.done() and not task.cancelled() for task in case.tasks))
+        self.assertFalse(case.c.runtime._continuation_tasks)
+        self.assertFalse(case.c.runtime._pending)
+        self.assertEqual([child.returncode for child in case.c.handles],[5,4])
         self.assertTrue(all(stream.closed for stream in case.c.logs))
         self.assertFalse(case.c.work.exists())
 
