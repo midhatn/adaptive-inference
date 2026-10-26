@@ -593,6 +593,20 @@ four-hour bounds are separate from the smaller M2 examples. This canonical
 integration is planned, not passed. Preserve bounded self-correction, but do not
 manually steer the agent through a running attempt to produce a success.
 
+At that milestone's preflight, refresh to the latest stable Strata (at least
+0.2.6), Hermes, ComfyUI, required nodes and quality tools; then freeze exact
+versions for the attempt while keeping the same IQ3_S, Turbo Q8_0 and H3 assets.
+Compare ancestry first: retain and explicitly identify a verified newer upstream
+revision when needed for required adapter capabilities, rather than silently
+downgrading it to an older release tag.
+Qualify performance tuning of each engine first, followed by complete-workflow
+tuning, with unchanged quality and independent validation. Include separate
+checks of visual/audio realism and sound/video synchronization. The named test
+documents the measurement and rollback requirements. Assess Hermes's official
+advanced-delegation provider for reusable profile routing instead of adding a
+new router; every test route must retain the same local IQ3_S contract and the
+existing resource, lifecycle and sequential-worker requirements.
+
 Connect actual agent tool dispatch to the existing ownership and handoff
 contract. The current supervisor-chosen video test is a starting point; the
 agent-host integration must declare and request the tool's needs.

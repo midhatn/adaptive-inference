@@ -23,6 +23,67 @@ video, sampled frames, diagnostics and concise final report.
 
 ## Fixed model and quality requirements
 
+### Test-time software refresh and performance qualification
+
+When this milestone is ready, resolve the latest stable official releases again:
+Strata **0.2.6 or newer**, Hermes, ComfyUI, required custom nodes and media-test
+tools. The date of this plan is not a version freeze. Record application and
+actual engine/library versions separately, with source revisions, executable
+hashes, plugin revisions and the effective configuration. Strata's
+[0.2.6 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.6), for example,
+identifies different app, control and Qwen-engine versions. Check the official
+[Strata](https://github.com/Niko1221/Strata/releases),
+[Hermes](https://github.com/NousResearch/hermes-agent/releases) and
+[ComfyUI](https://github.com/Comfy-Org/ComfyUI/releases) release sources at preflight.
+Follow the supported [ComfyUI update procedure](https://docs.comfy.org/installation/update_comfyui),
+including dependencies and custom-node compatibility.
+
+Compare release ancestry with any already-qualified newer upstream source before
+updating. A newer verified upstream revision may be necessary to retain the
+adapter's required capabilities; record that exact revision and why it is used,
+rather than silently downgrading it to an older release tag. Recheck both official
+release state and the chosen revision at test time. "Latest" must identify the
+actual tested source and compatibility, not just a displayed version string.
+
+Prepare updates in an isolated candidate installation and preserve the validated
+control. A latest-version incompatibility must be diagnosed and repaired or
+explicitly reported as blocking qualification; do not quietly run an older
+engine and label it the requested latest-version test. Once preflight passes,
+freeze the exact selected versions for the attempt. No mid-run updates.
+
+Keep the same IQ3_S LLM, Turbo Q8_0 reference-image model, H3 model and support
+weights by actual file identity. Software updates must not silently select a new
+model, lower quantization, reduced reasoning, fewer steps, lower resolution or
+shorter video. A compatible new representation or precision path requires its
+own explicit, reversible quality qualification before inclusion.
+
+Optimize in this order, using existing upstream benchmarks, tuning facilities
+and researched recommendations before introducing new mechanisms:
+
+1. **Each engine separately:** measure the current baseline, test supported
+   tuning candidates, then restore and recheck the control. Cover Strata's LLM
+   and vision behavior, ComfyUI image generation, H3 video/audio generation and
+   Hermes delegation/tool overhead. Retain cold/warm timings, peak RAM/commit and
+   VRAM, completed-task correctness, media quality and cleanup. Keep comparable
+   inputs, seeds, budgets, hardware/power conditions and actual model assets.
+   Recheck reproducibility and thermal/order effects before claiming a gain.
+2. **The integrated workflow:** measure complete prompt-to-delivery time,
+   release/reload costs, idle gaps, delegation, asset preparation, review and
+   resource contention. Tune their interaction using the individually validated
+   settings. Accept a slower isolated setting if it demonstrably improves the
+   complete workflow while preserving quality and responsiveness. Report both
+   component and total results without adding overlapping intervals.
+3. **Freeze, then run autonomous acceptance:** finish tuning before the measured
+   autonomous attempt. Hermes still owns its task decisions. No operator rescue,
+   model substitution or moving acceptance thresholds during the run.
+
+"Best performance" means the best measured valid configuration among the
+declared candidates on this machine, not an untested global optimum. Preserve
+unsuccessful tuning outcomes. The updated drivers/GPU-unlock environment must
+be recorded; its presence alone is not a measured speedup.
+
+### Unchanged model baseline
+
 | Component | Required baseline |
 | --- | --- |
 | Hermes supervisor and workers | Existing IQ3_S LLM, 64K context capacity, high reasoning, experimental speed projection disabled; one inference server and at most one delegated worker running at a time |
@@ -90,6 +151,48 @@ decoding and level measurements do not establish engine/tire sound content, and
 image vision cannot substitute for listening. If that check is unavailable, keep
 semantic audio acceptance incomplete rather than inventing a result.
 
+Update and pin the quality tools before the test, and validate them on known
+good and deliberately faulty material. Include both timestamp-offset fixtures
+and content-delayed audio with otherwise valid timestamps to check that the
+synchronization test detects an error. Reuse
+[ffprobe stream/frame/packet inspection](https://ffmpeg.org/ffprobe.html) and
+[FFmpeg decoding/audio diagnostics](https://ffmpeg.org/ffmpeg-filters.html)
+for dimensions, frame counts, timestamps, gaps, stream alignment, offset/drift,
+decode errors, missing audio, silence and clipping. Declare applicable numerical
+tolerances before execution. Matching stream duration does not establish that a
+visible action and its sound happen together.
+
+Review the complete playable clip with sound for believable car motion, stable
+identity, temporal artifacts, convincing engine/tire sounds and audible/visible
+event alignment. A validated automatic evaluator may support this review only
+within its demonstrated scope. D3 alone cannot confirm realism or sound/video
+sync. A reference-based metric such as [VMAF](https://github.com/Netflix/vmaf)
+can assess a suitable reference comparison, but is not a ground-truth realism
+score for a newly generated scene. Keep visual realism, audio realism, semantic
+synchronization and technical validity as separate reported acceptance results.
+
+### Reuse Hermes delegation rather than adding a separate router
+
+Assess the official [advanced-delegation plugin](https://hermes-agent.nousresearch.com/docs/plugins/advanced-delegation)
+at the test-time Hermes revision. The reviewed catalog entry requires Hermes
+0.22.5 or newer and adds configured model/profile routes while core retains
+worker lifecycle and concurrency. Its routing facility is a reuse candidate,
+not a replacement for resource grants, durable progress or media cleanup.
+
+For this fixed-model test, any selected supervisor/worker profile must use the
+same local IQ3_S endpoint and reasoning contract, with no remote or alternative
+model fallback. Image/video profiles may specialize permitted skills and tools;
+their LLM route does not become the image/video engine. Keep sequential workers
+and one cooperating GPU owner; explicitly set and verify those limits rather than
+inherit a new release's concurrency or background-execution defaults. Before
+adopting a route, verify actual core/plugin
+compatibility, resource authorization propagation, tool permissions, original
+task/session lineage, result identity, failure/Stop behavior and no unexpected
+fallback. Freeze routes before the session. Retain ordinary core delegation if
+additional routing provides no needed capability; do not reimplement its router.
+
+This is an integration requirement, not an installed-plugin or recovery result.
+
 Sampling should retain the historical operating floors of at least 3 GiB
 available RAM and 250 MiB actual CUDA-free memory where measurable. Record
 unobserved loading/transient windows and distinguish CUDA free memory, WDDM
@@ -142,7 +245,7 @@ budget. Neither budget is extended retroactively to rescue a failed run.
 
 ## Retained requirement identities
 
-This specification was reconciled against the following files from the retained
+The baseline specification was reconciled against the following files from the retained
 `Adaptive-Media-Autonomous-Desktop-20261017-visible01` attempt. They identify the
 historical requirements; these hashes are not new execution evidence. Private
 paths and full operator prompts are not needed to understand the contract above.
