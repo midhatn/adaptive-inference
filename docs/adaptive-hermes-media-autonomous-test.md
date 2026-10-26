@@ -108,20 +108,97 @@ and researched recommendations before introducing new mechanisms:
    VRAM, completed-task correctness, media quality and cleanup. Keep comparable
    inputs, seeds, budgets, hardware/power conditions and actual model assets.
    Recheck reproducibility and thermal/order effects before claiming a gain.
-2. **The integrated workflow:** measure complete prompt-to-delivery time,
-   release/reload costs, idle gaps, delegation, asset preparation, review and
-   resource contention. Tune their interaction using the individually validated
-   settings. Accept a slower isolated setting if it demonstrably improves the
-   complete workflow while preserving quality and responsiveness. Report both
-   component and total results without adding overlapping intervals.
-3. **Freeze, then run autonomous acceptance:** finish tuning before the measured
-   autonomous attempt. Hermes still owns its task decisions. No operator rescue,
-   model substitution or moving acceptance thresholds during the run.
+2. **Co-optimize the complete autonomous workflow without Adaptive Inference:**
+   first connect the individually qualified engines and agents into an unattended
+   reference workflow. Measure complete prompt-to-delivery time, release/reload
+   costs, idle gaps, delegation, asset preparation, review, correction and resource
+   contention. Tune their interaction before introducing the adaptive controller.
+   Accept a slower isolated setting if it demonstrably improves the complete
+   workflow while preserving quality and responsiveness. Report both component
+   and total results without adding overlapping intervals.
+3. **Freeze and qualify that autonomous baseline first:** run the complete
+   reference workflow with no operator intervention. It must meet the same output,
+   quality, resource-release and cleanup requirements. Save its configuration,
+   artifacts and measurements as the comparison baseline. An individual-engine
+   benchmark or a manually assisted demonstration cannot substitute for it.
+4. **Prepare the adaptive variant, then compare:** enable Adaptive Inference on
+   that qualified stack. Any adaptive-policy tuning uses separately identified
+   development runs and finishes before the measured comparison. Freeze both
+   variants and run the comparison contract below; do not tune the reference
+   during an adaptive run or count tuning trials as acceptance results. Hermes
+   owns its task decisions in both variants. No operator rescue, model
+   substitution or moving acceptance thresholds during a measured run.
 
 "Best performance" means the best measured valid configuration among the
 declared candidates on this machine, not an untested global optimum. Preserve
 unsuccessful tuning outcomes. The updated drivers/GPU-unlock environment must
 be recorded; its presence alone is not a measured speedup.
+
+### Autonomous baseline and adaptive comparison
+
+**The fully co-optimized, unattended baseline is a prerequisite for claiming an
+Adaptive Inference improvement in this test.** Use the same complete task from
+the initial user request to reviewed, delivered media and verified cleanup.
+
+| Variant | Resource decisions | Purpose |
+| --- | --- | --- |
+| Primary baseline, without Adaptive Inference | Existing upstream agent/engine behavior and any declared fixed orchestration, prepared before the run; the Adaptive Inference decision controller is absent | Establish what the optimized autonomous workflow achieves on its own |
+| Adaptive candidate | The same qualified workflow with the declared Adaptive Inference resource policy enabled | Measure the effect of adapting resource allocation and scheduling |
+| Optional policy-disabled diagnostic | Shared Adaptive Inference infrastructure with its adaptive policy disabled and an explicit fixed policy | Separate integration overhead from policy effects; does not replace the primary baseline |
+
+The reference must perform its own automatic handoffs using existing supported
+engine controls or predeclared fixed orchestration. It must preserve single-GPU
+ownership, actual capacity checks, authorization, verified process release and
+effect integrity; removing those protections is not an optimization. Record all
+shared adapters, any reference-only orchestration, and every candidate difference.
+If the complete reference cannot run unattended with the required models and
+quality, retain that failure and repair the reference before claiming a measured
+adaptive improvement. An adaptive completion may still be reported as its own
+functional result, with the comparative claim explicitly unavailable.
+
+Before either measured variant, declare the task brief, initial files, model
+identities/quality, software inventory, hardware/power/driver state, time and
+attempt budgets, cache/preparation state, resource checks, evaluation tools and
+acceptance thresholds. Keep these comparable. Use separate attempt directories
+and equivalent starting conditions; an adaptive run must not inherit the
+reference's completed outputs or a warmed cache while being compared with a cold
+reference. Declare cold and warm cases separately. Preserve the same initial
+task and permitted autonomy: Hermes still chooses its prompts, seeds and bounded
+corrections. Record those choices and the predeclared repetition/randomness
+protocol rather than assuming that two autonomous trajectories will be identical.
+
+Predeclare a small, bounded number of paired runs and a restored reference
+control to check variance, thermal effects and run-order drift. Record the
+comparison campaign's total run/time cap as well as each attempt's existing
+limits; a functional test does not require an open-ended optimization campaign.
+Any foreground activity
+introduced by a later M3/M6 variant must follow the same declared activity protocol
+in both conditions, with actual activity and resource traces retained. Do not
+compare an idle baseline with an adaptive run under a different user workload.
+
+Codex and the human operator may prepare, tune and validate infrastructure before
+the measured attempts and review outputs afterward. During each measured run,
+they only observe: no prompt coaching, manual resource release/reload, selecting
+or replacing outputs, supplying missing files, restarting a stuck agent, or
+editing its configuration. A necessary intervention is logged and the run is
+classified as assisted or failed, not an autonomous pass. The agent's own
+predeclared bounded corrections remain part of the measured workflow.
+
+Compare completion and correctness, visual/audio realism and synchronization,
+total prompt-to-delivery time, stage and handoff times, peak RAM/commit/VRAM,
+resource contention, cleanup and intervention count (zero for an autonomous pass).
+Include foreground responsiveness only when that variant measures it. Report
+failures, variability and regressions alongside gains. Faster output with worse
+quality or a rescued run does not establish an improvement; a responsiveness or
+resource benefit may be valuable even when total generation time is unchanged.
+
+Reuse established measurement practices: [pyperf's benchmark guidance](https://pyperf.readthedocs.io/en/latest/run_benchmark.html)
+separates warmup from recorded measurements, and its
+[analysis guidance](https://pyperf.readthedocs.io/en/latest/analyze.html) retains
+metadata, individual values and stability checks. Apply those principles to the
+declared component and workflow measurements; this is not a requirement to run
+long media tasks with a microbenchmark's default repetition count or remove the
+foreground activity that a coexistence test is meant to measure.
 
 ### Unchanged model baseline
 
@@ -147,6 +224,14 @@ quantization selection is a separately named future variant. FP16 experiments
 or a changed driver configuration are also separate from this quality baseline.
 
 ## Autonomous execution and resource handoff
+
+The sequence below describes the adaptive candidate. The primary reference
+must meet the same task, quality, authorization, capacity, exclusive-ownership
+and verified-release requirements through its documented native controls or fixed
+orchestration. It must not obtain forecasts or grants from the Adaptive Inference
+decision controller. Record the equivalent baseline mechanisms explicitly; a
+reference that requires that controller belongs to the separate policy-disabled
+diagnostic and cannot be relabeled the primary baseline.
 
 1. Hermes owns the plan, delegation, prompts, asset preparation, reference
    selection, visual review, corrections and final report. Codex prepares and

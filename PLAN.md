@@ -608,10 +608,17 @@ historical pinned replays remain explicitly labeled reproductions.
 Compare ancestry first: retain and explicitly identify a verified newer upstream
 revision when needed for required adapter capabilities, rather than silently
 downgrading it to an older release tag.
-Qualify performance tuning of each engine first, followed by complete-workflow
-tuning, with unchanged quality and independent validation. Include separate
-checks of visual/audio realism and sound/video synchronization. The named test
-documents the measurement and rollback requirements. Assess Hermes's official
+Qualify each engine first, then co-optimize the **complete autonomous workflow
+without Adaptive Inference** before freezing and qualifying its unattended
+baseline. Introduce and tune the adaptive variant only afterward, with separate
+development runs. Compare frozen variants under matched conditions and unchanged
+quality, including a restored baseline control and independently reviewed results.
+Neither Codex nor the user may coach, repair or manually hand resources between
+engines during a measured attempt; intervention disqualifies an autonomous pass.
+An absent or failed autonomous reference cannot support a comparative improvement
+claim. Include separate checks of visual/audio realism and sound/video
+synchronization. The named test documents the baseline, comparison, measurement
+and rollback requirements. Assess Hermes's official
 advanced-delegation provider for reusable profile routing instead of adding a
 new router; every test route must retain the same local IQ3_S contract and the
 existing resource, lifecycle and sequential-worker requirements.
