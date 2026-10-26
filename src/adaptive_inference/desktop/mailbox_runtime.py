@@ -23,6 +23,10 @@ class RuntimeUnavailable(RuntimeError):
     """Unavailable observation or unresolved lifecycle; never an invented state."""
 
 
+class ExpiredObservation(RuntimeUnavailable):
+    """A bound, ordered read exceeded freshness; it is not usable authority."""
+
+
 @dataclass(frozen=True)
 class Observation:
     snapshot: MailboxSnapshot
@@ -99,26 +103,29 @@ class MailboxRuntime:
         snapshot = (self.mailbox if mailbox is None else mailbox).snapshot()
         return Observation(snapshot, started, self._clock())
 
-    def _check_observation(self, observation, *, execution=None):
+    def _check_observation(self, observation, *, execution=None, installing=False):
         now = self._clock()
         if (type(observation) is not Observation or type(observation.snapshot) is not MailboxSnapshot
                 or not all(_number(value) for value in (observation.started, observation.finished, now))
-                or not observation.started <= observation.finished <= now
-                or now - observation.started > self.max_age_s):
+                or not observation.started <= observation.finished <= now):
             raise RuntimeUnavailable('Observation is unavailable or stale')
         target = observation.snapshot.target
         selected = self._selection if execution is None else execution
         if target.task_id != selected['execution_id'] or target.prompt != self.prepared.objective:
             raise RuntimeUnavailable('Original task binding changed')
+        if installing:
+            execution_outcome(target.state)
+            if self._cache is not None:
+                previous = self._cache.snapshot
+                if (target.revision < previous.target.revision
+                        or observation.snapshot.mailbox_revision < previous.mailbox_revision):
+                    raise RuntimeUnavailable('Observed history moved backward')
+        if now - observation.started > self.max_age_s:
+            raise ExpiredObservation('Observation is unavailable or stale')
         return observation.snapshot
 
     def _install(self, observation):
-        snapshot = self._check_observation(observation)
-        if self._cache is not None:
-            previous = self._cache.snapshot
-            if (snapshot.target.revision < previous.target.revision
-                    or snapshot.mailbox_revision < previous.mailbox_revision):
-                raise RuntimeUnavailable('Observed history moved backward')
+        snapshot = self._check_observation(observation, installing=True)
         self._cache = observation
         latest = snapshot.requests[-1] if snapshot.requests else None
         resume_pending = (latest is not None and latest['command'] == 'resume'

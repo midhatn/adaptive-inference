@@ -171,7 +171,7 @@ def safe_wait_inputs(root=None):
     rows = safe_wait_record(root)
     return [root / SAFE_WAIT_ARCHIVE / 'source-lineage.json',
             *(root / row['predecessor_source'] for row in rows['files'].values()),
-            *(root / row['source'] for group in rows['historical_views'].values() for row in group)]
+            *(root / row['source'] for group in rows['historical_views'].values() for row in group)] + continuation_observation_inputs(root)
 
 
 def _safe_wait_before(relative, root=None):
@@ -193,6 +193,7 @@ def _safe_wait_before(relative, root=None):
 
 
 def safe_wait_predecessor(relative, data, root=None):
+    data = continuation_observation_predecessor(relative, data, root=root)
     row, before = _safe_wait_before(relative, root)
     if row is None:
         return data
@@ -208,6 +209,7 @@ def safe_wait_predecessor(relative, data, root=None):
 
 
 def restore_safe_wait(tree, relative, root=None):
+    tree = restore_continuation_observation(tree, relative, root=root)
     row, before = _safe_wait_before(relative, root)
     if row is None:
         return tree
@@ -236,3 +238,75 @@ def _safe_wait_historical(relative, byte_pin, ast_pin, root=None):
             raise AssertionError('Changed safe-wait historical source identity')
         return True
     return False
+
+# Expired selected ACK-read retry: exact outer source view, no runtime execution.
+CONTINUATION_OBSERVATION_ARCHIVE = 'provenance/task-handover/continuation-observation'
+
+
+def continuation_observation_record(root=None):
+    root = ROOT if root is None else root
+    return json.loads((root / CONTINUATION_OBSERVATION_ARCHIVE / 'source-lineage.json').read_bytes())
+
+
+def continuation_observation_inputs(root=None):
+    root = ROOT if root is None else root
+    rows = continuation_observation_record(root)
+    return [root / CONTINUATION_OBSERVATION_ARCHIVE / 'source-lineage.json',
+            *(root / row['predecessor_source'] for row in rows['files'].values())]
+
+
+def _continuation_observation_before(relative, root=None):
+    root = ROOT if root is None else root
+    row = continuation_observation_record(root)['files'].get(relative)
+    if row is None:
+        return None, None
+    expected = CONTINUATION_OBSERVATION_ARCHIVE + '/predecessor/' + relative
+    if (not relative.startswith(('src/adaptive_inference/', 'tests/'))
+            or '\\' in relative or any(part in ('', '.', '..') for part in relative.split('/'))
+            or row['predecessor_source'] != expected):
+        raise AssertionError('Changed continuation-observation predecessor path')
+    before = (root / expected).read_bytes()
+    if hashlib.sha256(before).hexdigest() != row['predecessor_sha256']:
+        raise AssertionError('Changed continuation-observation predecessor bytes')
+    if fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']:
+        raise AssertionError('Changed continuation-observation predecessor AST')
+    return row, before
+
+
+def _continuation_observation_historical(relative, byte_pin, ast_pin, root=None):
+    # The already-declared safe-wait history remains supported; no guessed paths.
+    row, before = _safe_wait_before(relative, root)
+    if row is not None and ast_pin == row['predecessor_ast_sha256'] and (
+            byte_pin is None or byte_pin == row['predecessor_sha256']):
+        return True
+    return _safe_wait_historical(relative, byte_pin, ast_pin, root)
+
+
+def continuation_observation_predecessor(relative, data, root=None):
+    row, before = _continuation_observation_before(relative, root)
+    if row is None:
+        return data
+    pin = hashlib.sha256(data).hexdigest()
+    ast_pin = fingerprint(ast.parse(data))
+    if pin not in (row['predecessor_sha256'], row['successor_sha256']):
+        if _continuation_observation_historical(relative, pin, ast_pin, root):
+            return data
+        raise AssertionError('Changed complete task-handover source (continuation-observation runtime source): ' + relative)
+    expected_ast = row['predecessor_ast_sha256'] if pin == row['predecessor_sha256'] else row['successor_ast_sha256']
+    if ast_pin != expected_ast:
+        raise AssertionError('Changed complete task-handover AST (continuation-observation): ' + relative)
+    return before
+
+
+def restore_continuation_observation(tree, relative, root=None):
+    row, before = _continuation_observation_before(relative, root)
+    if row is None:
+        return tree
+    current = fingerprint(tree)
+    if current == row['predecessor_ast_sha256']:
+        return tree
+    if current != row['successor_ast_sha256']:
+        if _continuation_observation_historical(relative, None, current, root):
+            return tree
+        raise AssertionError('Changed complete task-handover AST (continuation-observation): ' + relative)
+    return ast.parse(before)

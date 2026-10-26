@@ -42,6 +42,26 @@ three dependent test sources and their exact assertions; all 69 lineage and
 readiness cases pass on Python 3.12. The earlier focused review was insufficient
 for that dependency, and its failure remains recorded in the readiness packet.
 
+The completed checks at `9308707` were **13 successes and one failure**. The
+[Windows Python 3.12 job](https://github.com/midhatn/adaptive-inference/actions/runs/40384008747/job/121787353059)
+failed during the selected worker's initial Pause acknowledgement, before the
+test's intentional result corruption. Its log lacks observation timestamps, so
+the exact failed freshness clause remains unmeasured. A separate real CPU-worker
+and SQLite reproduction aged one valid observation by two seconds; it produced
+the same permanent continuation/database fault with unchanged source. The
+[acknowledgement-read correction](admission-wait-recovery.md#delayed-acknowledgement-observations)
+is runtime development, separate from the preceding fixture-only fixes. Its
+regressions cover expired reads followed by fresh ones, unchanged intent and
+cache on discard, deadlines, Stop, child exit, malformed state, actual SQL errors
+and strict post-write behavior. The deterministic age injection is not a
+measurement of the hosted delay or an installed model result.
+The same reproduction passes against the two-module candidate: the selected
+worker completes with no runtime faults, both children join without forced
+termination, and the source stays unchanged. The focused group passes **48/48**
+on each of Python 3.11 and 3.12: 17 new cases, 28 existing mailbox cases and three
+existing host cases. Full assembled-source, package and installed gates remain
+separate from those focused results.
+
 The new wheel `e8dd65996661c470e0f4be8ad8d5eccea1e0674a3126c1e3d295e1f3ec2d89c7`
 has now passed its actual isolated host/worker installation sequence: both
 offline installs, both import audits, three installed SDK dispatcher cases,
@@ -53,6 +73,8 @@ steps joined successfully. Independent review confirmed the exact installed
 These installation checks do not execute the model task. The new recovery
 harness separately passed 41 independently replayed component cases; that is
 preparation evidence rather than an observed installed recovery outcome.
+That wheel predates the acknowledgement-read correction. Its installation
+receipts remain valid for that package and must not be reused for a changed one.
 
 Installed IQ3_S qualification of this extension remains pending. These checks
 do not establish native resource release, GUI behavior, physical reboot recovery,

@@ -11,7 +11,8 @@ from paused_expiry_lineage import fingerprint
 
 
 def current_source(relative):
-    return readiness_support_predecessor(relative, (lineage.ROOT / relative).read_bytes())
+    data = lineage.continuation_observation_predecessor(relative, (lineage.ROOT / relative).read_bytes())
+    return readiness_support_predecessor(relative, data)
 
 
 class SafeWaitLineageTests(unittest.TestCase):
@@ -23,7 +24,8 @@ class SafeWaitLineageTests(unittest.TestCase):
         self.assertEqual(set(actual), set(rows['runtime']))
         self.assertEqual(len(actual), 60)
         for relative, path in actual.items():
-            data = path.read_bytes(); pin = rows['runtime'][relative]
+            data = lineage.continuation_observation_predecessor('src/adaptive_inference/' + relative, path.read_bytes())
+            pin = rows['runtime'][relative]
             self.assertEqual(hashlib.sha256(data).hexdigest(), pin['sha256'])
             self.assertEqual(fingerprint(ast.parse(data)), pin['ast_sha256'])
         for relative, row in rows['files'].items():
@@ -100,3 +102,90 @@ class SafeWaitLineageTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+# Current ACK-read successor source checks; historical assertions above are unchanged.
+class ContinuationObservationLineageTests(unittest.TestCase):
+    def test_exact_two_runtime_delta_and_whole_source_projection(self):
+        rows = lineage.continuation_observation_record()
+        self.assertEqual(rows['schema'], 'adaptive.continuation-observation.source-lineage.v1')
+        self.assertEqual(set(rows['runtime_changes']), {
+            'src/adaptive_inference/desktop/composition.py',
+            'src/adaptive_inference/desktop/mailbox_runtime.py'})
+        for relative, row in rows['files'].items():
+            with self.subTest(relative=relative):
+                data = (lineage.ROOT / relative).read_bytes()
+                before = (lineage.ROOT / row['predecessor_source']).read_bytes()
+                self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
+                self.assertEqual(lineage.continuation_observation_predecessor(relative, data), before)
+                self.assertEqual(lineage.continuation_observation_predecessor(relative, before), before)
+                tree = ast.parse(data); initial = fingerprint(tree)
+                self.assertEqual(fingerprint(lineage.restore_continuation_observation(tree, relative)),
+                                 row['predecessor_ast_sha256'])
+                self.assertEqual(fingerprint(tree), initial)
+
+    def test_byte_and_inside_outside_ast_changes_refuse(self):
+        for relative in lineage.continuation_observation_record()['files']:
+            data = (lineage.ROOT / relative).read_bytes()
+            with self.subTest(relative=relative):
+                with self.assertRaisesRegex(AssertionError, 'complete task-handover source'):
+                    lineage.continuation_observation_predecessor(relative, data+b'\n# unreviewed\n')
+                for tree in (ast.parse(data+b'\nunreviewed=True\n'), ast.parse(data)):
+                    if not any(isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id=='unreviewed'
+                                                               for t in n.targets) for n in tree.body):
+                        method = next(n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)))
+                        method.body.insert(0, ast.Return(value=ast.Constant(value=None)))
+                    with self.assertRaisesRegex(AssertionError, 'complete task-handover AST'):
+                        lineage.restore_continuation_observation(tree, relative)
+
+    def test_predecessor_path_bytes_and_ast_refuse(self):
+        for relative in lineage.continuation_observation_record()['files']:
+            data = (lineage.ROOT / relative).read_bytes()
+            for field in ('predecessor_source', 'predecessor_sha256', 'predecessor_ast_sha256'):
+                rows = lineage.continuation_observation_record(); rows['files'][relative][field] = '0'*64
+                with self.subTest(relative=relative, field=field), mock.patch.object(
+                        lineage, 'continuation_observation_record', return_value=rows):
+                    with self.assertRaisesRegex(AssertionError, 'continuation-observation predecessor'):
+                        lineage.continuation_observation_predecessor(relative, data)
+
+    def test_original_support_assertions_restore_byte_exact(self):
+        rows = lineage.continuation_observation_record()
+        self.assertEqual(set(rows['support_edits']), {'tests/task_file_alias_lineage.py',
+            'tests/test_safe_wait_lineage.py', 'tests/test_continuation_readiness.py'})
+        for relative, rules in rows['support_edits'].items():
+            current = (lineage.ROOT / relative).read_bytes()
+            if rules.get('appended_marker'):
+                marker = rules['appended_marker'].encode()
+                self.assertEqual(current.count(marker), 1)
+                offset = current.index(marker)
+                self.assertEqual(hashlib.sha256(current[offset:]).hexdigest(), rules['appended_sha256'])
+                current = current[:offset]
+            for rule in reversed(rules['replacements']):
+                old, new = rule['old'].encode(), rule['new'].encode()
+                self.assertEqual(current.count(new), rule['count'])
+                current = current.replace(new, old)
+            row = rows['files'][relative]
+            self.assertEqual(current, (lineage.ROOT / row['predecessor_source']).read_bytes())
+
+    def test_previous_manifests_and_only_declared_runtime_seams_preserved(self):
+        from paused_expiry_lineage import mapping
+        rows = lineage.continuation_observation_record()
+        for relative, pin in rows['historical_manifests'].items():
+            self.assertEqual(hashlib.sha256((lineage.ROOT / relative).read_bytes()).hexdigest(), pin)
+        for relative, changes in rows['runtime_changes'].items():
+            row = rows['files'][relative]
+            old = ast.parse((lineage.ROOT / row['predecessor_source']).read_bytes())
+            current = ast.parse((lineage.ROOT / relative).read_bytes())
+            for change in changes:
+                parent, old_parent = current, old
+                for part in change['path'][:-1]:
+                    parent, old_parent = mapping(parent)[part], mapping(old_parent)[part]
+                node = mapping(parent)[change['path'][-1]]
+                prior = mapping(old_parent).get(change['path'][-1])
+                self.assertEqual(fingerprint(node), change['successor_ast_sha256'])
+                self.assertEqual(fingerprint(prior) if prior is not None else None, change['predecessor_ast_sha256'])
+                index = parent.body.index(node)
+                if prior is None:
+                    del parent.body[index]
+                else:
+                    parent.body[index] = deepcopy(prior)
+            self.assertEqual(fingerprint(current), fingerprint(old))

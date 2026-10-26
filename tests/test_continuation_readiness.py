@@ -15,6 +15,7 @@ from unittest import mock
 from test_continuation_host import wait_original_ready
 import continuation_diagnostics_lineage as diagnostics
 from paused_expiry_lineage import fingerprint
+from task_file_alias_lineage import continuation_observation_predecessor
 
 
 class ReadinessLineageTests(unittest.TestCase):
@@ -26,7 +27,7 @@ class ReadinessLineageTests(unittest.TestCase):
         self.assertEqual(rows['runtime_changes'],[])
         for relative,row in rows['files'].items():
             with self.subTest(relative=relative):
-                current=(root/relative).read_bytes()
+                current=continuation_observation_predecessor(relative, (root/relative).read_bytes(), root=root)
                 before=(root/row['predecessor_source']).read_bytes()
                 self.assertEqual(diagnostics.readiness_support_predecessor(relative,current),before)
                 self.assertEqual(diagnostics.readiness_support_predecessor(relative,before),before)

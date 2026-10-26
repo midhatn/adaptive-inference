@@ -1282,6 +1282,20 @@ assertions too, and all 69 lineage/readiness checks pass. Exact-head hosted CI
 remains a separate gate. Neither fixture
 correction changes runtime modules, installed deadlines or previous results.
 
+At `9308707`, 13 hosted jobs passed and one Windows Python 3.12 source check
+failed while awaiting the selected worker's initial acknowledgement. Unlike the
+earlier fixture corrections, this path uses the product's actual observation
+lifetime. A successful read can arrive too late to be usable. A deterministic
+CPU-worker/SQLite reproduction aged one valid read and reproduced the permanent
+fault; the hosted log itself does not establish which timestamp check failed.
+The [narrow acknowledgement-read correction](docs/admission-wait-recovery.md#delayed-acknowledgement-observations)
+discards only expired valid reads within the same worker lifetime and execution
+deadline. It preserves prior cache/intent without renewing either, and keeps
+malformed records, changed identity, database failures, ordinary refresh and
+post-write checks strict. This runtime change requires fresh source/package and
+installation validation before the IQ3_S trial; the prior installed wheel cannot
+serve as evidence for the correction.
+
 The fresh isolated package installation has now passed both import audits,
 the installed SDK dispatcher, shared-clock checks and resource-input audit;
 all seven installation steps joined successfully and passed independent review.

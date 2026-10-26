@@ -1,0 +1,147 @@
+{
+  "baseline_revision": "9308707025eacd06b399c5adfa46154bc38da65b",
+  "baseline_runtime_count": 60,
+  "files": {
+    "src/adaptive_inference/desktop/composition.py": {
+      "predecessor_ast_sha256": "3247d6d1cadc48cdcbc8dcee27044644c2e1a53a3ab011dda04f44a4134644cc",
+      "predecessor_sha256": "88dbb76bc680e79eb6cfc93d535544a11cd96e4d084b81eeb2c466cb3cc1001d",
+      "predecessor_source": "provenance/task-handover/continuation-observation/predecessor/src/adaptive_inference/desktop/composition.py",
+      "successor_ast_sha256": "23949bf1bb39a39b4f459f352b6a149c8d80a67167a45fa391b04bb2744eeec3",
+      "successor_sha256": "89398ee41c35e7a813d1f578eda1a799f1efda7f04bee8902af3d695017d6b9b"
+    },
+    "src/adaptive_inference/desktop/mailbox_runtime.py": {
+      "predecessor_ast_sha256": "b527b781ed0d2fb864dea6ae3333b26c05d46b4d2c63e477c5f2c9918fbba190",
+      "predecessor_sha256": "78c3c80eaa24dbef5a01126b287ee0874eaaa8bbaecc824977f2b2ac0162c376",
+      "predecessor_source": "provenance/task-handover/continuation-observation/predecessor/src/adaptive_inference/desktop/mailbox_runtime.py",
+      "successor_ast_sha256": "017c12dd3c669fa029c675959759e86aa65cb66c1b3c444f4082761eecf5fb56",
+      "successor_sha256": "aad1c3b383f6954be89ebe6c9f2e680cd286c672d7bb26bd7027402e0a7d6b72"
+    },
+    "tests/task_file_alias_lineage.py": {
+      "predecessor_ast_sha256": "8b62b7d7b7234bf6dfc28ed8397a6b8f7161d798c28995954f2d5ad39f240e18",
+      "predecessor_sha256": "44e407e885680dd04792b734bff6d168db405cceaead1f393b34fe9c0d4f4ab6",
+      "predecessor_source": "provenance/task-handover/continuation-observation/predecessor/tests/task_file_alias_lineage.py",
+      "successor_ast_sha256": "b488e23794df53b46d3cc59f740c88833a3583fbb895ae329b2d1322340f94fa",
+      "successor_sha256": "4c2061d664a0af3aa3ef5f3ed60eb2797fa0206841a9c28d896f79278c714ea6"
+    },
+    "tests/test_continuation_readiness.py": {
+      "predecessor_ast_sha256": "0b28fd3f02ea939b92218d5933bf2a5e2f8524155663905a132404e6419e7a0c",
+      "predecessor_sha256": "c2971461c5ecad2f9a6ead7056a783f97e36a13d36b1b8c94b2d1ff69a52ff00",
+      "predecessor_source": "provenance/task-handover/continuation-observation/predecessor/tests/test_continuation_readiness.py",
+      "successor_ast_sha256": "490ad24d7d76617c1d974007effbc5ef132421c8bce374baadb0c0428e840584",
+      "successor_sha256": "aaab649f9eaea6af2d6a1868e6d550f18c72209e99a7351345d9c70a8c3cfb16"
+    },
+    "tests/test_safe_wait_lineage.py": {
+      "predecessor_ast_sha256": "cf18b265847e42fd0ea5e4517729d310d2afc5a49304fad8cbb07e9846dd198b",
+      "predecessor_sha256": "6abaed6a38533bfe7fdf03a22d17197ae179542db42f5f47ceb1955f40b1a80d",
+      "predecessor_source": "provenance/task-handover/continuation-observation/predecessor/tests/test_safe_wait_lineage.py",
+      "successor_ast_sha256": "8f55e95fce8c35b9efd09049d7f9933ca5548998e51a56e60f4cf05a41f27aca",
+      "successor_sha256": "1256367d24ed0adf7a78f56f57d2cbf1a4bda47663e223bd94fd48397c07aa18"
+    }
+  },
+  "historical_manifests": {
+    "examples/validation/hermes_saved_history/source-manifest.json": "199bd214e88329329460d4f1ae101ec976e500fe84b0a7e9d63f9e40da0ffc0f",
+    "provenance/task-handover/fixture-readiness/source-lineage.json": "6d261a23cd05577b4ea780f5a62dbe42ee788e05075eba3157957367b16c4341",
+    "provenance/task-handover/fixture-readiness/support-source-lineage.json": "b2e7aac79a6e5797b4323e69a54c5f54cd779d6a3ba7d4a840d6a6159a8992ea",
+    "provenance/task-handover/pause-observation/source-lineage.json": "04933b01c9e6442707f9674e8403aa5e9d86f1f4c7642d6f3adf88b3e56786af",
+    "provenance/task-handover/safe-admission-wait/source-lineage.json": "6bf633f3f35d20a867a640a0a94a8fda37fdac9b0c3d26b77acad0df86714429",
+    "provenance/task-handover/task-file-aliases/source-lineage.json": "c99b9386c8426ff792bd078e643e110630a5cad7ae3c3cec7ba269556e1c07ba"
+  },
+  "runtime_changes": {
+    "src/adaptive_inference/desktop/composition.py": [
+      {
+        "path": [
+          "from:0:adaptive_inference.desktop.mailbox_runtime"
+        ],
+        "predecessor_ast_sha256": "a21b11457685a883fd469790ecba267ce3b934e35f3550c321932ee236e180d6",
+        "successor_ast_sha256": "f98934aa041e301228443fd1d7757802b8d8a8e94e50b82e703a3ace76dd2b01"
+      },
+      {
+        "path": [
+          "class:DesktopComposition",
+          "function:wait_continuation_ack"
+        ],
+        "predecessor_ast_sha256": "f47b1e2ed3685980731eb2e5ef095f32d170044dfb9ece447c247b7f6a2ec65d",
+        "successor_ast_sha256": "06a4d191162db8fdec38db150be7bbbbeef7321ac3249db9e2b22ce38611d866"
+      }
+    ],
+    "src/adaptive_inference/desktop/mailbox_runtime.py": [
+      {
+        "path": [
+          "class:ExpiredObservation"
+        ],
+        "predecessor_ast_sha256": null,
+        "successor_ast_sha256": "c37ac3dee9596e2327647bd77f843c95ccbd390d95995d4cf78b5a846850ba31"
+      },
+      {
+        "path": [
+          "class:MailboxRuntime",
+          "function:_check_observation"
+        ],
+        "predecessor_ast_sha256": "8188ccd8ec753f32d17189edfdc0de89a9d79d85a7e5a9ace8d0763cf44182f3",
+        "successor_ast_sha256": "f499f1526c95c1714ecc7e2408e5ba53b9e50dd485696b3da11b4cee59fc4574"
+      },
+      {
+        "path": [
+          "class:MailboxRuntime",
+          "function:_install"
+        ],
+        "predecessor_ast_sha256": "44ddc1e208cc3f5c5faec4c2c429ab798a01a8f02bbde03a85817909befae61f",
+        "successor_ast_sha256": "bfe9627bad27d85813cc62c3f6d6ff7c42d0b1640b422f19f17db2c93d520d95"
+      }
+    ]
+  },
+  "schema": "adaptive.continuation-observation.source-lineage.v1",
+  "support_edits": {
+    "tests/task_file_alias_lineage.py": {
+      "appended_marker": "\n# Expired selected ACK-read retry: exact outer source view, no runtime execution.\n",
+      "appended_sha256": "0c48c2774d78c53ef657994a77a6ca1cb2ccd4f1b33a2bf014c70306a79c6c59",
+      "replacements": [
+        {
+          "count": 1,
+          "new": "*(root / row['source'] for group in rows['historical_views'].values() for row in group)] + continuation_observation_inputs(root)",
+          "old": "*(root / row['source'] for group in rows['historical_views'].values() for row in group)]"
+        },
+        {
+          "count": 1,
+          "new": "def safe_wait_predecessor(relative, data, root=None):\n    data = continuation_observation_predecessor(relative, data, root=root)\n",
+          "old": "def safe_wait_predecessor(relative, data, root=None):\n"
+        },
+        {
+          "count": 1,
+          "new": "def restore_safe_wait(tree, relative, root=None):\n    tree = restore_continuation_observation(tree, relative, root=root)\n",
+          "old": "def restore_safe_wait(tree, relative, root=None):\n"
+        }
+      ]
+    },
+    "tests/test_continuation_readiness.py": {
+      "replacements": [
+        {
+          "count": 1,
+          "new": "from paused_expiry_lineage import fingerprint\nfrom task_file_alias_lineage import continuation_observation_predecessor\n",
+          "old": "from paused_expiry_lineage import fingerprint\n"
+        },
+        {
+          "count": 1,
+          "new": "                current=continuation_observation_predecessor(relative, (root/relative).read_bytes(), root=root)\n",
+          "old": "                current=(root/relative).read_bytes()\n"
+        }
+      ]
+    },
+    "tests/test_safe_wait_lineage.py": {
+      "appended_marker": "\n# Current ACK-read successor source checks; historical assertions above are unchanged.\n",
+      "appended_sha256": "c03101188738b2539a5e42cdd896d5efe746e377ac06476079549efc935b9272",
+      "replacements": [
+        {
+          "count": 1,
+          "new": "    data = lineage.continuation_observation_predecessor(relative, (lineage.ROOT / relative).read_bytes())\n    return readiness_support_predecessor(relative, data)\n",
+          "old": "    return readiness_support_predecessor(relative, (lineage.ROOT / relative).read_bytes())\n"
+        },
+        {
+          "count": 1,
+          "new": "            data = lineage.continuation_observation_predecessor('src/adaptive_inference/' + relative, path.read_bytes())\n            pin = rows['runtime'][relative]\n",
+          "old": "            data = path.read_bytes(); pin = rows['runtime'][relative]\n"
+        }
+      ]
+    }
+  }
+}

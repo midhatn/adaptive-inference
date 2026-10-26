@@ -29,7 +29,7 @@ from adaptive_inference.handoff import ToolRequirements
 from adaptive_inference.desktop.installation import package_identity, sha, verify_interpreter, verify_sdk
 from adaptive_inference.desktop.profile import WindowsProfile, COOPERATIVE_POLICY
 from adaptive_inference.desktop.control_transport import PreparedTask, ControlTransport, credential
-from adaptive_inference.desktop.mailbox_runtime import MailboxRuntime
+from adaptive_inference.desktop.mailbox_runtime import MailboxRuntime, ExpiredObservation
 from adaptive_inference.desktop.ui_intent import UIIntentGate
 from adaptive_inference.desktop.serial_listener import SerialListener
 from adaptive_inference.desktop.hermes import recovery as rec
@@ -615,20 +615,31 @@ class DesktopComposition:
 
     async def wait_continuation_ack(self,record,request_id,intent_valid):
         child,mailbox=record['child'],record['mailbox']
+        def install(observation):
+            try:
+                self.runtime._install(observation)
+            except ExpiredObservation:
+                # Read only: retain prior cache/intent, use no ACK from this read.
+                # A fresh read must still pass every binding/history check.
+                return False
+            return True
         while True:
             if self.runtime._stopping or not intent_valid():return None
-            await self.runtime._database(lambda:self.runtime._observe(mailbox),self.runtime._install)
-            if self.runtime._stopping or not intent_valid():return None
-            snapshot=self.runtime._cache.snapshot
-            ack=snapshot.status(request_id)
-            if ack['owner_acknowledged']:
-                if (ack['outcome']!='applied' or snapshot.target.owner_epoch is None
-                        or snapshot.target.task_id!=record['grant']['payload']['successor_id']
-                        or child.poll() is not None):
-                    raise RuntimeError('Selected control lacks exact live owner acknowledgement')
-                return ack
             if child.poll() is not None or execution_now()>=record['grant']['deadline_monotonic']:
                 raise RuntimeError('Selected worker did not acknowledge before its deadline')
+            fresh=await self.runtime._database(lambda:self.runtime._observe(mailbox),install)
+            if self.runtime._stopping or not intent_valid():return None
+            if child.poll() is not None or execution_now()>=record['grant']['deadline_monotonic']:
+                raise RuntimeError('Selected worker did not acknowledge before its deadline')
+            if fresh:
+                snapshot=self.runtime._cache.snapshot
+                ack=snapshot.status(request_id)
+                if ack['owner_acknowledged']:
+                    if (ack['outcome']!='applied' or snapshot.target.owner_epoch is None
+                            or snapshot.target.task_id!=record['grant']['payload']['successor_id']
+                            or child.poll() is not None):
+                        raise RuntimeError('Selected control lacks exact live owner acknowledgement')
+                    return ack
             await asyncio.sleep(.05)
 
     async def ready_continuation(self,record,intent_valid):

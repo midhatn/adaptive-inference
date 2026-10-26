@@ -65,6 +65,38 @@ the predecessor, control prefix, authorization, released worker and parked nativ
 owner before proceeding. Spent request capacity, an unreleased owner, a changed
 prefix, Stop or a retired endpoint cannot grant another execution.
 
+## Delayed acknowledgement observations
+
+A successful database read can be too old to authorize the next step by the time
+the controller receives it. Both the installed composition and its CPU-worker
+fixture use the same one-second observation lifetime. Waiting for a database lock
+or for the host event loop can exceed that interval. The Windows check on
+`9308707` failed at this boundary; its log lacks the timestamps needed to identify
+the exact failed freshness clause. A separate deterministic reproduction aged one
+otherwise real worker/database observation and reproduced the permanent failure.
+
+The selected-worker acknowledgement loop can discard only a structurally valid,
+correctly bound, ordered observation that has expired. It reads again within the
+same execution deadline and retained worker lifetime. It never installs the old
+read, accepts its acknowledgement, renews its timestamp, sends another Resume or
+launches another child. The previous validated cache and intent remain unchanged;
+the new read cannot create authority. Stop and lost user intent still end the wait.
+
+Malformed timestamps, wrong task identity, backward history and actual database
+errors still fail. Ordinary refresh, observations after a control write, and the
+final readiness check retain their strict behavior. The worker cannot dispatch
+until fresh acknowledgement and the separate identity/capacity readiness checks
+pass. A read that finishes after the execution deadline cannot authorize progress.
+
+This uses the existing serialized, retained database task. Python's
+[thread offload](https://docs.python.org/3.12/library/asyncio-task.html#asyncio.to_thread)
+does not guarantee delivery latency, and
+[shielding](https://docs.python.org/3.12/library/asyncio-task.html#shielding-from-cancellation)
+keeps a cancelled caller from abandoning that retained task. SQLite's
+[busy timeout](https://sqlite.org/c3ref/busy_timeout.html) documents bounded waiting
+before a lock failure; it is not a guarantee that a successful read remains fresh.
+These are API references, not copied implementations or a change to either timeout.
+
 ## Reproduction and evidence boundaries
 
 After installing the checkout as described in the repository's reproduction
@@ -74,6 +106,7 @@ guide, the focused portable cases can be run with:
 python -B -m unittest discover -s tests -p "test_*wait*.py"
 python -B -m unittest discover -s tests -p "test_prebegin_deadline_edges.py"
 python -B -m unittest discover -s tests -p "test_sdk_rebuild_pins.py"
+python -B -m unittest discover -s tests -p "test_continuation_observation.py"
 ```
 
 These exercise real SQLite state and current worker/control code with explicitly
