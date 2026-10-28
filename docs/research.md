@@ -17,6 +17,12 @@ and an existing optional FP16 expert-prompt path to evaluate after the current
 continuation milestone. It separates the user-reported GPU environment change
 and dense matrix measurements from unmeasured application performance.
 
+The [heterogeneous-inference qualification guide](npu-qualification.md), added
+28 October 2026, uses public Gufo and Phoenix counterevidence to define
+arithmetic, real-model and complete-task gates for future accelerator work.
+It records exact source and license boundaries and a pending shared-expert
+memory hypothesis. It enables no NPU path or backend resource control.
+
 ## Direct implementation lineage
 
 | Source | Use here | Attribution and boundary |
