@@ -649,3 +649,38 @@
   url = {https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/runner.py#L235},
   note = {Inspected alongside v3.11.9 on 2026-10-30. Stored errors are printed after the test call returns, including cleanup. Fail-fast therefore improves reporting opportunity but cannot guarantee a traceback before blocked cleanup or job termination. No runner code copied}
 }
+
+@misc{pythonAsyncioEventLifecycle,
+  title = {Python 3.11 asyncio Event synchronization},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.11/library/asyncio-sync.html#asyncio.Event},
+  note = {Inspected 2026-10-30 for the event-held HTTP disconnect fixture. Waiting suspends the waiting coroutine, not unrelated socket timers; event release belongs in cleanup. Informed a test-only correction, with no runtime implementation copied}
+}
+
+@misc{aiohttpSocketReadTimeout,
+  title = {aiohttp 3.14.5 ClientTimeout socket-read contract},
+  author = {{aiohttp contributors}},
+  url = {https://github.com/aio-libs/aiohttp/blob/v3.14.5/docs/client_reference.rst#L2235},
+  note = {Inspected 2026-10-30 at documentation blob 5ac57a0cfd766ef5425665c4875845f16caf6649. The wait for a portion of peer data is bounded independently of the test's EOF event. Supports a separate bounded lifecycle-test timeout while preserving the dedicated short-timeout test; does not prove the original hosted failure's cause}
+}
+
+@misc{aiohttpSocketReadTimer,
+  title = {aiohttp 3.14.5 client protocol read-timeout implementation},
+  author = {{aiohttp contributors}},
+  url = {https://github.com/aio-libs/aiohttp/blob/v3.14.5/aiohttp/client_proto.py#L287},
+  note = {Inspected 2026-10-30 at source blob e30183dafdb1f915bde943091b61407341b2791c. The existing scheduled timeout and SocketTimeoutError path informed the fixture correction. Source consulted, not copied; gateway and scheduler behavior are unchanged}
+}
+
+@misc{hermesTurnLivenessContract,
+  title = {Hermes turn liveness watchdog and activity configuration},
+  author = {{Nous Research and Hermes contributors}},
+  url = {https://hermes-agent.nousresearch.com/docs/user-guide/configuration#turn-liveness-watchdog},
+  note = {Inspected 2026-10-30 with installed MIT-licensed SDK revision 14e1e43a23761b369641208e204365cd6cb9399d. Activity and session-lease renewal are separate signals. The existing adaptive Pause bridge uses pinned private activity and interruption interfaces; reporting safe admission waits must preserve original execution deadlines and committed interruption checks. No SDK code copied}
+}
+
+@misc{hermesMoaActivityBridge,
+  title = {Hermes PR 131916: stamp turn-liveness activity from the MoA reference fan-out},
+  author = {{Hermes contributors}},
+  url = {https://github.com/NousResearch/hermes-agent/pull/131916},
+  note = {Merged 2026-10-03 as ba3c22b324908a5023122e8aa0aecd8910bb73aa; actual agent/moa_loop.py patch inspected 2026-10-30. Credits original contributions in PR 110056 by kokhlo and PR 110041 by KoNit-K. The principle of forwarding verified activity to the existing watchdog informs the proposed admission-wait bridge; MoA code was not copied and waiting is not reported as token or tool progress. Upstream MIT license retained by its authors}
+}

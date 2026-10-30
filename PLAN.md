@@ -49,11 +49,15 @@ interrupted runs will remain identified as such.
 **Current M2 gate — 30 October 2026:** the retained host implements user task
 contracts, task handover and explicit continuation after a resource wait. The
 outstanding acceptance gate is one complete installed IQ3_S two-task run covering
-safe waiting expiry, Continue, task acceptance and shutdown. The latest inventory
-task completed after native release and restoration. Its first-request foreground
-transition and exact identity recording were verified, but a 66.109-second gap
-between document actions failed the continuous-activity requirement. Safe expiry,
-Continue and the second task remain unqualified in this scenario. Earlier
+safe waiting expiry, Continue, task acceptance and shutdown. In the latest run,
+case11, actual foreground work closed admission, the first request completed and
+the native engine parked. Hermes then interrupted the saved second request's
+resource wait after 611.1 seconds without a reported activity signal. The first
+read is preserved, but the task did not complete and cooperative Stop was not
+confirmed. First correct the existing activity bridge to recognize a verified
+resource wait, retaining the original deadline and interruption checks; then
+validate a fresh installation and repeat the full scenario as a new case.
+Safe expiry, Continue and the second task remain unqualified in this scenario. Earlier
 accepted reference workflows retain their own source and scope. See the
 [current evidence](docs/evidence.md).
 
@@ -1475,6 +1479,33 @@ must identify the exact bound work file and preserve its input hash, complete
 result and native intent; a matching basename or copied content is insufficient.
 Do not modify case10 or retroactively claim the unchanged check passed.
 
+**Latest installed feedback — case11:** the revised operator cadence retained
+27 actual document actions with a maximum adjacent start-to-next-end interval of
+38.4695074 seconds. The first-request foreground transition and native parking
+were observed. However, Hermes's turn watchdog interrupted the resource wait
+after 611.1 seconds; no expiry seal, continuation, output or second task resulted.
+The original read and prepared next request remain saved. Native release and
+failure containment are narrower results than the unconfirmed cooperative Stop.
+The failed case is consumed and must not be patched or restarted.
+
+The existing activity guard reports an acknowledged user Pause but makes no
+activity stamp for an otherwise healthy admission wait. Reuse its serialized
+owner, live SDK lease, interruption checks and 15-second cadence together with
+the existing coherent `Mailbox.admission_wait_observation`. Only a verified,
+operation-free wait before the original 900-second deadline may report activity.
+An ordinary poll, blocked read, lost lease, pending unsafe control or committed
+interruption must not keep the agent alive. This is truthful waiting activity,
+not model progress, a resource grant or a deadline extension.
+
+The pattern follows the inspected, merged [Hermes activity bridge fix](https://github.com/NousResearch/hermes-agent/pull/131916)
+and the documented distinction between [turn activity and lease renewal](https://hermes-agent.nousresearch.com/docs/user-guide/configuration#turn-liveness-watchdog).
+The adapter already uses Hermes's pinned private `_touch_activity` API; this
+does not introduce a public SDK guarantee. First validate healthy waiting beyond
+600 seconds through the original 900-second expiry, cancellation, Pause and
+authority-loss failures with controlled clocks. Then review the changed source,
+build and validate a fresh isolated installation before another physical IQ3_S
+qualification. Preserve all failed evidence, task budgets and acceptance gates.
+
 **Validation follow-up:** consecutive documentation heads recorded Windows
 CI jobs exceeding their cumulative 15-minute limit while equivalent source
 passed on the other event. At `d3bc403`, 12 jobs passed and two were cancelled;
@@ -1487,7 +1518,17 @@ the current test and cleanup return. A failing run remains failed and its
 remaining tests are not executed; passing discovery and assertions are unchanged.
 Keep sibling matrix jobs running, the 15-minute limit and always-run diagnostics.
 This improves reporting; it neither guarantees a traceback before termination
-nor fixes the cumulative duration. After the live qualification,
+nor fixes the cumulative duration. At `39d2d90`, 13 jobs passed and one failed;
+fail-fast retained the actual disconnect-test assertion and traceback. The
+matching hosted job passed; all four Windows jobs passed. A narrow fixture
+correction now separates its event-held EOF from the shared 50-millisecond
+timeout, asserts ownership before closing and guarantees event cleanup. The
+dedicated timeout method is unchanged. Both affected tests passed once on each
+local interpreter, with pinned aiohttp on Python 3.11 but an older installed
+aiohttp on Python 3.12. These controls do not prove the hosted failure's cause
+or that the server observed a TCP disconnect; retain those limits and require
+fresh exact-head hosted CI. Exact runs and scope are in the
+[evidence record](docs/evidence.md). After the live qualification,
 use existing [Python profiling tools](https://docs.python.org/3.11/library/profile.html)
 to measure selected expensive groups, then consider explicit
 [job partitioning](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes)

@@ -344,6 +344,60 @@ and a 30-second action target, deferring nonessential work outside the hold whil
 retaining the strict 60-second condition and genuine observed input. See the
 [roadmap](../PLAN.md) for the remaining gates and citations.
 
+### Resource waiting interrupted by the agent's inactivity watchdog
+
+Case11 retained the same installed wheel, IQ3_S assets, quality settings and
+execution limits. The first actual document action occurred while the first
+request was active and admission was open. The next retained observation showed
+that same request active with admission closed and the controller draining for
+foreground activity. The request completed and the native engine parked.
+
+There were 27 actual document actions. Their maximum adjacent start-to-next-end
+interval was **38.4695074 seconds**, below the unchanged strict 60-second limit.
+Some actions occurred after the worker failed but before the operator observed
+the failure, and remain in the truthful record. No expiry seal exists, so this
+does not establish the complete continuous hold through safe expiry.
+
+Hermes's turn watchdog reported **611.1 seconds without activity**, last labelled
+as starting the second API call. Its committed interruption caused the existing
+guard to refuse further authority. The saved state and ledger contain one
+request, one attempt, one admission and no deferrals; the admission-attempt limit
+was not reached. The original task, exact 70-byte/four-line input read, three
+native history rows and prepared second request remain saved. There was no
+output write, task acceptance, Continue or second task. A one-shot readiness
+check correctly refused the already-terminal case instead of creating an
+expiry receipt.
+
+One native lifetime released normally: **8/8 retained descendant exits**, plus
+the separate retained owner. The final stop set had the owner and five then-live
+descendants; three other descendants had exited earlier. GUI, pipe and listener
+closure are supported by failure-containment receipts. The transport still
+records `stop_failed`, and cooperative product Stop remains unconfirmed.
+The parent and observer returned one; no timeout or emergency termination was
+used. The original auditor ran once and failed `normal_parent`. The supplemental
+audit was not run. **Qualification and whole-trial clean Stop remain false.**
+
+Independent terminal review retained 762 component/integrity checks across 367
+input hashes, receipt SHA-256
+`623def7fcb5ac22ce179ab7f13c20937516a0edf44612638c3fbe527b5662099`.
+Its separate native review retained 108 checks and 32 input hashes, SHA-256
+`08a070a5b1b29314ecae11389581f0fda08250e6f3f0431c46b939dd50386e48`.
+The A-only Python recording preserved the complete integer identity and all
+nonbinding action fields. No expired-window or B observation was invented.
+
+Source inspection explains the integration gap: the existing guard reports an
+acknowledged user Pause, while admission waiting performs health checks without
+an activity stamp. The proposed correction reuses the existing coherent owned
+wait observation and serialized activity guard before the original deadline.
+It does not disable Hermes's watchdog or renew task authority. The inspected
+[merged Hermes activity fix](https://github.com/NousResearch/hermes-agent/pull/131916)
+supports reporting a previously invisible legitimate activity; it concerns MoA
+streaming, not this adaptive wait. The [roadmap](../PLAN.md) records the required
+focused, installation and fresh physical qualification gates. Case11 remains
+consumed and failed regardless of any later correction.
+
+### CI diagnostics and isolated HTTP fixture validation
+
 At documentation head `938a9a123c2b9ad3991a8863856650e601798cf4`, the
 [PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41040556106)
 passed all seven jobs; the [push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41040549390)
@@ -384,7 +438,49 @@ This is a diagnostic change, not a runtime correction or duration improvement.
 See [Python 3.11](https://docs.python.org/3.11/library/unittest.html#command-line-options),
 [Python 3.12](https://docs.python.org/3.12/library/unittest.html#command-line-options)
 and the pinned [CPython runner](https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/runner.py#L235).
-Its next ordinary CI runs provide separate validation of the changed head.
+
+At diagnostic-change head `39d2d90b291603113c3dd6b017681ca8367a8872`, the
+[push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41050044491)
+and [PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41050053294)
+finished with **13 successful checks, one failure and no cancellations**. All
+four Windows jobs passed. Both checkouts have tree
+`3a5cb999528892c84a910c332cf093a6bf7e9e60`. The failed
+[push macOS/Python 3.11 job](https://github.com/midhatn/adaptive-inference/actions/runs/41050044491/job/124043555978)
+reported `AssertionError: unexpectedly None` in the disconnect/EOF test: its
+owner snapshot was already None before the client response was closed. Fail-fast
+preserved the traceback and exit 1 after 907 tests in 80.571 seconds, including
+35 skips; remaining core tests were not executed and later steps were skipped.
+The [matching PR job](https://github.com/midhatn/adaptive-inference/actions/runs/41050053294/job/124043585767)
+passed that test; its core suite reported 1,258 tests in 146.390 seconds with
+36 skips. This observed
+diagnostic result does not explain the earlier `d3bc403` error or resolve
+cumulative CI duration variability.
+
+The subsequent [fixture-only correction](../tests/test_immediate_admission.py)
+gives this deliberately event-held stream a separate bounded five-second read
+timeout, asserts a non-None owner before closing, and releases its finish event
+in `finally`. Ownership and post-EOF checks remain. Every other fixture test
+keeps 50 milliseconds; the dedicated timeout method is unchanged. The
+[Python Event contract](https://docs.python.org/3.11/library/asyncio-sync.html#asyncio.Event),
+[aiohttp read-timeout contract](https://github.com/aio-libs/aiohttp/blob/v3.14.5/docs/client_reference.rst#L2235)
+and [timer implementation](https://github.com/aio-libs/aiohttp/blob/v3.14.5/aiohttp/client_proto.py#L287)
+support separating these scenarios. A competing 50-millisecond timeout remains
+a hypothesis about the failed hosted execution; its gateway history was not
+retained.
+
+The two affected tests passed once each on local Python 3.11.9 with pinned
+aiohttp 3.14.5 (0.684 seconds), and Python 3.12.9 with installed aiohttp 3.11.13
+(0.655 seconds). The latter is an older-dependency compatibility control, not
+dependency-equivalent CI validation. Test-file blob
+`6235532acc1ac06209c75f733dbb7dc7d2f99e87` binds this correction. Actual session
+timeouts were five seconds and 50 milliseconds respectively; timeout cases
+still returned 502 with uncertain completion, no retry proof and one backend
+call. Lifecycle checks observed the same owner before and after client close,
+then one completion after explicit EOF without uncertainty. Their histories
+recorded `client_disconnected=false`:
+closing the client and yielding once does not prove that the server observed a
+TCP disconnect. No runtime code, installed dependency or model was changed.
+Fresh exact-head hosted CI remains a separate gate for this fixture correction.
 
 ## Explicit continuation after safe expiry
 
