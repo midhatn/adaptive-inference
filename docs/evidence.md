@@ -459,9 +459,93 @@ rule to preserve the tested SDK reference file exactly; an actual checkout with
 are updated after validation. These three metadata/documentation changes are
 recorded separately from the unchanged tested program and are checked in the
 final archive; behavioral suites are not repeated for them. Existing failed
-runs and the first archive remain preserved. Fresh installation and physical
-qualification remain required; these results do not qualify case11 or a
-replacement installation.
+runs and the first archive remain preserved. The fresh isolated installation
+has since passed all eight steps and independent review. It checks both installed
+environments, dispatcher and admission-activity SDK components, shared clocks,
+native inputs and predecessor preservation. The physical results below do not
+requalify case11 or establish general foreground performance.
+
+### Current installed head and physical recovery checks
+
+Exact source `7306a53085ddc31d53d2ba50e91975c80cfc0014` passed all **14 hosted
+jobs**, seven each in the [PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41062578967)
+and [push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41062565459),
+on their original attempts. The twelve portable jobs reported 1,282 core tests
+and 81 preservation tests, with explicit platform skips: 36 on Linux/macOS, one
+on Windows/Python 3.12 and none on Windows/Python 3.11. The two source trees were
+identical. Earlier failures and cancellations remain separate outcomes.
+
+Wheel `50919bc2dd7c4cabdc661f57cab387d2df0eb999e3ca467a03852ed6ea15e33f`
+passed the eight-step isolated installation. Independent gate
+`c32e20a02463bb414497e9c6d697c220eaaa105a13c2f9a71c1a5f4844e22a1c`
+binds the installed 60-module payload in both interpreters, dispatcher checks,
+three actual SDK admission-activity cases, clocks, native inputs and predecessor
+preservation. This establishes installed-component readiness, not a resource
+reservation, physical task acceptance or a performance gain.
+
+| Physical evidence | Observed result | Limit |
+| --- | --- | --- |
+| Case12 original task | Safe expiry, one Continue and the independently checked 23-unit inventory output; three cumulative model requests, one input read and one physical output write. | The old private checker required a completion-only prompt hash from the expired worker and raised `KeyError`, before recovery-acceptance publication, task B or user Stop. Whole qualification failed. |
+| Corrected prompt-hash checker | Both workers retain model, quality, context, SDK and fixture checks; the successful worker retains the mandatory prompt digest. Independent original/selected prompt and metadata comparisons remain. All 44 focused tests passed with no skips, followed by independent source review. | Private harness correction only. Its initial fixture expectation error remains preserved; no runtime change, deadline extension or retroactive case12 pass. |
+| Case13 task A | Actual controlled expiry and one Continue led to published safe-wait and inventory acceptance. The 23-unit output, original prompt, saved read and history remained exact after task B. Three cumulative requests and one physical output write. | This is the original-task recovery component, not a complete foreground/two-task qualification. |
+| Case13 task B | A distinct task and session read the bound brief and wrote one 382-byte text output. Its worker and durable task record reported completion after three requests. | Format-only validation; no semantic-quality claim. The checker failed before publishing B acceptance or observing user Stop. |
+| Case13 foreground and cleanup | Twenty real document actions were retained. Five native lifetimes recorded complete descendant release; both GUI endpoints, pipes, listeners and transports closed. | The 202.0352201-second action gap fails the strict 60-second rule. Both invocations joined with exit 1. Cleanup after failure is not normal user Stop; `qualification_case_passed` and `clean_stop` remain false. |
+
+The case12 checker correction follows the published producer: its
+[successful result](https://github.com/midhatn/adaptive-inference/blob/7306a53085ddc31d53d2ba50e91975c80cfc0014/src/adaptive_inference/desktop/hermes/run_recovery.py#L569)
+contains the prompt digest, while its
+[expiry result](https://github.com/midhatn/adaptive-inference/blob/7306a53085ddc31d53d2ba50e91975c80cfc0014/src/adaptive_inference/desktop/hermes/run_recovery.py#L633)
+represents incomplete work. The initial added fixture expected a later refusal
+than the existing durable-store validator actually produced. That failed test
+attempt is preserved; the corrected regression checks the earlier refusal and
+comparison with the independently retained prompt. The acceptance predicate
+was unchanged between those test runs.
+
+The case13 discrepancy was in the receipt reader. The
+[producer](https://github.com/midhatn/adaptive-inference/blob/7306a53085ddc31d53d2ba50e91975c80cfc0014/src/adaptive_inference/desktop/hermes/recovery.py#L454)
+writes UTF-8 JSON lines with unescaped Unicode. The checker omitted an encoding.
+Python 3.11's [text-file default is locale-dependent](https://docs.python.org/3.11/library/functions.html#open),
+and [PEP 597](https://peps.python.org/pep-0597/) describes this Windows portability
+error. Independent decoding of the unchanged receipt as UTF-8 equals the durable
+write exactly. Decoding those same bytes as `cp1252` reproduces the discrepancy
+solely in two em dashes in the original text. IDs, path, fingerprint, result and
+artifact hash match; this does not establish a duplicate or lost write. The
+separate post-run host observation reports `cp1252`, but is not presented as a
+historical in-process encoding measurement.
+
+The fresh private checker changes only that reader to explicit UTF-8, retaining
+strict decode failures and every content, identity and duplicate-write check.
+All **47 focused tests passed on their first invocation**, with no failures,
+errors or skips and unchanged tested source. The 44 existing tests remain; three
+new tests exercise the actual reader on real UTF-8 receipt files under a
+deterministic legacy-encoding default, reject malformed UTF-8, and retain
+refusal of changed content, call/operation identities and duplicate receipts.
+The fixture reuses the existing real SQLite recovery producer with its reduced
+native-history fixture; this is not a full SDK or model test.
+
+A separate read-only projection of the closed case13 B files reproduces the old
+reader's refusal and confirms that the corrected reader recovers the actual
+three requests, six native-history rows and one 382-byte write. The downstream
+check reaches missing GUI-resume records after its preceding task, quality,
+prompt, wire and artifact checks. Complete B transport and job-identity fields
+were not persisted, so none were invented. This partial retrospective diagnosis
+cannot publish the missing case13 acceptance or supply user Stop. Focused-test
+receipt SHA-256:
+`6a4da3af5d417e5301243e9516c1a24ce3dcde053128263b705bde33cfa60a3a`.
+
+The original primary audit failed at `normal_parent`; the official foreground
+supplement was not run. Independent evaluation of the unchanged onset predicate
+rejects the retained activity gap. Neither issue is removed from case13.
+
+The independent case13 review passed 471 evidence-integrity checks across 391
+pinned files, SHA-256
+`7760b9b325ab0258a6fd902d0a77f13eddf1e7c5044c7ee4e47664aae761b3cd`.
+These identify retained private evidence, not a public reproducible acceptance
+receipt. Case12's corresponding review is
+`48578b0df4a4d712cf33c627fc329ba0ea0c0e8dc32468af7b5a52a44edcc4e2`.
+The [roadmap](../PLAN.md) keeps a fresh complete qualification as the next live
+gate. No physical reboot, general media-quality, arbitrary-engine or performance
+claim follows from these results.
 
 ### CI diagnostics and isolated HTTP fixture validation
 

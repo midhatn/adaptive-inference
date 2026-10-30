@@ -46,24 +46,36 @@ interrupted runs will remain identified as such.
 
 ## Milestones and dependency order
 
-**Current M2 gate — 30 October 2026:** the retained host implements user task
-contracts, task handover and explicit continuation after a resource wait. The
-outstanding acceptance gate is one complete installed IQ3_S two-task run covering
-safe waiting expiry, Continue, task acceptance and shutdown. In the latest run,
-case11, actual foreground work closed admission, the first request completed and
-the native engine parked. Hermes then interrupted the saved second request's
-resource wait after 611.1 seconds without a reported activity signal. The first
-read is preserved, but the task did not complete and cooperative Stop was not
-confirmed. The source correction now recognizes a verified resource wait while
-retaining the original deadline and interruption checks. Focused tests and the
-actual pinned SDK watchdog components pass with controlled clocks. The complete
-source suite passes 1,282 tests, and all 81 source-preservation checks pass. Archive
-checks also pass; Git preserves the exact tested reference bytes. Next validate a
-fresh installation, then run the full physical scenario as a new case; source and
-component checks do not replace that acceptance.
-Safe expiry, Continue and the second task remain unqualified in this scenario. Earlier
-accepted reference workflows retain their own source and scope. See the
-[current evidence](docs/evidence.md).
+**Current M2 gate — 30 October 2026:** the installed IQ3_S composition now has
+observed safe resource-wait expiry, explicit continuation and a preserved original
+task result. Source head `7306a53` passed all 14 hosted jobs, and its isolated
+installation passed all eight steps. These source, package and component checks
+remain separate from the [physical evidence](docs/evidence.md#current-installed-head-and-physical-recovery-checks).
+
+In case13, one Continue resumed the original inventory task and produced the
+independently checked 23-unit result. That task's prompt, completed read, history
+and output remained intact after a different task ran in the same service. The
+second worker completed its separate text output with format-only validation.
+The complete qualification nevertheless failed: an operator/context-recovery gap
+of 202.035 seconds exceeded the strict 60-second foreground-activity rule, and
+the private checker later read a UTF-8 receipt using the Windows locale encoding.
+No second-task harness acceptance or normal user Stop was recorded. Cleanup
+completed, but it does not replace that missing acceptance.
+
+The narrow reader correction passes all 47 focused source tests, including three
+new non-ASCII and strict-refusal regressions. A read-only projection of the closed
+second task explains the mismatch; it cannot reconstruct the missing final GUI
+and job-identity evidence or qualify that failed run. Next run a fresh complete
+scenario with the same model, quality, original deadlines and acceptance rules.
+Preserve case13 and its
+failed foreground interval. Schedule the uninterrupted observation phase at a
+safe working-context boundary, with preparation and documentation outside that
+phase; never fill an observation gap retrospectively. The new run must still
+cover foreground protection, original-task acceptance, separate-task acceptance,
+normal Stop and retained cleanup before M2 advances. Publish its reproducible
+validation entry with that result. Broader desktop coexistence, media work and
+physical reboot recovery remain later gates; earlier accepted reference
+workflows retain their own source and scope.
 
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |

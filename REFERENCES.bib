@@ -691,3 +691,18 @@
   url = {https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tests/agent/test_turn_liveness_watchdog.py},
   note = {Inspected 2026-10-30, source SHA256 cf966c0bb3cb9c39bc952221b31281302e982f76e19bd9f3a1a267c69d6dd41c. The optional hermes_admission_activity component check adapts per-module clocks and the bounded ParkingReleaseLock test pattern while executing actual extracted SDK components. MIT notice retained with the example. No full agent, model, periodic scheduler, durable SessionDB heartbeat or hardware elapsed-time claim}
 }
+
+@misc{pythonExplicitTextEncoding,
+  title = {Python 3.11 text-file encoding and Path.read_text contracts},
+  author = {{Python Software Foundation and contributors}},
+  url = {https://docs.python.org/3.11/library/functions.html#open},
+  note = {Inspected 2026-10-30 with pathlib.Path.read_text documentation and CPython v3.11.9 Lib/pathlib.py. A private task-handover checker must read the existing producer's UTF-8 JSONL receipts explicitly as UTF-8; locale decoding can corrupt non-ASCII content before strict equality. No runtime producer, comparison rule or upstream implementation was changed or copied}
+}
+
+@misc{pep597EncodingWarning,
+  title = {PEP 597: Add optional EncodingWarning},
+  author = {Inada, Naoki},
+  year = {2019},
+  url = {https://peps.python.org/pep-0597/},
+  note = {Inspected 2026-10-30 for the documented Windows portability error caused by omitting an encoding for UTF-8 text. Informs the private receipt-reader correction and non-ASCII regression; no global locale change, replacement decoding or acceptance relaxation}
+}
