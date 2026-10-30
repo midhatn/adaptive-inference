@@ -17,6 +17,20 @@
           "path": "CONTRIBUTING.md",
           "blob_sha": "4efd7dd68049b626acf3306ad6a83288723268c8",
           "url": "https://github.com/Niko1221/Strata/blob/7ddc17a38fe7f31637e895ecfba58c2cd43d65ec/CONTRIBUTING.md"
+        },
+        {
+          "repo": "Niko1221/Strata",
+          "path": "strata_control/private_files.py",
+          "blob_sha": "b272d1bb5345543f139cc3d3e00cd04a29dc317c",
+          "url": "https://github.com/Niko1221/Strata/blob/870aedd9e1ebe1c91f94da93b59af17729f6c5c0/strata_control/private_files.py",
+          "scope": "Read-only verification of the attributed #3399/#3428 port; original canonical overlay remains unchanged."
+        },
+        {
+          "repo": "Niko1221/Strata",
+          "path": "tests/terminal/test_default_object_access.py",
+          "blob_sha": "b2f9ae7048bc5e4442e4dbb1c604f7d2efa4d087",
+          "url": "https://github.com/Niko1221/Strata/blob/870aedd9e1ebe1c91f94da93b59af17729f6c5c0/tests/terminal/test_default_object_access.py",
+          "scope": "Read-only verification of the attributed #3399/#3428 port; original canonical overlay remains unchanged."
         }
       ],
       "status": "updated-existing-draft",
@@ -61,8 +75,8 @@
       "outstanding": [
         "Published route-control correction has 46 CPU/fake-engine tests; no new native-build or live public workflow qualification.",
         "metal-link failed at compilation: Xcode15.4 SDK lacks Metal4/mathMode declarations. Affected Metal subtree and workflow match base7ddc17a3. HIP/SYCL/Metal and full public model-workflow gates remain open; earlier complete-suite failure retained.",
-        "Larger scheduler reconciliation is preserved locally and is not in this PR. Windows ownership fix #3399 remains separate.",
-        "Observed unchanged-head merge conflict on 2026-10-30; resolve against the current upstream base and validate that exact integration before further propagation. Existing tests remain bound to their original head/base."
+        "The larger scheduler reconciliation remains separate from #1493. Windows ownership #3399 is closed unmerged after an attributed upstream port; its original tests and source overlay remain historical.",
+        "Keep #1493 draft. First evaluate a narrow canonical adapter consuming existing upstream controls; only a reproduced missing contract or defect should motivate a focused revision. Resolve relevant conflicts and validate the exact new integration before propagation; do not automatically rebase the full 122-file draft."
       ],
       "history": [
         {
@@ -76,23 +90,92 @@
           "mergeable": "mergeable",
           "merge_state": "unstable",
           "superseded_by_snapshot": "2026-10-30T09:00:24.705429+00:00"
+        },
+        {
+          "checked_at": "2026-10-30T08:52:23.299Z",
+          "outstanding": [
+            "Published route-control correction has 46 CPU/fake-engine tests; no new native-build or live public workflow qualification.",
+            "metal-link failed at compilation: Xcode15.4 SDK lacks Metal4/mathMode declarations. Affected Metal subtree and workflow match base7ddc17a3. HIP/SYCL/Metal and full public model-workflow gates remain open; earlier complete-suite failure retained.",
+            "Larger scheduler reconciliation is preserved locally and is not in this PR. Windows ownership fix #3399 remains separate.",
+            "Observed unchanged-head merge conflict on 2026-10-30; resolve against the current upstream base and validate that exact integration before further propagation. Existing tests remain bound to their original head/base."
+          ],
+          "superseded_by_snapshot": "2026-10-30T09:43:27.532160+00:00"
         }
       ],
-      "last_checked": "2026-10-30T08:52:23.299Z",
+      "last_checked": "2026-10-30T09:43:27.532160+00:00",
       "related_pull_requests": [
         {
           "repository": "Niko1221/Strata",
           "number": 3399,
           "url": "https://github.com/Niko1221/Strata/pull/3399",
-          "state": "open",
+          "state": "closed",
           "head_sha": "841476cdcc566dcdcf750121ef235749efc06375",
           "base_sha": "c093ac263f8175307e67b7fd7eeeaa2e73ceaded",
-          "mergeable": "conflicting",
-          "merge_state": "dirty",
-          "checked_at": "2026-10-30T08:52:23.299Z",
-          "scope": "Separate Windows ownership correction; not counted among the original twelve delivery PRs. Prior external corroboration did not test this exact PR head."
+          "mergeable": "not_applicable",
+          "merge_state": "closed",
+          "checked_at": "2026-10-30T09:43:27.532160+00:00",
+          "scope": "Separate Windows ownership correction, closed unmerged after upstream incorporated both the fix and exact regression. Not counted among the original twelve delivery PRs; prior validation retains its original scope.",
+          "status_history": [
+            {
+              "state": "open",
+              "mergeable": "conflicting",
+              "merge_state": "dirty",
+              "checked_at": "2026-10-30T08:52:23.299Z"
+            }
+          ],
+          "merged": false,
+          "closed_at": "2026-10-30T09:40:16Z",
+          "closure_reason": "ported_upstream",
+          "ported_upstream": {
+            "repository": "Niko1221/Strata",
+            "commit_sha": "e2e99ae54aae9a5a28938223679ab9a5ec4ef33c",
+            "commit_url": "https://github.com/Niko1221/Strata/commit/e2e99ae54aae9a5a28938223679ab9a5ec4ef33c",
+            "release": "v0.2.7",
+            "maintainer_confirmation_url": "https://github.com/Niko1221/Strata/pull/3428#issuecomment-6445917772",
+            "related_pr": "https://github.com/Niko1221/Strata/pull/3428",
+            "contributors": [
+              {
+                "login": "kossum",
+                "source_pr": 3428,
+                "contribution": "Token-default correction and complementary child-process QoS reopen regression."
+              },
+              {
+                "login": "midhatn",
+                "source_pr": 3399,
+                "contribution": "Live-child identity and ownership-record regression; MIDHAT NASHAR co-author credit in the port commit."
+              }
+            ],
+            "inspected_upstream_main": "870aedd9e1ebe1c91f94da93b59af17729f6c5c0",
+            "production": {
+              "path": "strata_control/private_files.py",
+              "blob_sha": "b272d1bb5345543f139cc3d3e00cd04a29dc317c"
+            },
+            "identity_regression": {
+              "path": "tests/terminal/test_default_object_access.py",
+              "blob_sha": "b2f9ae7048bc5e4442e4dbb1c604f7d2efa4d087",
+              "bytes": 2052,
+              "sha256": "92b0198ade2a42eb456a9fb69dcdcfc51b9a5feeeb7c2ef30026e006f22a83be",
+              "identical_to_pr_head": "841476cdcc566dcdcf750121ef235749efc06375"
+            },
+            "checked_at": "2026-10-30T09:43:27.532160+00:00",
+            "scope": "Source incorporation and attribution verification only. The production correction and exact #3399 regression are present at the inspected main commit; no new runtime, model or performance validation was run. #3399 itself was closed unmerged."
+          }
         }
-      ]
+      ],
+      "next_step_review": {
+        "kind": "source_review_recommendation",
+        "checked_at": "2026-10-30T09:43:27.532160+00:00",
+        "inspected_upstream_main": "870aedd9e1ebe1c91f94da93b59af17729f6c5c0",
+        "existing_controls": [
+          "POST /v1/load",
+          "POST /v1/unload?wait=...",
+          "POST /v1/vram",
+          "internal admission/drain/cancel-owned-request primitives"
+        ],
+        "action": "Keep #1493 draft. First evaluate a narrow canonical adapter consuming existing upstream controls; only a reproduced missing contract or defect should motivate a focused revision. Resolve relevant conflicts and validate the exact new integration before propagation; do not automatically rebase the full 122-file draft.",
+        "limits": "The full lease broker and memory policy remain absent upstream. The nine-line coadaptive route fix depends on the draft-only producer and is not an independently present upstream defect. No maintainer scope agreement for the substantial feature was found; current contribution requirements still apply.",
+        "required_validation": "Exact current upstream/model configuration, busy/auth/failed-cleanup cases, positive owned-process release, real IQ3_S unload/reload and task completion. Fixture, source, backend build and hardware results remain separate. These are future checks, not results of this review."
+      }
     },
     {
       "id": "llamacpp",
@@ -1223,12 +1306,11 @@
   },
   "qualification_gateway_release": "https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0",
   "status_refresh": {
-    "checked_at": "2026-10-30T09:00:24.705429+00:00",
+    "checked_at": "2026-10-30T09:43:27.532160+00:00",
     "targets": [
-      "strata",
-      "openclaw"
+      "strata"
     ],
-    "scope": "Focused OpenClaw supersession/issue closure and Strata #1493/#3399 conflict update only. Other target entries and original publication timestamps retain their recorded scope."
+    "scope": "Focused #3399 port/closure and #1493 source-review next-step update. Original twelve-PR delivery counts are unchanged because #3399 is tracked separately; other target snapshots retain their scope."
   },
   "publication_summary_history": [
     {
@@ -1254,6 +1336,14 @@
         "sglang"
       ],
       "scope": "Focused status update; other target entries retain their individual timestamps. The original twelve-PR refresh now contains eleven open PRs and one merged catalog PR. Strata #3399 corroboration is recorded separately in the historical registry."
+    },
+    {
+      "checked_at": "2026-10-30T09:00:24.705429+00:00",
+      "targets": [
+        "strata",
+        "openclaw"
+      ],
+      "scope": "Focused OpenClaw supersession/issue closure and Strata #1493/#3399 conflict update only. Other target entries and original publication timestamps retain their recorded scope."
     }
   ]
 }

@@ -29,8 +29,12 @@ The initial delivery snapshot is **2026-10-24 at 01:41 UTC**. Eleven new pull
 requests were submitted and the existing Strata #1493 draft was updated. A focused
 status refresh at **2026-10-26T13:21:39Z** records the Hermes catalog merge, completed
 OpenClaw automated review, SGLang's current check snapshot and separate Strata #3399 corroboration. The twelve PRs
-in the delivery refresh now comprise **eleven open and one merged**. Other target
-entries below retain their original snapshot unless a later check is stated.
+in that historical refresh comprised **eleven open and one merged**. A focused
+30 October update records OpenClaw #182080 closed unmerged after #182565 merged,
+leaving **ten open, one merged and one closed unmerged** among the original twelve.
+Strata #3399 was separately closed unmerged after its attributed upstream port;
+#1493 remains draft and conflicting. Other target entries retain their individual
+snapshots unless a later check is stated.
 Three related issues and one feature discussion are tracked separately. The
 18-target scope is unchanged. The delivery release is v0.3.0; retained gateway
 qualification used v0.2.0, as recorded separately in the ledger. The [machine-readable ledger](../upstream/delivery.json)
@@ -43,7 +47,7 @@ MLX-LM and vLLM.
 
 | Target | Submitted or retained integration | Recorded delivery status |
 | --- | --- | --- |
-| Strata | [Existing #1493](https://github.com/Niko1221/Strata/pull/1493), head `06ba725d8b9bb42b457302f71dd85204e9760c32` | Draft updated with the narrow nested route-control correction; 46 CPU/fake-engine checks. `metal-link` is failed; native/public-workflow gates remain open. [#3399](https://github.com/Niko1221/Strata/pull/3399) stays separate; [independent Windows corroboration](https://github.com/Niko1221/Strata/pull/3399#issuecomment-6387474666) tests a local FA-to-GA patch, not that PR's exact head or model inference. |
+| Strata | [Existing #1493](https://github.com/Niko1221/Strata/pull/1493), head `06ba725d8b9bb42b457302f71dd85204e9760c32` | Draft and conflicting as observed on 30 October. Its 46 CPU/fake-engine routing checks remain historical; `metal-link` and native/public-workflow gates remain unresolved. First evaluate existing upstream load/unload/VRAM controls through a narrow canonical adapter before revising the broader draft. [#3399](https://github.com/Niko1221/Strata/pull/3399) is closed unmerged: [e2e99ae5](https://github.com/Niko1221/Strata/commit/e2e99ae54aae9a5a28938223679ab9a5ec4ef33c) ported its exact child-identity test and the token-default fix with credit, alongside kossum's QoS test. This is source/attribution verification, not a new runtime result. |
 | llama.cpp | Existing OpenAI-compatible server profile and preserved native source inputs | Human-authored upstream submission required by its contribution policy |
 | vLLM | Existing compatible server profile; no duplicate provider | Human validation and DCO required before an upstream submission |
 | SGLang | [#46199](https://github.com/sgl-project/sglang/pull/46199), head `c3aaf7ec` | Ready for review. All 121 returned checks on the unchanged head comprise 33 successes, 82 skips, five failures and one neutral result; the latest processor workflow succeeded. Prior draft/title/aggregate failures remain on this head, and fork preview requires maintainer approval. Six gateway/SDK fixture checks are not native SGLang qualification. |
@@ -52,7 +56,7 @@ MLX-LM and vLLM.
 | MLX-LM | Existing compatible server profile | Human-authored submission and Apple-host qualification remain necessary |
 | TGI | Retained legacy profile | Repository archived; no new upstream PR possible |
 | Hermes | [Catalog #143827](https://github.com/NousResearch/hermes-agent/pull/143827), head `2c1411b3` | Merged on 24 October at 20:23:02 UTC (`e7b15ab1`); 17 checks succeeded and 23 skipped. The catalog entry pins `d6f4e201` and `plugins/hermes`. This is not upstream acceptance of the desktop controller or new native/agent qualification. |
-| OpenClaw | [Docs #182080](https://github.com/openclaw/openclaw/pull/182080), head `f64d74b0`, linked to [issue #182077](https://github.com/openclaw/openclaw/issues/182077) | Draft provider/subagent route guide. Source/schema checks and single-page MDX sanity passed; [ClawSweeper automated review](https://github.com/openclaw/openclaw/pull/182080#issuecomment-6378362783) found no actionable defect and marked it ready for maintainer review, with limited proof confidence. It remains draft; no human approval is claimed. Docs CI is skipped and upstream auto-response automation failures remain. |
+| OpenClaw | [Docs #182080](https://github.com/openclaw/openclaw/pull/182080), head `f64d74b0`, linked to [issue #182077](https://github.com/openclaw/openclaw/issues/182077) | Closed unmerged on 30 October as superseded by [#182565](https://github.com/openclaw/openclaw/pull/182565), merged at `45fc29dcf159095be6251dba21c249af08a5d05a` on 27 October and closing the issue. The successor documents existing same-model routes, settings, fallbacks and precedence. Original patch, schema/MDX checks and failed/skipped CI remain historical. Documentation acceptance does not qualify runtime scheduling or agent performance. |
 | Aider | [#5899](https://github.com/Aider-AI/aider/pull/5899), head `d5e113fb` | Open base-path clarification, distinct from existing runtime-normalization #5488. No hosted checks reported. |
 | OpenHands | [SDK #6180](https://github.com/OpenHands/software-agent-sdk/pull/6180), head `415785b5`, and [docs #997](https://github.com/OpenHands/docs/pull/997), head `4ef32371` | Both drafts. The SDK's human-only template section remains unchanged; companion docs should land with or after the example. SDK and gateway checks use HTTP fixtures. |
 | Continue | [#13415](https://github.com/continuedev/continue/pull/13415), head `12eba630` | Open base-path guide. CLA, Snyk quota, FFmpeg setup and aggregate checks remain unresolved; formatting passed. |

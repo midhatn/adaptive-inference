@@ -40,3 +40,13 @@ transport is unchanged. The original patch here remains byte-for-byte historical
 source; it is not relabeled as the merged implementation or its validation.
 This records documentation acceptance, not runtime scheduling, resource handoff,
 agent-task completion or performance qualification.
+
+Strata #3399 was closed **unmerged** on 30 October 2026 after upstream
+[commit e2e99ae5](https://github.com/Niko1221/Strata/commit/e2e99ae54aae9a5a28938223679ab9a5ec4ef33c)
+ported the token-default correction and this PR's exact child-identity regression.
+The commit credits kossum's complementary QoS regression from #3428 and midhatn's
+identity/ownership-record test; the [maintainer confirmed the v0.2.7 port](https://github.com/Niko1221/Strata/pull/3428#issuecomment-6445917772).
+Both changes are present at inspected main `870aedd9e1ebe1c91f94da93b59af17729f6c5c0`;
+the original test is Git blob `b2f9ae7048bc5e4442e4dbb1c604f7d2efa4d087`.
+The canonical historical overlay and its original validation remain unchanged.
+This source and attribution check does not add a runtime or model test result.
