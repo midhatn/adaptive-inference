@@ -357,6 +357,35 @@ duration investigation. It remains 13 successful checks and one cancellation,
 with no runtime regression or infrastructure-only cause established by these
 documentation changes.
 
+At documentation head `d3bc4032753cf52db78a6ead6c5c0fa8d25e5e87`, the
+[PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41046301890)
+and [push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41046296284)
+finished with **12 successful jobs and two cancellations**, both at the cumulative
+15-minute limit. The push Windows/Python 3.11 job passed 1,258 core tests in
+809.063 seconds before a later cancellation. The PR Windows/Python 3.12 job
+logged `ERROR` for `test_clock_crosses_after_admitted_before_begin`; no final
+traceback was retained in its log or inspected diagnostic artifact. That error
+remains unexplained. The opposite-event counterparts passed, including 1,258
+core tests in 426.573 seconds on Windows/Python 3.12. Both checkouts have tree
+`0a86b0f12a487b04f5800ae48248203f4e684263`.
+
+One focused local Python 3.12 control of that exact test passed in 0.354 seconds:
+safe expiry preserved pending work with no second begin or transport call. It
+uses a scripted SDK and actual worker/recovery control flow, not a model run.
+This pass does not diagnose the hosted error or establish that all CI passed.
+
+The subsequent workflow change adds only standard unittest `--failfast` to core
+discovery. Passing runs retain the same collection and assertions. Failed runs
+stop after the first failure/error; tests not reached must be recorded as not
+executed. The matrix's `fail-fast: false`, timeout and always-run diagnostic upload remain
+unchanged. CPython reports stored tracebacks after the current test and cleanup
+return, so blocked cleanup or job termination can still prevent a report.
+This is a diagnostic change, not a runtime correction or duration improvement.
+See [Python 3.11](https://docs.python.org/3.11/library/unittest.html#command-line-options),
+[Python 3.12](https://docs.python.org/3.12/library/unittest.html#command-line-options)
+and the pinned [CPython runner](https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/runner.py#L235).
+Its next ordinary CI runs provide separate validation of the changed head.
+
 ## Explicit continuation after safe expiry
 
 The [source-bound continuation record](../provenance/explicit-continuation/acceptance/README.md)

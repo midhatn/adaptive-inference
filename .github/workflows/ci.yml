@@ -25,7 +25,7 @@ jobs:
           cache-dependency-path: requirements.lock
       - run: python -m pip install -r requirements.lock
       - run: python -m pip install --no-deps -e .
-      - run: python -m unittest discover -s tests -v
+      - run: python -m unittest discover -s tests -v --failfast
         env:
           CONTINUATION_TEST_RECEIPTS: ${{ runner.temp }}/continuation-child-receipts
       - name: Preserve continuation child diagnostics

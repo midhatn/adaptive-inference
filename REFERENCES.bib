@@ -635,3 +635,17 @@
   url = {https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes},
   note = {Inspected 2026-10-30 after two Windows CI cumulative 15-minute timeouts. Supports a possible future measured workload partition with complete test coverage preserved; no workflow change or rerun performed for this research}
 }
+
+@misc{pythonUnittestFailFast,
+  title = {Python unittest command-line fail-fast option},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.12/library/unittest.html#command-line-options},
+  note = {Inspected with the Python 3.11 documentation on 2026-10-30. Reuses the standard discovery option to stop a failed core suite after its first failure or error; passing collection and assertions, sibling matrix jobs and timeout are unchanged. Unexecuted tests are not passes}
+}
+
+@misc{cpythonUnittestErrorReporting,
+  title = {CPython 3.12.10 unittest TextTestRunner},
+  author = {{Python Software Foundation}},
+  url = {https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/runner.py#L235},
+  note = {Inspected alongside v3.11.9 on 2026-10-30. Stored errors are printed after the test call returns, including cleanup. Fail-fast therefore improves reporting opportunity but cannot guarantee a traceback before blocked cleanup or job termination. No runner code copied}
+}

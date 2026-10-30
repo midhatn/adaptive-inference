@@ -1475,9 +1475,19 @@ must identify the exact bound work file and preserve its input hash, complete
 result and native intent; a matching basename or copied content is insufficient.
 Do not modify case10 or retroactively claim the unchanged check passed.
 
-**Validation follow-up:** consecutive documentation heads recorded a Windows
-CI job exceeding its cumulative 15-minute limit while the equivalent source
-passed on the other event. Retain both results. After the live qualification,
+**Validation follow-up:** consecutive documentation heads recorded Windows
+CI jobs exceeding their cumulative 15-minute limit while equivalent source
+passed on the other event. At `d3bc403`, 12 jobs passed and two were cancelled;
+one cancelled job also logged an unresolved test `ERROR` without its traceback.
+The same test passed in the other hosted run and in one focused local Python
+3.12 control, neither of which explains that error. Retain every outcome.
+Use standard [unittest fail-fast](https://docs.python.org/3.12/library/unittest.html#command-line-options)
+for the core suite so a first failure/error can reach the final traceback after
+the current test and cleanup return. A failing run remains failed and its
+remaining tests are not executed; passing discovery and assertions are unchanged.
+Keep sibling matrix jobs running, the 15-minute limit and always-run diagnostics.
+This improves reporting; it neither guarantees a traceback before termination
+nor fixes the cumulative duration. After the live qualification,
 use existing [Python profiling tools](https://docs.python.org/3.11/library/profile.html)
 to measure selected expensive groups, then consider explicit
 [job partitioning](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes)
