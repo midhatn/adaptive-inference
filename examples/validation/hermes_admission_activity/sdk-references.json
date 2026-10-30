@@ -1,0 +1,52 @@
+{
+  "revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2025 Nous Research",
+  "files": {
+    "agent/__init__.py": "21cdce89e9ffdb847634bf498b087410cd191a1e375db43928735846fb7ddc86",
+    "agent/jiter_preload.py": "bb66461d6e52e54dd2368ad021304d74676824924c45df80f0a3e769c9e5fff3",
+    "agent/activity_tracking.py": "4b21eef1aa2656ee89ce0b4213bcb4c300edbc654d3cc19e9b27ee25e36f889a",
+    "agent/session_activity.py": "7c9b9416c93594b7872124dffa5327a6a953a44d94d20abf2ac541c8a04b2117",
+    "agent/turn_liveness.py": "1577203f3c2b8f19c42103e2f310b1e147d9eaadab14759d12cb7e4ea30b2f84",
+    "agent/turn_facade_lease.py": "67c0aa57a489f3b587697c9217422a67d88620ff0afaed1e6838e0e15a461885",
+    "agent/interrupt_control.py": "aee497b902f3cc6daa69021fb698382cc97d678a4fb749ab4c2a64309817c58f",
+    "agent/interrupt_compat.py": "3ce061954cf52505feb69013372bcef37141699761a05dfff334cb3eaa09f25c",
+    "agent/i18n.py": "818d6f6d2870f8931b7a4d2f4583f86194bfc733f5b8fed63627437104917ac8",
+    "agent/i18n_layers.py": "f77fc370c92522f5f1d7b7b14de1513e43d25ac6fef73601de48c074a61a5670",
+    "agent/i18n_languages.py": "ec22e409f7a964250cc9f67f317196623f5aa2ad86f23287685e9aa060910a49",
+    "tools/__init__.py": "7bca460f476ac9ace706c8cfd07e98f8aae34d839862f0f68abafc3a8397cf35",
+    "tools/interrupt.py": "3127f53b4ca1431df828015a3eb06d29ffd43ea9b6a51954d3a45bc69483917b",
+    "utils.py": "9c4751dc9fbcbfe7e16d9e0cc5fb25566517c4927d2dc84061d4cac993a98445",
+    "hermes_yaml.py": "f97f0f08b6474c52434d0cffaa7ba0ecaa5b9279c4abcbb35c11d15f9c89db76",
+    "hermes_state_pidns.py": "cd1bedbcbb5874cd22c9293aaa042e4fba1b5e7294701803a2dfbb7ac6be4f19",
+    "tests/agent/test_turn_liveness_watchdog.py": "cf966c0bb3cb9c39bc952221b31281302e982f76e19bd9f3a1a267c69d6dd41c",
+    "tests/agent/test_session_activity_persist.py": "fe450bd1c4057b9595d209a7425556fed139d40acc129c5631f7c8ae885a4d31",
+    "LICENSE": "e29dfaf6905a8d396a58ea4bd84ad27057756bbd9599b5bec0971ae34d2a2118"
+  },
+  "modules": {
+    "agent": "agent/__init__.py",
+    "agent.jiter_preload": "agent/jiter_preload.py",
+    "agent.activity_tracking": "agent/activity_tracking.py",
+    "agent.session_activity": "agent/session_activity.py",
+    "agent.turn_liveness": "agent/turn_liveness.py",
+    "agent.turn_facade_lease": "agent/turn_facade_lease.py",
+    "agent.interrupt_control": "agent/interrupt_control.py",
+    "agent.interrupt_compat": "agent/interrupt_compat.py",
+    "agent.i18n": "agent/i18n.py",
+    "agent.i18n_layers": "agent/i18n_layers.py",
+    "agent.i18n_languages": "agent/i18n_languages.py",
+    "tools": "tools/__init__.py",
+    "tools.interrupt": "tools/interrupt.py",
+    "utils": "utils.py",
+    "hermes_yaml": "hermes_yaml.py",
+    "hermes_state_pidns": "hermes_state_pidns.py"
+  },
+  "fixture_files": [
+    "test_admission_wait_expiry.py",
+    "test_desktop_paused_expiry.py",
+    "test_desktop_report_feedback.py",
+    "safe_wait_fixture.py",
+    "test_desktop_expiry_worker.py"
+  ],
+  "reuse": "Controlled per-module clocks and ParkingReleaseLock adapt upstream watchdog tests. Actual writer/watchdog/lease commit/interrupt components are imported from the exact SDK. No SDK implementation is copied into production."
+}

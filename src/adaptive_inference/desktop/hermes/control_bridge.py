@@ -91,14 +91,19 @@ class Controls:
                 except BaseException:
                     self.paused_expiry_observation = None
                     raise
-                # The timestamp follows the coherent read. A slow read cannot
-                # turn a newly observed late Pause into a pre-deadline boundary.
-                observed_at = self.clock()
-                previous = self.paused_expiry_observation
-                if previous is None or previous['pause'] != observation:
+                if observation is None:
+                    # A validated control arrived after consume. Keep the normal
+                    # activity/deadline/sleep path before consuming it next time.
                     self.paused_expiry_observation = None
-                    if observed_at < self.deadline:
-                        self.paused_expiry_observation = {'pause': observation, 'observed_at': observed_at}
+                else:
+                    # The timestamp follows the coherent read. A slow read cannot
+                    # turn a newly observed late Pause into a pre-deadline boundary.
+                    observed_at = self.clock()
+                    previous = self.paused_expiry_observation
+                    if previous is None or previous['pause'] != observation:
+                        self.paused_expiry_observation = None
+                        if observed_at < self.deadline:
+                            self.paused_expiry_observation = {'pause': observation, 'observed_at': observed_at}
             else:
                 self.paused_expiry_observation = None
             if self.wait_activity is not None:

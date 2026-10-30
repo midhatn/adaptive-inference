@@ -14,3 +14,7 @@ SDK_FILES.update({
 
 # The serialized Pause guard observes the SDK's current worker interruption.
 SDK_FILES['tools/interrupt.py'] = '3127f53b4ca1431df828015a3eb06d29ffd43ea9b6a51954d3a45bc69483917b'
+
+# Explicit Continue rebuilds a request using this saved-conversation prologue.
+# Existing disk and imported-module origin validation consume the same pin.
+SDK_FILES['agent/turn_context.py'] = '89df9b4ad047d3efff4b3d3514cc4a6eef2ac05d6add105e1e4b354bee4191fa'

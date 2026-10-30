@@ -1,0 +1,86 @@
+{
+  "historical_manifests": {
+    "provenance/task-handover/task-file-aliases/ci-diagnostics/source-lineage.json": "4c681cb0161a0f4afa19f228cfbb422bc476d7991c382e0ad0aba884fc6b93d7",
+    "provenance/task-handover/task-file-aliases/source-lineage.json": "c99b9386c8426ff792bd078e643e110630a5cad7ae3c3cec7ba269556e1c07ba"
+  },
+  "modules": {
+    "control_mailbox.py": {
+      "changed_methods": {
+        "Mailbox._paused_execution": {
+          "predecessor_ast_sha256": "d487221e2929874651e7907e1c77152953d82d15e86a0b188ea604c56f23505d",
+          "successor_ast_sha256": "faac049326779cf586dbd23da0489d95ab47fffcd3a2abd125d74bddfc9de429"
+        },
+        "Mailbox.paused_execution_observation": {
+          "predecessor_ast_sha256": "3cf592d78fdd824d059b5ba1e6d00f2e607188d6f14898da8b87a7db4575bb25",
+          "successor_ast_sha256": "1ef63aab2eeccbb59858f3c8ea4cc76fb4829ed40d40f5281b59198b54537464"
+        }
+      },
+      "predecessor_ast_sha256": "8888416a3f13f1d4643c3602b9bef2b48fa969e13148638c50d577290125071f",
+      "predecessor_sha256": "b317f39a527acb7e17edfe20f17a0377aa189a6d4e6ba583dd4ace9151d47cc8",
+      "predecessor_source": "provenance/paused-budget-expiry/reviewed-repository-bf70a2ac/src/adaptive_inference/control_mailbox.py",
+      "successor_ast_sha256": "451084fd75851ebc9f17207c0d691cae751323b10922568a7adf626f1fa18a1e",
+      "successor_sha256": "576fc9ad6b18d0a42650458bd5128e3bdf5aa222f63dd050fc55b6ab64bd6ff6"
+    },
+    "desktop/hermes/control_bridge.py": {
+      "changed_methods": {
+        "Controls.poll": {
+          "predecessor_ast_sha256": "f56aead94c56ec50cb0f9ef7c331f0e976b41eef1a71227fd0c1edaf03ce9a99",
+          "successor_ast_sha256": "8eafd8bddfcfce72797235c0f563915d8a47ebb56a580b5ba438a0d901182225"
+        }
+      },
+      "predecessor_ast_sha256": "c03fb2e71a5951423bb09b4cf729c74f59fabec40ca12afee3b0429288fd94b4",
+      "predecessor_sha256": "36865ccfecda2821fab12e9bcc32eaa6010d638b3ed47873bcaa4d45304b2780",
+      "predecessor_source": "provenance/paused-budget-expiry/reviewed-repository-bf70a2ac/src/adaptive_inference/desktop/hermes/control_bridge.py",
+      "successor_ast_sha256": "e432902dc2cc813ef45f0f26770118805d14f2b98bc1a56575761cdc289c3d03",
+      "successor_sha256": "7a8e0aa672efeb1c6f676446e0f3b6886fd778f5d0f6c185a87d005a0256a3db"
+    }
+  },
+  "schema": "adaptive.pause-observation.source-lineage.v1",
+  "scope": "Two runtime files and three declared methods; existing exact bf70 predecessors reused. Source preservation is separate from current behavior and installed acceptance.",
+  "support": {
+    "tests/task_file_alias_lineage.py": {
+      "appended_marker": "\n\n# Current pause-observation delta; reuse the already retained bf70 predecessors.",
+      "appended_sha256": "1e09e7654fadd0ee6f630efcde95fb949a21c4834fee147f7c4333b5ade535e8",
+      "insertions": [
+        "    data = observation_predecessor(relative, data, root=root)\n",
+        "    tree = restore_observation(tree, relative, root=root)\n",
+        "        data = observation_predecessor(relative, data, root=root)\n"
+      ],
+      "predecessor_sha256": "64c0164ebe7f5a3067fa9217121fb0cb7fe53a7ce273c30dd01573159f6f8e4f",
+      "predecessor_source": "provenance/task-handover/pause-observation/predecessor/tests/task_file_alias_lineage.py",
+      "successor_sha256": "7175a7d46551e65407baceb63e7eeaeb5fe810dcc06dbe7516f9460c8b30f2fc"
+    },
+    "tests/test_continuation_diagnostics_lineage.py": {
+      "insertions": [
+        "        fixture_input = b'            sources += lineage.observation_inputs()\\n'\n        self.assertEqual(current.count(fixture_input), 1)\n        current = current.replace(fixture_input, b'', 1)\n"
+      ],
+      "predecessor_sha256": "b33ff6309669db235ea5627232abe4ad74937e7055c08590a0302456a5bb0555",
+      "predecessor_source": "provenance/task-handover/pause-observation/predecessor/tests/test_continuation_diagnostics_lineage.py",
+      "successor_sha256": "41adad7df013d7faeb72ed55b3d9f773874be3e842582d3e09af88f57e4a3935"
+    },
+    "tests/test_task_contract_lineage.py": {
+      "insertions": [
+        "            import task_file_alias_lineage as aliases\n            for path in aliases.observation_inputs():\n                target = root / path.relative_to(lineage.ROOT)\n                target.parent.mkdir(parents=True, exist_ok=True)\n                target.write_bytes(path.read_bytes())\n"
+      ],
+      "predecessor_sha256": "6c6901f7654125abc0bacce1ff23d9a886e81ee5f88b5deb0209a6c5a757907e",
+      "predecessor_source": "provenance/task-handover/pause-observation/predecessor/tests/test_task_contract_lineage.py",
+      "successor_sha256": "6c3c0c8cdeedb5aeee762cc811ada8269d28be11a7cc4088d8b3e0ab473561f8"
+    },
+    "tests/test_task_file_alias_lineage.py": {
+      "insertions": [
+        "            sources += lineage.observation_inputs()\n"
+      ],
+      "predecessor_sha256": "10ccd83542c03624f891389510400c777a4394b08e615ed262cf811b9acdacf3",
+      "predecessor_source": "provenance/task-handover/pause-observation/predecessor/tests/test_task_file_alias_lineage.py",
+      "successor_sha256": "13231bedd85541c887aaf93ccfa49386a4b45b1d738d0eb5205cea03ba10ceb9"
+    },
+    "tests/test_task_handover_lineage.py": {
+      "insertions": [
+        "            sources += aliases.observation_inputs()\n"
+      ],
+      "predecessor_sha256": "00795ccc4f7df82f8e81c0cc8dd7840bb1afa08bc141f67745496f7a13792b08",
+      "predecessor_source": "provenance/task-handover/pause-observation/predecessor/tests/test_task_handover_lineage.py",
+      "successor_sha256": "bc7f4f49276df93cdad2bc160ec049bc8a9a6235c7cae412ffe6c5e45cb20f96"
+    }
+  }
+}

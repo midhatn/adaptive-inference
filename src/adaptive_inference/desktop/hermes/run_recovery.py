@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Installed bounded Hermes report consumer; never controls a model service."""
+"""Installed bounded Hermes task consumer; never controls a model service."""
 from __future__ import annotations
 from contextlib import contextmanager, nullcontext
 import argparse
@@ -34,6 +34,21 @@ CONTINUE = ('Continue the original saved task from this exact conversation. Pres
             'and do not repeat completed writes. Finish the original objective and report its outcome.')
 
 
+def prepared_contract(plan):
+    """Resolve a new explicit specification, or the unchanged legacy report plan."""
+    from adaptive_inference.task_spec import TaskSpec
+    if 'task_spec' not in plan and 'task_spec_sha256' not in plan:
+        if plan.get('task_id') != 'orders-report':
+            raise ValueError('An explicit task specification is required')
+        return None
+    if 'task_spec' not in plan or 'task_spec_sha256' not in plan:
+        raise ValueError('Incomplete prepared task specification')
+    spec = TaskSpec(plan['task_spec'])
+    if spec.sha256 != plan['task_spec_sha256']:
+        raise ValueError('Prepared task specification changed')
+    return spec
+
+
 def load_module(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
@@ -63,6 +78,36 @@ def prepare(args):
     if sha(args.profile) != args.profile_sha256:
         raise RuntimeError('Deployment profile changed before preparation')
     profile = WindowsProfile.load(args.profile)
+    from adaptive_inference.task_spec import TaskSpec
+    explicit = [getattr(args, key, None) for key in
+                ('task_spec', 'task_spec_sha256', 'task_inputs', 'task_id', 'session_id')]
+    if any(value is not None for value in explicit) and not all(explicit):
+        raise ValueError('A new task requires its specification, input directory and fresh task/session identities')
+    task_spec = None if not any(explicit) else TaskSpec.read(args.task_spec, args.task_spec_sha256)
+    reserved_identity = None
+    identity_path = getattr(args, 'demand_identity', None)
+    identity_sha = getattr(args, 'demand_identity_sha256', None)
+    if identity_path is not None or identity_sha is not None:
+        from adaptive_inference.task_spec import strict_json
+        from adaptive_inference.demand import DemandIdentity
+        if task_spec is None or not identity_path or not identity_sha:
+            raise ValueError('Reserved demand identity requires its file/hash and an explicit task specification')
+        with Path(identity_path).open('rb') as stream:
+            identity_raw = stream.read(4097)
+        if len(identity_raw) > 4096 or hashlib.sha256(identity_raw).hexdigest() != identity_sha:
+            raise ValueError('Reserved demand identity input changed')
+        reserved_identity = strict_json(identity_raw)
+        if type(reserved_identity) is not dict or set(reserved_identity) != {'registration_id', 'task_id', 'owner_id', 'arrived_at_utc'}:
+            raise ValueError('Exact reserved demand identity fields required')
+        DemandIdentity(**reserved_identity)
+        if reserved_identity['task_id'] != args.task_id:
+            raise ValueError('Reserved demand belongs to another task')
+    if task_spec is not None:
+        from adaptive_inference.task_store import _task_id
+        _task_id(args.task_id); _task_id(args.session_id)
+        if args.fixture or getattr(args, 'validate_report_before_write', False):
+            raise ValueError('Legacy report fixture options cannot replace an explicit task contract')
+        task_spec.verify_inputs(args.task_inputs)
     expected = json.loads(args.package_identity.read_text(encoding='utf-8'))
     installed = package_identity(expected)
     python = verify_interpreter(profile.worker_python, profile.worker_python_sha256, current=True)
@@ -79,14 +124,21 @@ def prepare(args):
     if args.control_case not in ('complete','cancel'):
         raise ValueError('Explicit qualification control case is required')
     plan['control_case']=args.control_case
+    if task_spec is not None:
+        plan.update(task_id=args.task_id, session_id=args.session_id,
+                    task_spec=task_spec.data, task_spec_sha256=task_spec.sha256)
     plan['demand_identity']={'registration_id':'qualification-'+uuid.uuid4().hex,
         'task_id':plan['task_id'],'owner_id':'qualified-hermes',
         'arrived_at_utc':datetime.now(timezone.utc).isoformat().replace('+00:00','Z')}
+    if reserved_identity is not None: plan['demand_identity'] = reserved_identity
     if args.fixture_scenario!='normal' and not args.fixture:
         raise ValueError('Synthetic admission scenario requires fixture mode')
     rec, base = setup(plan)
     validator_identity=None
-    if getattr(args,'validate_report_before_write',False):
+    if task_spec is not None:
+        validator_identity = task_spec.validator_identity()
+        plan['pre_effect_validator'] = validator_identity
+    elif getattr(args,'validate_report_before_write',False):
         from adaptive_inference.desktop.hermes.report_validator import identity as report_identity
         validator_identity=report_identity(base.REPORT)
         plan['pre_effect_validator']=validator_identity
@@ -94,7 +146,10 @@ def prepare(args):
         raise RuntimeError('Installed SDK identity changed')
     run.mkdir(parents=True, exist_ok=False)
     work = run / 'work'; work.mkdir()
-    (work / 'orders.csv').write_text(base.CSV, encoding='utf-8', newline='\n')
+    if task_spec is None:
+        (work / 'orders.csv').write_text(base.CSV, encoding='utf-8', newline='\n')
+    else:
+        task_spec.stage_inputs(args.task_inputs, work)
     (run / 'phase.txt').write_text('parent', encoding='utf-8')
     home = run / 'home'; home.mkdir()
     plugin = home / 'plugins/recovery-checkpoint'; plugin.mkdir(parents=True)
@@ -108,12 +163,15 @@ def prepare(args):
     from adaptive_inference.demand import DemandIdentity
     from adaptive_inference.desktop.hermes.control_bridge import prepare_task
     metadata={'sdk_revision':SDK_REV,'model':MODEL,'quality':QUALITY,'deadline_clock':CLOCK_ID}
+    if task_spec is not None: metadata.update(task_spec.metadata())
     if validator_identity is not None:metadata['pre_effect_validator']=validator_identity
-    prepare_task(TaskStore(run/'task.sqlite3'),DemandIdentity(**plan['demand_identity']),PROMPT,
+    prepare_task(TaskStore(run/'task.sqlite3'),DemandIdentity(**plan['demand_identity']),
+        PROMPT if task_spec is None else task_spec.prompt,
         plan['session_id'],metadata=metadata,max_attempts=8)
     # Installed source files are verified by shared wheel-relative pins;
     # mutable task inputs retain the original explicit file pins.
-    pins = [home / 'config.yaml', plugin / '__init__.py', plugin / 'plugin.yaml', work / 'orders.csv']
+    inputs = ['orders.csv'] if task_spec is None else [row['name'] for row in task_spec.data['inputs']]
+    pins = [home / 'config.yaml', plugin / '__init__.py', plugin / 'plugin.yaml', *(work / name for name in inputs)]
     plan['pins'] = {str(p): rec.digest(p.read_bytes()) for p in pins}
     rec.save(run / 'plan.json', plan)
     print(json.dumps({'prepared': True, 'model_started': False, 'fixture': args.fixture}))
@@ -171,9 +229,10 @@ def worker(args):
 def _worker(args, *, selected=None):
     run = args.run.resolve(strict=True)
     plan = json.loads((run / 'plan.json').read_text(encoding='utf-8'))
+    task_spec = prepared_contract(plan)
     if (plan.get('sdk_revision') != SDK_REV or plan.get('model') != MODEL
             or plan.get('quality') != QUALITY or type(plan.get('fixture')) is not bool
-            or plan.get('max_requests') != 8 or plan.get('task_id') != 'orders-report'):
+            or plan.get('max_requests') != 8):
         raise ValueError('Prepared source/quality/request contract differs')
     # Verify with stdlib before importing the pinned adapter/helper or loading
     # dependency .pth files. A rejected changed consumer must never execute.
@@ -211,7 +270,8 @@ def _worker(args, *, selected=None):
     from adaptive_inference.control_mailbox import Mailbox,ACKS
     from adaptive_inference.desktop.hermes.control_bridge import Controls
     from adaptive_inference.desktop.hermes.service_stop import (
-        StopAtPause, ProductStop, STOP_EXIT, PAUSED_EXPIRY_EXIT, finalize_paused_expiry)
+        StopAtPause, ProductStop, STOP_EXIT, PAUSED_EXPIRY_EXIT, finalize_paused_expiry,
+        WAIT_EXPIRY_EXIT, finalize_admission_wait_expiry)
     from hermes_state import SessionDB
     from adaptive_inference.desktop.installation import verify_sdk_imports
     verify_sdk_imports(plan['sdk'])
@@ -316,11 +376,18 @@ def _worker(args, *, selected=None):
         try:
             yield
         except rec.ControlStop as exc:
-            if (exc.control_state != 'paused' or exc.reason != 'control_wait_deadline'
-                    or controller is None):
+            if exc.reason != 'control_wait_deadline' or controller is None:
                 raise
-            proof = finalize_paused_expiry(controller, agent=agent, db=db,
-                provider=provider, session_db_factory=SessionDB)
+            if exc.control_state == 'paused':
+                finalizer = finalize_paused_expiry
+            elif (exc.control_state == 'active'
+                    and owned.checkpoint.state.get('phase') == 'waiting_admission'):
+                finalizer = finalize_admission_wait_expiry
+            else:
+                raise
+            proof = finalizer(controller, agent=agent, db=db,
+                provider=provider, session_db_factory=SessionDB,
+                **({'selected': selected} if finalizer is finalize_admission_wait_expiry else {}))
             # The exact objects were successfully closed while owned. Outer
             # finally must not close them again after sealing the checkpoint.
             agent = db = provider = None
@@ -340,7 +407,13 @@ def _worker(args, *, selected=None):
         pre_effect_validator=None
         expected_metadata={'sdk_revision':SDK_REV,'model':MODEL,'quality':QUALITY,NAMESPACE:identity.metadata(),
                            'deadline_clock':CLOCK_ID}
-        if validator_identity is not None:
+        if task_spec is not None:
+            expected_metadata.update(task_spec.metadata())
+            if validator_identity != task_spec.validator_identity():
+                raise ReconciliationRequired('Prepared task validator identity changed')
+            expected_metadata['pre_effect_validator'] = validator_identity
+            pre_effect_validator = task_spec.validate_write
+        elif validator_identity is not None:
             from adaptive_inference.desktop.hermes.report_validator import identity as report_identity,validator as report_validator
             if validator_identity!=report_identity(base.REPORT):
                 raise ReconciliationRequired('Prepared report validator source or oracle changed')
@@ -349,7 +422,8 @@ def _worker(args, *, selected=None):
         if selected is not None:
             from adaptive_inference.desktop.hermes.continuation import LINK
             expected_metadata[LINK] = selected.owned.checkpoint.metadata[LINK]
-        if (cp.prompt != PROMPT or cp.max_attempts != 8 or cp.metadata != expected_metadata):
+        original_prompt = PROMPT if task_spec is None else task_spec.prompt
+        if (cp.prompt != original_prompt or cp.max_attempts != 8 or cp.metadata != expected_metadata):
             raise ReconciliationRequired('Original task identity differs from the prepared contract')
         claim = store.claim(plan['task_id'], expected_revision=cp.revision) if selected is None else nullcontext(selected.owned)
         with claim as owned, paused_expiry_boundary(owned):
@@ -453,7 +527,7 @@ def _worker(args, *, selected=None):
                             controller.control_safe_point()
                             if execution_now()>=deadline:raise rec.RecoveryStop('Controlled safe-point hold deadline')
                             time.sleep(.05)
-                    if args.stop_request_id is None or args.qualification_hold_after_report:
+                    if task_spec is None and (args.stop_request_id is None or args.qualification_hold_after_report):
                         controller.barrier=controlled_safe_hold
                     rec.ACTIVE = controller
                     from run_agent import AIAgent
@@ -476,19 +550,27 @@ def _worker(args, *, selected=None):
                     if not plugin.enabled or plugin.error:
                         raise rec.RecoveryStop('Recovery middleware did not register')
                     before = len(boundary.rows)
-                    outcome = agent.run_conversation(CONTINUE if history else PROMPT,
-                                                     conversation_history=history or None)
-                    report = json.loads((run / 'work/report.json').read_text(encoding='utf-8'))
-                    if report != base.REPORT:
-                        raise rec.RecoveryStop('Original artifact acceptance failed')
+                    task_identity = {} if task_spec is None else {'task_id': cp.metadata.get(
+                        'adaptive_inference.execution_authorization.v1', {}).get('logical_task_id', cp.task_id)}
+                    outcome = agent.run_conversation(CONTINUE if history else original_prompt,
+                                                     conversation_history=history or None, **task_identity)
+                    if task_spec is None:
+                        report = json.loads((run / 'work/report.json').read_text(encoding='utf-8'))
+                        if report != base.REPORT:
+                            raise rec.RecoveryStop('Original artifact acceptance failed')
+                        completion = {'artifacts': {'report.json': rec.digest((run / 'work/report.json').read_bytes())},
+                                      'report': report}
+                    else:
+                        completion = task_spec.completion(run / 'work', owned.checkpoint.state['tools'],
+                                                          outcome.get('final_response', ''))
+                        completion['task_spec_sha256'] = task_spec.sha256
                     controls.wait_activity.finish_turn(outcome)
                     controller.finish(outcome)
                     result.update(passed=True, provider_calls=len(boundary.rows) - before,
-                        resumed=bool(history), original_prompt_sha256=rec.digest(PROMPT),
+                        resumed=bool(history), original_prompt_sha256=rec.digest(original_prompt),
                         transcript_rows=len(owned.checkpoint.state['native_history']),
                         transcript_sha256=rec.digest(owned.checkpoint.state['native_history']),
-                        artifacts={'report.json': rec.digest((run / 'work/report.json').read_bytes())},
-                        report=report, completed=outcome.get('completed'),
+                        **completion, completed=outcome.get('completed'),
                         admission_attempts=owned.checkpoint.state.get('admission_attempts',0),
                         admission_deferrals=len(owned.checkpoint.state.get('admission_deferrals',[])),
                         fixture_admission_clock_s=clock.now if clock else None)
@@ -547,13 +629,18 @@ def _worker(args, *, selected=None):
             result.update(passed=False, completed=False, cleanup_errors=cleanup_errors)
             result.pop('service_stopped', None)
         if pending_expiry is not None:
+            from adaptive_inference.desktop.hermes.service_stop import WAIT_EXPIRY_RECEIPT_SCHEMA
+            waiting = pending_expiry['schema'] == WAIT_EXPIRY_RECEIPT_SCHEMA
             result.update(passed=False, controlled=True, completed=False,
-                control_state='paused', control_reason='paused_budget_expired',
-                paused_expiry=pending_expiry, provider_calls=len(boundary.rows)-starting_requests)
+                control_state='waiting_admission' if waiting else 'paused',
+                control_reason='admission_wait_budget_expired' if waiting else 'paused_budget_expired',
+                **({'admission_wait_expiry': pending_expiry} if waiting else {'paused_expiry': pending_expiry}),
+                provider_calls=len(boundary.rows)-starting_requests)
         if selected is not None:
             result['continuation_cleanup_verified'] = selected.cleanup_proof is not None and not cleanup_errors
         rec.save(diagnostics / f'result-{os.getpid()}.json', result)
     return (2 if result.get('cleanup_errors') else 0 if result['passed'] else STOP_EXIT if result.get('service_stopped') is True
+            else WAIT_EXPIRY_EXIT if result.get('admission_wait_expiry') is not None
             else PAUSED_EXPIRY_EXIT if result.get('paused_expiry') is not None
             else 3 if result.get('control_state')=='cancelled' else 2)
 
@@ -565,6 +652,13 @@ def main():
     p.add_argument('--profile', type=Path)
     p.add_argument('--profile-sha256')
     p.add_argument('--package-identity', type=Path)
+    p.add_argument('--task-spec', type=Path)
+    p.add_argument('--task-spec-sha256')
+    p.add_argument('--task-inputs', type=Path)
+    p.add_argument('--task-id')
+    p.add_argument('--session-id')
+    p.add_argument('--demand-identity', type=Path)
+    p.add_argument('--demand-identity-sha256')
     p.add_argument('--fixture', action='store_true')
     p.add_argument('--pause', choices=['safe_after_write', 'uncertain_after_write'])
     p.add_argument('--controller-ready', type=Path)

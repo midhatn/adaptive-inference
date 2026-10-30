@@ -1,0 +1,5 @@
+# Tested binary wheels only: CPython 3.11, Windows x86_64.
+river==0.26.1 --hash=sha256:45b8e0cc1a9be39c53b8a78ccd5330de9d6722601d8284de51ac71e08a6975ec
+narwhals==2.27.1 --hash=sha256:d057df13f5852b8e157596e82eb5e955fad267425df5e420e0ee9863da483b31
+numpy==2.4.6 --hash=sha256:1e254a00cdf42b1e4d5b3d68d33af63268d41340d8885df2ab6470f2e1500147
+scipy==1.17.1 --hash=sha256:d30e57c72013c2a4fe441c2fcb8e77b14e152ad48b5464858e07e2ad9fbfceff

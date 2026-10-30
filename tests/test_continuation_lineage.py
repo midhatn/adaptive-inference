@@ -8,6 +8,7 @@ from unittest import mock
 
 import continuation_lineage as lineage
 from paused_expiry_lineage import fingerprint
+from task_contract_lineage import runtime_view
 
 
 class ContinuationLineageTests(unittest.TestCase):
@@ -17,9 +18,10 @@ class ContinuationLineageTests(unittest.TestCase):
             ('modules', 'unchanged_runtime', 'new_modules')), (8, 46, 3))
         expected = set(record['modules']) | set(record['unchanged_runtime']) | set(record['new_modules'])
         root = lineage.ROOT / 'src/adaptive_inference'
-        self.assertEqual({path.relative_to(root).as_posix() for path in root.rglob('*.py')}, expected)
+        historical = runtime_view()  # Validate the complete current closure before projecting it.
+        self.assertEqual(set(historical), expected)
         for relative, row in record['modules'].items():
-            data = (root / relative).read_bytes()
+            data = historical[relative]
             self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
             self.assertEqual(fingerprint(ast.parse(data)), row['successor_ast_sha256'])
             self.assertEqual(row['predecessor_source'], record['historical_snapshot'] + '/src/adaptive_inference/' + relative)
@@ -29,9 +31,9 @@ class ContinuationLineageTests(unittest.TestCase):
             self.assertEqual(fingerprint(lineage.restore_continuation(ast.parse(data), relative)), fingerprint(ast.parse(prior)))
             self.assertTrue(row['edits'])
         for relative, digest in record['unchanged_runtime'].items():
-            self.assertEqual(hashlib.sha256((root / relative).read_bytes()).hexdigest(), digest)
+            self.assertEqual(hashlib.sha256(historical[relative]).hexdigest(), digest)
         for relative, row in record['new_modules'].items():
-            data = (root / relative).read_bytes()
+            data = historical[relative]
             self.assertEqual(hashlib.sha256(data).hexdigest(), row['sha256'])
             self.assertEqual(fingerprint(ast.parse(data)), row['ast_sha256'])
 
@@ -39,9 +41,9 @@ class ContinuationLineageTests(unittest.TestCase):
         for relative in lineage.record()['modules']:
             data = (lineage.ROOT / 'src/adaptive_inference' / relative).read_bytes()
             with self.subTest(relative=relative):
-                with self.assertRaisesRegex(AssertionError, 'complete continuation source'):
+                with self.assertRaisesRegex(AssertionError, 'complete (?:task-handover|task-contract|continuation) source'):
                     lineage.predecessor(relative, data + b'\n# unreviewed whitespace-only change\n')
-                with self.assertRaisesRegex(AssertionError, 'complete continuation AST'):
+                with self.assertRaisesRegex(AssertionError, 'complete (?:task-handover|task-contract|continuation) AST'):
                     lineage.restore_continuation(ast.parse(data + b'\nunreviewed = True\n'), relative)
 
     def test_changed_guard_inside_declared_seam_is_not_hidden(self):
@@ -53,7 +55,7 @@ class ContinuationLineageTests(unittest.TestCase):
             for name in edit['path']:
                 node = lineage.mapping(node)[name]
             node.body.insert(0, ast.Return(value=ast.Constant(value=None)))
-            with self.subTest(relative=relative), self.assertRaisesRegex(AssertionError, 'complete continuation AST'):
+            with self.subTest(relative=relative), self.assertRaisesRegex(AssertionError, 'complete (?:task-handover|task-contract|continuation) AST'):
                 lineage.restore_continuation(tree, relative)
 
     def test_missing_and_tampered_declared_seams_fail_closed(self):

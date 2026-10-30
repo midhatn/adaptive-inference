@@ -1,0 +1,75 @@
+{
+  "schema": "adaptive.latency-drift.sources.v1",
+  "river_version": "0.26.1",
+  "release_commit": "64285b9dd6c606804753235fe992bcf25b9856ee",
+  "release_tag_object": "9721a8734f7c6bacef5ebf5ba211964a171a56aa",
+  "release_url": "https://github.com/online-ml/river/tree/64285b9dd6c606804753235fe992bcf25b9856ee",
+  "audited_main_commit": "950984786649806bfdc446062fcc830235f8131b",
+  "main_is_not_release": true,
+  "release_reset_max_decrease": -1,
+  "audited_main_reset_max_decrease": "-inf",
+  "source_comparison": "Exact release Git blobs after CRLF-to-LF only; no main/release equivalence claim.",
+  "runtime_sources": {
+    "river/drift/page_hinkley.py": {
+      "sha256_lf": "ad9b8209b24d786f267175097694e6640080beafb89b86b806fc76e28e71056f",
+      "windows_wheel_sha256": "9722e459becb6e0845992d63e89582a179d93ef9506c9b0d5107d5fd1de2133d",
+      "release_git_blob": "7202710020d844441002f024dda5828c269f8cba"
+    },
+    "river/stats/mean.py": {
+      "sha256_lf": "aac63673e4dda4a96e8380466fa80cf9fa631aef37ae3775896bf53ce3858c32",
+      "windows_wheel_sha256": "3ceb9ab288b664231dce7336e3c2be2f7bb5de0e1fba8d88c5b2371d708310b8",
+      "release_git_blob": "e08ec8358753c5a03c9d042ac95c3a7f64599ae1"
+    },
+    "river/base/drift_detector.py": {
+      "sha256_lf": "0747f5410fe3998075fd572f85f1677d37ca0e4d0d8503d133c6023ac1c87995",
+      "windows_wheel_sha256": "37d2839db95cd96d00e0db89113f215b9c9936960fd136fe1c73033f47e55624",
+      "release_git_blob": "ab76036e649fc61580d5922aba6178285ea93c5a"
+    }
+  },
+  "license_git_blob": "c3a351f973d0b1b38eadc6ae72917bfc5ce24f8e",
+  "license_sha256_lf": "e87f2c8f1ba611702af10cba745e6ceb773d32310135ed55aa2722c55dd0d077",
+  "upstream_test_git_blob": "6e49cc203c870f9006eb5ec440b2cc135a8804eb",
+  "upstream_test_excerpt_sha256": "ecbc984e31051a1ca9c09a584b042361583dd01f4feb018fd90ac403c4bbefb3",
+  "baseline": {
+    "path": "src/adaptive_inference/costs.py",
+    "sha256_lf": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1"
+  },
+  "tested_binary": {
+    "filename": "river-0.26.1-cp311-cp311-win_amd64.whl",
+    "sha256": "45b8e0cc1a9be39c53b8a78ccd5330de9d6722601d8284de51ac71e08a6975ec",
+    "python": "3.11.9",
+    "platform": "Windows x86_64"
+  },
+  "tested_dependencies": {
+    "river": "0.26.1",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "narwhals": "2.27.1"
+  },
+  "dependency_artifacts": [
+    {
+      "name": "river",
+      "version": "0.26.1",
+      "sha256": "45b8e0cc1a9be39c53b8a78ccd5330de9d6722601d8284de51ac71e08a6975ec",
+      "filename": "river-0.26.1-cp311-cp311-win_amd64.whl"
+    },
+    {
+      "name": "narwhals",
+      "version": "2.27.1",
+      "sha256": "d057df13f5852b8e157596e82eb5e955fad267425df5e420e0ee9863da483b31",
+      "filename": "narwhals-2.27.1-py3-none-any.whl"
+    },
+    {
+      "name": "numpy",
+      "version": "2.4.6",
+      "sha256": "1e254a00cdf42b1e4d5b3d68d33af63268d41340d8885df2ab6470f2e1500147",
+      "filename": "numpy-2.4.6-cp311-cp311-win_amd64.whl"
+    },
+    {
+      "name": "scipy",
+      "version": "1.17.1",
+      "sha256": "d30e57c72013c2a4fe441c2fcb8e77b14e152ad48b5464858e07e2ad9fbfceff",
+      "filename": "scipy-1.17.1-cp311-cp311-win_amd64.whl"
+    }
+  ]
+}

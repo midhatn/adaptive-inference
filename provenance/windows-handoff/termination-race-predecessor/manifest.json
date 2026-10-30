@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "scope": "Unchanged native owner before bounded retained-handle termination verification; private trial receipts excluded",
+  "sha256": {
+    "ownership.py": "f419391c84d5d123328b8c3b454253f060e4d5d59db89fedd43fbd2313960b14",
+    "source-pins.json": "19f871c8b6ca05becec6f9a76758eac94d9aa38f29951af1e20753bdd7ee7aca"
+  }
+}

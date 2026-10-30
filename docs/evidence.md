@@ -2,6 +2,737 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Safe resource-wait expiry and continuation development
+
+The [resource-wait recovery extension](admission-wait-recovery.md) handles a
+saved, undispatched request whose execution budget expires. Source and component
+checks cover its exact checkpoint and control prefix, verified cleanup, explicit
+continuation, repeated execution generations and preserved cumulative limits.
+The predecessor keeps the complete old request; the continuation grant records
+its digest, and the successor rebuilds through the supported saved-conversation
+entry. A later error after
+an operation starts still requires reconciliation.
+
+The public [saved-history SDK check](../examples/validation/hermes_saved_history/README.md)
+exercises the actual pinned Hermes conversation prologue, request builder and
+middleware with a scripted terminal response and checked import origins. It is
+not a full agent or model trial. The [source lineage](../provenance/task-handover/safe-admission-wait/README.md)
+preserves the narrow predecessor inputs needed to reproduce earlier acceptance.
+
+Hosted Linux/macOS checks on `0cacf969` exposed four fixture errors: a synthetic
+900-second expiry was checked against the host performance counter. Python
+documents that counter's [undefined reference point](https://docs.python.org/3.11/library/time.html#time.perf_counter).
+The same four errors were reproduced locally with a simulated host clock of
+100 seconds. The corrected fixture uses its existing synthetic clock for the
+receipt check too. All 34 affected tests then passed on Python 3.11/3.12; an
+additional long-host-clock run passed on 3.11. The added regression still rejects
+pre-seal and nonfinite observations. Runtime code and expiry guards are unchanged;
+the earlier hosted failures remain part of the history.
+
+The following Windows Python 3.12 check on `24713ab3` failed while opening a
+CPU-fixture readiness marker in setup. The bounded
+[readiness correction](../provenance/task-handover/fixture-readiness/README.md)
+retains the original child and time limits. Its deterministic denial reproduction
+and actual Windows sharing-handle regression pass; all 50 focused Python 3.12
+source/CPU-child checks passed without skips. The exact earlier fixture and
+historical manifests remain preserved. This is a test-only change.
+The first readiness publication, `c3d99c1`, then failed an older test-reader
+identity check omitted from the focused selection. The follow-up preserves the
+three dependent test sources and their exact assertions; all 69 lineage and
+readiness cases pass on Python 3.12. The earlier focused review was insufficient
+for that dependency, and its failure remains recorded in the readiness packet.
+
+The completed checks at `9308707` were **13 successes and one failure**. The
+[Windows Python 3.12 job](https://github.com/midhatn/adaptive-inference/actions/runs/40384008747/job/121787353059)
+failed during the selected worker's initial Pause acknowledgement, before the
+test's intentional result corruption. Its log lacks observation timestamps, so
+the exact failed freshness clause remains unmeasured. A separate real CPU-worker
+and SQLite reproduction aged one valid observation by two seconds; it produced
+the same permanent continuation/database fault with unchanged source. The
+[acknowledgement-read correction](admission-wait-recovery.md#delayed-acknowledgement-observations)
+is runtime development, separate from the preceding fixture-only fixes. Its
+regressions cover expired reads followed by fresh ones, unchanged intent and
+cache on discard, deadlines, Stop, child exit, malformed state, actual SQL errors
+and strict post-write behavior. The deterministic age injection is not a
+measurement of the hosted delay or an installed model result.
+The same reproduction passes against the two-module candidate: the selected
+worker completes with no runtime faults, both children join without forced
+termination, and the source stays unchanged. The focused group passes **48/48**
+on each of Python 3.11 and 3.12: 17 new cases, 28 existing mailbox cases and three
+existing host cases. Full assembled-source, package and installed gates remain
+separate from those focused results.
+
+The new wheel `e8dd65996661c470e0f4be8ad8d5eccea1e0674a3126c1e3d295e1f3ec2d89c7`
+has now passed its actual isolated host/worker installation sequence: both
+offline installs, both import audits, three installed SDK dispatcher cases,
+three shared-clock comparisons, and native-input/resource checks. All seven
+steps joined successfully. Independent review confirmed the exact installed
+60-module map in both environments, unchanged SDK identities, signed driver
+621.01 and preserved prior installations. Private gate SHA-256:
+`a07b2b1ece6fb98f86e68a485eff9ca0668effa4190e839f23e3cf2ffc24a888`.
+These installation checks do not execute the model task. The new recovery
+harness separately passed 41 independently replayed component cases; that is
+preparation evidence rather than an observed installed recovery outcome.
+That wheel predates the acknowledgement-read correction. Its installation
+receipts remain valid for that package and must not be reused for a changed one.
+
+Installed IQ3_S qualification of this extension remains pending. These checks
+do not establish native resource release, GUI behavior, physical reboot recovery,
+performance, autonomous media completion or a pass for the failed trial below.
+
+The acknowledgement-read successor uses wheel SHA-256
+`18469c0cf967f391cbb23433e6496e48756645d8dfb880352936a336413857a4`.
+All seven isolated installation steps and independent review passed for that
+exact wheel. All fourteen hosted checks passed on source head
+`5fd3d7a66590effa3b85d6bcf0d02c6b8f9b0c8c`, including the retry of a Windows job
+that had exceeded its whole-job time limit. The original timeout remains a
+separate unsuccessful attempt. These are preparation results for case07 below.
+
+## Ordinary-task handover development
+
+The installed two-task IQ3_S scenario remains unqualified. On 26 October 2026,
+the candidate built from source head `841989abfcc442f9615a0d1390670a4de8e5c0bd`
+used wheel SHA-256
+`d2a10deb4a1eb6b911988357b2f8838dd62afe805402ace2367b3ed84b0b5e61`.
+Its source tests, provenance checks, fourteen hosted checks and isolated
+installation gates passed. The following real run, retained as case06, failed
+the original 900-second task budget before completing inventory or selecting
+the welcome task. Those earlier passes do not establish end-to-end completion.
+
+One real model request and one inventory read completed, with no output write.
+Of 895 valid external observations, 784 showed the engine parked and 720 reported
+foreground activity; no controller fault was reported. These are sample counts,
+not exact durations or desktop-responsiveness measurements. The original task,
+session, three native-history messages, completed read and pending next request
+survived, and both terminal databases passed integrity checks.
+
+The worker returned `active / control_wait_deadline` through its generic failure
+path. It did not produce a safe-expiry or service-stop receipt, and the shutdown
+Pause remained unacknowledged. The product therefore correctly refused to claim
+cooperative cleanup. Separate native evidence confirmed all nine retained native
+process exits and listener release; the GUI and gateway listener also recorded
+closure. The retained parent exited with code 1 after about 912 seconds without
+an outer timeout or emergency termination. Both parent and observer were joined.
+Observer connection loss alone is not cleanup evidence.
+
+The unchanged acceptance auditor rejected `normal_parent`. An independent
+fourteen-check diagnostic review confirmed this failure classification; it did
+not pass the task. Two distinct Resume acknowledgements exist, while the root
+record shows one successful automated Resume and an earlier rejected input.
+The source of the second acknowledgement is unknown; no total physical-click
+count is inferred. There is no second task, manual Stop, FP16 result or performance
+claim. The installed pause-observation race did not appear in the recorded
+exception chain, but this is not proof of absence of all races.
+
+Private terminal result SHA-256:
+`881a62f79e60ebe93d7a822a05886f44aee41bb0ea271a46aa83396cf37a7187`.
+Independent failure-review SHA-256:
+`c1e77836463bd623710f85077754e97a945365113ed4410aeb3bfc5db5823202`.
+These identify retained evidence rather than a public reproducible acceptance
+receipt. The [roadmap](../PLAN.md) records the safe-wait expiry lifecycle gap and
+the separate foreground-coexistence work that this outcome prioritizes.
+
+The next installed run, **case07**, also failed. Its first real IQ3_S request
+completed, and foreground activity triggered admission closure and native drain.
+The native owner then reported `TerminateProcess` error 5, six retained processes
+and only five confirmed exits, although its visible active list was empty.
+Server exit zero and an empty list did not satisfy complete release; the adapter
+correctly refused it. The worker preserved its pending request and returned its
+cooperative service-stop outcome, exit 4. It did not reach verified expiry exit 6,
+explicit continuation, task acceptance or a second task.
+
+The host's terminal retention-failure loop cannot retry cleanup or produce a
+successful result. Root explicitly terminated that exact runner after checking
+its creation identity, executable, command and parent, then confirmed exit using
+the same retained handle. Its original supervisor observed runner exit 125. The separate
+root receipt records external emergency termination; the supervisor's own
+`emergency_termination_attempted=false` describes only its unused timeout handler.
+It is not a clean Stop. Both test listeners and observed test processes were
+absent afterward, which establishes containment rather than product release.
+The external observer recorded 473 valid responses and three connection errors;
+connection loss does not establish successful shutdown.
+
+The exact kernel timing was not captured. The receipt is consistent with a
+documented Windows exit race, and the [roadmap](../PLAN.md) now prioritizes a
+bounded same-handle termination check. Neither error 5 nor PID absence may be
+accepted as exit without that signal and complete retained-process accounting.
+The original failed case and native source remain preserved; a changed owner
+requires its own deployment identity and fresh installed qualification.
+
+The [native-owner correction](../examples/validation/windows_handoff/native/README.md#termination-denial-during-exit)
+passes 30 focused source checks on each of Python 3.11 and 3.12. Two independent
+checks cover the shared cleanup deadline across handles and unchanged complete
+release requirements. An additional Windows CPU-child probe uses actual retained
+handles, job membership and waits, with only termination denial and release
+coordination injected. The predecessor retains its error; the candidate signals
+and collects every owned process. Both children exit normally and are joined.
+The reviewer's first collector incorrectly assumed one owned process; Windows
+also created a console host. That failed review attempt remains preserved, and
+the fresh replay checks complete owned-descendant accounting. These results
+qualify the narrow source behavior, not a fresh native-model release or full
+task handover. Independent review SHA-256:
+`9e3d3ecd621b3e9b74b0ea0c3d79a31df9c3dcd0bcf43e788f60534d0f32b1b1`.
+
+Hosted CI at `fc84187c124b9fbed9e115cc88a713c941eabd21` subsequently caught an
+omitted historical source selection in the older arithmetic/shutdown checks:
+those checks still compared the newer native helper with an exact predecessor.
+The [correction](../provenance/windows-handoff/termination-race-predecessor/README.md)
+preserves both original readers and every original assertion, verifies current
+and predecessor hashes for exactly two declared helpers, and keeps other inputs
+current. The affected 11 arithmetic and nine shutdown tests, three new source
+selection tests and 81 provenance checks pass on Python 3.11 and 3.12 (104 per
+interpreter). Independent source review passed 15 checks. These local results
+belong to `d07f1012f6ae736ab90d2c8e8ceeb09055c72396`; hosted checks on the
+corrected commit remain a separate gate. The original failed CI is retained.
+
+On 30 October, all 14 hosted checks passed for research-integration commit
+`920c0a577321d20a2f3f77174a68df3627a97f3c`. Its source archive verified all 1,072
+expected source files and its wheel verified all 60 runtime modules plus the
+required notices. This new archive was not installed over the qualification
+wheel. The preceding `d07f101` push run passed all seven jobs; its duplicate PR
+run finished with six successful jobs and one cancelled Windows job. Those
+outcomes are retained separately.
+
+### V6 inventory completion and the missed recovery boundary
+
+The fresh case08 used the repaired v6 owner and unchanged IQ3_S runtime. Its
+inventory worker completed three actual provider requests, executed native
+`read_file` and one physical `write_file`, and produced the independently checked
+23-unit result. The original prompt and native history were preserved. The
+worker returned zero and its retained process was joined.
+
+The task completed before the intended foreground resource-wait boundary.
+The operator performed one Resume and one Stop; no safe expiry, Continue or
+second task occurred. The parent therefore returned one, the original auditor
+refused `normal_parent`, and the whole result retains both
+`qualification_case_passed=false` and `clean_stop=false`. Missing operator
+observations were left missing. This is a failed recovery qualification, not a
+replacement for the required two-task acceptance.
+
+The component cleanup evidence is narrower and positive: normal native release
+confirmed all five retained descendants and the separate owner handle exited,
+with server exit zero. GUI, pipe, listener, transport and asynchronous obligations
+were closed or joined; no emergency termination was required. A recorded error 5
+belongs to `QueryFullProcessImageNameW` during identity capture, so it does not
+prove that the new termination-denial branch executed.
+
+Independent review passed 48 evidence-integrity checks across 383 source and
+evidence identities, using the existing terminal task/native/artifact validators.
+Review SHA-256:
+`7e2616824e96ab28a4ab42444a28f184020da3618498c2c8773d6f676ff95592`.
+The live status exposed neither successful native `read_file` nor the saved
+undispatched request. Gateway completion was not treated as proof of either.
+The [roadmap](../PLAN.md) revises the next experiment around an observable
+in-flight boundary and immutable evidence afterward, without changing this
+failed result or weakening task-progress, ownership and budget requirements.
+
+### Foreground release and restoration with an unsuccessful timing test
+
+Case09 retained the same installed wheel, IQ3_S quality and v6 native owner.
+The original inventory task completed after native release and restoration:
+three real provider requests, one native read, one native write and one physical
+output write. The independent oracle accepted 23 units. Artifact SHA-256:
+`f279173777ec0ddcbe467a5370337b8a4d4fa3c09c4c211e1740e8f1232a8e3e`.
+
+The declared scenario required foreground activity during the first admitted
+request, with open admission observed before the action and that same request
+still active afterward. The trace contained 46 first-active observations, but
+the action began about 9.11 seconds after the last of them. The latest complete
+pre-action sample already showed the second request active and admission closed.
+The post-action sample showed foreground-driven draining during that later
+request. These observations do not satisfy either required onset condition.
+
+The operator record also rounded a 64-bit Windows process-creation value while
+transferring it through JavaScript. The immutable pre-Resume capture retained
+the exact value and matched the actual retained GUI identity; the consumed UI
+record remains inconsistent. This is a test-recording limitation, not evidence
+of a changed runtime identity. Future binding transfers must preserve integers
+through the existing [Python JSON reader/writer](https://docs.python.org/3.11/library/json.html).
+[RFC8259](https://www.rfc-editor.org/rfc/rfc8259#section-6) explains the common
+binary64 integer-interoperability limit that this Windows identity exceeds.
+
+Both native owners released normally, confirming 7/7 and 8/8 lifetime descendant
+exits. The final release separately retained six stop-time handles: its owner
+and five then-active descendants. The first complete stop-time handle list was
+not persisted, so that detail cannot be reconstructed. Worker, GUI, pipes,
+listener, transport and asynchronous cleanup records support closure; there was
+no emergency termination. No termination-denial branch coverage is established.
+
+Independent review passed 60 integrity/component checks across 401 pinned files,
+SHA-256 `720dfca7e4a962016097a0312e0e6b1ab6fc6936d0bf6c9e0d3e4b2256ddfb61`.
+The separate native review is
+`47b650e26c5aadb7d9de522d77b41711255b17e8f9bbd3426a05c7a3097c7977`.
+No safe expiry, Continue or second task occurred. The original parent returned
+one, the original auditor failed `normal_parent`, and both
+`qualification_case_passed=false` and whole-trial `clean_stop=false` remain
+unchanged. The supplemental auditor was not used as an alternative. These
+component results do not qualify the full recovery workflow.
+
+The next correction is limited to the operator procedure: promptly observe the
+existing append-only GET trace, bound all UI text output, perform a fresh genuine
+action, and copy complete identity records without integer rounding. Runtime,
+quality, task acceptance, timing predicates and execution limits remain fixed.
+
+For documentation/ledger head `e85b68147613f476bd89da834ec0939aa6391e51`, the
+[push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41035632823)
+passed all seven jobs. The [PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41035639711)
+passed six; its Windows/Python 3.11 job exceeded the cumulative 15-minute job
+limit during core test discovery, and later steps were skipped. The checkouts
+have identical tree `1a52efe071dc59d1638c3924b36b03ad4e7d7a6a`. The successful
+Windows job completed 1,258 core tests in 447.901 seconds and its remaining steps.
+This is 13 successful jobs and one cancelled job, not 14 passes; the differing
+duration is not diagnosed as an infrastructure-only failure.
+
+### First-request foreground transition with an unsuccessful continuous hold
+
+Case10 kept the same installed wheel, IQ3_S quality, native owner and execution
+limits. Its bounded cue used only the existing append-only GET observer; the
+operator then inspected a fresh screenshot and performed actual document input.
+The trace records the same first request active with admission open before the
+input, then active with admission closed for foreground activity and draining
+afterward. It subsequently records that request complete and the engine parked.
+This establishes the onset component, not the complete recovery scenario.
+
+The interval from the second action's start through the third action's end took
+**66.1093105 seconds**, exceeding
+the unchanged strict `<60` condition. Trace samples also changed to foreground
+recovery margin/dwell. Admission remained closed and no second request dispatched
+during that gap, but continuous foreground hold was not established. The operator
+returned to quiet recovery and allowed the original task to finish within its
+existing budget, then used normal Stop once. There was no extra Resume, safe
+expiry, Continue or second task.
+
+The inventory oracle accepted **23 units**, three real requests, one native read,
+one native write and one physical output write. Artifact SHA-256:
+`48de85ae982b910b3f88139528b182c45fdce62c0e005428e0aea2d49c7d1af9`.
+The Python recorder preserved the complete A binding exactly, including its
+64-bit integer creation identity, while leaving all nonbinding action fields
+unchanged. Its three recorded input hashes and output/backup hashes were checked.
+B and expired-window transfer were not exercised by this failed attempt.
+
+Both native owners released normally, confirming 10/10 and 7/7 lifetime
+descendant exits. The final stop set separately retained the owner plus five
+then-active descendants; two lifetime descendants had exited earlier. The first
+complete stop-time handle list was not persisted. Worker, GUI and associated
+cleanup records support closure without emergency termination; monitor joins
+remain inferred from successful pinned close paths rather than separate raw
+thread-join flags. No termination-denial branch coverage is established.
+
+Independent review retained 60 component/integrity checks across 439 input
+hashes, receipt SHA-256
+`0664d15d8ef4e1128a475684e0a410159bb9a5e60fc2bebcbf268d6e09911516`.
+The separate native review is
+`1b268a113b8e02af7fbffb3b2860b3b25b34974022d6c8a7a8cdeeb5b49e0c95`.
+The original parent returned one and its auditor failed `normal_parent`;
+`qualification_case_passed=false` and whole-trial `clean_stop=false` remain
+unchanged. The supplemental auditor was not run. Component evidence does not
+convert the consumed case into a qualification pass.
+
+The review also preserved a checker assumption and its narrow correction. The
+native read used the exact absolute path of the bound 70-byte, four-line input.
+An initial component assertion expected a literal relative path; its failed
+receipt remains preserved. The successor review checked the exact bound path,
+input hash, full returned content and native intent/result. It did not change
+the original supplemental lineage rule, whose literal-relative-path predicate
+remains unestablished. A future equivalence rule needs separate source review
+before another case; matching content or basename alone is insufficient.
+
+The preparation's 22 new synthetic helper tests and two additional independent
+failure cases cover bounded observation and lossless recording. They are not
+runtime qualification. The next operator correction uses existing QPC feedback
+and a 30-second action target, deferring nonessential work outside the hold while
+retaining the strict 60-second condition and genuine observed input. See the
+[roadmap](../PLAN.md) for the remaining gates and citations.
+
+### Resource waiting interrupted by the agent's inactivity watchdog
+
+Case11 retained the same installed wheel, IQ3_S assets, quality settings and
+execution limits. The first actual document action occurred while the first
+request was active and admission was open. The next retained observation showed
+that same request active with admission closed and the controller draining for
+foreground activity. The request completed and the native engine parked.
+
+There were 27 actual document actions. Their maximum adjacent start-to-next-end
+interval was **38.4695074 seconds**, below the unchanged strict 60-second limit.
+Some actions occurred after the worker failed but before the operator observed
+the failure, and remain in the truthful record. No expiry seal exists, so this
+does not establish the complete continuous hold through safe expiry.
+
+Hermes's turn watchdog reported **611.1 seconds without activity**, last labelled
+as starting the second API call. Its committed interruption caused the existing
+guard to refuse further authority. The saved state and ledger contain one
+request, one attempt, one admission and no deferrals; the admission-attempt limit
+was not reached. The original task, exact 70-byte/four-line input read, three
+native history rows and prepared second request remain saved. There was no
+output write, task acceptance, Continue or second task. A one-shot readiness
+check correctly refused the already-terminal case instead of creating an
+expiry receipt.
+
+One native lifetime released normally: **8/8 retained descendant exits**, plus
+the separate retained owner. The final stop set had the owner and five then-live
+descendants; three other descendants had exited earlier. GUI, pipe and listener
+closure are supported by failure-containment receipts. The transport still
+records `stop_failed`, and cooperative product Stop remains unconfirmed.
+The parent and observer returned one; no timeout or emergency termination was
+used. The original auditor ran once and failed `normal_parent`. The supplemental
+audit was not run. **Qualification and whole-trial clean Stop remain false.**
+
+Independent terminal review retained 762 component/integrity checks across 367
+input hashes, receipt SHA-256
+`623def7fcb5ac22ce179ab7f13c20937516a0edf44612638c3fbe527b5662099`.
+Its separate native review retained 108 checks and 32 input hashes, SHA-256
+`08a070a5b1b29314ecae11389581f0fda08250e6f3f0431c46b939dd50386e48`.
+The A-only Python recording preserved the complete integer identity and all
+nonbinding action fields. No expired-window or B observation was invented.
+
+Source inspection explains the integration gap: the case11 guard reports an
+acknowledged user Pause, while admission waiting performs health checks without
+an activity stamp. The subsequent source correction reuses the existing coherent owned
+wait observation and serialized activity guard before the original deadline.
+It does not disable Hermes's watchdog or renew task authority. The inspected
+[merged Hermes activity fix](https://github.com/NousResearch/hermes-agent/pull/131916)
+supports reporting a previously invisible legitimate activity; it concerns MoA
+streaming, not this adaptive wait. The [roadmap](../PLAN.md) records the required
+focused, installation and fresh physical qualification gates. Case11 remains
+consumed and failed regardless of any later correction.
+
+### Admission-wait activity correction: source and SDK components
+
+The correction changes only `desktop/hermes/pause_activity.py` in the runtime.
+It derives a fresh coherent wait only for actual waiting/active demand and a
+saved, undispatched request. It checks the exact checkpoint, request, native
+history, owner and original deadline, then reads the SDK lease and current time
+after potentially slow reads. Changed identity, interruption or cleanup
+revocation prevents another activity stamp. The existing 15-second cadence and
+900-second execution bound remain; no timer, automatic Resume or lease renewal
+is added. Pause with newly arriving Resume/Cancel retains its normal control path.
+
+Nineteen focused tests pass against the final source. A controlled-clock worker
+case waits beyond 600 seconds and reaches the original 900-second safe expiry
+with its request and completed read preserved, without another provider dispatch
+or tool effect. Ten affected selected-worker tests also pass after their scripted
+agent gained the existing SDK activity hook. The first regression run retained
+124 successes and seven failures caused by that fixture omission; its original
+candidate and failed output remain distinct from final-source results.
+
+The optional [actual Hermes component check](../examples/validation/hermes_admission_activity/README.md)
+passed all three cases on the pinned worker interpreter. Its healthy wait uses
+the actual activity writer and watchdog for 60 activity stamps through execution
+second 885, with no stamp at 900 or 901. An otherwise silent turn is actually
+interrupted at 600 and its lease component deactivated; the guard cannot revive
+it. A bounded contender exercises a reserved abort claim that verified owner
+activity invalidates, then joins without publishing an interruption. Receipt
+SHA-256: `5f3d1ec8468d8609f6fad269ec802f648f40ddc4ba69cdb41e65f51727221106`.
+These are controlled-clock components with reduced SQLite and a scripted lease
+row, not a complete agent, durable SDK heartbeat, physical-time benchmark or
+installed IQ3_S recovery. The existing SDK dispatcher and saved-history checks
+separately pass three and two cases against the changed source.
+
+The existing source-preservation mechanism retains the complete previous module
+and two original source-test readers; all 59 other runtime modules stay unchanged.
+Fifty-four affected source/AST checks passed separately on Python 3.11.9 and
+3.12.9. Independent review confirmed exact prior bytes and rejection of an unknown
+input. Historical source assertions and manifests remain intact.
+
+The complete source suite passed **1,282 tests with no failures or skips** on
+Windows/Python 3.11.9 with all 15 locked dependency versions, in 329.279 seconds.
+All **81 source-preservation tests** passed separately. The source receipt is
+`114d361588e26c16e2c16ccaf3b1bb7b3a98b661c0c671e316e2d3ab9c44ff0e`;
+the preservation receipt is
+`6b234af37ce54751cf0694f67183a74a55b27efddbefcf804c92fceda780bf15`.
+These test durations are validation timings, not inference performance results.
+
+The preceding full run remains failed: 28 child-readiness identity failures and
+one resulting cleanup-control failure. Its virtual-environment executable was a
+Windows redirector that started a second process, whereas the fixtures require
+the actual child to retain the launched PID. A bounded local probe and independent
+review confirmed the mismatch. The corrected run used the full interpreter and
+the same pinned libraries; all 1,084 source hashes, 1,282 test identities and
+assertions were unchanged. No identity check was relaxed. This follows the
+version-matched [CPython launcher behavior](https://github.com/python/cpython/blob/v3.11.9/PC/launcher.c#L755)
+and its [multiprocessing treatment of the redirector](https://github.com/python/cpython/blob/v3.11.9/Lib/multiprocessing/popen_spawn_win32.py).
+
+Fresh archive checks verify 1,084 source paths, all 60 runtime modules, wheel
+RECORD hashes and license files. Publication then adds a narrow Git attribute
+rule to preserve the tested SDK reference file exactly; an actual checkout with
+`core.autocrlf=true` preserves its bytes. The roadmap and this evidence account
+are updated after validation. These three metadata/documentation changes are
+recorded separately from the unchanged tested program and are checked in the
+final archive; behavioral suites are not repeated for them. Existing failed
+runs and the first archive remain preserved. The fresh isolated installation
+has since passed all eight steps and independent review. It checks both installed
+environments, dispatcher and admission-activity SDK components, shared clocks,
+native inputs and predecessor preservation. The physical results below do not
+requalify case11 or establish general foreground performance.
+
+### Current installed head and physical recovery checks
+
+Exact source `7306a53085ddc31d53d2ba50e91975c80cfc0014` passed all **14 hosted
+jobs**, seven each in the [PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41062578967)
+and [push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41062565459),
+on their original attempts. The twelve portable jobs reported 1,282 core tests
+and 81 preservation tests, with explicit platform skips: 36 on Linux/macOS, one
+on Windows/Python 3.12 and none on Windows/Python 3.11. The two source trees were
+identical. Earlier failures and cancellations remain separate outcomes.
+
+Wheel `50919bc2dd7c4cabdc661f57cab387d2df0eb999e3ca467a03852ed6ea15e33f`
+passed the eight-step isolated installation. Independent gate
+`c32e20a02463bb414497e9c6d697c220eaaa105a13c2f9a71c1a5f4844e22a1c`
+binds the installed 60-module payload in both interpreters, dispatcher checks,
+three actual SDK admission-activity cases, clocks, native inputs and predecessor
+preservation. This establishes installed-component readiness, not a resource
+reservation, physical task acceptance or a performance gain.
+
+| Physical evidence | Observed result | Limit |
+| --- | --- | --- |
+| Case12 original task | Safe expiry, one Continue and the independently checked 23-unit inventory output; three cumulative model requests, one input read and one physical output write. | The old private checker required a completion-only prompt hash from the expired worker and raised `KeyError`, before recovery-acceptance publication, task B or user Stop. Whole qualification failed. |
+| Corrected prompt-hash checker | Both workers retain model, quality, context, SDK and fixture checks; the successful worker retains the mandatory prompt digest. Independent original/selected prompt and metadata comparisons remain. All 44 focused tests passed with no skips, followed by independent source review. | Private harness correction only. Its initial fixture expectation error remains preserved; no runtime change, deadline extension or retroactive case12 pass. |
+| Case13 task A | Actual controlled expiry and one Continue led to published safe-wait and inventory acceptance. The 23-unit output, original prompt, saved read and history remained exact after task B. Three cumulative requests and one physical output write. | This is the original-task recovery component, not a complete foreground/two-task qualification. |
+| Case13 task B | A distinct task and session read the bound brief and wrote one 382-byte text output. Its worker and durable task record reported completion after three requests. | Format-only validation; no semantic-quality claim. The checker failed before publishing B acceptance or observing user Stop. |
+| Case13 foreground and cleanup | Twenty real document actions were retained. Five native lifetimes recorded complete descendant release; both GUI endpoints, pipes, listeners and transports closed. | The 202.0352201-second action gap fails the strict 60-second rule. Both invocations joined with exit 1. Cleanup after failure is not normal user Stop; `qualification_case_passed` and `clean_stop` remain false. |
+
+The case12 checker correction follows the published producer: its
+[successful result](https://github.com/midhatn/adaptive-inference/blob/7306a53085ddc31d53d2ba50e91975c80cfc0014/src/adaptive_inference/desktop/hermes/run_recovery.py#L569)
+contains the prompt digest, while its
+[expiry result](https://github.com/midhatn/adaptive-inference/blob/7306a53085ddc31d53d2ba50e91975c80cfc0014/src/adaptive_inference/desktop/hermes/run_recovery.py#L633)
+represents incomplete work. The initial added fixture expected a later refusal
+than the existing durable-store validator actually produced. That failed test
+attempt is preserved; the corrected regression checks the earlier refusal and
+comparison with the independently retained prompt. The acceptance predicate
+was unchanged between those test runs.
+
+The case13 discrepancy was in the receipt reader. The
+[producer](https://github.com/midhatn/adaptive-inference/blob/7306a53085ddc31d53d2ba50e91975c80cfc0014/src/adaptive_inference/desktop/hermes/recovery.py#L454)
+writes UTF-8 JSON lines with unescaped Unicode. The checker omitted an encoding.
+Python 3.11's [text-file default is locale-dependent](https://docs.python.org/3.11/library/functions.html#open),
+and [PEP 597](https://peps.python.org/pep-0597/) describes this Windows portability
+error. Independent decoding of the unchanged receipt as UTF-8 equals the durable
+write exactly. Decoding those same bytes as `cp1252` reproduces the discrepancy
+solely in two em dashes in the original text. IDs, path, fingerprint, result and
+artifact hash match; this does not establish a duplicate or lost write. The
+separate post-run host observation reports `cp1252`, but is not presented as a
+historical in-process encoding measurement.
+
+The fresh private checker changes only that reader to explicit UTF-8, retaining
+strict decode failures and every content, identity and duplicate-write check.
+All **47 focused tests passed on their first invocation**, with no failures,
+errors or skips and unchanged tested source. The 44 existing tests remain; three
+new tests exercise the actual reader on real UTF-8 receipt files under a
+deterministic legacy-encoding default, reject malformed UTF-8, and retain
+refusal of changed content, call/operation identities and duplicate receipts.
+The fixture reuses the existing real SQLite recovery producer with its reduced
+native-history fixture; this is not a full SDK or model test.
+
+A separate read-only projection of the closed case13 B files reproduces the old
+reader's refusal and confirms that the corrected reader recovers the actual
+three requests, six native-history rows and one 382-byte write. The downstream
+check reaches missing GUI-resume records after its preceding task, quality,
+prompt, wire and artifact checks. Complete B transport and job-identity fields
+were not persisted, so none were invented. This partial retrospective diagnosis
+cannot publish the missing case13 acceptance or supply user Stop. Focused-test
+receipt SHA-256:
+`6a4da3af5d417e5301243e9516c1a24ce3dcde053128263b705bde33cfa60a3a`.
+
+The original primary audit failed at `normal_parent`; the official foreground
+supplement was not run. Independent evaluation of the unchanged onset predicate
+rejects the retained activity gap. Neither issue is removed from case13.
+
+The independent case13 review passed 471 evidence-integrity checks across 391
+pinned files, SHA-256
+`7760b9b325ab0258a6fd902d0a77f13eddf1e7c5044c7ee4e47664aae761b3cd`.
+These identify retained private evidence, not a public reproducible acceptance
+receipt. Case12's corresponding review is
+`48578b0df4a4d712cf33c627fc329ba0ea0c0e8dc32468af7b5a52a44edcc4e2`.
+The [roadmap](../PLAN.md) keeps a fresh complete qualification as the next live
+gate. No physical reboot, general media-quality, arbitrary-engine or performance
+claim follows from these results.
+
+#### Case14: primary recovery/handover passed; foreground supplement failed
+
+The fresh run used the same installed `7306a53` payload, V6 native owner, IQ3_S
+assets and quality, with the reviewed UTF-8 checker. Its original 900-second
+execution budget expired during a verified safe resource wait. An actual expired
+screen was observed before one Continue. The inventory task then produced the
+independently checked 23-unit result and published safe-wait and task-acceptance
+records. A native task/file chooser admitted the separate welcome specification
+and input directory; its new window was captured before one Resume. That task
+published its own format-only acceptance. One user Stop completed normal cleanup.
+
+The unchanged primary audit passed **99 checks**. Six cumulative provider calls
+produced two physical writes, one per task. The original inventory prompt, read,
+history, output and counters remained intact across continuation and task B;
+the second task had separate task/session authority. The parent joined with exit
+0 after 1,457.406 seconds, with no timeout or emergency termination. Three native
+lifetimes accounted for 7/7, 6/6 and 6/6 descendants, and both GUI endpoints,
+listeners, transports and all five retained preparation/worker processes closed.
+The external observer joined with exit 1 after its expected three connection
+errors following service closure; its 1,439 valid observations are not themselves
+proof of cleanup. Retained owner evidence supplies that proof.
+
+The additional first-inflight foreground audit nevertheless returned
+`hold_not_preserved`. All audited hold rows kept admission closed, with no second
+dispatch or reported backend uncertainty. Twelve early rows had a different
+reason: eleven `foreground_recovery_margin` and one `foreground_recovery_dwell`,
+instead of the predicate's required `foreground_activity`. The later parked
+observations and normal task recovery do not erase this refusal. The lineage
+stage after that failed predicate was not reached. Thus the product's recorded
+`qualification_case_passed=true` belongs to the original primary audit;
+**the combined foreground/recovery scenario is failed**.
+
+The operator retained 55 actual document actions. Their maximum adjacent
+start-to-next-end interval was 29.4707506 seconds; the last completed pre-seal
+action began 7.6725251 seconds before sealing. Those pass the unchanged temporal
+coverage requirement. The first record was standalone window activation, however,
+and the first navigation key followed about 17 seconds later. All twelve reason
+violations occurred before that key. A `foreground_activity` sample also returned
+before the key's bracket, so the key is not presented as the proven sole cause of
+the transition. Compact action notes and clocks were retained during the hold;
+the structured captions were transcribed afterward from the displayed UI
+observations, with that provenance declared and the original compact log kept.
+
+Microsoft distinguishes [last session input](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getlastinputinfo)
+from [foreground activation](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow).
+The latter documents focus and input routing, not a guarantee that activation
+refreshes the input-event timestamp. [Keyboard/mouse input](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput)
+is a separate operation. These contracts and the retained action sequence support
+a prospective procedure correction, not an independently measured historical
+input age: the observer does not save raw input-age/CPU samples. The existing
+policy keeps admission closed in both recovery states. No runtime or acceptance
+rule is changed to turn this run into a pass.
+
+The next first action will retain the full useful transition when activation is
+needed: QPC before activation, activation and refresh, inspection of the actual
+document, an immediate state-derived navigation input and refresh, then QPC after.
+Both UI substeps and their latency remain explicit. Each input uses a separate
+observed UI call; there is no automatic key loop. If latency misses the original
+inflight request, the unchanged overlap check must still fail. The original
+case14 records will not be regrouped, retried or reclassified.
+
+Primary audit SHA-256:
+`1e218b3f2c56c74d1fd5d1ee049ab46f6091babcb1f68ef7bad7f58f7ae3d569`.
+Failed supplement SHA-256:
+`640feeab44a1e700daf769bf1c0df18901473aaaa2d3408c86575253bd41fdf1`.
+Independent terminal review passed 3,059 evidence-integrity and identity checks
+across 2,866 pinned files, preserving the failed combined outcome. Its SHA-256 is
+`330933877ab119086cf98a43621f5a9cb63bb4bbfa9912a40041bc126d3987b7`.
+The review verifies the preserved compact action records and declared caption
+provenance; it does not independently reconstruct unsaved screenshot contents.
+These identify retained private evidence, not a public reproducible acceptance
+release. The full foreground gate and sanitized reconstruction package remain
+required before advancing the combined milestone.
+
+For the preceding documentation-only head `ac5d5b9`, the
+[PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41081619157)
+passed all seven jobs, while the
+[push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41081611814)
+passed six and cancelled Windows/Python 3.12 at its cumulative 15-minute limit.
+The cancelled job had passed its core and preservation suites and built packages;
+the timeout interrupted archive reading. Its equivalent PR job passed on the same
+source tree. This remains **13 successes and one cancellation**, without a retry;
+it does not replace the separate 14 successful jobs for the installed source.
+
+### CI diagnostics and isolated HTTP fixture validation
+
+At documentation head `938a9a123c2b9ad3991a8863856650e601798cf4`, the
+[PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41040556106)
+passed all seven jobs; the [push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41040549390)
+passed six and cancelled Windows/Python 3.11 at its cumulative 15-minute limit.
+Both checkouts have tree `104a22c0dc9859172530e269d4aa586749935239`. The successful
+Windows counterpart passed 1,258 core tests in 508.419 seconds and all remaining
+checks. Cancellation interrupted AST copying during lineage verification, which
+identifies the interruption location, not the cause of the accumulated delay.
+Together with the preceding timeout at a different test, this warrants a bounded
+duration investigation. It remains 13 successful checks and one cancellation,
+with no runtime regression or infrastructure-only cause established by these
+documentation changes.
+
+At documentation head `d3bc4032753cf52db78a6ead6c5c0fa8d25e5e87`, the
+[PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41046301890)
+and [push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41046296284)
+finished with **12 successful jobs and two cancellations**, both at the cumulative
+15-minute limit. The push Windows/Python 3.11 job passed 1,258 core tests in
+809.063 seconds before a later cancellation. The PR Windows/Python 3.12 job
+logged `ERROR` for `test_clock_crosses_after_admitted_before_begin`; no final
+traceback was retained in its log or inspected diagnostic artifact. That error
+remains unexplained. The opposite-event counterparts passed, including 1,258
+core tests in 426.573 seconds on Windows/Python 3.12. Both checkouts have tree
+`0a86b0f12a487b04f5800ae48248203f4e684263`.
+
+One focused local Python 3.12 control of that exact test passed in 0.354 seconds:
+safe expiry preserved pending work with no second begin or transport call. It
+uses a scripted SDK and actual worker/recovery control flow, not a model run.
+This pass does not diagnose the hosted error or establish that all CI passed.
+
+The subsequent workflow change adds only standard unittest `--failfast` to core
+discovery. Passing runs retain the same collection and assertions. Failed runs
+stop after the first failure/error; tests not reached must be recorded as not
+executed. The matrix's `fail-fast: false`, timeout and always-run diagnostic upload remain
+unchanged. CPython reports stored tracebacks after the current test and cleanup
+return, so blocked cleanup or job termination can still prevent a report.
+This is a diagnostic change, not a runtime correction or duration improvement.
+See [Python 3.11](https://docs.python.org/3.11/library/unittest.html#command-line-options),
+[Python 3.12](https://docs.python.org/3.12/library/unittest.html#command-line-options)
+and the pinned [CPython runner](https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/runner.py#L235).
+
+At diagnostic-change head `39d2d90b291603113c3dd6b017681ca8367a8872`, the
+[push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41050044491)
+and [PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41050053294)
+finished with **13 successful checks, one failure and no cancellations**. All
+four Windows jobs passed. Both checkouts have tree
+`3a5cb999528892c84a910c332cf093a6bf7e9e60`. The failed
+[push macOS/Python 3.11 job](https://github.com/midhatn/adaptive-inference/actions/runs/41050044491/job/124043555978)
+reported `AssertionError: unexpectedly None` in the disconnect/EOF test: its
+owner snapshot was already None before the client response was closed. Fail-fast
+preserved the traceback and exit 1 after 907 tests in 80.571 seconds, including
+35 skips; remaining core tests were not executed and later steps were skipped.
+The [matching PR job](https://github.com/midhatn/adaptive-inference/actions/runs/41050053294/job/124043585767)
+passed that test; its core suite reported 1,258 tests in 146.390 seconds with
+36 skips. This observed
+diagnostic result does not explain the earlier `d3bc403` error or resolve
+cumulative CI duration variability.
+
+The subsequent [fixture-only correction](../tests/test_immediate_admission.py)
+gives this deliberately event-held stream a separate bounded five-second read
+timeout, asserts a non-None owner before closing, and releases its finish event
+in `finally`. Ownership and post-EOF checks remain. Every other fixture test
+keeps 50 milliseconds; the dedicated timeout method is unchanged. The
+[Python Event contract](https://docs.python.org/3.11/library/asyncio-sync.html#asyncio.Event),
+[aiohttp read-timeout contract](https://github.com/aio-libs/aiohttp/blob/v3.14.5/docs/client_reference.rst#L2235)
+and [timer implementation](https://github.com/aio-libs/aiohttp/blob/v3.14.5/aiohttp/client_proto.py#L287)
+support separating these scenarios. A competing 50-millisecond timeout remains
+a hypothesis about the failed hosted execution; its gateway history was not
+retained.
+
+The two affected tests passed once each on local Python 3.11.9 with pinned
+aiohttp 3.14.5 (0.684 seconds), and Python 3.12.9 with installed aiohttp 3.11.13
+(0.655 seconds). The latter is an older-dependency compatibility control, not
+dependency-equivalent CI validation. Test-file blob
+`6235532acc1ac06209c75f733dbb7dc7d2f99e87` binds this correction. Actual session
+timeouts were five seconds and 50 milliseconds respectively; timeout cases
+still returned 502 with uncertain completion, no retry proof and one backend
+call. Lifecycle checks observed the same owner before and after client close,
+then one completion after explicit EOF without uncertainty. Their histories
+recorded `client_disconnected=false`:
+closing the client and yielding once does not prove that the server observed a
+TCP disconnect. No runtime code, installed dependency or model was changed.
+Fresh exact-head hosted CI remains a separate gate for this fixture correction.
+
+At fixture-correction head `aec8d9070f1509268e7d9b3e9944c14c3f374e75`, the
+[PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41054525936)
+passed all seven jobs. The [push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41054518769)
+passed five and cancelled both Windows jobs at the cumulative 15-minute limit:
+**12 successes and two cancellations**. Both tested trees are
+`9b1e2c51645f7b54dbe629f9e876e93f28e4fd8a`. Both affected HTTP tests logged `ok`
+in all 12 portable jobs. The push Windows/Python 3.12 job completed 1,258 core
+tests in 752.991 seconds with one supported-interpreter skip and individually
+completed its later validation/build steps; its overall result nevertheless
+remains cancelled. Push Windows/Python 3.11 has no completed core summary: it
+was interrupted during a SQLite commit in task creation. That location does
+not identify the cause of cumulative delay. The passing PR Windows counterparts
+completed 1,258 tests in 674.558 and 680.898 seconds respectively. This validates
+the fixture correction within those bounds; it does not qualify the separately
+developed activity bridge or explain earlier unresolved failures.
+
 ## Explicit continuation after safe expiry
 
 The [source-bound continuation record](../provenance/explicit-continuation/acceptance/README.md)

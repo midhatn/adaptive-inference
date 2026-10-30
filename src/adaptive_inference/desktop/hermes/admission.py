@@ -25,6 +25,10 @@ class AdmissionStop(BaseException):
     pass
 
 
+class AdmissionWaitExpired(AdmissionStop):
+    """The deadline passed before begin() or any transport invocation."""
+
+
 def sha(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -122,11 +126,11 @@ class Provider:
             while True:
                 if poll_control is not None: poll_control()
                 if self.clock()>=self.deadline:
-                    raise AdmissionStop('Admission wait deadline reached before dispatch')
+                    raise AdmissionWaitExpired('Admission wait deadline reached before dispatch')
                 if self.admitted():break
                 self.sleep(min(.25,max(0,self.deadline-self.clock())))
             if self.clock()>=self.deadline:
-                raise AdmissionStop('Admission deadline reached before dispatch')
+                raise AdmissionWaitExpired('Admission deadline reached before dispatch')
             self.current_attempt=uuid.uuid4().hex
             outgoing=copy.deepcopy(original)
             outgoing['extra_headers']={**headers,'X-Adaptive-Admission':'immediate',

@@ -158,8 +158,12 @@ class ImmediateHTTPTests(unittest.IsolatedAsyncioTestCase):
         upstream.router.add_post("/v1/chat/completions", receive)
         self.backend = TestServer(upstream)
         await self.backend.start_server()
+        # This lifecycle test holds EOF explicitly; the separate timeout test
+        # must retain its short read deadline.
+        read_timeout_s = (5 if self._testMethodName ==
+                          "test_client_disconnect_after_dispatch_retains_owner_until_eof" else .05)
         self.app = create_app(Config(backend_kind="strata", backend_url=str(self.backend.make_url("/v1")),
-                                    queue_timeout_s=1, upstream_read_timeout_s=.05),
+                                    queue_timeout_s=1, upstream_read_timeout_s=read_timeout_s),
                               capacity=lambda: self.capacity)
         self.gateway = self.app[GATEWAY]
         self.client = TestClient(TestServer(self.app))
@@ -319,15 +323,22 @@ class ImmediateHTTPTests(unittest.IsolatedAsyncioTestCase):
             return response
 
         self.backend_handler = stream
-        response = await self.client.post("/v1/chat/completions", json={**BODY, "stream": True}, headers=HEADERS)
-        await asyncio.wait_for(started.wait(), 1)
-        self.no_proof(response)
-        active = self.gateway.scheduler.active
-        response.close()
-        await asyncio.sleep(0)
-        self.assertIs(self.gateway.scheduler.active, active)
-        self.assertIsNotNone(active)
-        finish.set()
+        try:
+            response = await self.client.post("/v1/chat/completions", json={**BODY, "stream": True}, headers=HEADERS)
+            await asyncio.wait_for(started.wait(), 1)
+            self.no_proof(response)
+            active = self.gateway.scheduler.active
+            self.assertIsNotNone(active, {"completed": self.gateway.scheduler.completed,
+                "uncertain": self.gateway.scheduler.uncertain,
+                "deferred": self.gateway.scheduler.deferred,
+                "backend_calls": len(self.backend_calls), "history_entries": len(self.gateway.history)})
+            response.close()
+            await asyncio.sleep(0)
+            self.assertIs(self.gateway.scheduler.active, active)
+            self.assertEqual(self.gateway.scheduler.completed, 0)
+            self.assertFalse(self.gateway.scheduler.uncertain)
+        finally:
+            finish.set()
         async with asyncio.timeout(1):
             while self.gateway.scheduler.active is not None:
                 await asyncio.sleep(.001)

@@ -47,8 +47,14 @@ async def wait_original_ready(child,path,*,timeout_s=30,clock=time.monotonic):
     """Bound only this CPU fixture's import/startup; never retry its work."""
     deadline=clock()+timeout_s
     while True:
-        if path.exists():
-            if json.loads(path.read_text(encoding='utf-8'))!={'pid':child.pid,'work_guard_s':15}:
+        try:
+            readiness=path.read_text(encoding='utf-8')
+        except (FileNotFoundError,PermissionError):
+            # Publication/Windows sharing can briefly prevent observation.
+            # The same child and original startup bound still govern the wait.
+            pass
+        else:
+            if json.loads(readiness)!={'pid':child.pid,'work_guard_s':15}:
                 raise AssertionError('CPU fixture readiness identity differs')
             return
         if child.poll() is not None:
@@ -162,6 +168,9 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         patch=mock.patch.object(product.subprocess,'Popen',side_effect=popen);patch.start();self.patches.append(patch)
 
     async def asyncTearDown(self):
+        # A completed failed transition is already removed from its set,
+        # but the fixture restore loop still needs its Stop fence.
+        self.c.runtime.fence_admission()
         for release in self.releases:release.set()
         c=self.c
         if c.runtime._continuation_tasks:
@@ -205,6 +214,22 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
                 row.update(exit_code=item['child'].returncode,joined=item['child'] in joined,
                            cleanup_killed=item['child'] in killed,
                            join_observed_utc=datetime.now(timezone.utc).isoformat())
+                # The existing opt-in CI receipt must outlive temporary logs.
+                # Capture only this exact retained label, after join and close.
+                log_path=c.root/(item['kind']+'.log')
+                try:
+                    matching=[stream for stream in c.logs if Path(stream.name)==log_path]
+                    if len(matching)!=1 or not matching[0].closed:
+                        raise ValueError('Retained child log handle differs or remains open')
+                    with log_path.open('rb') as stream:
+                        stream.seek(0,os.SEEK_END);total=stream.tell()
+                        stream.seek(max(0,total-65536));tail=stream.read(65536)
+                    row['output_log']={'name':log_path.name,'total_bytes':total,
+                        'captured_bytes':len(tail),'truncated':total>len(tail),
+                        'tail_sha256':hashlib.sha256(tail).hexdigest(),
+                        'tail_utf8':tail.decode('utf-8',errors='replace')}
+                except (OSError,ValueError) as exc:
+                    row['output_log']={'name':log_path.name,'capture_error':type(exc).__name__}
                 rows.append(row)
             output=Path(destination);output.mkdir(exist_ok=True)
             (output/(self._testMethodName+'.json')).write_text(json.dumps({'test':self.id(),'children':rows,
@@ -449,6 +474,100 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(c.handles),2)
         receipt=await c.runtime.cooperative_stop();self.assertTrue(receipt['host_closed']);self.assertFalse(receipt['uncertain'])
 
+    async def test_new_task_admission_reuses_exact_completed_successor_verifier(self):
+        from adaptive_inference.desktop.task_admission import TaskAdmission
+        from adaptive_inference.task_store import TaskStore, TaskBusyError
+        from adaptive_inference.task_spec import TaskSpec, BUDGET
+        from adaptive_inference.demand import DemandIdentity
+        from test_task_admission import create_task
+        c=self.c
+        original_binding=c.stop_binding
+        grant=await self.select();await self.continue_task(grant)
+        record=c.continuation.current
+        self.assertEqual(await c.join_child(record['child']),0)
+        cp=record['mailbox'].snapshot().target
+        history=c.store.history(cp.task_id)
+        tasks=c.root/'new-tasks';tasks.mkdir()
+        admission=TaskAdmission(TaskStore(c.root/'admission.sqlite3'),host_generation=c.host_epoch,
+            tasks_root=tasks,initial_task_id='orders-report',initial_run=c.work)
+        with self.assertRaisesRegex(ReconciliationRequired,'Original worker no longer'):
+            with admission._released_checkpoint(admission.initial,'orders-report',self.old.revision,
+                                                stop_binding=original_binding):pass
+        task_spec=TaskSpec({'schema':'adaptive.task-spec.v1','prompt':'Explain one idea.',
+            'inputs':[],'outputs':[],'budget':BUDGET,'validation':{'validator':None}})
+        payload=admission.request(command_id='new-task',expected_selection_revision=0,
+            predecessor_execution_id=cp.task_id,predecessor_revision=cp.revision,spec=task_spec,
+            arrived_at_utc='2026-10-26T12:00:00Z')
+        authority_cp=admission.store.load(admission.task_id)
+        with admission.store.claim(admission.task_id,expected_revision=authority_cp.revision) as owner:
+            with self.assertRaisesRegex(ReconciliationRequired,'Unverified successor'):
+                admission.reserve(owner,payload,predecessor_cleanup_sha256='1'*64)
+            admission.retain_execution_binding(record['binding'])
+            # The continuation authority cannot be claimed while admission holds
+            # its stable lock; this prevents a concurrent selection during write.
+            saved=owner.save_checkpoint
+            def guarded_save(*args,**kwargs):
+                authority=record['authority'];current=c.store.load(authority.task_id)
+                with self.assertRaises(TaskBusyError):
+                    with c.store.claim(current.task_id,expected_revision=current.revision):pass
+                return saved(*args,**kwargs)
+            with mock.patch.object(owner,'save_checkpoint',side_effect=guarded_save):
+                reservation=admission.reserve(owner,payload,predecessor_cleanup_sha256='1'*64)
+            operation=admission.begin(owner,reservation,action='prepare')
+            run=Path(payload['run']);run.mkdir();(run/'work').mkdir()
+            identity=DemandIdentity(**{key:payload['demand_identity'][key] for key in
+                ('registration_id','task_id','owner_id','arrived_at_utc')})
+            create_task(TaskStore(run/'task.sqlite3'),identity,task_spec,payload['session_id'])
+            result_path=record['diagnostics']/f"result-{record['child'].pid}.json"
+            original=result_path.read_bytes()
+            try:
+                changed=json.loads(original);changed['continuation_cleanup_verified']=False
+                result_path.write_text(json.dumps(changed),encoding='utf-8')
+                with self.assertRaisesRegex(ReconciliationRequired,'Selected result'):
+                    admission.prepared(owner,reservation,operation_id=operation)
+            finally:
+                result_path.write_bytes(original)
+            admission.prepared(owner,reservation,operation_id=operation)
+            self.assertEqual(admission.status()['selected']['task_id'],payload['task_id'])
+        self.assertEqual(c.store.history(cp.task_id),history)
+
+    async def test_new_task_stop_reuses_committed_unlaunched_verifier(self):
+        from adaptive_inference.desktop.task_admission import TaskAdmission
+        from adaptive_inference.task_store import TaskStore, TaskBusyError
+        c=self.c;grant=await self.select();record=c.continuation.current
+        tasks=c.root/'new-tasks';tasks.mkdir()
+        admission=TaskAdmission(TaskStore(c.root/'admission.sqlite3'),host_generation=c.host_epoch,
+            tasks_root=tasks,initial_task_id='orders-report',initial_run=c.work)
+        history=c.store.history(grant['execution_id'])
+        with admission._unlaunched_checkpoint(admission.initial,c.continuation) as (cp,outcome):
+            self.assertEqual(cp.task_id,grant['execution_id'])
+            self.assertEqual(outcome,'selected_not_launched')
+            for ident in (record['authority'].task_id,cp.task_id):
+                current=c.store.load(ident)
+                with self.assertRaises(TaskBusyError):
+                    with c.store.claim(ident,expected_revision=current.revision):pass
+        self.assertEqual(c.store.history(grant['execution_id']),history)
+        record['launch_attempted']=True
+        try:
+            with self.assertRaisesRegex(ReconciliationRequired,'known unstarted'):
+                with admission._unlaunched_checkpoint(admission.initial,c.continuation):pass
+        finally:record['launch_attempted']=False
+
+    async def test_new_task_release_locks_first_continuation_authority_before_row_exists(self):
+        from adaptive_inference.desktop.task_admission import TaskAdmission
+        from adaptive_inference.task_store import TaskStore, TaskBusyError
+        from adaptive_inference.desktop.hermes.continuation_worker import scope_for
+        c=self.c;tasks=c.root/'new-tasks';tasks.mkdir()
+        admission=TaskAdmission(TaskStore(c.root/'admission.sqlite3'),host_generation=c.host_epoch,
+            tasks_root=tasks,initial_task_id='orders-report',initial_run=c.work)
+        with admission._released_checkpoint(admission.initial,'orders-report',self.old.revision,
+                                            stop_binding=c.stop_binding):
+            authority=ContinuationAuthority(c.store,'orders-report',
+                scope_for(c.work,c.plan,(c.work/'plan.json').read_bytes()),host_generation=c.host_epoch)
+            cp=c.store.load(authority.task_id)
+            with self.assertRaises(TaskBusyError):
+                with c.store.claim(cp.task_id,expected_revision=cp.revision):pass
+
     async def test_stop_before_initial_pause_ack_joins_new_child_without_resume(self):
         self.pause_delay=.5;self.behavior='hold';c=self.c
         grant=await self.select()
@@ -591,6 +710,39 @@ class FixtureStartupTests(unittest.TestCase):
         self.assertIn('injected readiness failure',result.errors[0][1])
         self.assertFalse(result.failures)
         self.assertIsNotNone(case.c.worker.returncode)
+        self.assertTrue(all(stream.closed for stream in case.c.logs))
+        self.assertFalse(case.c.work.exists())
+
+
+    @unittest.skipUnless(os.name=='nt','Windows retained-process body failure fixture')
+    def test_async_body_error_still_finishes_restore_and_retained_cleanup(self):
+        class FailedBody(HostTests):
+            async def test_injected_body_failure(self):
+                grant=await self.select();launch=self.c.launch_continuation
+                async def fail_after_pause(record,coordinator,intent_valid):
+                    await launch(record,coordinator,intent_valid)
+                    raise RuntimeError('injected failure after initial Pause before Resume')
+                self.c.launch_continuation=fail_after_pause
+                await self.continue_task(grant)
+
+            async def asyncTearDown(self):
+                try:
+                    # Bound this regression itself if the old teardown bug
+                    # returns; original production/fixture budgets stay intact.
+                    await asyncio.wait_for(super().asyncTearDown(),20)
+                finally:
+                    self.c.runtime.fence_admission()
+                    await asyncio.gather(*self.tasks,return_exceptions=True)
+        case=FailedBody('test_injected_body_failure');result=unittest.TestResult()
+        case.run(result)
+        self.assertEqual(len(result.errors),1)
+        self.assertIn('injected failure after initial Pause before Resume',result.errors[0][1])
+        self.assertFalse(result.failures)
+        self.assertTrue(case.c.runtime._stopping)
+        self.assertTrue(all(task.done() and not task.cancelled() for task in case.tasks))
+        self.assertFalse(case.c.runtime._continuation_tasks)
+        self.assertFalse(case.c.runtime._pending)
+        self.assertEqual([child.returncode for child in case.c.handles],[5,4])
         self.assertTrue(all(stream.closed for stream in case.c.logs))
         self.assertFalse(case.c.work.exists())
 
