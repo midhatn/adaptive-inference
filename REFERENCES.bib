@@ -614,3 +614,24 @@
   url = {https://arxiv.org/abs/2602.16603v1},
   note = {Discovered through Papers with Code record 56294; inspected 2026-10-26 with Apache-2.0 author implementation ChiachiHsieh/FlowPrefill at d8a1c417c04469287c39abb63e8d3a3791c70f1a. Native-capability research only; no code imported or published performance reproduced on our Windows hybrid IQ3_S stack}
 }
+
+@misc{windowsSessionInputAge,
+  title = {GetLastInputInfo session input observation},
+  author = {{Microsoft}},
+  url = {https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getlastinputinfo},
+  note = {Inspected 2026-10-30 alongside existing foreground policy. Session input age is distinct from QPC operator brackets; actual trace and action coverage remain required. No documentation or implementation copied}
+}
+
+@misc{pythonProfilingDiagnostics,
+  title = {Python cProfile and pstats profiling tools},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.11/library/profile.html},
+  note = {Inspected 2026-10-30 as a proposed diagnostic for repeated cumulative Windows CI timeouts. Profiling is not a benchmark and no profiling result or optimization is claimed}
+}
+
+@misc{githubActionsBoundedJobs,
+  title = {GitHub Actions workflow job timeouts and matrix scheduling},
+  author = {{GitHub}},
+  url = {https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes},
+  note = {Inspected 2026-10-30 after two Windows CI cumulative 15-minute timeouts. Supports a possible future measured workload partition with complete test coverage preserved; no workflow change or rerun performed for this research}
+}

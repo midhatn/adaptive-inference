@@ -283,6 +283,80 @@ Windows job completed 1,258 core tests in 447.901 seconds and its remaining step
 This is 13 successful jobs and one cancelled job, not 14 passes; the differing
 duration is not diagnosed as an infrastructure-only failure.
 
+### First-request foreground transition with an unsuccessful continuous hold
+
+Case10 kept the same installed wheel, IQ3_S quality, native owner and execution
+limits. Its bounded cue used only the existing append-only GET observer; the
+operator then inspected a fresh screenshot and performed actual document input.
+The trace records the same first request active with admission open before the
+input, then active with admission closed for foreground activity and draining
+afterward. It subsequently records that request complete and the engine parked.
+This establishes the onset component, not the complete recovery scenario.
+
+The interval from the second action's start through the third action's end took
+**66.1093105 seconds**, exceeding
+the unchanged strict `<60` condition. Trace samples also changed to foreground
+recovery margin/dwell. Admission remained closed and no second request dispatched
+during that gap, but continuous foreground hold was not established. The operator
+returned to quiet recovery and allowed the original task to finish within its
+existing budget, then used normal Stop once. There was no extra Resume, safe
+expiry, Continue or second task.
+
+The inventory oracle accepted **23 units**, three real requests, one native read,
+one native write and one physical output write. Artifact SHA-256:
+`48de85ae982b910b3f88139528b182c45fdce62c0e005428e0aea2d49c7d1af9`.
+The Python recorder preserved the complete A binding exactly, including its
+64-bit integer creation identity, while leaving all nonbinding action fields
+unchanged. Its three recorded input hashes and output/backup hashes were checked.
+B and expired-window transfer were not exercised by this failed attempt.
+
+Both native owners released normally, confirming 10/10 and 7/7 lifetime
+descendant exits. The final stop set separately retained the owner plus five
+then-active descendants; two lifetime descendants had exited earlier. The first
+complete stop-time handle list was not persisted. Worker, GUI and associated
+cleanup records support closure without emergency termination; monitor joins
+remain inferred from successful pinned close paths rather than separate raw
+thread-join flags. No termination-denial branch coverage is established.
+
+Independent review retained 60 component/integrity checks across 439 input
+hashes, receipt SHA-256
+`0664d15d8ef4e1128a475684e0a410159bb9a5e60fc2bebcbf268d6e09911516`.
+The separate native review is
+`1b268a113b8e02af7fbffb3b2860b3b25b34974022d6c8a7a8cdeeb5b49e0c95`.
+The original parent returned one and its auditor failed `normal_parent`;
+`qualification_case_passed=false` and whole-trial `clean_stop=false` remain
+unchanged. The supplemental auditor was not run. Component evidence does not
+convert the consumed case into a qualification pass.
+
+The review also preserved a checker assumption and its narrow correction. The
+native read used the exact absolute path of the bound 70-byte, four-line input.
+An initial component assertion expected a literal relative path; its failed
+receipt remains preserved. The successor review checked the exact bound path,
+input hash, full returned content and native intent/result. It did not change
+the original supplemental lineage rule, whose literal-relative-path predicate
+remains unestablished. A future equivalence rule needs separate source review
+before another case; matching content or basename alone is insufficient.
+
+The preparation's 22 new synthetic helper tests and two additional independent
+failure cases cover bounded observation and lossless recording. They are not
+runtime qualification. The next operator correction uses existing QPC feedback
+and a 30-second action target, deferring nonessential work outside the hold while
+retaining the strict 60-second condition and genuine observed input. See the
+[roadmap](../PLAN.md) for the remaining gates and citations.
+
+At documentation head `938a9a123c2b9ad3991a8863856650e601798cf4`, the
+[PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41040556106)
+passed all seven jobs; the [push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41040549390)
+passed six and cancelled Windows/Python 3.11 at its cumulative 15-minute limit.
+Both checkouts have tree `104a22c0dc9859172530e269d4aa586749935239`. The successful
+Windows counterpart passed 1,258 core tests in 508.419 seconds and all remaining
+checks. Cancellation interrupted AST copying during lineage verification, which
+identifies the interruption location, not the cause of the accumulated delay.
+Together with the preceding timeout at a different test, this warrants a bounded
+duration investigation. It remains 13 successful checks and one cancellation,
+with no runtime regression or infrastructure-only cause established by these
+documentation changes.
+
 ## Explicit continuation after safe expiry
 
 The [source-bound continuation record](../provenance/explicit-continuation/acceptance/README.md)

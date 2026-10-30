@@ -50,9 +50,12 @@ interrupted runs will remain identified as such.
 contracts, task handover and explicit continuation after a resource wait. The
 outstanding acceptance gate is one complete installed IQ3_S two-task run covering
 safe waiting expiry, Continue, task acceptance and shutdown. The latest inventory
-task completed after native release and restoration, but its recovery scenario
-failed the declared timing and evidence requirements. Earlier accepted reference
-workflows retain their own source and scope. See the [current evidence](docs/evidence.md).
+task completed after native release and restoration. Its first-request foreground
+transition and exact identity recording were verified, but a 66.109-second gap
+between document actions failed the continuous-activity requirement. Safe expiry,
+Continue and the second task remain unqualified in this scenario. Earlier
+accepted reference workflows retain their own source and scope. See the
+[current evidence](docs/evidence.md).
 
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
@@ -1441,6 +1444,45 @@ predecessor and original two-task audit requirements unchanged. Do not add a
 runtime poller, read actively replaced product state, manufacture input or alter
 any execution budget. The [evidence ledger](docs/evidence.md) records the failed
 scenario alongside its narrower completed-task and release results.
+
+**Subsequent 30 October feedback:** case10 verified the first-request onset:
+admission was open before actual document input, then closed for foreground
+activity while the same first request remained active, followed by completion
+and parking. Python preserved the complete A-window identity without integer
+rounding. The inventory again completed with three actual IQ3_S requests, one
+physical write and the 23-unit oracle. However, an actual action-coverage gap of
+66.1093105 seconds exceeded the unchanged strict 60-second condition. The trace
+also changed to the foreground recovery margin/dwell during that gap, although
+admission stayed closed. No expiry, Continue or second task occurred; the whole
+case and original audit remain failed.
+
+Use the existing verified [QPC clock](https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps)
+for compact operator feedback. Target the next completed useful document action
+within 30 seconds of the previous start, leaving margin under the unchanged
+60-second acceptance condition. Preserve fresh observe/inspect/action/refresh
+and timely notes; defer nonessential file serialization, trace interpretation
+and coordinator work until outside the hold. This adds no automatic input,
+poller, controller or execution allowance. Session input age remains a distinct
+[Windows observation](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getlastinputinfo);
+the retained trace and terminal audit, not the displayed target, prove the hold.
+
+Case10 also exposed a future proof-checker limitation: its real native read used
+the exact absolute path of the bound input, while the supplemental lineage check
+requires literal relative `inventory.csv`. The complete correct input was read,
+but that later predicate was not established. Review the existing task/native
+path-resolution rules before defining a fresh case. Any proposed equivalence
+must identify the exact bound work file and preserve its input hash, complete
+result and native intent; a matching basename or copied content is insufficient.
+Do not modify case10 or retroactively claim the unchanged check passed.
+
+**Validation follow-up:** consecutive documentation heads recorded a Windows
+CI job exceeding its cumulative 15-minute limit while the equivalent source
+passed on the other event. Retain both results. After the live qualification,
+use existing [Python profiling tools](https://docs.python.org/3.11/library/profile.html)
+to measure selected expensive groups, then consider explicit
+[job partitioning](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes)
+if justified. Preserve all tests and source checks; a rerun alone does not resolve
+the recurring duration problem, and no infrastructure-only cause is established.
 
 Exercise ordinary-task waiting, truthful expiry, explicit continuation and Stop,
 with separate original-task acceptance before a second task can be admitted.
