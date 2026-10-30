@@ -153,6 +153,7 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         c.launch_api=SimpleNamespace(handle=lambda child:child,identity=lambda child:(child.pid,child.pid*10),
             in_job=lambda child,job:True)
         self.behavior='complete';self.pause_delay=0.;self.tasks=[];self.releases=[]
+        self.restore_stop=asyncio.Event()
         self.actual_popen=subprocess.Popen
         def popen(command,**kwargs):
             self.assertNotIn('--qualification-hold-after-report',command)
@@ -162,6 +163,10 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         patch=mock.patch.object(product.subprocess,'Popen',side_effect=popen);patch.start();self.patches.append(patch)
 
     async def asyncTearDown(self):
+        # A failed Continue may never produce an applied Resume receipt. Stop
+        # only the test's simulated restore helper so cleanup can report that
+        # original failure; real continuation tasks/children still get joined.
+        self.restore_stop.set()
         for release in self.releases:release.set()
         c=self.c
         if c.runtime._continuation_tasks:
@@ -221,7 +226,7 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
     async def select(self):return await self.c.runtime.select_continuation(self.request(),intent_valid=self.intent)
 
     async def restore(self):
-        while True:
+        while not self.restore_stop.is_set():
             record=self.c.continuation.current
             if record and record.get('resume_id'):
                 snap=await asyncio.to_thread(record['mailbox'].snapshot)
@@ -548,6 +553,24 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         with sqlite3.connect(c.store.path) as db:
             db.execute('UPDATE history SET payload=? WHERE task_id=? AND revision=?',
                 (json.dumps(completed['payload']),authority.task_id,completed['revision']))
+
+
+class RestoreCleanupTests(unittest.IsolatedAsyncioTestCase):
+    async def test_failed_continue_restore_helper_can_finish_without_receipt(self):
+        fixture=HostTests()
+        fixture.restore_stop=asyncio.Event()
+        fixture.c=SimpleNamespace(continuation=SimpleNamespace(current=None),
+                                  runtime=SimpleNamespace(_stopping=False))
+        task=asyncio.create_task(fixture.restore())
+        try:
+            await asyncio.sleep(0)
+            self.assertFalse(task.done())
+            fixture.restore_stop.set()
+            await asyncio.wait_for(task,1)
+            self.assertFalse(task.cancelled())
+        finally:
+            if not task.done():task.cancel()
+            await asyncio.gather(task,return_exceptions=True)
 
 
 class FixtureStartupTests(unittest.TestCase):
