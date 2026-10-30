@@ -17,6 +17,16 @@ and an existing optional FP16 expert-prompt path to evaluate after the current
 continuation milestone. It separates the user-reported GPU environment change
 and dense matrix measurements from unmeasured application performance.
 
+The [heterogeneous-inference qualification guide](npu-qualification.md), added
+28 October 2026, uses public Gufo and Phoenix counterevidence to define
+arithmetic, real-model and complete-task gates for future accelerator work.
+It records exact source and license boundaries and a pending shared-expert
+memory hypothesis. Its 30 October update preserves the measured 26.44–27.03
+teacher-forced continuation steps/s from a standalone BF16 LFM2.5-230M Phoenix
+drafter, with a sanitized timing record and explicit quality/acceptance limits.
+This is not DeepSeek accepted-token throughput. The guide enables no NPU path
+or backend resource control.
+
 ## Direct implementation lineage
 
 | Source | Use here | Attribution and boundary |

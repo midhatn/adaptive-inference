@@ -545,3 +545,59 @@
   url = {https://docs.langchain.com/oss/python/langgraph/interrupts},
   note = {MIT documentation, inspected revision 4506df5fb4105a39b84c2b7390d21bed89e28668, src/oss/langgraph/interrupts.mdx, blob 32b562c8c91387fc5aa274700d98181cbcadbf54; official page rechecked 2026-10-26. Saved-state resume and repeated-effect hazards inform preserved effect/history checks. No dependency, copied implementation or inherited exactly-once guarantee}
 }
+
+@misc{gufoNpuPrefillQualification,
+  title = {Gufo XDNA2 prefill offload and whole-mode quality feedback},
+  author = {{Gufo contributors}},
+  url = {https://github.com/gufo-org/gufo/pull/568},
+  note = {Open PR head cb708e10f7b2c96c012d30fa7a69d9ae0568a650 inspected 2026-10-28 with issue comment 6295731394 by alytaphoenix. Contributor-reported prefill, speculative-acceptance and decode tradeoffs from a separate modified 0.18 port on Strix Halo; not a reproduction of that PR head here. Research only, no implementation copied}
+}
+
+@misc{phoenixCudaNpuCounterevidence,
+  title = {Phoenix NPU plus discrete CUDA GPU: experiment report and request for review},
+  author = {{midhatn}},
+  url = {https://github.com/midhatn/gufo/blob/ac456f320eea2f9ffb57654171d3ac9d539fea43/docs/models/qwen3.8-flash-next/PHOENIX_CUDA_NPU_REPORT.md},
+  note = {Corrected unmerged PR 1 head ac456f320eea2f9ffb57654171d3ac9d539fea43 inspected 2026-10-30. Public Windows Strata adaptation report with unsuccessful NPU performance comparisons, not a Gufo benchmark or this gateway's acceptance. Research only}
+}
+
+@misc{phoenixLfmDrafterReference,
+  title = {Ryzen AI NPU Lab eight-core LFM2.5 model engine},
+  author = {{Abhiram Jayasankar and contributors}},
+  url = {https://github.com/AbhiramJayasankar/ryzenai-npu-lab/blob/a9531b87b770fd3142164b61254fb6f74fed2d22/experiments/lfm25_x8_model.py},
+  note = {MIT, revision a9531b87b770fd3142164b61254fb6f74fed2d22, rechecked 2026-10-30. Existing implementation reused by a separate local Phoenix diagnostic with LiquidAI/LFM2.5-230M at 40cb2ad3b3044d5a41eee083a6103c8b523afa45 (LFM Open License v1.0). This repository adds a sanitized measurement summary only, no copied implementation, model, or enabled backend}
+}
+
+@misc{gufoGlmSharedExpertReference,
+  title = {Gufo GLM shared-expert NPU dependency and weight ownership},
+  author = {{Gufo contributors}},
+  url = {https://github.com/mikealanni/gufo/blob/46408c0533a8e4a0e1787b1f1200b21e6ce7171e/src/models/glm53_flash/kernels/rocm/executor.cpp},
+  note = {MIT, revision 46408c0533a8e4a0e1787b1f1200b21e6ce7171e, source blob 229dbf9c714637a2bf2111fe8d37c4c86dc6ab1d; inspected 2026-10-28. Informs a pending overlap and memory-lifecycle hypothesis. No implementation copied or Phoenix support claimed}
+}
+
+@misc{strataSharedExpertOrderReference,
+  title = {Strata DeepSeek shared-expert allocation and accumulation order},
+  author = {{Niko1221 and Strata contributors}},
+  url = {https://github.com/Niko1221/Strata/blob/a42cc3d7df70d1940de82cd0882f03e1f5dfc741/src/dsv41/ds4_model.cu},
+  note = {MIT, revision a42cc3d7df70d1940de82cd0882f03e1f5dfc741; inspected 2026-10-28. Source assessment only; does not update the retained Strata overlay or qualify new model execution}
+}
+
+@misc{phoenixQueueQualificationReference,
+  title = {Ryzen AI NPU Lab persistent-kernel queue checks},
+  author = {{Abhiram Jayasankar and contributors}},
+  url = {https://github.com/AbhiramJayasankar/ryzenai-npu-lab/blob/a9531b87b770fd3142164b61254fb6f74fed2d22/experiments/pk_engine.py},
+  note = {MIT, revision a9531b87b770fd3142164b61254fb6f74fed2d22; inspected 2026-10-28. Existing Phoenix queue and DMA checks are research references, not copied code or a diagnosis of another device's faults}
+}
+
+@misc{amdNpuArchitectureQualification,
+  title = {AMD NPU architecture and firmware},
+  author = {{Linux kernel contributors}},
+  url = {https://docs.kernel.org/accel/amdxdna/amdnpu.html},
+  note = {Official driver documentation inspected 2026-10-28. Hardware-generation and NPU graph-scheduling context only; not a Windows interface or external CUDA and storage scheduling contract}
+}
+
+@misc{windowsLiveDump141Qualification,
+  title = {Bug Check 0x141: VIDEO ENGINE TIMEOUT DETECTED},
+  author = {{Microsoft}},
+  url = {https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/bug-check-0x141---video-engine-timeout-detected},
+  note = {Official live-dump and responsible-driver parameter documentation inspected 2026-10-28. Event-identity guidance only; a later publication is not by itself a new hardware fault or device attribution}
+}
