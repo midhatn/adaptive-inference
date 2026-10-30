@@ -1,6 +1,6 @@
 # Adaptive Inference roadmap
 
-**Updated: 26 October 2026. Status: living plan, with evidence-based completion gates.**
+**Updated: 30 October 2026. Status: living plan, with evidence-based completion gates.**
 
 ## Destination
 
@@ -45,6 +45,14 @@ own acceptance gate. Existing successful tests will be reused; failed and
 interrupted runs will remain identified as such.
 
 ## Milestones and dependency order
+
+**Current M2 gate — 30 October 2026:** the retained host implements user task
+contracts, task handover and explicit continuation after a resource wait. The
+outstanding acceptance gate is one complete installed IQ3_S two-task run covering
+safe waiting expiry, Continue, task acceptance and shutdown. The latest inventory
+task completed after native release and restoration, but its recovery scenario
+failed the declared timing and evidence requirements. Earlier accepted reference
+workflows retain their own source and scope. See the [current evidence](docs/evidence.md).
 
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
@@ -1014,7 +1022,14 @@ that estimate when evidence changes. Do not publish a completion date or
 percentage for the whole research-and-engineering program without a defensible
 basis.
 
-## Next execution packet
+<a id="next-execution-packet"></a>
+
+## Execution history and continuation notes
+
+These dated entries preserve the decisions, failures and next steps recorded as
+development progressed. Earlier instructions described as "next" are historical
+when a later entry supersedes them. Use the dated current M2 gate above and the
+latest applicable feedback below to choose the next work.
 
 Preserve the published M1 source and evidence while developing its successor.
 Require fresh distribution checks and CI for each changed submitted revision.
@@ -1402,6 +1417,30 @@ actual safe expiry, explicit Continue, the inventory oracle, welcome's existing
 format validation and complete release
 requirements. Adding a new runtime status projection remains an alternative only
 if these existing observation mechanisms cannot qualify the scenario.
+
+**Later 30 October feedback:** case09 completed the same inventory task after
+native release and restoration, with three IQ3_S requests and one physical
+output write. Independent review confirmed the 23-unit result and both native
+release records. The complete recovery scenario remains failed: the foreground
+action missed the first-request interval, its latest pre-action observation
+already had admission closed, and a JavaScript transfer rounded a 64-bit identity
+field in the operator record. The earlier immutable capture retains the exact
+identity. No expiry, Continue or second task occurred; do not revise those
+outcomes or relabel component cleanup as a whole-trial pass.
+
+Correct the operator procedure before another fresh case. Reuse the existing
+append-only GET observer for a bounded, prompt cue, explicitly limit every UI
+text field, and keep the fresh observe/inspect/action/refresh sequence. Transfer
+full A/B window bindings through the existing
+[Python JSON reader/writer](https://docs.python.org/3.11/library/json.html) without
+passing 64-bit values through JavaScript numbers; retain the
+[RFC8259 integer-range boundary](https://www.rfc-editor.org/rfc/rfc8259#section-6).
+Keep the actual input, open
+precondition, first-request overlap, saved native-read progress, immutable
+predecessor and original two-task audit requirements unchanged. Do not add a
+runtime poller, read actively replaced product state, manufacture input or alter
+any execution budget. The [evidence ledger](docs/evidence.md) records the failed
+scenario alongside its narrower completed-task and release results.
 
 Exercise ordinary-task waiting, truthful expiry, explicit continuation and Stop,
 with separate original-task acceptance before a second task can be admitted.

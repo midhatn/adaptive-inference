@@ -226,6 +226,63 @@ The [roadmap](../PLAN.md) revises the next experiment around an observable
 in-flight boundary and immutable evidence afterward, without changing this
 failed result or weakening task-progress, ownership and budget requirements.
 
+### Foreground release and restoration with an unsuccessful timing test
+
+Case09 retained the same installed wheel, IQ3_S quality and v6 native owner.
+The original inventory task completed after native release and restoration:
+three real provider requests, one native read, one native write and one physical
+output write. The independent oracle accepted 23 units. Artifact SHA-256:
+`f279173777ec0ddcbe467a5370337b8a4d4fa3c09c4c211e1740e8f1232a8e3e`.
+
+The declared scenario required foreground activity during the first admitted
+request, with open admission observed before the action and that same request
+still active afterward. The trace contained 46 first-active observations, but
+the action began about 9.11 seconds after the last of them. The latest complete
+pre-action sample already showed the second request active and admission closed.
+The post-action sample showed foreground-driven draining during that later
+request. These observations do not satisfy either required onset condition.
+
+The operator record also rounded a 64-bit Windows process-creation value while
+transferring it through JavaScript. The immutable pre-Resume capture retained
+the exact value and matched the actual retained GUI identity; the consumed UI
+record remains inconsistent. This is a test-recording limitation, not evidence
+of a changed runtime identity. Future binding transfers must preserve integers
+through the existing [Python JSON reader/writer](https://docs.python.org/3.11/library/json.html).
+[RFC8259](https://www.rfc-editor.org/rfc/rfc8259#section-6) explains the common
+binary64 integer-interoperability limit that this Windows identity exceeds.
+
+Both native owners released normally, confirming 7/7 and 8/8 lifetime descendant
+exits. The final release separately retained six stop-time handles: its owner
+and five then-active descendants. The first complete stop-time handle list was
+not persisted, so that detail cannot be reconstructed. Worker, GUI, pipes,
+listener, transport and asynchronous cleanup records support closure; there was
+no emergency termination. No termination-denial branch coverage is established.
+
+Independent review passed 60 integrity/component checks across 401 pinned files,
+SHA-256 `720dfca7e4a962016097a0312e0e6b1ab6fc6936d0bf6c9e0d3e4b2256ddfb61`.
+The separate native review is
+`47b650e26c5aadb7d9de522d77b41711255b17e8f9bbd3426a05c7a3097c7977`.
+No safe expiry, Continue or second task occurred. The original parent returned
+one, the original auditor failed `normal_parent`, and both
+`qualification_case_passed=false` and whole-trial `clean_stop=false` remain
+unchanged. The supplemental auditor was not used as an alternative. These
+component results do not qualify the full recovery workflow.
+
+The next correction is limited to the operator procedure: promptly observe the
+existing append-only GET trace, bound all UI text output, perform a fresh genuine
+action, and copy complete identity records without integer rounding. Runtime,
+quality, task acceptance, timing predicates and execution limits remain fixed.
+
+For documentation/ledger head `e85b68147613f476bd89da834ec0939aa6391e51`, the
+[push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41035632823)
+passed all seven jobs. The [PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41035639711)
+passed six; its Windows/Python 3.11 job exceeded the cumulative 15-minute job
+limit during core test discovery, and later steps were skipped. The checkouts
+have identical tree `1a52efe071dc59d1638c3924b36b03ad4e7d7a6a`. The successful
+Windows job completed 1,258 core tests in 447.901 seconds and its remaining steps.
+This is 13 successful jobs and one cancelled job, not 14 passes; the differing
+duration is not diagnosed as an infrastructure-only failure.
+
 ## Explicit continuation after safe expiry
 
 The [source-bound continuation record](../provenance/explicit-continuation/acceptance/README.md)
