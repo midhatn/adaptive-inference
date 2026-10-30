@@ -46,41 +46,50 @@ interrupted runs will remain identified as such.
 
 ## Milestones and dependency order
 
-**Current M2 gate — 30 October 2026:** the installed IQ3_S composition now has
-observed safe resource-wait expiry, explicit continuation and a preserved original
-task result. Source head `7306a53` passed all 14 hosted jobs, and its isolated
+**Current M2 gate — 30 October 2026:** the installed IQ3_S composition has now
+completed safe resource-wait expiry, explicit continuation, the original inventory
+task, a separate welcome task and one normal user Stop in the same service. The
+unchanged primary recovery/handover audit passed all 99 checks in case14. The
+additional foreground-hold audit failed, so the combined scenario and the full
+M2 milestone remain unqualified. Source head `7306a53` passed all 14 hosted jobs, and its isolated
 installation passed all eight steps. These source, package and component checks
 remain separate from the [physical evidence](docs/evidence.md#current-installed-head-and-physical-recovery-checks).
 
-In case13, one Continue resumed the original inventory task and produced the
-independently checked 23-unit result. That task's prompt, completed read, history
-and output remained intact after a different task ran in the same service. The
-second worker completed its separate text output with format-only validation.
-The complete qualification nevertheless failed: an operator/context-recovery gap
-of 202.035 seconds exceeded the strict 60-second foreground-activity rule, and
-the private checker later read a UTF-8 receipt using the Windows locale encoding.
-No second-task harness acceptance or normal user Stop was recorded. Cleanup
-completed, but it does not replace that missing acceptance.
+Case14 preserved the independently checked 23-unit result, original prompt, read,
+history and output through continuation and the second task. Both tasks published
+their acceptance records; the welcome task has format-only validation. Six
+cumulative model calls produced two physical writes, and all retained workers,
+native owners, windows and connections closed. The parent joined normally without
+a timeout or emergency termination. These are bounded private qualification
+results, not a new released or publicly reproducible acceptance package.
 
-The narrow reader correction passes all 47 focused source tests, including three
-new non-ASCII and strict-refusal regressions. A read-only projection of the closed
-second task explains the mismatch; it cannot reconstruct the missing final GUI
-and job-identity evidence or qualify that failed run. Next run a fresh complete
-scenario with the same model, quality, original deadlines and acceptance rules.
-Preserve case13 and its
-failed foreground interval. Schedule the uninterrupted observation phase at a
-safe working-context boundary, with preparation and documentation outside that
-phase; never fill an observation gap retrospectively. The new run must still
-cover foreground protection, original-task acceptance, separate-task acceptance,
-normal Stop and retained cleanup before M2 advances. Publish its reproducible
-validation entry with that result. Broader desktop coexistence, media work and
-physical reboot recovery remain later gates; earlier accepted reference
-workflows retain their own source and scope.
+The remaining failure is specific: all audited hold observations kept admission
+closed, but twelve early observations reported recovery margin/dwell instead of
+the required continuous `foreground_activity`. The first operator action only
+activated the document window; the first navigation key followed about 17 seconds
+later. All 55 recorded actions met the unchanged timing rule, with a maximum
+adjacent interval of 29.471 seconds. Window activation and a recent input event
+are different observations; the trace does not retain raw input-age or CPU
+samples and does not prove an exact OS-level cause.
+
+Next correct the opening procedure prospectively: when activation is necessary,
+bracket the complete useful transition from before activation through an actual
+document observation, one immediate meaningful navigation input and its refresh.
+Retain both substeps and all elapsed time. Each UI call still performs one input
+and refreshes before another input. An already observable document can receive
+the meaningful input directly. Do not discard a standalone activation, move the
+start after admission closed, weaken the predicate or reinterpret case14. Use a
+fresh case with the same installed source, model, quality, deadlines and gates.
+Keep the uninterrupted phase at a safe working-context boundary and publish the
+reproducible validation entry after complete acceptance. Case13's earlier action
+gap and UTF-8 reader failure remain failed; the reviewed 47-test reader correction
+was used by case14 without another runtime change. Broader desktop coexistence,
+media work and physical reboot recovery remain later gates.
 
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded installed composition, retained commands, safe paused expiry and explicit same-window continuation qualified; ordinary task use remains |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: ordinary-task expiry/continuation and two-task handover passed the primary installed audit; full foreground gate and public acceptance package remain |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |

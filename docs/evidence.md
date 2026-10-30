@@ -547,6 +547,90 @@ The [roadmap](../PLAN.md) keeps a fresh complete qualification as the next live
 gate. No physical reboot, general media-quality, arbitrary-engine or performance
 claim follows from these results.
 
+#### Case14: primary recovery/handover passed; foreground supplement failed
+
+The fresh run used the same installed `7306a53` payload, V6 native owner, IQ3_S
+assets and quality, with the reviewed UTF-8 checker. Its original 900-second
+execution budget expired during a verified safe resource wait. An actual expired
+screen was observed before one Continue. The inventory task then produced the
+independently checked 23-unit result and published safe-wait and task-acceptance
+records. A native task/file chooser admitted the separate welcome specification
+and input directory; its new window was captured before one Resume. That task
+published its own format-only acceptance. One user Stop completed normal cleanup.
+
+The unchanged primary audit passed **99 checks**. Six cumulative provider calls
+produced two physical writes, one per task. The original inventory prompt, read,
+history, output and counters remained intact across continuation and task B;
+the second task had separate task/session authority. The parent joined with exit
+0 after 1,457.406 seconds, with no timeout or emergency termination. Three native
+lifetimes accounted for 7/7, 6/6 and 6/6 descendants, and both GUI endpoints,
+listeners, transports and all five retained preparation/worker processes closed.
+The external observer joined with exit 1 after its expected three connection
+errors following service closure; its 1,439 valid observations are not themselves
+proof of cleanup. Retained owner evidence supplies that proof.
+
+The additional first-inflight foreground audit nevertheless returned
+`hold_not_preserved`. All audited hold rows kept admission closed, with no second
+dispatch or reported backend uncertainty. Twelve early rows had a different
+reason: eleven `foreground_recovery_margin` and one `foreground_recovery_dwell`,
+instead of the predicate's required `foreground_activity`. The later parked
+observations and normal task recovery do not erase this refusal. The lineage
+stage after that failed predicate was not reached. Thus the product's recorded
+`qualification_case_passed=true` belongs to the original primary audit;
+**the combined foreground/recovery scenario is failed**.
+
+The operator retained 55 actual document actions. Their maximum adjacent
+start-to-next-end interval was 29.4707506 seconds; the last completed pre-seal
+action began 7.6725251 seconds before sealing. Those pass the unchanged temporal
+coverage requirement. The first record was standalone window activation, however,
+and the first navigation key followed about 17 seconds later. All twelve reason
+violations occurred before that key. A `foreground_activity` sample also returned
+before the key's bracket, so the key is not presented as the proven sole cause of
+the transition. Compact action notes and clocks were retained during the hold;
+the structured captions were transcribed afterward from the displayed UI
+observations, with that provenance declared and the original compact log kept.
+
+Microsoft distinguishes [last session input](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getlastinputinfo)
+from [foreground activation](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow).
+The latter documents focus and input routing, not a guarantee that activation
+refreshes the input-event timestamp. [Keyboard/mouse input](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput)
+is a separate operation. These contracts and the retained action sequence support
+a prospective procedure correction, not an independently measured historical
+input age: the observer does not save raw input-age/CPU samples. The existing
+policy keeps admission closed in both recovery states. No runtime or acceptance
+rule is changed to turn this run into a pass.
+
+The next first action will retain the full useful transition when activation is
+needed: QPC before activation, activation and refresh, inspection of the actual
+document, an immediate state-derived navigation input and refresh, then QPC after.
+Both UI substeps and their latency remain explicit. Each input uses a separate
+observed UI call; there is no automatic key loop. If latency misses the original
+inflight request, the unchanged overlap check must still fail. The original
+case14 records will not be regrouped, retried or reclassified.
+
+Primary audit SHA-256:
+`1e218b3f2c56c74d1fd5d1ee049ab46f6091babcb1f68ef7bad7f58f7ae3d569`.
+Failed supplement SHA-256:
+`640feeab44a1e700daf769bf1c0df18901473aaaa2d3408c86575253bd41fdf1`.
+Independent terminal review passed 3,059 evidence-integrity and identity checks
+across 2,866 pinned files, preserving the failed combined outcome. Its SHA-256 is
+`330933877ab119086cf98a43621f5a9cb63bb4bbfa9912a40041bc126d3987b7`.
+The review verifies the preserved compact action records and declared caption
+provenance; it does not independently reconstruct unsaved screenshot contents.
+These identify retained private evidence, not a public reproducible acceptance
+release. The full foreground gate and sanitized reconstruction package remain
+required before advancing the combined milestone.
+
+For the preceding documentation-only head `ac5d5b9`, the
+[PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41081619157)
+passed all seven jobs, while the
+[push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41081611814)
+passed six and cancelled Windows/Python 3.12 at its cumulative 15-minute limit.
+The cancelled job had passed its core and preservation suites and built packages;
+the timeout interrupted archive reading. Its equivalent PR job passed on the same
+source tree. This remains **13 successes and one cancellation**, without a retry;
+it does not replace the separate 14 successful jobs for the installed source.
+
 ### CI diagnostics and isolated HTTP fixture validation
 
 At documentation head `938a9a123c2b9ad3991a8863856650e601798cf4`, the

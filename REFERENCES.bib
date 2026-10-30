@@ -622,6 +622,20 @@
   note = {Inspected 2026-10-30 alongside existing foreground policy. Session input age is distinct from QPC operator brackets; actual trace and action coverage remain required. No documentation or implementation copied}
 }
 
+@misc{windowsForegroundActivation,
+  title = {SetForegroundWindow foreground activation contract},
+  author = {{Microsoft}},
+  url = {https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow},
+  note = {Inspected 2026-10-30 after case14's standalone document activation and early recovery-state observations. Activation and input routing are distinct from a guaranteed new session input event. Informs a prospective operator procedure only; no Windows implementation copied or raw historical input-age measurement claimed}
+}
+
+@misc{windowsInputEvents,
+  title = {SendInput keyboard and mouse event contract},
+  author = {{Microsoft}},
+  url = {https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput},
+  note = {Inspected 2026-10-30 with GetLastInputInfo and SetForegroundWindow to distinguish meaningful document navigation from foreground activation. Existing supported computer-use actions are retained; no custom input injector, automatic key loop, runtime change or acceptance relaxation was added}
+}
+
 @misc{pythonProfilingDiagnostics,
   title = {Python cProfile and pstats profiling tools},
   author = {{Python Software Foundation}},
