@@ -684,3 +684,10 @@
   url = {https://github.com/NousResearch/hermes-agent/pull/131916},
   note = {Merged 2026-10-03 as ba3c22b324908a5023122e8aa0aecd8910bb73aa; actual agent/moa_loop.py patch inspected 2026-10-30. Credits original contributions in PR 110056 by kokhlo and PR 110041 by KoNit-K. The principle of forwarding verified activity to the existing watchdog informs the proposed admission-wait bridge; MoA code was not copied and waiting is not reported as token or tool progress. Upstream MIT license retained by its authors}
 }
+
+@misc{hermesWatchdogControlledClockTests,
+  title = {Hermes turn-liveness watchdog controlled-clock and abort-claim tests},
+  author = {{Nous Research and Hermes contributors}},
+  url = {https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tests/agent/test_turn_liveness_watchdog.py},
+  note = {Inspected 2026-10-30, source SHA256 cf966c0bb3cb9c39bc952221b31281302e982f76e19bd9f3a1a267c69d6dd41c. The optional hermes_admission_activity component check adapts per-module clocks and the bounded ParkingReleaseLock test pattern while executing actual extracted SDK components. MIT notice retained with the example. No full agent, model, periodic scheduler, durable SessionDB heartbeat or hardware elapsed-time claim}
+}

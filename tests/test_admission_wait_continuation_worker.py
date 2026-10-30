@@ -65,6 +65,9 @@ class SelectedWaitTests(unittest.TestCase):
                 f.assert_owned()
                 self.session_id=kwargs['session_id'];self._session_db=kwargs['session_db']
                 self._active_session_turn_lease_holder='selected-holder'
+                self.activity=[]
+            def _touch_activity(self,label):
+                self.activity.append(label)  # Scripted SDK activity; no watchdog thread.
             def run_conversation(self, prompt, conversation_history=None):
                 outer.assertEqual(prompt,worker.CONTINUE)
                 outer.assertEqual(conversation_history,rec.native_history(self._session_db,'native'))

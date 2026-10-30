@@ -114,6 +114,9 @@ class SafeWaitCases(unittest.TestCase):
                 self.session_id = kwargs['session_id']
                 self._session_db = kwargs['session_db']
                 self._active_session_turn_lease_holder = 'scripted-holder'
+                self.activity = []
+            def _touch_activity(self, label):
+                self.activity.append(label)  # Scripted SDK activity; no watchdog thread.
             def run_conversation(self, prompt, conversation_history=None, **unused):
                 outer.assertEqual(prompt, worker.PROMPT)
                 outer.assertIsNone(conversation_history)

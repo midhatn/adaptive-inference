@@ -385,9 +385,9 @@ Its separate native review retained 108 checks and 32 input hashes, SHA-256
 The A-only Python recording preserved the complete integer identity and all
 nonbinding action fields. No expired-window or B observation was invented.
 
-Source inspection explains the integration gap: the existing guard reports an
+Source inspection explains the integration gap: the case11 guard reports an
 acknowledged user Pause, while admission waiting performs health checks without
-an activity stamp. The proposed correction reuses the existing coherent owned
+an activity stamp. The subsequent source correction reuses the existing coherent owned
 wait observation and serialized activity guard before the original deadline.
 It does not disable Hermes's watchdog or renew task authority. The inspected
 [merged Hermes activity fix](https://github.com/NousResearch/hermes-agent/pull/131916)
@@ -395,6 +395,73 @@ supports reporting a previously invisible legitimate activity; it concerns MoA
 streaming, not this adaptive wait. The [roadmap](../PLAN.md) records the required
 focused, installation and fresh physical qualification gates. Case11 remains
 consumed and failed regardless of any later correction.
+
+### Admission-wait activity correction: source and SDK components
+
+The correction changes only `desktop/hermes/pause_activity.py` in the runtime.
+It derives a fresh coherent wait only for actual waiting/active demand and a
+saved, undispatched request. It checks the exact checkpoint, request, native
+history, owner and original deadline, then reads the SDK lease and current time
+after potentially slow reads. Changed identity, interruption or cleanup
+revocation prevents another activity stamp. The existing 15-second cadence and
+900-second execution bound remain; no timer, automatic Resume or lease renewal
+is added. Pause with newly arriving Resume/Cancel retains its normal control path.
+
+Nineteen focused tests pass against the final source. A controlled-clock worker
+case waits beyond 600 seconds and reaches the original 900-second safe expiry
+with its request and completed read preserved, without another provider dispatch
+or tool effect. Ten affected selected-worker tests also pass after their scripted
+agent gained the existing SDK activity hook. The first regression run retained
+124 successes and seven failures caused by that fixture omission; its original
+candidate and failed output remain distinct from final-source results.
+
+The optional [actual Hermes component check](../examples/validation/hermes_admission_activity/README.md)
+passed all three cases on the pinned worker interpreter. Its healthy wait uses
+the actual activity writer and watchdog for 60 activity stamps through execution
+second 885, with no stamp at 900 or 901. An otherwise silent turn is actually
+interrupted at 600 and its lease component deactivated; the guard cannot revive
+it. A bounded contender exercises a reserved abort claim that verified owner
+activity invalidates, then joins without publishing an interruption. Receipt
+SHA-256: `5f3d1ec8468d8609f6fad269ec802f648f40ddc4ba69cdb41e65f51727221106`.
+These are controlled-clock components with reduced SQLite and a scripted lease
+row, not a complete agent, durable SDK heartbeat, physical-time benchmark or
+installed IQ3_S recovery. The existing SDK dispatcher and saved-history checks
+separately pass three and two cases against the changed source.
+
+The existing source-preservation mechanism retains the complete previous module
+and two original source-test readers; all 59 other runtime modules stay unchanged.
+Fifty-four affected source/AST checks passed separately on Python 3.11.9 and
+3.12.9. Independent review confirmed exact prior bytes and rejection of an unknown
+input. Historical source assertions and manifests remain intact.
+
+The complete source suite passed **1,282 tests with no failures or skips** on
+Windows/Python 3.11.9 with all 15 locked dependency versions, in 329.279 seconds.
+All **81 source-preservation tests** passed separately. The source receipt is
+`114d361588e26c16e2c16ccaf3b1bb7b3a98b661c0c671e316e2d3ab9c44ff0e`;
+the preservation receipt is
+`6b234af37ce54751cf0694f67183a74a55b27efddbefcf804c92fceda780bf15`.
+These test durations are validation timings, not inference performance results.
+
+The preceding full run remains failed: 28 child-readiness identity failures and
+one resulting cleanup-control failure. Its virtual-environment executable was a
+Windows redirector that started a second process, whereas the fixtures require
+the actual child to retain the launched PID. A bounded local probe and independent
+review confirmed the mismatch. The corrected run used the full interpreter and
+the same pinned libraries; all 1,084 source hashes, 1,282 test identities and
+assertions were unchanged. No identity check was relaxed. This follows the
+version-matched [CPython launcher behavior](https://github.com/python/cpython/blob/v3.11.9/PC/launcher.c#L755)
+and its [multiprocessing treatment of the redirector](https://github.com/python/cpython/blob/v3.11.9/Lib/multiprocessing/popen_spawn_win32.py).
+
+Fresh archive checks verify 1,084 source paths, all 60 runtime modules, wheel
+RECORD hashes and license files. Publication then adds a narrow Git attribute
+rule to preserve the tested SDK reference file exactly; an actual checkout with
+`core.autocrlf=true` preserves its bytes. The roadmap and this evidence account
+are updated after validation. These three metadata/documentation changes are
+recorded separately from the unchanged tested program and are checked in the
+final archive; behavioral suites are not repeated for them. Existing failed
+runs and the first archive remain preserved. Fresh installation and physical
+qualification remain required; these results do not qualify case11 or a
+replacement installation.
 
 ### CI diagnostics and isolated HTTP fixture validation
 
@@ -481,6 +548,22 @@ recorded `client_disconnected=false`:
 closing the client and yielding once does not prove that the server observed a
 TCP disconnect. No runtime code, installed dependency or model was changed.
 Fresh exact-head hosted CI remains a separate gate for this fixture correction.
+
+At fixture-correction head `aec8d9070f1509268e7d9b3e9944c14c3f374e75`, the
+[PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41054525936)
+passed all seven jobs. The [push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41054518769)
+passed five and cancelled both Windows jobs at the cumulative 15-minute limit:
+**12 successes and two cancellations**. Both tested trees are
+`9b1e2c51645f7b54dbe629f9e876e93f28e4fd8a`. Both affected HTTP tests logged `ok`
+in all 12 portable jobs. The push Windows/Python 3.12 job completed 1,258 core
+tests in 752.991 seconds with one supported-interpreter skip and individually
+completed its later validation/build steps; its overall result nevertheless
+remains cancelled. Push Windows/Python 3.11 has no completed core summary: it
+was interrupted during a SQLite commit in task creation. That location does
+not identify the cause of cumulative delay. The passing PR Windows counterparts
+completed 1,258 tests in 674.558 and 680.898 seconds respectively. This validates
+the fixture correction within those bounds; it does not qualify the separately
+developed activity bridge or explain earlier unresolved failures.
 
 ## Explicit continuation after safe expiry
 

@@ -54,9 +54,13 @@ case11, actual foreground work closed admission, the first request completed and
 the native engine parked. Hermes then interrupted the saved second request's
 resource wait after 611.1 seconds without a reported activity signal. The first
 read is preserved, but the task did not complete and cooperative Stop was not
-confirmed. First correct the existing activity bridge to recognize a verified
-resource wait, retaining the original deadline and interruption checks; then
-validate a fresh installation and repeat the full scenario as a new case.
+confirmed. The source correction now recognizes a verified resource wait while
+retaining the original deadline and interruption checks. Focused tests and the
+actual pinned SDK watchdog components pass with controlled clocks. The complete
+source suite passes 1,282 tests, and all 81 source-preservation checks pass. Archive
+checks also pass; Git preserves the exact tested reference bytes. Next validate a
+fresh installation, then run the full physical scenario as a new case; source and
+component checks do not replace that acceptance.
 Safe expiry, Continue and the second task remain unqualified in this scenario. Earlier
 accepted reference workflows retain their own source and scope. See the
 [current evidence](docs/evidence.md).
@@ -1488,10 +1492,11 @@ The original read and prepared next request remain saved. Native release and
 failure containment are narrower results than the unconfirmed cooperative Stop.
 The failed case is consumed and must not be patched or restarted.
 
-The existing activity guard reports an acknowledged user Pause but makes no
-activity stamp for an otherwise healthy admission wait. Reuse its serialized
-owner, live SDK lease, interruption checks and 15-second cadence together with
-the existing coherent `Mailbox.admission_wait_observation`. Only a verified,
+The case11 activity guard reported an acknowledged user Pause but made no
+activity stamp for an otherwise healthy admission wait. The source correction
+reuses its serialized owner, live SDK lease, interruption checks and 15-second
+cadence together with the existing coherent `Mailbox.admission_wait_observation`.
+Only a verified,
 operation-free wait before the original 900-second deadline may report activity.
 An ordinary poll, blocked read, lost lease, pending unsafe control or committed
 interruption must not keep the agent alive. This is truthful waiting activity,
@@ -1500,10 +1505,18 @@ not model progress, a resource grant or a deadline extension.
 The pattern follows the inspected, merged [Hermes activity bridge fix](https://github.com/NousResearch/hermes-agent/pull/131916)
 and the documented distinction between [turn activity and lease renewal](https://hermes-agent.nousresearch.com/docs/user-guide/configuration#turn-liveness-watchdog).
 The adapter already uses Hermes's pinned private `_touch_activity` API; this
-does not introduce a public SDK guarantee. First validate healthy waiting beyond
-600 seconds through the original 900-second expiry, cancellation, Pause and
-authority-loss failures with controlled clocks. Then review the changed source,
-build and validate a fresh isolated installation before another physical IQ3_S
+does not introduce a public SDK guarantee. Nineteen focused tests cover healthy
+waiting beyond 600 seconds through the original 900-second expiry, cancellation,
+Pause and authority-loss failures. Three optional checks also exercise the
+actual pinned SDK activity writer, watchdog and interruption components with
+controlled clocks: healthy waiting, effective silent-turn abortion and refusal
+of a stale abort claim. These do not construct a full agent or prove durable SDK
+heartbeat persistence. The complete source suite now passes 1,282 tests without
+failures or skips, and the preservation suite passes 81 tests. The initial full
+run's Windows virtual-environment launcher mismatch remains a retained failure;
+the corrected run uses the full interpreter, identical dependencies and unchanged
+assertions. Archive checks and an actual Git checkout verify the preserved source
+bytes. Next validate a fresh isolated installation before another physical IQ3_S
 qualification. Preserve all failed evidence, task budgets and acceptance gates.
 
 **Validation follow-up:** consecutive documentation heads recorded Windows
@@ -1527,7 +1540,10 @@ dedicated timeout method is unchanged. Both affected tests passed once on each
 local interpreter, with pinned aiohttp on Python 3.11 but an older installed
 aiohttp on Python 3.12. These controls do not prove the hosted failure's cause
 or that the server observed a TCP disconnect; retain those limits and require
-fresh exact-head hosted CI. Exact runs and scope are in the
+fresh exact-head hosted CI. At `aec8d90`, all seven PR jobs passed, while both
+push Windows jobs exceeded the cumulative limit: 12 successes and two cancellations
+overall. Both affected tests passed in all 12 portable jobs. The duration issue
+remains open, separate from the successful fixture correction. Exact runs and scope are in the
 [evidence record](docs/evidence.md). After the live qualification,
 use existing [Python profiling tools](https://docs.python.org/3.11/library/profile.html)
 to measure selected expensive groups, then consider explicit

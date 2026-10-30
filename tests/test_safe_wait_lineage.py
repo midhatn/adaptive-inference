@@ -6,6 +6,7 @@ import unittest
 from unittest import mock
 
 import task_file_alias_lineage as lineage
+from admission_activity_lineage import predecessor as activity_predecessor
 from continuation_diagnostics_lineage import readiness_support_predecessor
 from paused_expiry_lineage import fingerprint
 
@@ -113,7 +114,7 @@ class ContinuationObservationLineageTests(unittest.TestCase):
             'src/adaptive_inference/desktop/mailbox_runtime.py'})
         for relative, row in rows['files'].items():
             with self.subTest(relative=relative):
-                data = (lineage.ROOT / relative).read_bytes()
+                data = activity_predecessor(relative, (lineage.ROOT / relative).read_bytes())
                 before = (lineage.ROOT / row['predecessor_source']).read_bytes()
                 self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
                 self.assertEqual(lineage.continuation_observation_predecessor(relative, data), before)
@@ -125,7 +126,7 @@ class ContinuationObservationLineageTests(unittest.TestCase):
 
     def test_byte_and_inside_outside_ast_changes_refuse(self):
         for relative in lineage.continuation_observation_record()['files']:
-            data = (lineage.ROOT / relative).read_bytes()
+            data = activity_predecessor(relative, (lineage.ROOT / relative).read_bytes())
             with self.subTest(relative=relative):
                 with self.assertRaisesRegex(AssertionError, 'complete task-handover source'):
                     lineage.continuation_observation_predecessor(relative, data+b'\n# unreviewed\n')
@@ -139,7 +140,7 @@ class ContinuationObservationLineageTests(unittest.TestCase):
 
     def test_predecessor_path_bytes_and_ast_refuse(self):
         for relative in lineage.continuation_observation_record()['files']:
-            data = (lineage.ROOT / relative).read_bytes()
+            data = activity_predecessor(relative, (lineage.ROOT / relative).read_bytes())
             for field in ('predecessor_source', 'predecessor_sha256', 'predecessor_ast_sha256'):
                 rows = lineage.continuation_observation_record(); rows['files'][relative][field] = '0'*64
                 with self.subTest(relative=relative, field=field), mock.patch.object(
@@ -152,7 +153,7 @@ class ContinuationObservationLineageTests(unittest.TestCase):
         self.assertEqual(set(rows['support_edits']), {'tests/task_file_alias_lineage.py',
             'tests/test_safe_wait_lineage.py', 'tests/test_continuation_readiness.py'})
         for relative, rules in rows['support_edits'].items():
-            current = (lineage.ROOT / relative).read_bytes()
+            current = activity_predecessor(relative, (lineage.ROOT / relative).read_bytes())
             if rules.get('appended_marker'):
                 marker = rules['appended_marker'].encode()
                 self.assertEqual(current.count(marker), 1)

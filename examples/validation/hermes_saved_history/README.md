@@ -34,13 +34,15 @@ source and dependency directories. Dependencies must already be available; this
 check downloads, installs and launches nothing.
 
 ```powershell
-& 'C:\path\to\worker\python.exe' -I -B 'C:\path\to\adaptive-inference\examples\validation\hermes_saved_history\check_sdk.py' --profile 'C:\path\to\deployment.json' --source-root 'C:\path\to\adaptive-inference' --source-manifest 'C:\path\to\adaptive-inference\examples\validation\hermes_saved_history\source-manifest-ack-read.json' --output 'C:\evidence\fresh-saved-history'
+& 'C:\path\to\worker\python.exe' -I -B 'C:\path\to\adaptive-inference\examples\validation\hermes_saved_history\check_sdk.py' --profile 'C:\path\to\deployment.json' --source-root 'C:\path\to\adaptive-inference' --source-manifest 'C:\path\to\adaptive-inference\examples\validation\hermes_saved_history\source-manifest-admission-activity.json' --output 'C:\evidence\fresh-saved-history'
 ```
 
-The command explicitly selects `source-manifest-ack-read.json` for the current
-acknowledgement-read correction. It changes only the two reviewed runtime pins.
-The earlier `source-manifest.json` remains byte-for-byte intact for its original
-source and results; it is still the runner's default when the option is omitted.
+The command explicitly selects `source-manifest-admission-activity.json` for the
+current wait-activity correction. Relative to `source-manifest-ack-read.json`,
+only the `pause_activity.py` runtime pin changes. The ACK-read manifest remains
+intact for its earlier two-module correction. The original
+`source-manifest.json` also remains byte-for-byte intact for its original source
+and results; it is still the runner's default when the option is omitted.
 An explicit `--source-manifest FILE` selects the source identity being checked.
 The supplied manifest verifies
 all 60 runtime modules and the existing `tests/test_desktop_report_feedback.py`

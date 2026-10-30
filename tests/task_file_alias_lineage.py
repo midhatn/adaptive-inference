@@ -9,6 +9,7 @@ import hashlib
 import json
 
 from paused_expiry_lineage import ROOT, fingerprint
+import admission_activity_lineage as admission_activity
 
 ARCHIVE_RELATIVE = 'provenance/task-handover/task-file-aliases'
 
@@ -252,7 +253,7 @@ def continuation_observation_inputs(root=None):
     root = ROOT if root is None else root
     rows = continuation_observation_record(root)
     return [root / CONTINUATION_OBSERVATION_ARCHIVE / 'source-lineage.json',
-            *(root / row['predecessor_source'] for row in rows['files'].values())]
+            *(root / row['predecessor_source'] for row in rows['files'].values())] + admission_activity.inputs(root)
 
 
 def _continuation_observation_before(relative, root=None):
@@ -283,6 +284,7 @@ def _continuation_observation_historical(relative, byte_pin, ast_pin, root=None)
 
 
 def continuation_observation_predecessor(relative, data, root=None):
+    data = admission_activity.predecessor(relative, data, root)
     row, before = _continuation_observation_before(relative, root)
     if row is None:
         return data
@@ -299,6 +301,7 @@ def continuation_observation_predecessor(relative, data, root=None):
 
 
 def restore_continuation_observation(tree, relative, root=None):
+    tree = admission_activity.restore(tree, relative, root)
     row, before = _continuation_observation_before(relative, root)
     if row is None:
         return tree

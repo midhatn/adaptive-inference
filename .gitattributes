@@ -60,3 +60,5 @@ examples/validation/explicit_continuation/** -text whitespace=cr-at-eol
 provenance/task-contract/** -text whitespace=cr-at-eol
 # Retain the preceding task-contract sources and reviewed handover projection.
 provenance/task-handover/** -text whitespace=cr-at-eol
+# Preserve the reference bytes exercised by the admission-watchdog SDK validation.
+examples/validation/hermes_admission_activity/sdk-references.json -text whitespace=cr-at-eol
