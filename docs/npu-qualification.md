@@ -1,6 +1,6 @@
 # Qualifying useful heterogeneous inference
 
-Assessment date: 28 October 2026. This guide makes the existing
+Assessment date: 30 October 2026. This guide makes the existing
 [hardware-expansion milestone](../PLAN.md#m9--expand-hardware-only-where-it-helps)
 reviewable. It enables no accelerator, changes no admission policy and reports
 no new Adaptive Inference performance result. The
@@ -35,7 +35,7 @@ These are results from that contributor's modified port on Strix Halo, not a
 reproduction of the inspected PR head here or evidence against every NPU
 implementation.
 
-The separate [Phoenix/CUDA report](https://github.com/mikealanni/gufo/blob/12a2bbda30388fe67d0194ea288103224d795ca4/docs/models/qwen3.8-flash-next/PHOENIX_CUDA_NPU_REPORT.md)
+The separate [corrected Phoenix/CUDA report](https://github.com/midhatn/gufo/blob/ac456f320eea2f9ffb57654171d3ac9d539fea43/docs/models/qwen3.8-flash-next/PHOENIX_CUDA_NPU_REPORT.md)
 records a Windows Strata adaptation, not a Gufo benchmark. Its final NPU
 candidate increased fresh-prefill latency in all three confirmation pairs at
 each tested length: median paired increases of 2.35% at 2,667 tokens and 3.61%
@@ -43,6 +43,62 @@ at 7,805 tokens. Physical execution and arithmetic checks did not establish
 acceleration. Its configured 65,536-token capacity was not a full-context test.
 These public observations motivate acceptance gates, not replay of consumed
 experiments or replacement of a working baseline.
+
+## Observed Phoenix drafter: 26.44 to 27.03 continuation steps/s
+
+A physical experiment on 29 October 2026 ran **LiquidAI/LFM2.5-230M with
+BF16 weights on a Ryzen 9 7940HS Phoenix NPU**, under native Windows with
+64 GiB RAM. This is the small drafter's measured continuation rate, not
+DeepSeek's accepted-token rate or an Adaptive Inference backend benchmark.
+The [sanitized measurement record](measurements/phoenix-lfm-drafter-20261029.json)
+preserves the exact counts, timing boundaries and retained-artifact hashes.
+Private prompts, raw workstation logs, model weights and runtime binaries are
+not distributed with that record; the hashes identify the retained evidence
+and do not make this a self-contained reproduction package.
+
+The experiment reused the MIT-licensed
+[eight-core LFM engine from ryzenai-npu-lab](https://github.com/AbhiramJayasankar/ryzenai-npu-lab/blob/a9531b87b770fd3142164b61254fb6f74fed2d22/experiments/lfm25_x8_model.py),
+at that pinned revision, rather than implementing new model kernels. Its
+programs execute all 14 layers, the vocabulary head and token selection on the
+NPU. Weights are packed for eight parallel streams; a persistent core program
+reduces program switching, and prompt processing reuses each weight pass for
+four tokens. The host prepares tokens and rotary constants, submits DMA/work,
+records results and coordinates state. The local adapter used four precompiled
+prefill/decode variants, with 1,024/4,096-position capacities, and checked the
+two complete prefill-to-decode state copies for bitwise equality.
+
+Each of two fixed segments had a 1,024-token prefix and 256 recorded next-token
+predictions. The first prediction came from prefill. The continuation timer
+covered the remaining **255 steps**, including host recording and byte mapping,
+but excluding the preceding prefill and cold setup:
+
+| Segment | Prefill wall time | Timed continuation | Continuation rate | Complete segment wall time |
+| --- | ---: | ---: | ---: | ---: |
+| A, reasoning fixture | 10.4983464 s | 255 steps / 9.6438754 s | **26.44 steps/s** | 20.1561715 s |
+| B, structured-answer fixture | 10.4612721 s | 255 steps / 9.4348167 s | **27.03 steps/s** | 19.9101350 s |
+
+These were **teacher-forced** steps: each step received the known previous
+continuation token, rather than the drafter's own previous choice. Across both
+segments, 512 predictions and 1,028 completed NPU submissions were recorded;
+the collector took 42.5407866 s including setup/teardown. HWiNFO reported
+61.57% average NPU use under backward sample-hold weighting over the complete
+47.72 s owner window, and a 93.4% peak. Alternative forward/linear weighting
+gave 60.10%/60.93%; 24 samples fell inside the window. These are sampled usage
+readings, not achieved FLOPS. DeepSeek was not running concurrently.
+
+Selected-token agreement with the retained CPU reference was 251/256 for A
+and 254/256 for B. Agreement with the fixed true next-token IDs was 110/256
+and 218/256; both segments had zero initial matching proposal tokens. Segment
+B's repetitive structured answer is not representative reasoning quality.
+Full CPU logits were not retained, so the seven CPU/NPU selection differences
+cannot be described as ties or full numerical equivalence.
+
+This establishes a working NPU drafter execution path and substantial observed
+utilization. It does **not** establish free-running quality, exact speculative
+acceptance, intelligence preservation or an end-to-end DeepSeek speedup. All
+five qualification flags in the original diagnostic remain false. The useful
+next comparison must include target verification, state rollback, prefill and
+handoff overhead, and accepted output under matched complete-task conditions.
 
 ## Qualify evidence in stages
 
