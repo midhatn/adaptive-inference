@@ -786,6 +786,31 @@ cover queueing, Peak EWMA, adaptive concurrency, heterogeneous scheduling and
 task-level work. Refresh primary sources before choosing a new mechanism.
 Published speedups on another workload are not our results.
 
+The [Papers with Code audit](docs/paperswithcode-assessment.md) adds a bounded
+implementation path for workload-change detection. Reuse River's maintained
+Page-Hinkley API in an optional offline experiment, outside the installed
+controller. Compare unchanged eligible execution-time traces with the existing
+Peak-EWMA/p90/expiry model. Separate runtime/request cohorts, preserve failures
+and sparse-data outcomes, predeclare units and parameters, and evaluate stable,
+shifted, recovered and held-out traces for false alarms and detection delay.
+Only after that comparison may a separately reviewed shadow observer be added;
+alarms must not control admission or invalidate durable task/effect authority.
+
+The [optional offline example](examples/validation/latency_drift/README.md) now
+has 22 passing synthetic CPU tests and two independent behavioral checks against
+the pinned River 0.26.1 release and unchanged cost estimator. The release differs
+from current upstream main; its source identity and BSD license are retained.
+This completes the bounded implementation check only. Collect and evaluate
+held-out traces with enough observations per cohort before selecting parameters
+or proposing a shadow observer; the short IQ3_S lifecycle trial is insufficient.
+
+The same audit retains FlowPrefill's separation of native interruption boundaries
+and scheduling triggers as a later M3/M8 comparison. Establish backend support,
+actual interruption latency, full state preservation and unchanged model quality
+before comparing it with complete drain/unload. The inspected modified vLLM/NIXL
+implementation does not establish native Windows/IQ3_S compatibility. These
+research steps do not replace or delay the current M2 release and recovery gates.
+
 Jev and Laya are optional research, not prerequisites or enabled dependencies.
 The previous Laya experiment established no advantage over the guarded
 deterministic baseline. New evaluations using another decision model or hosted
@@ -1344,6 +1369,16 @@ accounting, while a live denial remains failed. The next step is a fresh sealed
 native-owner package and relevant input/clock verification, retaining the
 unchanged installed wheel and quality, followed by the complete IQ3_S scenario.
 The failed case07 and the earlier qualified packages remain immutable.
+
+The sealed v6 owner package has been built and its file identities independently
+verified. The unchanged installed host/worker payloads and SDK remain separately
+identified; a package check is not a model run. Hosted CI also exposed older
+historical checks that still read the newer native helper. Their source-selection
+correction preserves the original readers/assertions, validates both source
+identities, and passes 104 relevant local tests on each Python version. Retain
+that failure and require fresh hosted CI. After the restart, recheck actual
+driver, input and clock evidence for the new owner profile before a fresh trial;
+do not repeat the consumed failed case or relabel old SDK receipts as new runs.
 
 Exercise ordinary-task waiting, truthful expiry, explicit continuation and Stop,
 with separate original-task acceptance before a second task can be admitted.

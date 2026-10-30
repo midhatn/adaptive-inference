@@ -16,6 +16,13 @@ adds agent-directed cache relief as a later capability-gated option. It records
 the inspected implementation, current hybrid-model compatibility gap and the
 need to preserve cache-operation history. No AKV runtime integration is enabled.
 
+The same day's [Papers with Code assessment](paperswithcode-assessment.md)
+uses the supplied catalog to find implementations, then checks their primary
+sources. It selects River's existing Page-Hinkley API for an isolated offline
+timing-drift comparison, defers FlowPrefill behind native compatibility gates,
+and records one mismatched catalog implementation link that was rejected.
+These decisions preserve the current controller and model baseline.
+
 The [precision assessment](precision-research.md), added 26 October 2026,
 identifies the mixed precision already present in the retained IQ3_S engine
 and an existing optional FP16 expert-prompt path to evaluate after the current

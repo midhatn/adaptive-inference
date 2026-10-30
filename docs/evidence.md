@@ -173,6 +173,18 @@ qualify the narrow source behavior, not a fresh native-model release or full
 task handover. Independent review SHA-256:
 `9e3d3ecd621b3e9b74b0ea0c3d79a31df9c3dcd0bcf43e788f60534d0f32b1b1`.
 
+Hosted CI at `fc84187c124b9fbed9e115cc88a713c941eabd21` subsequently caught an
+omitted historical source selection in the older arithmetic/shutdown checks:
+those checks still compared the newer native helper with an exact predecessor.
+The [correction](../provenance/windows-handoff/termination-race-predecessor/README.md)
+preserves both original readers and every original assertion, verifies current
+and predecessor hashes for exactly two declared helpers, and keeps other inputs
+current. The affected 11 arithmetic and nine shutdown tests, three new source
+selection tests and 81 provenance checks pass on Python 3.11 and 3.12 (104 per
+interpreter). Independent source review passed 15 checks. These local results
+belong to `d07f1012f6ae736ab90d2c8e8ceeb09055c72396`; hosted checks on the
+corrected commit remain a separate gate. The original failed CI is retained.
+
 ## Explicit continuation after safe expiry
 
 The [source-bound continuation record](../provenance/explicit-continuation/acceptance/README.md)

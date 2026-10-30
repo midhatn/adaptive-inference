@@ -21,6 +21,9 @@ DIRECTORIES = ('src', 'docs', 'examples', 'integrations', 'plugins', 'provenance
 TOP_LEVEL = ('README.md', 'PLAN.md', 'CONTRIBUTING.md', 'SECURITY.md', 'CITATION.cff',
              'REFERENCES.bib', 'requirements.lock', 'CHANGELOG.md', 'AGENTS.md',
              'LICENSE', 'NOTICE', 'MANIFEST.in', 'pyproject.toml', '.gitattributes', '.gitignore')
+WHEEL_LICENSE_FILES = ('LICENSE', 'NOTICE', 'third_party/strata/LICENSE',
+                       'third_party/finagle/LICENSE', 'third_party/finagle/NOTICE',
+                       'examples/validation/latency_drift/LICENSE.river')
 
 
 def expected_files(root=ROOT):
@@ -65,9 +68,7 @@ def wheel_identity(archive, version, expected):
     record_name = prefix + 'RECORD'
     metadata = {prefix + name for name in
                 ('METADATA', 'WHEEL', 'entry_points.txt', 'top_level.txt', 'RECORD')}
-    licenses = {prefix + 'licenses/' + name for name in
-                ('LICENSE', 'NOTICE', 'third_party/strata/LICENSE',
-                 'third_party/finagle/LICENSE', 'third_party/finagle/NOTICE')}
+    licenses = {prefix + 'licenses/' + name for name in WHEEL_LICENSE_FILES}
     if set(names) != set(runtime) | metadata | licenses:
         raise ValueError('Unexpected or missing wheel member')
     headers = BytesParser().parsebytes(archive.read(prefix + 'METADATA'), headersonly=True)
@@ -76,6 +77,11 @@ def wheel_identity(archive, version, expected):
             or re.sub(r'[-_.]+', '-', project_names[0]).lower() != 'adaptive-inference'
             or headers.get_all('Version', []) != [version]):
         raise ValueError('Wheel METADATA project name or version differs')
+    declared_licenses = headers.get_all('License-File', [])
+    if (len(declared_licenses) != len(WHEEL_LICENSE_FILES)
+            or set(declared_licenses) != set(WHEEL_LICENSE_FILES)
+            or headers.get_all('License-Expression', [])):
+        raise ValueError('Wheel METADATA license notices or archive scope differ')
     rows = list(csv.reader(io.StringIO(archive.read(record_name).decode('utf-8')), strict=True))
     if (any(len(row) != 3 for row in rows) or len(rows) != len(names)
             or {row[0] for row in rows} != set(names)):
@@ -129,8 +135,7 @@ def check(sdist, wheel, root=ROOT):
                     raise ValueError('Wheel source differs: ' + packaged)
                 wheel_files += 1
         license_prefix = f'adaptive_inference-{version}.dist-info/licenses/'
-        for name in ('LICENSE', 'NOTICE', 'third_party/strata/LICENSE',
-                     'third_party/finagle/LICENSE', 'third_party/finagle/NOTICE'):
+        for name in WHEEL_LICENSE_FILES:
             if archive.read(license_prefix + name) != (root / name).read_bytes():
                 raise ValueError('Wheel license differs: ' + name)
     return {'passed': True, 'version': version, 'source_files_verified': len(expected),

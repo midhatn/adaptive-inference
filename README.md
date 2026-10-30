@@ -142,6 +142,11 @@ The [evidence ledger](docs/evidence.md) links exact CI and model receipts, retai
 
 Research references and reuse decisions live in [docs/research.md](docs/research.md) and [REFERENCES.bib](REFERENCES.bib). [NOTICE](NOTICE) and `third_party/` preserve source attribution and licenses. [CITATION.cff](CITATION.cff) describes how to cite this project.
 
+The [Papers with Code assessment](docs/paperswithcode-assessment.md) records
+implementation audits and their practical fit: an optional offline timing-drift
+experiment, deferred native prefill interruption, and explicit limits on what
+catalog links or external benchmarks establish.
+
 See [portable policy setup](docs/portable-policies.md) for the optional memory gate and context-budget command, and [task survival](docs/task-survival.md) for durable continuation. Citations remain beside each reused mechanism, with licensed source references preserved locally. The [changelog](CHANGELOG.md) distinguishes release contents and acceptance boundaries.
 
 Contributions should start here, pass the common contract tests, and then be offered upstream as narrowly scoped adapters or fixes. See [CONTRIBUTING.md](CONTRIBUTING.md). The goal is useful task completion with feedback and recoverable mistakes; optimizations follow measured need.

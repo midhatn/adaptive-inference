@@ -575,3 +575,42 @@
   url = {https://github.com/python/cpython/blob/v3.11.9/Lib/multiprocessing/popen_spawn_win32.py},
   note = {PSF license, inspected 2026-10-26. Reuses the principle of verification through the retained handle following termination denial, alongside the project's existing bounded wait. No CPython implementation copied; exit-code observations alone are not treated as wait-confirmed release}
 }
+
+@misc{huggingfacePapersWithCodeCatalog,
+  title = {Papers with Code catalog and public API},
+  author = {{Hugging Face and contributors}},
+  url = {https://github.com/huggingface/paperswithcode/tree/885539fec00ed12c19baca8f7a08f5355b8ef7cd},
+  note = {Apache-2.0 application, inspected 2026-10-26. Used bounded public keyword searches and selected paper records as discovery leads; implementation ownership, license and compatibility checked separately. A repository clone is not a hosted catalog snapshot; no catalog implementation copied}
+}
+
+@article{riverStreamingLearning,
+  title = {River: machine learning for streaming data in Python},
+  author = {Montiel, Jacob and Halford, Max and Mastelini, Saulo Martiello and Bolmier, Geoffrey and Sourty, Raphael and Vaysse, Robin and Zouitine, Adil and Gomes, Heitor Murilo and Read, Jesse and Abdessalem, Talel and Bifet, Albert},
+  year = {2020},
+  journal = {arXiv preprint arXiv:2012.04740},
+  url = {https://arxiv.org/abs/2012.04740v1},
+  note = {Discovered through Papers with Code record 4702; inspected 2026-10-26. The maintained River implementation, rather than a new detector, supplies the optional offline timing-drift experiment}
+}
+
+@misc{riverPageHinkleyAudit,
+  title = {River Page-Hinkley change detector},
+  author = {{River contributors}},
+  url = {https://github.com/online-ml/river/blob/950984786649806bfdc446062fcc830235f8131b/river/drift/page_hinkley.py},
+  note = {BSD-3-Clause, inspected 2026-10-26 with detector base, running mean and upstream up/down/both tests. Git blob c14c82121e19afc9d251fdb5339a00a89f3f48f8. Public API reuse is restricted to offline advisory timing analysis; no live controller dependency or performance claim}
+}
+
+@misc{riverPageHinkleyRelease,
+  title = {River 0.26.1 released change-detector implementation},
+  author = {{River contributors}},
+  url = {https://github.com/online-ml/river/tree/64285b9dd6c606804753235fe992bcf25b9856ee},
+  note = {BSD-3-Clause, inspected 2026-10-26. The published Windows wheel is matched to this release separately from current main; Page-Hinkley, Mean and detector-base files agree after CRLF normalization. The initialization difference from main is retained explicitly. Optional offline CPU experiment only, not a controller dependency}
+}
+
+@article{flowPrefill2026,
+  title = {FlowPrefill: Decoupling Preemption from Prefill Scheduling Granularity to Mitigate Head-of-Line Blocking in LLM Serving},
+  author = {Hsieh, Chia-chi and Zong, Zan and Chen, Xinyang and Li, Jianjiang and Zhai, Jidong and Wen, Lijie},
+  year = {2026},
+  journal = {arXiv preprint arXiv:2602.16603},
+  url = {https://arxiv.org/abs/2602.16603v1},
+  note = {Discovered through Papers with Code record 56294; inspected 2026-10-26 with Apache-2.0 author implementation ChiachiHsieh/FlowPrefill at d8a1c417c04469287c39abb63e8d3a3791c70f1a. Native-capability research only; no code imported or published performance reproduced on our Windows hybrid IQ3_S stack}
+}

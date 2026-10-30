@@ -35,10 +35,10 @@
           "draft": true,
           "head_sha": "06ba725d8b9bb42b457302f71dd85204e9760c32",
           "base_sha": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
-          "mergeable": "mergeable",
-          "merge_state": "unstable",
+          "mergeable": "conflicting",
+          "merge_state": "dirty",
           "review_decision": "not_reported",
-          "checked_at": "2026-10-24T01:38:43.1288595Z",
+          "checked_at": "2026-10-30T08:52:23.299Z",
           "checks": {
             "counts": {
               "failure": 1,
@@ -61,16 +61,38 @@
       "outstanding": [
         "Published route-control correction has 46 CPU/fake-engine tests; no new native-build or live public workflow qualification.",
         "metal-link failed at compilation: Xcode15.4 SDK lacks Metal4/mathMode declarations. Affected Metal subtree and workflow match base7ddc17a3. HIP/SYCL/Metal and full public model-workflow gates remain open; earlier complete-suite failure retained.",
-        "Larger scheduler reconciliation is preserved locally and is not in this PR. Windows ownership fix #3399 remains separate."
+        "Larger scheduler reconciliation is preserved locally and is not in this PR. Windows ownership fix #3399 remains separate.",
+        "Observed unchanged-head merge conflict on 2026-10-30; resolve against the current upstream base and validate that exact integration before further propagation. Existing tests remain bound to their original head/base."
       ],
       "history": [
         {
           "checked_date": "2026-10-24",
           "status": "existing-pr-narrow-fix-prepared",
           "superseded_by_snapshot": "2026-10-24T01:38:43.1288595Z"
+        },
+        {
+          "checked_at": "2026-10-24T01:38:43.1288595Z",
+          "status": "updated-existing-draft",
+          "mergeable": "mergeable",
+          "merge_state": "unstable",
+          "superseded_by_snapshot": "2026-10-30T09:00:24.705429+00:00"
         }
       ],
-      "last_checked": "2026-10-24T01:38:43.1288595Z"
+      "last_checked": "2026-10-30T08:52:23.299Z",
+      "related_pull_requests": [
+        {
+          "repository": "Niko1221/Strata",
+          "number": 3399,
+          "url": "https://github.com/Niko1221/Strata/pull/3399",
+          "state": "open",
+          "head_sha": "841476cdcc566dcdcf750121ef235749efc06375",
+          "base_sha": "c093ac263f8175307e67b7fd7eeeaa2e73ceaded",
+          "mergeable": "conflicting",
+          "merge_state": "dirty",
+          "checked_at": "2026-10-30T08:52:23.299Z",
+          "scope": "Separate Windows ownership correction; not counted among the original twelve delivery PRs. Prior external corroboration did not test this exact PR head."
+        }
+      ]
     },
     {
       "id": "llamacpp",
@@ -533,12 +555,20 @@
           "path": "docs/gateway/config-tools/custom-providers.md",
           "blob_sha": "f0f1c0c74fb268ea20674aecd7cea5db454a92db",
           "url": "https://github.com/openclaw/openclaw/blob/24adbb81e0a36cbac79446ce603ccf3c46b84c64/docs/gateway/config-tools/custom-providers.md"
+        },
+        {
+          "repo": "openclaw/openclaw",
+          "path": "docs/gateway/config-tools/provider-examples.md",
+          "blob_sha": "a5f42dff0ea4b04a7ffb820750ee9173a27265fe",
+          "url": "https://github.com/openclaw/openclaw/blob/45fc29dcf159095be6251dba21c249af08a5d05a/docs/gateway/config-tools/provider-examples.md",
+          "scope": "Merged successor documentation inspected at the exact merge commit; original proposal patch remains separately preserved."
         }
       ],
-      "status": "submitted-draft",
+      "status": "superseded-by-merged-documentation",
       "public_links": [
         "https://github.com/openclaw/openclaw/pull/182080",
-        "https://github.com/openclaw/openclaw/issues/182077"
+        "https://github.com/openclaw/openclaw/issues/182077",
+        "https://github.com/openclaw/openclaw/pull/182565"
       ],
       "policy_summary": "New features normally belong in third-party plugins. Agent-authored/non-trivial work starts with an issue; small fixes have exception. No refactor-only or known-main-CI-fix PRs.",
       "pull_requests": [
@@ -547,14 +577,14 @@
           "number": 182080,
           "url": "https://github.com/openclaw/openclaw/pull/182080",
           "title": "docs: explain same-model background provider routes",
-          "state": "open",
+          "state": "closed",
           "draft": true,
           "head_sha": "f64d74b04b90dd123c5a1bf7cf36de7543a74309",
           "base_sha": "b052b9736bca156bda1e69b9391ffc6e06013d7f",
-          "mergeable": "mergeable",
-          "merge_state": "unstable",
+          "mergeable": "not_applicable",
+          "merge_state": "closed",
           "review_decision": "not_reported",
-          "checked_at": "2026-10-26T13:21:39Z",
+          "checked_at": "2026-10-30T09:00:24.705429+00:00",
           "checks": {
             "counts": {
               "cancelled": 1,
@@ -592,22 +622,62 @@
             "reviewed_head": "f64d74b04b90dd123c5a1bf7cf36de7543a74309",
             "updated_at": "2026-10-24T01:47:15Z",
             "scope": "ClawSweeper automated review found no actionable defect and marked the unchanged head ready for maintainer review. Proof confidence is limited; the PR remains draft and no human approval is claimed."
+          },
+          "merged": false,
+          "closed_at": "2026-10-30T08:56:00Z",
+          "closure_reason": "superseded_by_merged_documentation",
+          "preclosure_mergeability": {
+            "checked_at": "2026-10-30T08:52:23.299Z",
+            "mergeable": "conflicting",
+            "merge_state": "dirty"
+          },
+          "superseded_by": {
+            "repository": "openclaw/openclaw",
+            "number": 182565,
+            "url": "https://github.com/openclaw/openclaw/pull/182565",
+            "author": "SC-10749",
+            "state": "closed",
+            "merged": true,
+            "head_sha": "f6bb05ebefdcf1fa291c5054192d336ef7d7e297",
+            "merge_commit_sha": "45fc29dcf159095be6251dba21c249af08a5d05a",
+            "merged_at": "2026-10-27T18:24:29Z",
+            "source_path": "docs/gateway/config-tools/provider-examples.md",
+            "source_blob_sha": "a5f42dff0ea4b04a7ffb820750ee9173a27265fe",
+            "source_url": "https://github.com/openclaw/openclaw/blob/45fc29dcf159095be6251dba21c249af08a5d05a/docs/gateway/config-tools/provider-examples.md",
+            "license": "MIT",
+            "maintainer_audit_url": "https://github.com/openclaw/openclaw/pull/182565#issuecomment-6449975512",
+            "maintainer_landing_url": "https://github.com/openclaw/openclaw/pull/182565#issuecomment-6450243999",
+            "scope": "Merged documentation for existing same-model provider routing; separate author and commit, not a merge of #182080. Source comparison only; no runtime scheduler, live agent, model or performance qualification.",
+            "checked_at": "2026-10-30T09:00:24.705429+00:00"
           }
         }
       ],
       "outstanding": [
-        "Draft docs-only PR linked to issue #182077; exact source/schema checks do not qualify full OpenClaw transport or agent execution.",
-        "Auto-response workflow fails in unchanged barnacle-auto-response.mjs:712 with undefined.owner. Draft docs CI is skipped.",
-        "ClawSweeper automated review found no actionable defect and marked the unchanged head ready for maintainer review. Proof confidence is limited; the PR remains draft and no human approval is claimed."
+        "No duplicate routing-docs PR is required: #182565 merged and closed #182077; our #182080 is closed unmerged as superseded.",
+        "Original #182080 patch, schema/MDX evidence, automated review and failed/skipped checks remain historical and are not relabeled as successor validation.",
+        "Merged documentation covers existing configuration only. Runtime resource handoff, accepted agent tasks and performance still need their own exact integration validation."
       ],
       "history": [
         {
           "checked_date": "2026-10-24",
           "status": "prepared-not-submitted",
           "superseded_by_snapshot": "2026-10-24T01:38:43.1288595Z"
+        },
+        {
+          "checked_at": "2026-10-26T13:21:39Z",
+          "status": "submitted-draft",
+          "pull_request_state": "open",
+          "mergeable": "mergeable",
+          "merge_state": "unstable",
+          "outstanding": [
+            "Draft docs-only PR linked to issue #182077; exact source/schema checks do not qualify full OpenClaw transport or agent execution.",
+            "Auto-response workflow fails in unchanged barnacle-auto-response.mjs:712 with undefined.owner. Draft docs CI is skipped.",
+            "ClawSweeper automated review found no actionable defect and marked the unchanged head ready for maintainer review. Proof confidence is limited; the PR remains draft and no human approval is claimed."
+          ],
+          "superseded_by_snapshot": "2026-10-30T09:00:24.705429+00:00"
         }
       ],
-      "last_checked": "2026-10-26T13:21:39Z",
+      "last_checked": "2026-10-30T09:00:24.705429+00:00",
       "proposals": [
         {
           "kind": "issue",
@@ -615,7 +685,7 @@
           "number": 182077,
           "url": "https://github.com/openclaw/openclaw/issues/182077",
           "title": "[Docs Bug]: Show same-model interactive and background provider routes",
-          "state": "open",
+          "state": "closed",
           "assignees": [],
           "labels": [
             "no-stale",
@@ -626,7 +696,11 @@
             "issue-rating: ðŸ¦ž diamond lobster",
             "impact:ux-friction"
           ],
-          "checked_at": "2026-10-24T01:38:43.1288595Z"
+          "checked_at": "2026-10-30T09:00:24.705429+00:00",
+          "state_reason": "completed",
+          "closed_at": "2026-10-27T18:24:30Z",
+          "resolved_by": "https://github.com/openclaw/openclaw/pull/182565",
+          "merge_commit_sha": "45fc29dcf159095be6251dba21c249af08a5d05a"
         }
       ]
     },
@@ -1139,21 +1213,47 @@
   "publication_summary": {
     "new_pull_requests": 11,
     "updated_existing_pull_requests": 1,
-    "open_pull_requests_in_refresh": 11,
+    "open_pull_requests_in_refresh": 10,
     "merged_pull_requests_in_refresh": 1,
     "related_issues": 3,
     "feature_discussions": 1,
     "targets": 18,
-    "scope": "Counts describe this delivery refresh, not every historical PR or native qualification."
+    "scope": "Counts cover the original twelve delivery PRs, refreshed on 2026-10-30: ten open, one merged catalog PR and one closed unmerged superseded draft. The separately authored OpenClaw successor is not counted as our submission.",
+    "closed_unmerged_pull_requests_in_refresh": 1
   },
   "qualification_gateway_release": "https://github.com/midhatn/adaptive-inference/releases/tag/v0.2.0",
   "status_refresh": {
-    "checked_at": "2026-10-26T13:21:39Z",
+    "checked_at": "2026-10-30T09:00:24.705429+00:00",
     "targets": [
-      "hermes",
-      "openclaw",
-      "sglang"
+      "strata",
+      "openclaw"
     ],
-    "scope": "Focused status update; other target entries retain their individual timestamps. The original twelve-PR refresh now contains eleven open PRs and one merged catalog PR. Strata #3399 corroboration is recorded separately in the historical registry."
-  }
+    "scope": "Focused OpenClaw supersession/issue closure and Strata #1493/#3399 conflict update only. Other target entries and original publication timestamps retain their recorded scope."
+  },
+  "publication_summary_history": [
+    {
+      "checked_at": "2026-10-26T13:21:39Z",
+      "summary": {
+        "new_pull_requests": 11,
+        "updated_existing_pull_requests": 1,
+        "open_pull_requests_in_refresh": 11,
+        "merged_pull_requests_in_refresh": 1,
+        "related_issues": 3,
+        "feature_discussions": 1,
+        "targets": 18,
+        "scope": "Counts describe this delivery refresh, not every historical PR or native qualification."
+      }
+    }
+  ],
+  "status_refresh_history": [
+    {
+      "checked_at": "2026-10-26T13:21:39Z",
+      "targets": [
+        "hermes",
+        "openclaw",
+        "sglang"
+      ],
+      "scope": "Focused status update; other target entries retain their individual timestamps. The original twelve-PR refresh now contains eleven open PRs and one merged catalog PR. Strata #3399 corroboration is recorded separately in the historical registry."
+    }
+  ]
 }

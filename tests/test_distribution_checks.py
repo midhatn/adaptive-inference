@@ -31,7 +31,8 @@ class DistributionChecks(unittest.TestCase):
         for name in ('src/adaptive_inference/__init__.py',
                      'src/adaptive_inference/desktop/installation.py',
                      'third_party/strata/LICENSE', 'third_party/finagle/LICENSE',
-                     'third_party/finagle/NOTICE'):
+                     'third_party/finagle/NOTICE',
+                     'examples/validation/latency_drift/LICENSE.river'):
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(b'# fixture\n')
@@ -45,10 +46,12 @@ class DistributionChecks(unittest.TestCase):
                         path.read_bytes() for path in (self.root / 'src/adaptive_inference').rglob('*.py')}
         self.members.update({self.prefix + name: b'fixture\n' for name in
                             ('METADATA', 'WHEEL', 'entry_points.txt', 'top_level.txt')})
-        self.members[self.prefix + 'METADATA'] = b'Metadata-Version: 2.4\nName: adaptive-inference\nVersion: 0.3.0\n\n'
+        self.members[self.prefix + 'METADATA'] = (
+            'Metadata-Version: 2.4\nName: adaptive-inference\nVersion: 0.3.0\n' +
+            ''.join('License-File: ' + name + '\n' for name in distribution.WHEEL_LICENSE_FILES) + '\n'
+        ).encode()
         self.members.update({self.prefix + 'licenses/' + name: (self.root / name).read_bytes()
-                             for name in ('LICENSE', 'NOTICE', 'third_party/strata/LICENSE',
-                                          'third_party/finagle/LICENSE', 'third_party/finagle/NOTICE')})
+                             for name in distribution.WHEEL_LICENSE_FILES})
 
     def write_wheel(self, *, members=None, rows_change=None, duplicate=False):
         members = dict(self.members if members is None else members)
@@ -124,6 +127,39 @@ class DistributionChecks(unittest.TestCase):
         (self.root / 'README.md').write_text('changed\n', encoding='utf-8')
         with self.assertRaisesRegex(ValueError, 'Source distribution differs'):
             self.check()
+
+    def test_river_license_is_required_and_exact_in_both_archives(self):
+        license_name = 'examples/validation/latency_drift/LICENSE.river'
+        wheel_name = self.prefix + 'licenses/' + license_name
+        for change in ('missing', 'changed'):
+            with self.subTest(archive='wheel', change=change):
+                members = dict(self.members)
+                if change == 'missing':
+                    del members[wheel_name]
+                else:
+                    members[wheel_name] = b'changed notice\n'
+                self.write_wheel(members=members)
+                with self.assertRaisesRegex(ValueError, 'wheel member|Wheel license differs'):
+                    self.check()
+        self.write_wheel()
+        with tarfile.open(self.sdist, 'w:gz') as archive:
+            for name, path in distribution.expected_files(self.root).items():
+                if name != license_name:
+                    archive.add(path, arcname='adaptive_inference-0.3.0/' + name)
+        with self.assertRaisesRegex(ValueError, 'Source distribution omits:.*LICENSE.river'):
+            self.check()
+
+    def test_license_metadata_matches_exact_notices_without_shared_expression(self):
+        original = self.members[self.prefix + 'METADATA']
+        river_field = b'License-File: examples/validation/latency_drift/LICENSE.river\n'
+        for raw in (original.replace(river_field, b''),
+                    original.replace(river_field, river_field * 2),
+                    original.replace(river_field, b'License-File: unexpected\n'),
+                    b'License-Expression: Apache-2.0 AND MIT\n' + original):
+            with self.subTest(metadata=raw):
+                self.write_wheel(members={**self.members, self.prefix + 'METADATA': raw})
+                with self.assertRaisesRegex(ValueError, 'METADATA license'):
+                    self.check()
 
     def test_metadata_cannot_export_an_identity_the_installer_would_change(self):
         for raw in (b'Name: adaptive-inference\nVersion: 99.0\n\n',
