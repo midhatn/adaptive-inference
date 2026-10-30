@@ -185,6 +185,47 @@ interpreter). Independent source review passed 15 checks. These local results
 belong to `d07f1012f6ae736ab90d2c8e8ceeb09055c72396`; hosted checks on the
 corrected commit remain a separate gate. The original failed CI is retained.
 
+On 30 October, all 14 hosted checks passed for research-integration commit
+`920c0a577321d20a2f3f77174a68df3627a97f3c`. Its source archive verified all 1,072
+expected source files and its wheel verified all 60 runtime modules plus the
+required notices. This new archive was not installed over the qualification
+wheel. The preceding `d07f101` push run passed all seven jobs; its duplicate PR
+run finished with six successful jobs and one cancelled Windows job. Those
+outcomes are retained separately.
+
+### V6 inventory completion and the missed recovery boundary
+
+The fresh case08 used the repaired v6 owner and unchanged IQ3_S runtime. Its
+inventory worker completed three actual provider requests, executed native
+`read_file` and one physical `write_file`, and produced the independently checked
+23-unit result. The original prompt and native history were preserved. The
+worker returned zero and its retained process was joined.
+
+The task completed before the intended foreground resource-wait boundary.
+The operator performed one Resume and one Stop; no safe expiry, Continue or
+second task occurred. The parent therefore returned one, the original auditor
+refused `normal_parent`, and the whole result retains both
+`qualification_case_passed=false` and `clean_stop=false`. Missing operator
+observations were left missing. This is a failed recovery qualification, not a
+replacement for the required two-task acceptance.
+
+The component cleanup evidence is narrower and positive: normal native release
+confirmed all five retained descendants and the separate owner handle exited,
+with server exit zero. GUI, pipe, listener, transport and asynchronous obligations
+were closed or joined; no emergency termination was required. A recorded error 5
+belongs to `QueryFullProcessImageNameW` during identity capture, so it does not
+prove that the new termination-denial branch executed.
+
+Independent review passed 48 evidence-integrity checks across 383 source and
+evidence identities, using the existing terminal task/native/artifact validators.
+Review SHA-256:
+`7e2616824e96ab28a4ab42444a28f184020da3618498c2c8773d6f676ff95592`.
+The live status exposed neither successful native `read_file` nor the saved
+undispatched request. Gateway completion was not treated as proof of either.
+The [roadmap](../PLAN.md) revises the next experiment around an observable
+in-flight boundary and immutable evidence afterward, without changing this
+failed result or weakening task-progress, ownership and budget requirements.
+
 ## Explicit continuation after safe expiry
 
 The [source-bound continuation record](../provenance/explicit-continuation/acceptance/README.md)

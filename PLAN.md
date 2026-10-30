@@ -1380,6 +1380,29 @@ that failure and require fresh hosted CI. After the restart, recheck actual
 driver, input and clock evidence for the new owner profile before a fresh trial;
 do not repeat the consumed failed case or relabel old SDK receipts as new runs.
 
+**30 October feedback:** case08 completed the inventory correctly (three IQ3_S
+requests, native read and one physical write, independently checked 23-unit
+result) and released the v6 native owner normally. It did not enter safe expiry
+or Continue, and no second task was admitted. Its parent/auditor failure and
+whole-trial `clean_stop=false` remain failures; successful component cleanup is
+reported separately in the [evidence ledger](docs/evidence.md).
+
+The operator procedure depended on an unobservable live boundary: the current
+GET/UI status cannot establish that the native file read has completed while
+the next request remains undispatched. Do not infer this from a gateway count,
+read actively replaced evidence to manufacture a timely signal, or repeat the
+same timing race. Review a separately declared next scenario that starts genuine
+foreground work during the first observed in-flight request. Reuse the existing
+admission closure, active-request drain and durable request handling; then prove
+the native read, completed progress and saved undispatched request from immutable
+expiry evidence. Bind actual foreground input to same-instance GET observations
+before and after it. An active request alone proves neither tool success nor GPU
+progress. Keep the original 900/2,700-second and eight-request/32-admission limits,
+actual safe expiry, explicit Continue, the inventory oracle, welcome's existing
+format validation and complete release
+requirements. Adding a new runtime status projection remains an alternative only
+if these existing observation mechanisms cannot qualify the scenario.
+
 Exercise ordinary-task waiting, truthful expiry, explicit continuation and Stop,
 with separate original-task acceptance before a second task can be admitted.
 Do not extend a budget silently, accept uncertain effects or reuse old installed
