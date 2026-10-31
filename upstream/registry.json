@@ -938,10 +938,9 @@
       "merge_commit_sha": "8689b1eefedcd5eadea1c819bd4554c88c7e238f",
       "merged_at": "2026-10-11T15:41:28Z",
       "update_needed": false,
-      "update_reason": "Merged contribution is already retained in the pinned Strata overlay; collaboration invitation posted in the canonical repository.",
+      "update_reason": "Merged contribution is already retained in the pinned Strata overlay.",
       "discussion_records_checked": 1,
-      "last_discussion_url": "https://github.com/midhatn/Strata/pull/1#issuecomment-6109310453",
-      "collaboration_url": "https://github.com/midhatn/adaptive-inference/issues/1"
+      "last_discussion_url": "https://github.com/midhatn/Strata/pull/1#issuecomment-6109310453"
     },
     {
       "repo": "sgl-project/sglang",
