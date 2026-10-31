@@ -545,3 +545,32 @@
   url = {https://docs.langchain.com/oss/python/langgraph/interrupts},
   note = {MIT documentation, inspected revision 4506df5fb4105a39b84c2b7390d21bed89e28668, src/oss/langgraph/interrupts.mdx, blob 32b562c8c91387fc5aa274700d98181cbcadbf54; official page rechecked 2026-10-26. Saved-state resume and repeated-effect hazards inform preserved effect/history checks. No dependency, copied implementation or inherited exactly-once guarantee}
 }
+
+@misc{agentsMarkdownConvention,
+  title = {AGENTS.md: an open format for guiding coding agents},
+  author = {{AGENTS.md contributors}},
+  url = {https://agents.md/},
+  note = {Inspected 2026-10-30. Adopted a predictable Markdown instruction entry point with manual onboarding fallback; automatic discovery depends on the AI client. No upstream implementation copied}
+}
+
+@misc{gitWorktreeCollaboration,
+  title = {Git worktree documentation},
+  author = {{Git contributors}},
+  url = {https://git-scm.com/docs/git-worktree},
+  note = {Inspected 2026-10-30. Separate working trees, HEADs and indexes inform concurrent source ownership. Worktrees and worktree administrative locks do not reserve hardware or isolate live services. No Git implementation copied}
+}
+
+@misc{githubIssueOwnership,
+  title = {Assigning issues and pull requests to other GitHub users},
+  author = {{GitHub}},
+  url = {https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/assigning-issues-and-pull-requests-to-other-github-users},
+  note = {Inspected 2026-10-30. Existing issues and PRs carry human ownership and bounded work records; local worker names and offline Markdown remain supported. Assignment is coordination, not an atomic resource lock. No implementation copied}
+}
+
+@misc{longRunningAgentHarnesses,
+  title = {Effective harnesses for long-running agents},
+  author = {{Anthropic}},
+  year = {2025},
+  url = {https://www.anthropic.com/research/effective-harnesses-for-long-running-agents},
+  note = {Inspected 2026-10-30. Adapted incremental tasks, explicit acceptance and durable progress artifacts alongside Git history. No agent harness code copied; this does not establish automatic multi-agent success or transfer private execution capabilities}
+}
