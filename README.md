@@ -5,6 +5,11 @@
 [![CI](https://github.com/midhatn/adaptive-inference/actions/workflows/ci.yml/badge.svg)](https://github.com/midhatn/adaptive-inference/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0%20%2B%20MIT-blue)](LICENSE)
 
+**Continuing this project with an AI or a team?** Start with
+[AGENTS.md](AGENTS.md), the dated [continuation handoff](HANDOFF.md), and the
+[multi-agent workflow](docs/multi-agent-collaboration.md). They preserve the goal,
+current evidence, next work and coordination rules across tools and sessions.
+
 ## The goal: start your agent and leave it running
 
 You should be able to start your AI agent and keep using your computer normally: browse the internet, play a game, watch a video, or do your own work. The agent should adapt to your activity, make progress when resources are available, and back off when you need them. You should not have to manage competing model servers or repeatedly stop and restart the agent yourself.

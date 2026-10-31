@@ -1,4 +1,4 @@
-include README.md PLAN.md CONTRIBUTING.md SECURITY.md CITATION.cff REFERENCES.bib requirements.lock CHANGELOG.md AGENTS.md
+include README.md PLAN.md CONTRIBUTING.md SECURITY.md CITATION.cff REFERENCES.bib requirements.lock CHANGELOG.md AGENTS.md HANDOFF.md
 include .gitattributes .gitignore
 recursive-include .github *.yml *.yaml *.md
 recursive-include docs *.md
