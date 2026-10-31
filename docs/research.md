@@ -29,6 +29,21 @@ and an existing optional FP16 expert-prompt path to evaluate after the current
 continuation milestone. It separates the user-reported GPU environment change
 and dense matrix measurements from unmeasured application performance.
 
+## Durable contributor and AI collaboration
+
+On 30 October 2026, the [collaboration workflow](multi-agent-collaboration.md)
+adopted the [AGENTS.md entry-point convention](https://agents.md/),
+[Git worktree isolation](https://git-scm.com/docs/git-worktree) for source edits,
+and [existing GitHub issue/PR assignment](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/assigning-issues-and-pull-requests-to-other-github-users)
+for human ownership. [Long-running agent harness research](https://www.anthropic.com/research/effective-harnesses-for-long-running-agents)
+informs bounded incremental tasks, explicit acceptance and durable handoffs.
+These are documented coordination practices; no upstream code or new orchestration
+runtime was copied. The guide explains them locally and includes reusable task
+and return records, so an external link is not required to follow the workflow.
+Separate source trees do not reserve shared hardware. Instructions are context,
+not enforcement or a promise of automatic loading by every AI client. Sources
+and the exact scope of reuse are recorded in REFERENCES.bib.
+
 ## Direct implementation lineage
 
 | Source | Use here | Attribution and boundary |

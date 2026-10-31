@@ -720,3 +720,32 @@
   url = {https://peps.python.org/pep-0597/},
   note = {Inspected 2026-10-30 for the documented Windows portability error caused by omitting an encoding for UTF-8 text. Informs the private receipt-reader correction and non-ASCII regression; no global locale change, replacement decoding or acceptance relaxation}
 }
+
+@misc{agentsMarkdownConvention,
+  title = {AGENTS.md: an open format for guiding coding agents},
+  author = {{AGENTS.md contributors}},
+  url = {https://agents.md/},
+  note = {Inspected 2026-10-30. Adopted a predictable Markdown instruction entry point with manual onboarding fallback; automatic discovery depends on the AI client. No upstream implementation copied}
+}
+
+@misc{gitWorktreeCollaboration,
+  title = {Git worktree documentation},
+  author = {{Git contributors}},
+  url = {https://git-scm.com/docs/git-worktree},
+  note = {Inspected 2026-10-30. Separate working trees, HEADs and indexes inform concurrent source ownership. Worktrees and worktree administrative locks do not reserve hardware or isolate live services. No Git implementation copied}
+}
+
+@misc{githubIssueOwnership,
+  title = {Assigning issues and pull requests to other GitHub users},
+  author = {{GitHub}},
+  url = {https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/assigning-issues-and-pull-requests-to-other-github-users},
+  note = {Inspected 2026-10-30. Existing issues and PRs carry human ownership and bounded work records; local worker names and offline Markdown remain supported. Assignment is coordination, not an atomic resource lock. No implementation copied}
+}
+
+@misc{longRunningAgentHarnesses,
+  title = {Effective harnesses for long-running agents},
+  author = {{Anthropic}},
+  year = {2025},
+  url = {https://www.anthropic.com/research/effective-harnesses-for-long-running-agents},
+  note = {Inspected 2026-10-30. Adapted incremental tasks, explicit acceptance and durable progress artifacts alongside Git history. No agent harness code copied; this does not establish automatic multi-agent success or transfer private execution capabilities}
+}
