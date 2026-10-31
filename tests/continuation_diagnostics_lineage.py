@@ -8,6 +8,7 @@ import hashlib
 import json
 
 from paused_expiry_lineage import ROOT, fingerprint
+import continuation_timeout_lineage as timeout_lineage
 
 ARCHIVE = 'provenance/task-handover/task-file-aliases/ci-diagnostics'
 FIXTURE = 'tests/test_continuation_host.py'
@@ -16,6 +17,7 @@ READINESS = 'provenance/task-handover/fixture-readiness'
 
 def readiness_predecessor(data, root=None):
     """Project only the pinned readiness observation change to the old fixture."""
+    data = timeout_lineage.predecessor(FIXTURE, data, root)
     root = ROOT if root is None else root
     row = json.loads((root / READINESS / 'source-lineage.json').read_bytes())
     before = (root / READINESS / 'predecessor-test_continuation_host.py').read_bytes()

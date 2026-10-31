@@ -42,7 +42,7 @@ class ReadinessLineageTests(unittest.TestCase):
     def test_only_readiness_observation_changed_and_old_fixture_is_exact(self):
         root=diagnostics.ROOT
         row=json.loads((root/diagnostics.READINESS/'source-lineage.json').read_bytes())
-        current=(root/diagnostics.FIXTURE).read_bytes()
+        current=diagnostics.timeout_lineage.predecessor(diagnostics.FIXTURE, (root/diagnostics.FIXTURE).read_bytes())
         old=diagnostics.readiness_predecessor(current)
         self.assertEqual(hashlib.sha256(old).hexdigest(),
                          '9aba2b541f1b08bca5a07fe3283d887bd53d01e4d48ae2679986aa5a20a1504d')

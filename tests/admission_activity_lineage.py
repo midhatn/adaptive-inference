@@ -9,6 +9,7 @@ import hashlib
 import json
 
 from paused_expiry_lineage import ROOT, fingerprint
+import continuation_timeout_lineage as timeout_lineage
 
 ARCHIVE = 'provenance/task-handover/admission-activity'
 
@@ -42,6 +43,7 @@ def retained(relative, root=None):
 
 
 def predecessor(relative, data, root=None):
+    data = timeout_lineage.predecessor(relative, data, root)
     row, before = retained(relative, root)
     if row is not None and hashlib.sha256(data).hexdigest() == row['successor_sha256']:
         if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:
