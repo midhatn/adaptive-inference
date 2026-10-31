@@ -1,0 +1,50 @@
+{
+  "tests/test_continuation_host.py": [
+    {
+      "old": "from test_desktop_control_transport import Reader,Writer\n",
+      "new": "from test_desktop_control_transport import Reader,Writer\nimport continuation_timeout_diagnostics as timeout_diagnostics\n",
+      "count": 1
+    },
+    {
+      "old": "            output=Path(destination);output.mkdir(exist_ok=True)\n            (output/(self._testMethodName+'.json')).write_text(json.dumps({'test':self.id(),'children':rows,\n                'scope':'CPU Python child and actual SQLite; injected native/window/job boundaries; no SDK/model'},indent=2),encoding='utf-8')",
+      "new": "            payload={'test':self.id(),'children':rows,\n                'scope':'CPU Python child and actual SQLite; injected native/window/job boundaries; no SDK/model'}\n            if hasattr(self,'timeout_observation'):\n                try:after=timeout_diagnostics.after_join(self,joined)\n                except Exception as exc:after={'capture_error':type(exc).__name__}\n                payload['timeout_observation']={'before_teardown':self.timeout_observation,'after_join':after}\n            output=Path(destination);output.mkdir(exist_ok=True)\n            (output/(self._testMethodName+'.json')).write_text(json.dumps(payload,indent=2),encoding='utf-8')",
+      "count": 1
+    },
+    {
+      "old": "        await asyncio.wait_for(asyncio.shield(task),5)\n        record=c.continuation.current\n",
+      "new": "        try:\n            await asyncio.wait_for(asyncio.shield(task),5)\n        except TimeoutError:\n            if os.environ.get('CONTINUATION_TEST_RECEIPTS'):\n                try:self.timeout_observation=timeout_diagnostics.before_teardown(self,task)\n                except Exception as exc:self.timeout_observation={'capture_error':type(exc).__name__}\n            raise\n        record=c.continuation.current\n",
+      "count": 1
+    }
+  ],
+  "tests/continuation_diagnostics_lineage.py": [
+    {
+      "old": "from paused_expiry_lineage import ROOT, fingerprint\n",
+      "new": "from paused_expiry_lineage import ROOT, fingerprint\nimport continuation_timeout_lineage as timeout_lineage\n",
+      "count": 1
+    },
+    {
+      "old": "    \"\"\"Project only the pinned readiness observation change to the old fixture.\"\"\"\n",
+      "new": "    \"\"\"Project only the pinned readiness observation change to the old fixture.\"\"\"\n    data = timeout_lineage.predecessor(FIXTURE, data, root)\n",
+      "count": 1
+    }
+  ],
+  "tests/admission_activity_lineage.py": [
+    {
+      "old": "from paused_expiry_lineage import ROOT, fingerprint\n",
+      "new": "from paused_expiry_lineage import ROOT, fingerprint\nimport continuation_timeout_lineage as timeout_lineage\n",
+      "count": 1
+    },
+    {
+      "old": "def predecessor(relative, data, root=None):\n",
+      "new": "def predecessor(relative, data, root=None):\n    data = timeout_lineage.predecessor(relative, data, root)\n",
+      "count": 1
+    }
+  ],
+  "tests/test_continuation_readiness.py": [
+    {
+      "old": "        current=(root/diagnostics.FIXTURE).read_bytes()\n",
+      "new": "        current=diagnostics.timeout_lineage.predecessor(diagnostics.FIXTURE, (root/diagnostics.FIXTURE).read_bytes())\n",
+      "count": 1
+    }
+  ]
+}

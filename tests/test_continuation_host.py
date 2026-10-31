@@ -39,6 +39,7 @@ from adaptive_inference.task_store import ReconciliationRequired
 import test_continuation_worker as seed_fixture
 import test_desktop_lifecycle as lifecycle_fixture
 from test_desktop_control_transport import Reader,Writer
+import continuation_timeout_diagnostics as timeout_diagnostics
 
 CHILD=Path(__file__).with_name('continuation_cpu_child.py')
 
@@ -231,9 +232,14 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
                 except (OSError,ValueError) as exc:
                     row['output_log']={'name':log_path.name,'capture_error':type(exc).__name__}
                 rows.append(row)
+            payload={'test':self.id(),'children':rows,
+                'scope':'CPU Python child and actual SQLite; injected native/window/job boundaries; no SDK/model'}
+            if hasattr(self,'timeout_observation'):
+                try:after=timeout_diagnostics.after_join(self,joined)
+                except Exception as exc:after={'capture_error':type(exc).__name__}
+                payload['timeout_observation']={'before_teardown':self.timeout_observation,'after_join':after}
             output=Path(destination);output.mkdir(exist_ok=True)
-            (output/(self._testMethodName+'.json')).write_text(json.dumps({'test':self.id(),'children':rows,
-                'scope':'CPU Python child and actual SQLite; injected native/window/job boundaries; no SDK/model'},indent=2),encoding='utf-8')
+            (output/(self._testMethodName+'.json')).write_text(json.dumps(payload,indent=2),encoding='utf-8')
         if errors:raise ExceptionGroup('CPU fixture cleanup failed',errors)
 
     def request(self,ident='continue-1'):
@@ -279,7 +285,13 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         restoring=asyncio.create_task(self.restore());self.tasks.append(restoring)
         first=await self.wire('continue');self.assertTrue(first['ok'])
         task=self.transport._records['continue-1']['task'];self.tasks.append(task)
-        await asyncio.wait_for(asyncio.shield(task),5)
+        try:
+            await asyncio.wait_for(asyncio.shield(task),5)
+        except TimeoutError:
+            if os.environ.get('CONTINUATION_TEST_RECEIPTS'):
+                try:self.timeout_observation=timeout_diagnostics.before_teardown(self,task)
+                except Exception as exc:self.timeout_observation={'capture_error':type(exc).__name__}
+            raise
         record=c.continuation.current
         self.assertEqual(await c.join_child(record['child']),0)
         duplicate=await self.wire('continue')
