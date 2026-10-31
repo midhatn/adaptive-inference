@@ -5,7 +5,7 @@ Read [AGENTS.md](AGENTS.md) first. The repository, its retained evidence and cur
 Git state are authoritative; no previous conversation or particular AI provider
 is required to understand the intended work.
 
-**Snapshot date: 30 October 2026.** Recheck branch heads, PRs, task ownership and
+**Snapshot date: 1 November 2026.** Recheck branch heads, PRs, task ownership and
 the actual machine before acting. This file does not reserve hardware or assert
 that a previously recorded process is still running.
 
@@ -42,19 +42,20 @@ citations and unsuccessful evidence. The full milestone sequence is in
 
 | Item | Dated state and verification boundary |
 | --- | --- |
-| Stable main starting point | Commit `5d2264dfeafe6483dd9d839097811f687fab654c`, merging explicit task continuation. Verify current `main`; this is a historical anchor, not a claim that it remains HEAD. |
+| Stable main starting point | Commit `fb438a3fa0d4a63c395944897aabbd7d711a6936`, including the merged collaboration guide. Verify current `main`; this is a dated anchor, not a claim that it remains HEAD. |
 | Active implementation | Branch `feat/same-host-task-admission`, [PR #25](https://github.com/midhatn/adaptive-inference/pull/25), still a draft at this snapshot. Do not merge its unqualified runtime merely to obtain these collaboration documents. |
 | Installed source used for the latest experiments | `7306a53085ddc31d53d2ba50e91975c80cfc0014`; unchanged IQ3_S and quality. Source, package, controlled-clock SDK and physical evidence are separate levels. |
 | Current milestone | M2: practical persistent controller, safe resource waiting, explicit continuation and isolated tasks in one retained host. M1's accepted reference remains independently preserved. |
 | Latest physical result | Case14 completed safe expiry, one Continue, the original 23-unit inventory task, a distinct welcome task and one Stop. The primary audit passed 99 checks. The welcome task is format-only. The separate foreground audit failed; the combined scenario and full M2 remain unqualified. |
 | Remaining foreground issue | Twelve early status rows had recovery-margin/dwell reasons rather than the exact required foreground-activity reason. Admission stayed closed. The first operator action was standalone window activation. Raw input-age/CPU samples were not retained, so an exact OS-level cause is not established. |
-| Next experiment decision | Clarify the first useful document transition prospectively, including activation, actual observation and meaningful navigation in its full time bracket; preserve every predicate, model and budget. A fresh independently reviewed packet is required. Never regroup or rerun consumed case14. |
+| Next experiment decision | A fresh disabled successor packet has independent source review, using the same installed source and the prospective full activation/observation/meaningful-navigation bracket. It still needs current host ownership/capacity checks, fresh document/window observations and an uninterrupted observation session before activation. Source clearance is not a physical pass. Never regroup or rerun consumed case14. |
+| CI follow-up | Reporting head `4d2f5a7` finished with 13 successful hosted jobs and one Windows/Python 3.12 test timeout. The [test-only diagnostic addition](provenance/task-handover/continuation-timeout-diagnostics/README.md) at `20a9c80db2a8ba5a1296e9bccb4e77f3e91c84e5` passed 48 focused CPU-fixture/source tests on Python 3.11.9 and independent source review. It preserves the original timeout and leaves runtime modules unchanged; it does not diagnose or erase that failure. Check hosted results for the current integration separately. |
 | Process state at the end of case14 | The retained parent and observer joined, all owned runtime lifetimes closed, and the later read-only process/listener check found none. This is a dated result; a new operator must inspect current state before any physical work. |
 | Publication boundary | Detailed case14 evidence and the revised procedure are published at documentation commit [`4d2f5a767d58b4fadaab539438f9bfe9211d6615`](https://github.com/midhatn/adaptive-inference/commit/4d2f5a767d58b4fadaab539438f9bfe9211d6615), separate from tested runtime `7306a53`. Read its [case14 evidence](https://github.com/midhatn/adaptive-inference/blob/4d2f5a767d58b4fadaab539438f9bfe9211d6615/docs/evidence.md#case14-primary-recoveryhandover-passed-foreground-supplement-failed) and [current M2 roadmap](https://github.com/midhatn/adaptive-inference/blob/4d2f5a767d58b4fadaab539438f9bfe9211d6615/PLAN.md#milestones-and-dependency-order). The private run is not a public reproducible acceptance package. |
 
-In this main-based snapshot, local PLAN.md and docs/evidence.md describe the
-stable checkout. For active M2 development, start with the pinned development
-roadmap's **Current M2 gate** and evidence linked above. Earlier entries saying
+Local PLAN.md and docs/evidence.md describe the selected checkout. On stable
+main, the pinned development gate above describes later unmerged work. On the
+active M2 branch, start with its **Current M2 gate**. Earlier entries saying
 "next" are historical when a newer source-bound result supersedes them; verify
 the current work item before choosing or repeating an action.
 
