@@ -1,6 +1,6 @@
 # Adaptive Inference roadmap
 
-**Updated: 30 October 2026. Status: living plan, with evidence-based completion gates.**
+**Updated: 1 November 2026. Status: living plan, with evidence-based completion gates.**
 
 ## Destination
 
@@ -46,16 +46,16 @@ interrupted runs will remain identified as such.
 
 ## Milestones and dependency order
 
-**Current M2 gate — 30 October 2026:** the installed IQ3_S composition has now
+**Current M2 gate — 1 November 2026:** the installed IQ3_S composition has now
 completed safe resource-wait expiry, explicit continuation, the original inventory
 task, a separate welcome task and one normal user Stop in the same service. The
-unchanged primary recovery/handover audit passed all 99 checks in case14. The
+unchanged primary recovery/handover audit passed all 99 checks in cases 14 and 15. The
 additional foreground-hold audit failed, so the combined scenario and the full
 M2 milestone remain unqualified. Source head `7306a53` passed all 14 hosted jobs, and its isolated
 installation passed all eight steps. These source, package and component checks
 remain separate from the [physical evidence](docs/evidence.md#current-installed-head-and-physical-recovery-checks).
 
-Case14 preserved the independently checked 23-unit result, original prompt, read,
+Case15 preserved the independently checked 23-unit result, original prompt, read,
 history and output through continuation and the second task. Both tasks published
 their acceptance records; the welcome task has format-only validation. Six
 cumulative model calls produced two physical writes, and all retained workers,
@@ -63,28 +63,28 @@ native owners, windows and connections closed. The parent joined normally withou
 a timeout or emergency termination. These are bounded private qualification
 results, not a new released or publicly reproducible acceptance package.
 
-The remaining failure is specific: all audited hold observations kept admission
-closed, but twelve early observations reported recovery margin/dwell instead of
-the required continuous `foreground_activity`. The first operator action only
-activated the document window; the first navigation key followed about 17 seconds
-later. All 55 recorded actions met the unchanged timing rule, with a maximum
-adjacent interval of 29.471 seconds. Window activation and a recent input event
-are different observations; the trace does not retain raw input-age or CPU
-samples and does not prove an exact OS-level cause.
+Case15 used the prospective complete activation/observation/navigation bracket
+and retained 32 genuine document actions. One adjacent start-to-next-end interval
+was **63.377849 seconds**, exceeding the unchanged strict less-than-60-second
+coverage requirement. The foreground supplement stopped at `real_activity_hold_gap`;
+later onset, continuous-hold and lineage predicates were not reached. A primary
+pass therefore does not qualify this combined scenario. The delay's cause is
+unknown; the records do not justify a runtime change. Case14's distinct early
+recovery-margin/dwell failure remains preserved in the [evidence ledger](docs/evidence.md#case14-primary-recoveryhandover-passed-foreground-supplement-failed).
 
-Next correct the opening procedure prospectively: when activation is necessary,
-bracket the complete useful transition from before activation through an actual
-document observation, one immediate meaningful navigation input and its refresh.
-Retain both substeps and all elapsed time. Each UI call still performs one input
-and refreshes before another input. An already observable document can receive
-the meaningful input directly. Do not discard a standalone activation, move the
-start after admission closed, weaken the predicate or reinterpret case14. Use a
-fresh case with the same installed source, model, quality, deadlines and gates.
-Keep the uninterrupted phase at a safe working-context boundary and publish the
-reproducible validation entry after complete acceptance. Case13's earlier action
-gap and UTF-8 reader failure remain failed; the reviewed 47-test reader correction
-was used by case14 without another runtime change. Broader desktop coexistence,
-media work and physical reboot recovery remain later gates.
+Before another costly model trial, review the operator's critical path using the
+existing observe/inspect/input/refresh workflow. Keep contemporaneous action
+notes short, defer polished analysis, and put necessary commentary after a
+completed action and before the next fresh observation. These are prospective
+operating changes, not a proven explanation or timing guarantee. Use a bounded
+operator-only check with genuine remaining work to assess feasibility before a
+new physical case. Keep the 30-second operating target, strict 60-second gate,
+full first-action bracket, installed source, IQ3_S quality and all original
+budgets. Do not add artificial activity, retry consumed cases or relabel their
+results. The [case15 evidence](docs/evidence.md#case15-primary-recovery-passed-foreground-coverage-failed)
+records the measured limit. Publish the reproducible validation entry only after
+complete acceptance. Broader desktop coexistence, media work and physical reboot
+recovery remain later gates.
 
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |

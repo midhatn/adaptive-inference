@@ -631,6 +631,80 @@ the timeout interrupted archive reading. Its equivalent PR job passed on the sam
 source tree. This remains **13 successes and one cancellation**, without a retry;
 it does not replace the separate 14 successful jobs for the installed source.
 
+#### Case15: primary recovery passed; foreground coverage failed
+
+On 1 November 2026, a fresh case used the same installed `7306a53` runtime,
+V6 owner, IQ3_S assets, quality and original budgets. The unchanged primary audit
+passed **99 checks**: safe admission-wait expiry, an observed saved-work screen,
+one Continue, the original inventory acceptance, a separate welcome task and one
+Stop. Six cumulative provider calls produced two physical writes. Inventory has
+the independent 23-unit oracle; welcome remains format-only. The primary result
+is bounded private evidence, not a complete foreground or public reproduction pass.
+
+The actual parent joined with exit 0 after 1,458.437 seconds, without timeout or
+emergency termination. The observer joined with exit 1 after three connection
+errors following closure; it retained 1,442 valid status responses. The primary
+owner audit verifies cleanup separately. A subsequent read-only process/listener
+observation found no remaining owned runtime processes or qualification listeners.
+
+The foreground supplement failed at **`real_activity_hold_gap`**. All 32 recorded
+document actions finished before the wait was sealed, but action24's start to
+action25's end spanned **63.3778490 seconds**, violating the unchanged strict
+less-than-60-second requirement. Their individual brackets lasted 0.5465117 and
+0.5281718 seconds, with 62.3031655 seconds between them. Across 31 adjacent
+intervals, the median was 22.0501411 seconds; four missed the 30-second operating
+target and one failed the actual 60-second gate. The final pre-seal action began
+18.5124573 seconds before sealing.
+
+The first action now truthfully included activation, an inspected document
+refresh, a meaningful navigation key and its refresh, spanning 7.6786183 seconds.
+This does not prove that the onset correction qualified: the supplement stopped
+at coverage before evaluating the later onset, continuous-hold and lineage
+predicates. The original primary `qualification_case_passed` field does not
+override the failed combined result. Case14's different failure remains unchanged.
+
+The action record does not attribute the missed interval to reasoning, tools,
+service scheduling or the runtime. Microsoft recommends [QPC for same-machine
+elapsed intervals](https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps),
+and Python's [performance-counter contract](https://docs.python.org/3.11/library/time.html#time.perf_counter)
+includes time elapsed during sleep. Neither guarantees an operator response deadline.
+Keep the actual elapsed interval; do not subtract time or infer a product defect.
+
+The next procedure review will reduce work between genuine observed actions:
+retain short factual notes, defer polished analysis, and place required progress
+messages after a completed action and before the next fresh observation. Assess
+that operator path with bounded genuine work before another model trial. This
+is a prospective feasibility step, not a measured fix. All predicates, models,
+quality, time/request budgets and failed records remain intact; no automatic
+input or synthetic activity is introduced.
+
+Primary audit SHA-256:
+`d5fc3f8cb51539cfc1b354f6276a5b79d6bf3b1e29714ed0b1d5bd7a881d8391`.
+Failed supplement SHA-256:
+`57e7593e3b8e33450809338b3fcd8e2cb7e310bf529fd0bb2f9236e21b0572b6`.
+Foreground action record SHA-256:
+`8b984335689292b9f92f04523a3f560854ee134f9d44c65bfe66dcdce03851c2`.
+Independent terminal review passed 355 integrity/identity checks across 111
+exact input pins, confirming the original inventory oracle, source identity and
+retained cleanup while preserving the failed combined result. Review SHA-256:
+`f542262d749bf5b54f26748cc6fc11ed22e8f8540e7ef9c86aee55bfac191829`.
+These hashes identify retained private evidence. They do not make that private
+run publicly reproducible or establish physical reboot, media quality, general
+desktop responsiveness or a performance improvement.
+
+Separately, development revision `33ae7f01c3deba44e6f11d2a546fdff26029b7ea`
+passed all **14 original-attempt hosted jobs** in its
+[PR workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41249549616)
+and [push workflow](https://github.com/midhatn/adaptive-inference/actions/runs/41249544792).
+All four Windows jobs reported 1,290 core tests and 81 provenance tests; Python
+3.11 had no core skips and Python 3.12 had one. Both new timeout-diagnostic
+regressions and the original successful-continuation test passed in all four.
+Their archive checks verified 1,097 source files and 60 runtime modules. The PR
+checkout and published package share tree `5140531a0a9187fe08de3c21a5617e91365e6d8d`.
+This leaves installed `7306a53` unchanged and does not explain or erase the prior
+`4d2f5a7` result of 13 successes and one actual timeout failure. Later reporting
+commits require their own applicable checks; these CI results are exact-revision evidence.
+
 ### CI diagnostics and isolated HTTP fixture validation
 
 At documentation head `938a9a123c2b9ad3991a8863856650e601798cf4`, the
