@@ -1,10 +1,15 @@
 # Contributing
 
+New contributors and AI workers should first read [AGENTS.md](AGENTS.md),
+[HANDOFF.md](HANDOFF.md) and the [collaboration workflow](docs/multi-agent-collaboration.md).
+Use its bounded task/return records to coordinate parallel work and preserve
+continuation state. The same workflow works with one contributor or several.
+
 Develop shared policy here, then contribute minimal changes to upstream engines and agents. Before editing, inspect [PLAN.md](PLAN.md), the relevant compatibility row and the [source preservation contract](docs/source-of-truth.md). Consult [upstream/registry.json](upstream/registry.json) when touching an upstream-specific integration; it is historical context, not a prerequisite for portable development.
 
 1. Reproduce the problem with a focused observable contract.
 2. Implement the smallest useful change without changing model quality or replaying side effects.
-3. Run `python -m unittest discover -s tests -v` and `adaptive-inference demo` in a clean environment.
+3. Run the relevant existing checks for the changed contract and the required milestone/CI gates. Runtime changes normally include `python -m unittest discover -s tests -v` and `adaptive-inference demo` in a clean environment; use the reproduction guide for integration-specific checks. Documentation-only work needs content/link and applicable source-package checks, not a fresh model trial. Retain exact commands, source identity, results and unexecuted checks.
 4. Update documentation, compatibility/evidence status and research attribution when relevant.
 5. Open a PR here. Name any actual backend/client run separately from fixture tests.
 

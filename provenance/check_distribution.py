@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DIRECTORIES = ('src', 'docs', 'examples', 'integrations', 'plugins', 'provenance',
                'tests', 'third_party', 'upstream', '.github')
 TOP_LEVEL = ('README.md', 'PLAN.md', 'CONTRIBUTING.md', 'SECURITY.md', 'CITATION.cff',
-             'REFERENCES.bib', 'requirements.lock', 'CHANGELOG.md', 'AGENTS.md',
+             'REFERENCES.bib', 'requirements.lock', 'CHANGELOG.md', 'AGENTS.md', 'HANDOFF.md',
              'LICENSE', 'NOTICE', 'MANIFEST.in', 'pyproject.toml', '.gitattributes', '.gitignore')
 
 
