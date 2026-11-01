@@ -21,14 +21,34 @@ It verified the existing host wheel, pinned Hermes interfaces and native owner's
 files/dependencies/model metadata. Readback confirmed the selected components,
 hashes, gateway settings and foreground policy matched that installation; only
 the operator's backend revision label changed to the helper's generic label.
-The copied launch script matched exactly and its run folder was empty. This
-check launched no worker, model or GUI. Ordinary launcher/UI qualification is
-still a separate next step; setup success does not extend case17 acceptance.
+The copied launch script matched exactly and its run folder was empty. That
+setup-only check launched no worker, model or GUI.
+
+The first actual launcher attempt then stalled inside `tk_getOpenFile`, with
+no targetable window and no run/task created. A read-only
+[py-spy stack](https://github.com/benfred/py-spy#dump) identified the blocked call;
+it did not establish its underlying cause. The exact owned test process was
+terminated and its parent joined nonzero. That attempt remains failed.
+
+The correction shows a small startup window and invokes the existing picker
+from its **Choose task** button after entering Tk's event loop. A fresh installed
+check displayed that window, selected the existing inventory specification and
+inputs, and displayed the original objective with **Task paused**. One genuine
+**Stop engine** click closed the controller. The actual parent joined with exit
+0; terminal records confirmed zero provider calls, no native backend launch,
+joined retained obligations, and closed GUI, listener and transport resources.
+There was no Resume and the inventory task was not executed. UI automation's
+unavailable nested element and closed-window refreshes were retained; observation
+was refreshed rather than repeating a task control.
+
+Five focused checks passed again for the changed visible-entry flow. This is a
+bounded installed launcher/startup/Stop result on the existing deployment, not
+new inference acceptance, measured desktop coexistence or reboot recovery.
 
 The checked setup source has SHA-256
 `e99f3ae9c235145b150e6136c485a002efa6229d763ba54ac826dc19508134c5`;
 the launch source has SHA-256
-`3fc3ec5351b9a2bd8b32630a40fd8baa17238f71dc48181d177d74375a5b6d39`.
+`e23eebc34323c7fb45cd6a34e741f8ef75b365be76aaf8c47e488345d40bb8fd`.
 Both are preserved in the repository and complete source archive. The
 component tests are [directly reproducible](../tests/test_desktop_setup.py);
 actual installation paths and model assets remain local prerequisites.

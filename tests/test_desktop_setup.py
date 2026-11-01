@@ -111,16 +111,43 @@ class DesktopSetupTests(unittest.TestCase):
         import adaptive_inference.desktop.run_gui as gui
         root = mock.Mock()
         tkinter = mock.Mock(Tk=mock.Mock(return_value=root))
+        buttons = {}
+        def button(parent, *, text, command):
+            self.assertIs(parent, root)
+            buttons[text] = command
+            return mock.Mock()
+        tkinter.Button.side_effect = button
+        selected = {'task_spec_path': 'task.json', 'task_inputs': 'inputs'}
+        with mock.patch.dict(sys.modules, {'tkinter': tkinter}), \
+                mock.patch.object(gui, 'choose_task', return_value=selected) as choose:
+            def click():
+                choose.assert_not_called()
+                buttons['Choose task']()
+            root.mainloop.side_effect = click
+            self.assertEqual(launcher.select_task(), selected)
+            choose.assert_called_once_with(root)
+            root.quit.assert_called_once_with()
+            root.destroy.assert_called_once_with()
+            root.withdraw.assert_not_called()
+        root.reset_mock()
         with mock.patch.dict(sys.modules, {'tkinter': tkinter}), \
                 mock.patch.object(gui, 'choose_task', return_value=None) as choose:
+            def cancel():
+                buttons['Choose task']()
+                root.quit.assert_not_called()
+                buttons['Cancel']()
+            root.mainloop.side_effect = cancel
             self.assertIsNone(launcher.select_task())
             choose.assert_called_once_with(root)
+            root.quit.assert_called_once_with()
             root.destroy.assert_called_once_with()
         root.reset_mock()
         with mock.patch.dict(sys.modules, {'tkinter': tkinter}), \
                 mock.patch.object(gui, 'choose_task', side_effect=ValueError('invalid task')):
+            root.mainloop.side_effect = lambda: buttons['Choose task']()
             with self.assertRaisesRegex(ValueError, 'invalid task'):
                 launcher.select_task()
+            root.quit.assert_called_once_with()
             root.destroy.assert_called_once_with()
 
     @unittest.skipUnless(os.name == 'nt', 'Windows command processor')

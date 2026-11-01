@@ -79,9 +79,12 @@ The `prepare-task` command now supplies objective-plus-file task preparation
 through the existing contract. The [setup helper](examples/desktop/README.md)
 now generates the deployment profile and reusable Start launcher from installed
 components, reusing the task picker and existing controller. It leaves the
-runtime package, model quality and control policy unchanged. Validate ordinary
-launch on the supported installation, then move on to resource coexistence,
-useful tool handoff and restart
+runtime package, model quality and control policy unchanged. A genuine
+launcher/task-picker/paused-start/Stop check now passes on the supported
+installation. The first hidden-start attempt remains failed; a visible Tk
+startup window fixed the observed entry path without changing the controller.
+Finish delivery of this narrow reference alpha, then move on to resource
+coexistence, useful tool handoff and restart
 recovery. Extra investigations belong on this path only when they block it.
 
 The reference can be delivered as a narrow alpha before the full daily-use
@@ -110,7 +113,7 @@ and public reproduction retain their separate evidence boundaries.
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded foreground/continuation/two-task run passed both audits; public reproduction, task preparation and supported setup helper available; ordinary launch validation is next |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded foreground/continuation/two-task run passed both audits; public reproduction, task preparation and setup/launcher startup checks available; narrow reference alpha delivery is next |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |

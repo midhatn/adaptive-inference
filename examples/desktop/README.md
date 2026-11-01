@@ -33,9 +33,11 @@ The default uses the existing cooperative foreground policy and gateway port
 policy; `--gateway-port` selects another allowed local gateway port. The owned
 backend stays on port 18098 with the same quality and execution allowances.
 
-Open **Start Adaptive Inference.cmd**, choose a prepared task specification and
-its input folder, then use **Resume** in the existing control window. Cancelling
-the picker starts no task. Each launch uses a new folder below `runs`; the
+Open **Start Adaptive Inference.cmd**, select **Choose task** in its startup
+window, choose a prepared task specification and its input folder, then use
+**Resume** in the existing control window. Cancelling a native picker returns to
+the startup window; **Cancel** closes it without starting a task. Each launch
+uses a new folder below `runs`; the
 controller owns its creation and cleanup. Stop the current controller before
 starting another against the same backend. **New task**, **Continue saved task**
 and **Stop engine** retain their existing behavior. See the
@@ -57,6 +59,13 @@ Official sources checked on 1 November 2026:
 
 - [Python native file dialogs](https://docs.python.org/3.11/library/dialog.html#module-tkinter.filedialog)
   provide the existing task selection and cancellation behavior.
+- [Python's Tk event-loop example](https://docs.python.org/3.11/library/tkinter.html#a-hello-world-program)
+  supplies the normal visible-window/button-callback pattern. The first installed
+  launcher check reached the native file-dialog call without a visible picker or
+  a task starting. The revised entry follows the existing controller's **New task**
+  interaction: a visible parent running its event loop before the user opens the
+  picker. This addresses startup usability; a new installed check must establish
+  its actual behavior. The precise cause of the first invisible dialog is unknown.
 - [Python command-line options](https://docs.python.org/3.11/using/cmdline.html#cmdoption-I)
   document isolated `-I` execution; `-B` avoids bytecode writes. The launcher
   uses an explicit interpreter and ordinary installed imports.

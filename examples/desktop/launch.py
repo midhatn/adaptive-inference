@@ -13,9 +13,37 @@ def select_task():
     from adaptive_inference.desktop.run_gui import choose_task
 
     root = tkinter.Tk()
+    selected = None
+    failures = []
+
+    def choose():
+        nonlocal selected
+        try:
+            selected = choose_task(root)
+        except Exception as error:
+            failures.append(error)
+            root.quit()
+        else:
+            if selected is not None:
+                root.quit()
+
     try:
-        root.withdraw()
-        return choose_task(root)
+        root.title('Adaptive Inference — choose a task')
+        root.resizable(False, False)
+        tkinter.Label(root, text='Choose a prepared task to start.\n'
+                      'The engine will remain paused until you select Resume.',
+                      padx=18, pady=14).pack()
+        tkinter.Button(root, text='Choose task', command=choose).pack(
+            fill='x', padx=18, pady=5)
+        tkinter.Button(root, text='Cancel', command=root.quit).pack(
+            fill='x', padx=18, pady=(5, 14))
+        root.protocol('WM_DELETE_WINDOW', root.quit)
+        # Reuse the working New task interaction: a native picker opened by a
+        # button callback on a visible parent with its Tk event loop running.
+        root.mainloop()
+        if failures:
+            raise failures[0]
+        return selected
     finally:
         root.destroy()
 

@@ -46,8 +46,9 @@ and [fresh qualification workflow](examples/validation/task_handover/README.md)
 are preserved in this repository. The fresh workflow still requires actual
 installation records and external model assets. The
 [supported setup helper](examples/desktop/README.md) now creates the deployment
-profile and Start launcher from installed components; ordinary launch validation
-is the next step toward a usable installed alpha. The
+profile and Start launcher from installed components. Its separate
+[startup/Stop check](docs/evidence.md#supported-desktop-setup-helper) now passes
+on the retained installation without loading the model. The
 [task contracts](docs/task-spec.md), [roadmap](PLAN.md) and
 [handoff](HANDOFF.md) explain the supported scope and remaining work.
 

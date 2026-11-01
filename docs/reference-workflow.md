@@ -35,8 +35,9 @@ task for the next selection; its output receives format-only checking.
 
 ## Start and work
 
-After setup, open **Start Adaptive Inference.cmd** and choose your task
-specification and input folder. Cancelling the picker starts no task. Each
+After setup, open **Start Adaptive Inference.cmd**, select **Choose task**, and
+choose your task specification and input folder. Cancelling the picker returns
+to the startup window; **Cancel** closes it without starting a task. Each
 launch selects a fresh state directory and calls the existing desktop host.
 The window still starts paused and requires **Resume**.
 
