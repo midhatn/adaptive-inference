@@ -78,6 +78,15 @@ exit/cleanup assertions and product settings stay intact. Verify the new head's
 complete hosted result before refreshing or publishing release assets. The
 draft is still unpublished; its old assets must not be labeled as the new source.
 
+The next alpha head `70dc1cd` exposed a separate macOS listener-test assumption:
+the deliberately refused unread TCP connection reset instead of returning empty
+EOF. The [bounded correction](docs/evidence.md#refused-tcp-connection-fixture-on-macos)
+accepts that specific reset only for the refusal, while retaining all ownership,
+subsequent-request, timeout and cleanup assertions. Collect the original workflow
+outcomes and validate this successor before the next release attempt. Its 21
+existing listener tests passed locally with completed fixture cleanup. The private
+release preparation pinned to `70dc1cd` cannot qualify that failed candidate.
+
 PR #26 merged at `46ecac6` after all 14 fresh jobs passed for its reviewed head
 `aaabfd8`. Its five documentation/data/manifest files are integrated into this
 candidate without changing runtime or tests. The [NPU qualification guide](docs/npu-qualification.md)

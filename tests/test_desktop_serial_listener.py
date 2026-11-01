@@ -255,8 +255,14 @@ class ListenerTests(unittest.IsolatedAsyncioTestCase):
         held_writer = fixtures.Writer()
         held = self.transport.admit(held_reader, held_writer)
         listener = self.listener()
-        data = await self.exchange(listener, request())
-        self.assertEqual(data, b'')
+        try:
+            data = await self.exchange(listener, request())
+        except ConnectionResetError:
+            # Closing an unread refused request may reset the connection:
+            # https://www.rfc-editor.org/rfc/rfc9293.html#section-3.6.1
+            pass
+        else:
+            self.assertEqual(data, b'')
         await self.eventually(lambda: listener._record is None)
         self.assertEqual(listener.lifecycle()['refused_connections'], 1)
         self.assertEqual(len(self.transport._connections), 1)

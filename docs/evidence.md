@@ -91,6 +91,35 @@ remained. The host fixture's explanatory comment has an identical AST and uses
 the existing exact byte projection; historical archives and runtime/model
 settings are unchanged. Corrected-head hosted integration remains required.
 
+### Refused TCP connection fixture on macOS
+
+The original alpha `70dc1cdf1225b501e27199887ec47e1d66d28f90`
+[macOS 3.12 job](https://github.com/midhatn/adaptive-inference/actions/runs/41272546653/job/124748107031)
+failed the deliberately refused-connection test with `ConnectionResetError`
+from the client's stream read. It had run 766 tests in 60.354 seconds, with
+37 platform skips. The test had occupied the only transport slot, sent a request
+on another connection and expected empty EOF. Its later ownership and next-request
+assertions were not reached; the original outcome remains failed.
+
+The listener closes and reaps refused streams without reading their payload.
+[RFC 9293 section 3.6.1](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.6.1)
+allows reset behavior when closing with unread received data, and
+[CPython 3.12.10 streams](https://github.com/python/cpython/blob/v3.12.10/Lib/asyncio/streams.py)
+propagate connection-loss errors to the reader. This supports a test portability
+correction; the log does not establish the exact packet timing. Only the first,
+intentionally refused exchange accepts `ConnectionResetError` as an alternative
+to empty EOF. The shared exchange helper and second successful request remain
+strict. Record reaping, refusal count, held-connection count, retained joins,
+closed sockets, no remaining tasks and all timeouts stay required. No runtime,
+source-projection or historical-archive changes are needed.
+
+All 21 existing listener tests passed once in 3.224 seconds on full Python
+3.11.9 with locked dependencies and explicit checkout imports. All 21 fixture
+teardowns completed; all 20 tracked socket observations were closed, with no
+pending tasks and only the main thread remaining. The actual test parent joined
+with exit 0. This is local socket-fixture evidence; the corrected candidate's
+own macOS CI remains required before release.
+
 ## NPU research integration
 
 [PR #26](https://github.com/midhatn/adaptive-inference/pull/26) merged at

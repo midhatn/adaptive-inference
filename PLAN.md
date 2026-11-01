@@ -143,6 +143,15 @@ one failure. Validate the corrected integration and refresh source assets only
 after its own checks pass.
 No product/model deadline or physical acceptance gate changes.
 
+A later original macOS job exposed an EOF-only assumption in the deliberately
+refused TCP-connection test. Reuse the [TCP standard's allowed reset behavior](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.6.1)
+in that one refusal assertion, retaining the subsequent ownership, next-request
+and cleanup checks. This is a test portability correction, not a controller or
+timeout change. Preserve the original failure, run the existing listener suite,
+collect the original workflows and require corrected-head CI before release.
+The [evidence ledger](docs/evidence.md#refused-tcp-connection-fixture-on-macos)
+records its scope. Keep final archive refresh behind that gate.
+
 The separate NPU research contribution, PR #26, passed all 14 fresh hosted jobs
 and merged into main at `46ecac6`. Its qualification guide and measurement record
 are included in the release candidate; no runtime or tests changed through that
