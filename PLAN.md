@@ -138,9 +138,16 @@ gives only that child's hang detector 60 seconds, covering already permitted
 30-second entry, five-second hold and 20-second cleanup phases. Original-child
 timing, intentional timeout, cleanup deadline, exact exits and no-kill assertions
 remain unchanged. Forty-eight affected checks passed locally with all retained
-children joined. Finish collecting the original hosted outcomes, validate the
-corrected integration and refresh source assets only after its own checks pass.
+children joined. The original alpha PR run is now closed with six passes and
+one failure. Validate the corrected integration and refresh source assets only
+after its own checks pass.
 No product/model deadline or physical acceptance gate changes.
+
+The separate NPU research contribution, PR #26, passed all 14 fresh hosted jobs
+and merged into main at `46ecac6`. Its qualification guide and measurement record
+are included in the release candidate; no runtime or tests changed through that
+integration. This supports optional M9 decisions without moving accelerator
+optimization ahead of the foreground, tool-handoff and restart milestones.
 
 The separate `0.4.0a1` release candidate now names the supported scope, reconciles
 the changelog and preserves the old physical source records through the existing

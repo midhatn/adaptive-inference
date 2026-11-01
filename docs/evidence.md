@@ -91,6 +91,26 @@ remained. The host fixture's explanatory comment has an identical AST and uses
 the existing exact byte projection; historical archives and runtime/model
 settings are unchanged. Corrected-head hosted integration remains required.
 
+## NPU research integration
+
+[PR #26](https://github.com/midhatn/adaptive-inference/pull/26) merged at
+`46ecac6012c129601091b647d9f66abe05c3bd84` after all 14 original jobs passed for
+reviewed head `aaabfd83f4ab7e52e162a3f1f8caa1ffd4d591e3`
+([push](https://github.com/midhatn/adaptive-inference/actions/runs/41271397879),
+[PR](https://github.com/midhatn/adaptive-inference/actions/runs/41271400923)).
+Its final delta contains five documentation/data/manifest files; the newer main
+runtime, tests and source mappings were preserved. Ten existing distribution
+checks passed locally, followed by an isolated source/wheel build and verification
+of 1,191 source files and 61 runtime modules at version 0.3.0. Those package
+identities belong to the PR #26 revision, separately from the alpha below.
+
+The [qualification guide](npu-qualification.md) and [measurement record](measurements/phoenix-lfm-drafter-20261029.json)
+retain the limited teacher-forced Phoenix NPU diagnostic and its unqualified
+quality, acceptance and complete-task claims. This contribution enables no NPU
+backend and proves no IQ3_S or agent speedup. Integrating it into the alpha
+changed no runtime or test bytes; that combined release still requires its own
+hosted checks and final source archive.
+
 ## Windows reference alpha packaging
 
 The `0.4.0a1` candidate changes the package version and delivery documentation.
@@ -101,11 +121,15 @@ rejecting unknown changes. Forty-three affected source-lineage tests passed
 before integration of the separate test-guard correction; final combined checks
 and hosted CI remain distinct gates.
 
-After combining both declared changes, all 43 affected lineage tests passed
-again in 53.723 seconds on Python 3.11.9. The actual source, helper and test
+After combining the release-version and original whole-fixture guard changes,
+all 43 affected lineage tests passed again in 53.723 seconds on Python 3.11.9.
+This predates the selected-child watchdog correction above and is historical
+evidence for that earlier source view. The actual source, helper and test
 origins were recorded, and the captured runtime/test/source-map hashes remained
-unchanged during that run. This validates the combined source view; hosted
-checks and complete release-archive verification remain separate.
+unchanged during that run. The later host-comment and source-view changes use
+the separate 48-check result above; the old 43-check source hashes are not
+claimed to match the new candidate. Hosted checks and complete release-archive
+verification remain separate.
 
 A new isolated Python 3.11.9 environment, without inherited site packages,
 installed the locked dependencies and regular candidate wheel. The existing

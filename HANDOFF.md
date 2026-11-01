@@ -42,36 +42,25 @@ citations and unsuccessful evidence. The full milestone sequence is in
 
 | Item | Dated state and verification boundary |
 | --- | --- |
-| Stable main starting point | Commit `fb438a3fa0d4a63c395944897aabbd7d711a6936`, including the merged collaboration guide. Verify current `main`; this is a dated anchor, not a claim that it remains HEAD. |
-| Active implementation | Branch `feat/same-host-task-admission`, [PR #25](https://github.com/midhatn/adaptive-inference/pull/25), has the test-only guard correction. Separate branch `release/reference-alpha-0.4.0a1` combines that source with version, documentation and packaging work. Verify each current head and hosted checks before merge or release; a prepared alpha candidate is not a published release. |
+| Stable main starting point | Commit `46ecac6012c129601091b647d9f66abe05c3bd84`, including merged PRs #25 and #26. Verify current `main`; this is a dated anchor, not a claim that it remains HEAD. |
+| Active delivery | Branch `release/reference-alpha-0.4.0a1`, [PR #28](https://github.com/midhatn/adaptive-inference/pull/28), combines merged main with version, documentation, packaging and the selected CPU-fixture watchdog correction. PR #25 is merged. Verify this candidate's current head and hosted checks before merge or release; it remains an unpublished alpha. |
 | Installed source used for the latest experiments | `7306a53085ddc31d53d2ba50e91975c80cfc0014`; unchanged IQ3_S and quality. Source, package, controlled-clock SDK and physical evidence are separate levels. |
 | Current milestone | M2: practical persistent controller, safe resource waiting, explicit continuation and isolated tasks in one retained host. M1's accepted reference remains independently preserved. |
 | Latest physical result | Case17 passed both original terminal audits on one installed IQ3_S run: 99 primary recovery/handover checks plus the foreground/lineage supplement. The correct 23-unit inventory result survived safe expiry and one Continue; a separate welcome task completed in the retained controller before one normal Stop. Six calls produced two physical writes. Welcome has format-only acceptance. Full M2 is still broader than this run. |
 | Preserved limits and failures | Original quality, 900-second execution budgets, 2,700-second outer bound and task accounting remain unchanged. Cases14/15/16 keep their original failed outcomes. Case17 retains the rejected file-picker input and 30-second operating-target misses; neither repeated a task control nor violated the strict foreground gate. |
 | Foreground evidence | Case17 retained 25 real document actions, 24 wholly preseal, maximum adjacent interval 54.680872 seconds and preseal tail 37.453106 seconds. The original supplement passed onset, continuous hold and saved-read lineage; the postseal action is excluded from coverage. This is not a desktop-performance or GPU-preemption measurement. |
 | Next delivery | Task preparation and the [supported setup helper](examples/desktop/README.md) create task files, the deployment profile and Start launcher without manual JSON/hash editing. Setup/readback and five component checks passed. A fresh genuine launcher/task-picker/paused-controller/one-Stop check also passed: parent exit 0, zero provider calls, native backend never launched and owned resources closed. Its original hidden-start failure is retained. Finish narrow reference alpha delivery, then continue resource coexistence, useful tools and restart. |
-| CI follow-up | Setup predecessor `a9eff31` passed all 14 original jobs. Launcher head `5ccf739` finished with 13 passes and one ordinary continuation-fixture timeout. Its [test guard correction](provenance/task-handover/continuation-timeout-diagnostics/README.md#whole-fixture-orchestration-guard-1-november-2026) passed locally and passed in the next failing Windows job at `fbc78b9`; that job instead failed a later snapshot-fixture four-second thread join. A [separate completion-guard correction](provenance/control-mailbox/README.md#snapshot-fixture-completion-guard-1-november-2026) passed all five existing snapshot tests with both threads joined. Runtime deadlines, transaction assertions and historical evidence remain unchanged. Collect all original CI outcomes and verify the corrected head before merge; earlier failures remain failed. |
+| CI follow-up | PR #25's corrected source passed all 14 original jobs and its merged main passed seven. Alpha `d5837f9` passed seven push jobs, but its PR run finished with six passes and one selected-child watchdog failure. The [bounded correction](provenance/task-handover/continuation-timeout-diagnostics/README.md#selected-cpu-child-emergency-guard-1-november-2026) passed 48 affected local checks and independent review. Require the combined candidate's own hosted checks; earlier failed runs remain failed. |
 | Process state at the end of case17 | The actual parent joined with exit 0 after one user Stop. The observer joined with exit 1 after three post-shutdown connection errors, with the terminal result present. The terminal audits verify owned worker/GUI/native-resource/transport cleanup; connection errors alone do not. This dated result is not a current hardware reservation. |
 | Publication boundary | The [case17 replay](provenance/task-handover/acceptance/README.md) includes a public result and fixed 33-input selection; actual and relocated replay produced identical output. The [fresh-run workflow](examples/validation/task_handover/README.md) preserves the harness, predicates and explicit local templates. New physical trials still need actual installation/deployment records and model assets; a public clone does not include private replay inputs or an automatic installer. No complete M2, reboot, gaming/media or speedup claim is made. |
 
-All original release-follow-up runs are now terminal: `fbc78b9` had 13 passes
-and the retained snapshot failure; alpha `1efe6cd` had six passes and one Windows
-job canceled at its 15-minute cumulative limit after 1,306 core tests and the
-subsequent validation through demo passed. The current follow-up combines the
-snapshot completion correction with a Windows-only 30-minute CI job allowance.
-Other job limits, test assertions and product/model budgets remain unchanged.
-See the [original outcome and rationale](docs/evidence.md#reference-delivery-checks).
-Publish this bounded follow-up, require its own complete hosted checks, refresh
-the alpha draft's exact source/assets, then continue M3. No alpha is released yet.
-
-The alpha draft was refreshed to `ebe0f1a` with all five uploaded asset digests
-verified, still unpublished. Its next Windows job failed a separate pending-reply
-fixture's short snapshot-entry wait. The current narrow correction reuses an
-existing authority-entry event before that wait; 29 affected checks passed with
-pinned dependencies and completed fixture cleanup. See the [failure and scope](docs/evidence.md#reference-delivery-checks).
-Independent review accepted this correction. Collect all current original CI
-outcomes before the next batch push. Require corrected-head checks, then refresh the final source assets
-and integrate/release. Do not repeat physical model tests for these fixture edits.
+The [delivery evidence ledger](docs/evidence.md#reference-delivery-checks)
+preserves the earlier continuation, snapshot, authority-entry and whole-job
+timeout outcomes with their separate corrections. They are historical results,
+not pending experiments to repeat. The remote alpha draft still contains the
+older `ebe0f1a` assets. After the corrected candidate's own checks pass, refresh
+its exact source/assets together and verify them before publication. Do not
+repeat physical model tests for these fixture and documentation changes.
 
 Local PLAN.md and docs/evidence.md describe the selected checkout. For unmerged
 M2 work, verify the active PR's development revision before reading that revision's
@@ -88,6 +77,13 @@ changes only that test child's emergency allowance and its source-view comment;
 exit/cleanup assertions and product settings stay intact. Verify the new head's
 complete hosted result before refreshing or publishing release assets. The
 draft is still unpublished; its old assets must not be labeled as the new source.
+
+PR #26 merged at `46ecac6` after all 14 fresh jobs passed for its reviewed head
+`aaabfd8`. Its five documentation/data/manifest files are integrated into this
+candidate without changing runtime or tests. The [NPU qualification guide](docs/npu-qualification.md)
+supports optional M9 research; it enables no backend and establishes no agent
+speedup. Finish the reference alpha, then continue real foreground coexistence,
+useful tool handoff and restart recovery.
 
 Cases12 and13 also remain failed, for their recorded checker/observation issues.
 The corrected UTF-8 receipt checker passed its 47 focused tests and was used by
