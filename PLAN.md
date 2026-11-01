@@ -97,6 +97,27 @@ does not change product deadlines, child watchdogs, IQ3_S or task allowances.
 Complete its exact-revision checks before merging the source and packaging the
 reference alpha. Do not repeat the accepted physical scenario for this change.
 
+The next original Windows job passed those continuation checks, then exposed a
+different snapshot-fixture completion guard: a four-second thread join was
+shorter than an individual allowed SQLite wait. Preserve that failure and its
+unknown delayed thread/operation. Give the retained joins the same standard
+30-second test completion allowance, keep the transaction/50-millisecond
+non-commit assertions and product settings intact, and validate the existing
+snapshot module. Collect the current CI outcomes before publishing another
+correction, so independent failures can be addressed in one bounded follow-up.
+
+The original alpha workflow then finished with six successes and one Windows
+job canceled at its cumulative 15-minute limit. All 1,306 core tests passed in
+813.388 seconds; subsequent checks passed through the demo, but packaging never
+ran. The [retained job and timing evidence](docs/evidence.md#reference-delivery-checks)
+justify a prospective 30-minute Windows CI job allowance using GitHub's existing
+job timeout control. Other platforms and the offline job keep 15 minutes. This
+supersedes the earlier instruction to retain that cumulative Windows limit;
+all test assertions, individual guards and product/model budgets stay intact.
+Require the complete corrected-head workflow before release. Detailed performance
+work can follow if slowness still blocks delivery; do not start a separate
+profiling or CI redesign project for this bounded correction.
+
 The separate `0.4.0a1` release candidate now names the supported scope, reconciles
 the changelog and preserves the old physical source records through the existing
 exact source view. Its fresh isolated regular-wheel check verified all 61 modules
