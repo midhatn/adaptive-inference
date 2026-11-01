@@ -163,6 +163,13 @@ def prepare(args):
     from adaptive_inference.demand import DemandIdentity
     from adaptive_inference.desktop.hermes.control_bridge import prepare_task
     metadata={'sdk_revision':SDK_REV,'model':MODEL,'quality':QUALITY,'deadline_clock':CLOCK_ID}
+    context_path = getattr(args, 'reopen_context', None)
+    if context_path is not None:
+        from adaptive_inference.desktop.saved_tasks import CONTEXT, bind_context
+        context = bind_context(json.loads(context_path.read_text(encoding='utf-8')), run)
+        if context['profile_sha256'] != args.profile_sha256 or context['package_sha256'] != rec.digest(installed):
+            raise ValueError('Fresh reopen context differs from the verified deployment')
+        plan[CONTEXT] = metadata[CONTEXT] = context
     if task_spec is not None: metadata.update(task_spec.metadata())
     if validator_identity is not None:metadata['pre_effect_validator']=validator_identity
     prepare_task(TaskStore(run/'task.sqlite3'),DemandIdentity(**plan['demand_identity']),
@@ -249,6 +256,10 @@ def _worker(args, *, selected=None):
     if selected is not None:
         plan = selected.exact_plan()
     diagnostics = run if selected is None else selected.diagnostics
+    if selected is None and getattr(args, 'diagnostics', None) is not None:
+        diagnostics = args.diagnostics.resolve(strict=True)
+        if not diagnostics.is_relative_to(run / 'episodes') or not diagnostics.is_dir():
+            raise ValueError('Fresh worker diagnostics must remain inside the saved task episodes')
     verify_execution_clock()
     if (plan.get('deadline_clock') != CLOCK_ID
             or startup_checkpoint.metadata.get('deadline_clock') != CLOCK_ID
@@ -407,6 +418,9 @@ def _worker(args, *, selected=None):
         pre_effect_validator=None
         expected_metadata={'sdk_revision':SDK_REV,'model':MODEL,'quality':QUALITY,NAMESPACE:identity.metadata(),
                            'deadline_clock':CLOCK_ID}
+        from adaptive_inference.desktop.saved_tasks import CONTEXT
+        if CONTEXT in plan:
+            expected_metadata[CONTEXT] = plan[CONTEXT]
         if task_spec is not None:
             expected_metadata.update(task_spec.metadata())
             if validator_identity != task_spec.validator_identity():
@@ -655,6 +669,8 @@ def main():
     p.add_argument('--task-spec', type=Path)
     p.add_argument('--task-spec-sha256')
     p.add_argument('--task-inputs', type=Path)
+    p.add_argument('--reopen-context', type=Path)
+    p.add_argument('--diagnostics', type=Path)
     p.add_argument('--task-id')
     p.add_argument('--session-id')
     p.add_argument('--demand-identity', type=Path)

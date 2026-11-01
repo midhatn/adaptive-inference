@@ -103,13 +103,22 @@ async def join_retained(tasks):
 class DesktopComposition:
     """Shared lifecycle; qualification scenarios may extend its existing seams."""
     def __init__(self, profile_path, run, *, qualification_hold_after_report=False,
-                 task_spec=None, task_inputs=None):
+                 task_spec=None, task_inputs=None, saved_task=None, enable_reopen=False):
         self.profile_path = Path(profile_path).resolve(strict=True)
         self.profile_sha256 = sha(self.profile_path)
         self.profile = WindowsProfile.load(self.profile_path)
         if type(qualification_hold_after_report) is not bool:
             raise TypeError('Qualification hold must be an explicit boolean')
         self.qualification_hold_after_report = qualification_hold_after_report
+        if type(enable_reopen) is not bool:
+            raise TypeError('Saved-task support must be explicit')
+        if saved_task is not None and (task_spec is not None or task_inputs is not None or qualification_hold_after_report):
+            raise ValueError('Open one saved task without new task or qualification inputs')
+        self.saved_task = None if saved_task is None else Path(saved_task).resolve(strict=True)
+        self.enable_reopen = enable_reopen or self.saved_task is not None
+        self.reopen_context = self.saved = self.saved_diagnostics = None
+        self.reopen_locks = []
+        self.reopen_pause_id = 'reopen-pause-' + uuid.uuid4().hex
         if (task_spec is None) != (task_inputs is None):
             raise ValueError('Task specification and input directory must be supplied together')
         self.task_spec_path = self.task_inputs = self.task_spec_sha256 = None
@@ -199,9 +208,22 @@ class DesktopComposition:
                 or cp.state.get('deadline_clock')!=CLOCK_ID):
             raise RuntimeError('Original identity, objective or deadline changed')
 
+    def worker_diagnostics(self):
+        return self.saved_diagnostics if self.work == self.saved_task else self.work
+
+    def initial_pause_id(self):
+        return self.reopen_pause_id if self.work == self.saved_task else INITIAL_PAUSE
+
+    def assert_paused(self, cp):
+        if self.work == self.saved_task:
+            from adaptive_inference.desktop.saved_tasks import assert_paused_saved
+            assert_paused_saved(cp, self.original, self.deadline, self.host)
+        else:
+            no_work(cp,self.original,self.deadline,self.host,self.work)
+
     async def ready(self,child,path):
-        await self.until(lambda:(self.work/f'bootstrap-{child.pid}.json').exists(),child)
-        boot=read(self.work/f'bootstrap-{child.pid}.json');cp=self.checkpoint()
+        await self.until(lambda:(self.worker_diagnostics()/f'bootstrap-{child.pid}.json').exists(),child)
+        boot=read(self.worker_diagnostics()/f'bootstrap-{child.pid}.json');cp=self.checkpoint()
         self.assert_original(cp)
         if (boot['pid']!=child.pid or boot['task_id']!=self.identity.task_id
                 or boot['registration_id']!=self.identity.registration_id
@@ -222,7 +244,7 @@ class DesktopComposition:
             self.stop_binding=WorkerStopBinding(self.worker,self.work,self.box,requester_capability=self.capability,
                 capability=self.worker_cap,stop_request_id=self.stop_id,original=self.original,
                 deadline_monotonic=self.deadline,model=MODEL,quality=QUALITY,fence=self.fence,
-                deadline_clock=CLOCK_ID)
+                deadline_clock=CLOCK_ID,diagnostics=self.worker_diagnostics())
 
     async def join_child(self,child):
         if child not in self.handles:raise RuntimeError('Cannot adopt a child for cleanup')
@@ -241,11 +263,11 @@ class DesktopComposition:
             self.host.closing=True;self.host.gateway.scheduler.closing=True
 
     def paused_ack(self):
-        snapshot=self.box.snapshot();ack=snapshot.status(INITIAL_PAUSE);cp=snapshot.target
+        snapshot=self.box.snapshot();ack=snapshot.status(self.initial_pause_id());cp=snapshot.target
         if ack['outcome']!='applied' or ack['owner_acknowledged'] is not True:return None
         if type(cp.owner_epoch) is not str or len(cp.owner_epoch)!=32:return None
         if self.worker.poll() is not None:raise RuntimeError('Worker exited before paused ownership proof')
-        no_work(cp,self.original,self.deadline,self.host,self.work)
+        self.assert_paused(cp)
         if snapshot.demand is None or snapshot.demand['state']!='paused':raise RuntimeError('No durable paused demand')
         return {'ack':ack,'checkpoint':asdict(cp),'worker_pid':self.worker.pid}
 
@@ -343,13 +365,32 @@ class DesktopComposition:
         verify_execution_clock()
         profile = self.profile
         verify_interpreter(profile.host_python, profile.host_python_sha256, current=True)
-        verify_interpreter(profile.worker_python, profile.worker_python_sha256)
-        verify_sdk(profile.hermes_source)
         self.installed = package_identity()
         if sha(self.profile_path) != self.profile_sha256:
             raise RuntimeError('Deployment profile changed')
         rec.save(self.root/'installed-package.private.json', self.installed)
         self.result['package_version'] = self.installed['version']
+        if self.enable_reopen:
+            from adaptive_inference.desktop import saved_tasks
+            if self.saved_task is not None:
+                self.saved = saved_tasks.read_saved(self.saved_task)
+                if self.saved['completed']:
+                    self.result.update(saved_result=saved_tasks.completed_result(self.saved),
+                                       task_completed=True, worker_outcome='saved_result', clean_stop=True)
+                    return
+            boot = saved_tasks.observe_boot()
+            self.reopen_context = saved_tasks.new_context(self.profile_sha256, self.installed, boot)
+            rec.save(self.root/'reopen-context.private.json', self.reopen_context)
+            if self.saved_task is not None:
+                self.saved = saved_tasks.inspect_saved(self.saved_task,
+                    profile_sha256=self.profile_sha256, installed=self.installed, boot=boot, now=execution_now())
+                self.reopen_locks.append(saved_tasks.claim_host(self.saved_task))
+                # Selection and owner acquisition are separate; re-read after
+                # locking before any Pause, host start or worker launch.
+                self.saved = saved_tasks.inspect_saved(self.saved_task,
+                    profile_sha256=self.profile_sha256, installed=self.installed, boot=boot, now=execution_now())
+        verify_interpreter(profile.worker_python, profile.worker_python_sha256)
+        verify_sdk(profile.hermes_source)
         from adaptive_inference.desktop import owned_job
         from adaptive_inference.desktop.activity import WindowsActivityReader
         from adaptive_inference.desktop.cold_start import ColdStartAdapter
@@ -360,7 +401,7 @@ class DesktopComposition:
 
         self.job = owned_job
         self.job.contain_current_process()
-        self.work = self.root/'hermes-task'
+        self.work = self.root/'hermes-task' if self.saved is None else self.saved['work']
         prepare_command = [str(profile.worker_python), '-I', '-B', '-m',
             'adaptive_inference.desktop.hermes.run_recovery', 'prepare', '--run', str(self.work),
             '--profile', str(self.profile_path), '--profile-sha256', self.profile_sha256,
@@ -372,10 +413,21 @@ class DesktopComposition:
             prepare_command.extend(['--task-spec', str(self.task_spec_path),
                 '--task-spec-sha256', self.task_spec_sha256, '--task-inputs', str(self.task_inputs),
                 '--task-id', 'task-'+uuid.uuid4().hex, '--session-id', 'adaptive-'+uuid.uuid4().hex])
-        child = self.launch(prepare_command, 'prepare')
-        await self.until(lambda:child.poll() is not None, timeout=60)
-        if await self.join_child(child) != 0:
-            raise RuntimeError('Fresh paused-task preparation failed; see prepare.log')
+        if self.reopen_context is not None:
+            prepare_command.extend(['--reopen-context', str(self.root/'reopen-context.private.json')])
+        if self.saved is None:
+            child = self.launch(prepare_command, 'prepare')
+            await self.until(lambda:child.poll() is not None, timeout=60)
+            if await self.join_child(child) != 0:
+                raise RuntimeError('Fresh paused-task preparation failed; see prepare.log')
+            if self.enable_reopen:
+                self.reopen_locks.append(saved_tasks.claim_host(self.work))
+        else:
+            self.saved_diagnostics = self.work/'episodes'/self.root.name
+            self.saved_diagnostics.mkdir(parents=True, exist_ok=False)
+            if self.saved['spec'] is not None:
+                self.task_spec_path = self.work/'plan.json'
+                self.task_spec_sha256 = self.saved['spec'].sha256
         self.plan = read(self.work/'plan.json')
         self.store = TaskStore(self.work/'task.sqlite3')
         self.identity = DemandIdentity(**self.plan['demand_identity'])
@@ -387,7 +439,7 @@ class DesktopComposition:
                 or self.original.state.get('deadline_clock')!=CLOCK_ID):
             raise RuntimeError('Fresh installed task lacks the explicit execution clock')
         rec.save(self.root/'original-checkpoint.private.json', asdict(self.original))
-        self.submit(INITIAL_PAUSE, 'pause')
+        self.submit(self.initial_pause_id(), 'pause')
         self.host_epoch = 'desktop-'+uuid.uuid4().hex
         self.intent_cap = object()
         self.gate = UIIntentGate(host_epoch=self.host_epoch, capability=self.intent_cap,
@@ -408,14 +460,16 @@ class DesktopComposition:
         complete_ledger(self.host.controller.events, self.initial_events)
         if adapter.launch_intent is not None or adapter.started_owner or self.registry.observe(self.identity.registration_id).eligible:
             raise RuntimeError('Cold host unexpectedly loaded before paused owner bootstrap')
-        self.deadline = execution_now()+900
+        self.deadline = execution_now()+900 if self.saved is None else self.saved['deadline']
         self.result['deadline_monotonic'] = self.deadline
         self.result['deadline_clock'] = CLOCK_ID
-        self.first_ready = self.work/'controller-ready-1.json'
+        self.first_ready = self.worker_diagnostics()/'controller-ready-1.json'
         command = [self.plan['base_python'], '-I', '-B', '-m',
             'adaptive_inference.desktop.hermes.run_recovery', 'worker', '--run', str(self.work),
             '--controller-ready', str(self.first_ready), '--gateway-instance', self.host.gateway.instance,
             '--deadline-monotonic', str(self.deadline), '--stop-request-id', self.stop_id]
+        if self.saved is not None:
+            command.extend(['--diagnostics', str(self.saved_diagnostics)])
         if self.qualification_hold_after_report:
             command.append('--qualification-hold-after-report')
         self.worker = self.launch(command, 'worker')
@@ -458,7 +512,7 @@ class DesktopComposition:
                 and self.host.adapter.launch_intent is None and self.paused_ack() is not None,
             bind_session=self.bind_gui,revoke_session=self.facade.window_closed,timeout_s=10)
         await self.until(lambda:self.transport._ready,self.worker,timeout=30)
-        no_work(self.checkpoint(),self.original,self.deadline,self.host,self.work)
+        self.assert_paused(self.checkpoint())
         self.result['retained_gui_binding'] = asdict(self.gui.binding)
         rec.save(self.root/'ready.private.json',{'ready':True,'gui_pid':self.gui.process.pid,
             'worker_pid':self.worker.pid,'task_id':self.identity.task_id,'paused_owner_acknowledged':True,
@@ -709,7 +763,7 @@ class DesktopComposition:
                 self.result['execution_expired'] = outcome in ('paused_budget_expired', 'admission_wait_budget_expired')
                 await self.runtime.refresh()
             if (selected is None and code is None and not self.first_ready.exists()
-                    and (self.work/f'bootstrap-{self.worker.pid}.json').exists()
+                    and (self.worker_diagnostics()/f'bootstrap-{self.worker.pid}.json').exists()
                     and self.registry.observe(self.identity.registration_id).eligible
                     and self.host.controller()):
                 await self.ready(self.worker,self.first_ready)
@@ -755,6 +809,9 @@ class DesktopComposition:
         self.root.mkdir(exist_ok=False)
         try:
             await self.prepare()
+            if 'saved_result' in self.result:
+                rec.save(self.root/'result.private.json', self.result)
+                return self.result
             await self.interact()
         except BaseException as error:
             self.result['primary_error'] = diagnostic(error)
@@ -814,11 +871,14 @@ class DesktopComposition:
         self.result['clean_stop'] = not any(k in self.result for k in ('primary_error','cleanup_error'))
         for stream in self.logs:
             stream.close()
+        for lock in self.reopen_locks:
+            lock.close()
         rec.save(self.root/'result.private.json',self.result)
         return self.result
 
 
-def execute(profile_path, run, *, qualification_timeout_s=None, task_spec=None, task_inputs=None):
+def execute(profile_path, run, *, qualification_timeout_s=None, task_spec=None, task_inputs=None,
+            saved_task=None, enable_reopen=False):
     # Ordinary host lifetime is persistent, as in PersistentDesktopHost. Only a
     # caller explicitly running a qualification may arm its emergency bound.
     # Unknown ordinary cleanup remains retained; it is never reported clean.
@@ -827,6 +887,8 @@ def execute(profile_path, run, *, qualification_timeout_s=None, task_spec=None, 
             raise ValueError('The accepted qualification guard is exactly 1800 seconds')
         threading.Thread(target=hard_deadline,args=(qualification_timeout_s,),daemon=True).start()
     options = {} if task_spec is None and task_inputs is None else {'task_spec':task_spec,'task_inputs':task_inputs}
+    if saved_task is not None: options['saved_task'] = saved_task
+    if enable_reopen: options['enable_reopen'] = True
     result = asyncio.run(DesktopComposition(profile_path,run,**options).run())
     result['asyncio_teardown_completed'] = True
     rec.save(Path(run)/'result.private.json',result)

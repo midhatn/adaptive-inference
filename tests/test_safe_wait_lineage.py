@@ -174,7 +174,8 @@ class ContinuationObservationLineageTests(unittest.TestCase):
         for relative, changes in rows['runtime_changes'].items():
             row = rows['files'][relative]
             old = ast.parse((lineage.ROOT / row['predecessor_source']).read_bytes())
-            current = ast.parse((lineage.ROOT / relative).read_bytes())
+            current = ast.parse(lineage.admission_activity.timeout_lineage.reopen_predecessor(
+                relative, (lineage.ROOT / relative).read_bytes()))
             for change in changes:
                 parent, old_parent = current, old
                 for part in change['path'][:-1]:

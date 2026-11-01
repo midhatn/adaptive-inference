@@ -37,7 +37,7 @@ The default uses the existing cooperative foreground policy and gateway port
 policy; `--gateway-port` selects another allowed local gateway port. The owned
 backend stays on port 18098 with the same quality and execution allowances.
 
-Open **Start Adaptive Inference.cmd**, select **Choose task** in its startup
+Open **Start Adaptive Inference.cmd**, select **New task** in its startup
 window, choose a prepared task specification and its input folder, then use
 **Resume** in the existing control window. Cancelling a native picker returns to
 the startup window; **Cancel** closes it without starting a task. Each launch
@@ -52,8 +52,19 @@ The generated folder contains `deployment.json`, a byte-for-byte copy of
 `launch.py`, the Start command and `runs`. The launcher calls the existing
 `choose_task` and `composition.execute` in one dedicated full-Python process.
 It uses no extra service or task executor. The picker is destroyed before the
-controller acquires its children. This convenience does not add application or
-computer restart recovery; completed state remains in its run folder.
+controller acquires its children.
+
+The candidate launcher also offers **Open saved task** for tasks created by this
+launcher with saved-task support. A safe stopped unfinished task reopens paused
+with its original prompt, history, receipts and remaining execution budget;
+select **Resume** to continue. Time while the application is closed still counts
+against that budget. Reopening requires the same observed Windows boot, profile
+and package; an exhausted or uncertain execution is refused. Completed tasks
+open a read-only result view without the worker or model, including after a boot
+or package change. Discovery does not repair databases or adopt old validation
+archives. This first path lists tasks started from the startup window; it is not
+computer-restart recovery or a migration tool. See [saved-task reopening](../../docs/saved-task-reopening.md)
+for its source-validation and pending installed-qualification boundaries.
 
 ## Reused mechanisms and validation scope
 

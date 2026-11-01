@@ -68,6 +68,20 @@ class TaskPreparationTests(unittest.TestCase):
         with self.assertRaises(FileExistsError): self.invoke()
         self.assertEqual(TaskStore(self.args.run/'task.sqlite3').load('task-A'),cp)
 
+    def test_fresh_reopen_context_is_bound_in_both_plan_and_immutable_metadata(self):
+        from adaptive_inference.desktop import saved_tasks
+        context = saved_tasks.new_context(self.args.profile_sha256, {'files':{}}, {
+            'source':saved_tasks.BOOT_SOURCE,'boot_utc':'2026-11-01T08:12:13.1234567Z','computer_name':'fixture'})
+        self.args.reopen_context = self.root/'reopen.json'
+        rec.save(self.args.reopen_context, context)
+        self.invoke()
+        plan=json.loads((self.args.run/'plan.json').read_text())
+        cp=TaskStore(self.args.run/'task.sqlite3').load('task-A')
+        expected=saved_tasks.bind_context(context,self.args.run)
+        self.assertEqual(plan[saved_tasks.CONTEXT], expected)
+        self.assertEqual(cp.metadata[saved_tasks.CONTEXT], expected)
+        self.assertIsNone(cp.state.get('deadline_monotonic'))
+
     def test_malformed_reserved_identity_pair_refuses_before_run_creation(self):
         self.reserve(); self.args.demand_identity_sha256 = None
         with self.assertRaises(ValueError): self.invoke()

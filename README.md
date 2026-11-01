@@ -12,6 +12,15 @@ and [setup helper](examples/desktop/README.md). This is a prerelease toward the
 always-on goal; application/reboot recovery and broad daily-use qualification
 remain on the [roadmap](PLAN.md).
 
+**Validated development update:** the ordinary launcher can now reopen a safely
+stopped task on the same Windows boot, preserving its completed read, conversation
+and original time limit. An installed IQ3_S trial completed the remaining work
+with one output write, then opened the answer read-only without another model
+call. See the [workflow and reproduction steps](docs/saved-task-reopening.md)
+and [source-bound result](provenance/installed-reopen/application-restart-2026-11-01.json).
+This is a development-source increment beyond the released alpha above;
+computer-reboot and broad daily-use qualification remain on the roadmap.
+
 **Continuing this project with an AI or a team?** Start with
 [AGENTS.md](AGENTS.md), the dated [continuation handoff](HANDOFF.md), and the
 [multi-agent workflow](docs/multi-agent-collaboration.md). They preserve the goal,

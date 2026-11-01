@@ -1,0 +1,116 @@
+{
+  "schema": "adaptive.installed-reopen.admission-wait-validation.v1",
+  "date": "2026-11-01",
+  "predecessor_revision": "1af6d4a2b5a4431f66ac828318d60be7d6198670",
+  "environment": {
+    "platform": "Windows",
+    "python": "3.11.9",
+    "locked_dependencies_verified": true
+  },
+  "change": "Recognize an otherwise eligible, safely stopped and known-undispatched admission wait using the existing bounded wait and flushed-tool validators. Preserve the pending request, absolute deadline, accounting and native history; still refuse uncertain dispatched work.",
+  "source_sha256": {
+    "src/adaptive_inference/desktop/saved_tasks.py": "49fc7aaf793a1c087317bbc086ccd6fce4a644d2d80d019fcc52a399b11e76b3",
+    "tests/test_desktop_saved_tasks.py": "abbf75c14b13bbd201ca3fbecd7094f72ed9ad82eb0bde0e8489585e1b410564",
+    "src/adaptive_inference/desktop/composition.py": "18736f122419375debd79c6391f5a65ee009e487b1c66b74c2ed6ab541db0b74",
+    "src/adaptive_inference/desktop/hermes/run_recovery.py": "c53043931117f0a50ca30af7d53688927c32cd81ef7f21e13a49eae53841de17"
+  },
+  "preserved_attempts": [
+    {
+      "attempt": "red-01",
+      "classification": "runner_import_error_before_tests",
+      "passed": false
+    },
+    {
+      "attempt": "red-02",
+      "classification": "fixture_initialization_error",
+      "passed": false
+    },
+    {
+      "attempt": "red-03",
+      "classification": "meaningful_predecessor_failure",
+      "tests": 2,
+      "errors": 1,
+      "passed": false,
+      "result": "Safe undispatched wait was refused; uncertain dispatched work remained refused."
+    },
+    {
+      "attempt": "green-01",
+      "classification": "fixture_plan_encoding_error",
+      "passed": false
+    },
+    {
+      "attempt": "green-02",
+      "classification": "corrected_regression",
+      "tests": 2,
+      "passed": true
+    }
+  ],
+  "affected_component_batch": {
+    "modules": [
+      "test_desktop_saved_tasks",
+      "test_desktop_composition",
+      "test_task_spec_recovery",
+      "test_admission_wait_expiry"
+    ],
+    "tests": 68,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "passed": true,
+    "test_seconds": 13.31,
+    "orchestrated_seconds": 13.438,
+    "source_unchanged_during_batch": true,
+    "parent_joined_exit_zero": true,
+    "retained_children": 2,
+    "all_children_joined_exit_zero": true,
+    "remaining_threads": [
+      "MainThread"
+    ],
+    "private_receipt_sha256": "804c3ae8e36989d260c98bf4134a05c3f11958bb9f40b606992a03dc4a82d191"
+  },
+  "lineage": {
+    "original_addition_retained": "admission-wait-predecessor/saved_tasks.py",
+    "original_sha256": "7f5d7da8b1343dd24ea2ae574b165d960e0fac48936c0517eb4fd7c0bc3c13a6",
+    "current_record_sha256": "27ec409d26b4fd1c2c3344474ea7d825297dc55cc8ebead12075465e79b1c214",
+    "line_endings": "Normalized to the repository LF policy before source and package validation; the earlier private aggregate retains its original working-copy hash.",
+    "updated_after_targeted_batch": true,
+    "original_validation_unchanged": "validation-2026-11-01.json"
+  },
+  "private_aggregate_sha256": "7a042d81890c180cd8360fc1393c2ed8a67675c44fa46f91884333423785e343",
+  "boundaries": {
+    "actual_components": "TaskStore, native SQLite read history, Recovery, provider admission, Stop acknowledgement, owner release and conversation rebuilding.",
+    "fixture_edges": "Composition launch, GUI, process/native adapter and external provider transport.",
+    "full_source_suite_for_correction": "passed; exact source pins and prior failed environment attempt retained above",
+    "package_validation_for_correction": "Reported separately for the exact corrected PR head; this record binds the source checks.",
+    "installed_iq3_s_application_restart_qualified": false,
+    "os_reboot_qualified": false,
+    "m3_foreground_comparison_qualified": false,
+    "speedup_claim": false
+  },
+  "complete_core_suite": {
+    "passed": true,
+    "summary": [
+      "Ran 1344 tests in 345.251s"
+    ],
+    "orchestrated_seconds": 346.562,
+    "full_interpreter": true,
+    "parent_child_joined_exit_zero": true,
+    "source_unchanged_during_suite": true,
+    "private_receipt_sha256": "37989869b2b57991c15c53841c3264f2d6154ae5c3362242b1fcf0fa36c0151c",
+    "private_source_pins_sha256": "6f3af42d24b56ee343f8d55faf9e6f86f50cfc47a710a41fca9c1096250626b2",
+    "preserved_failed_attempt": {
+      "summary": [
+        "Ran 117 tests in 34.932s"
+      ],
+      "passed": false,
+      "private_receipt_sha256": "16aa89bb2702a8f30c0663854ae82cc3fa49a2b5d4e9bd63472f7067f0d89f40",
+      "classification": "Wrong Windows venv redirector test environment; the established direct-interpreter process-identity prerequisite was restored.",
+      "observed": "Original child setup failed before the intended injected body error; no selected worker launched. The outer assertion recorded zero nested errors but omitted nested failures.",
+      "uncertainty": "Exact nested traceback and readiness marker were not retained; the precise failed identity assertion is inferred, not captured."
+    }
+  },
+  "independent_source_review": {
+    "material_main_path_findings_remaining": 0,
+    "line_endings_corrected_before_suite": true
+  }
+}

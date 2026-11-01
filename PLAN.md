@@ -773,20 +773,16 @@ capture lead, quality, task budgets, clip, post-handback write requirement and
 all acceptance thresholds. Missing display attribution stays unknown.
 
 Do not keep replaying the inventory task to chase green counters. Preserve this
-closed sequence, finish the independent evidence review, and continue the
-separately scoped installed application-restart work in [PR #31](https://github.com/midhatn/adaptive-inference/pull/31)
-using an isolated candidate installation. Source preflight found that Stop during
-an undispatched admission wait can preserve a pending request which the initial
-reopening reader refused. The correction at `6ac601546daf32d96e38b6689a5818e4cc8dafa8`
-now exercises actual provider-wait, safe Stop and reopening in a component
-regression. It passed 68 affected checks, the complete 1,344-test local suite
-and source/wheel verification; all 14 original exact-head hosted jobs and 12
-distribution checks also passed. Stage the isolated candidate and qualify the
-installed trial; fixture transport/GUI edges do not establish a physical
-restart. Preserve original deadlines and counters and refuse uncertain
-dispatched work. M3 remains open; lifecycle progress
-does not waive its capture or foreground-quality gates. Broader daily-use
-qualification still depends on those gates and the later useful-tool work.
+closed sequence and its independent review. The separately scoped installed
+application-restart trial in [PR #31](https://github.com/midhatn/adaptive-inference/pull/31)
+has now passed at source `6ac601546daf32d96e38b6689a5818e4cc8dafa8`, after its
+68 affected checks, complete 1,344-test suite, package verification and all
+14 original hosted jobs/12 distribution checks. Its saved-read, original-budget,
+single-write and read-only-result evidence is recorded in [M5](#m5--survive-application-and-computer-lifecycle-changes).
+Publish that accepted scope after validating the source integration with PR #32's
+fixture fixes. Do not re-stage or replay the consumed trial. M3 remains open;
+lifecycle progress does not waive its capture or foreground-quality gates.
+Broader daily-use qualification still depends on those gates and useful-tool work.
 
 Do not change scheduling merely because restoration occurred during passive
 video: useful background work within the foreground quality budget is the goal.
@@ -905,12 +901,64 @@ does not become an arbitrary shell-execution endpoint.
 
 ### M5 — Survive application and computer lifecycle changes
 
+**Installed application path passed, 1 November 2026:** the [recorded IQ3_S
+trial](provenance/installed-reopen/application-restart-2026-11-01.json) closed an
+unfinished task after one confirmed read and reopened that same task through the
+ordinary launcher. The new host started paused; one Resume completed the original
+23-unit objective with one physical output write. The saved read was present in
+the first resumed request, and the original 900-second deadline and consumed
+counters were preserved. Completed-result viewing added no worker/provider call
+and changed none of the eight checked canonical files. All three app parents
+joined normally; bounded observer shutdown errors remain separately recorded.
+This closes the first same-boot application path below, not the complete M5 gate.
+
+**Next lifecycle work:** reuse that accepted path to support discovery of tasks
+created later through the running controller, then design the original durable
+budget policy for changed Windows boots before a separate actual reboot trial.
+Research existing lifecycle/budget implementations first. Do not replay the
+accepted application trial or silently reset a saved monotonic deadline. M3's
+inert window-switch rehearsal and M4 useful-tool/media gates remain open; this
+result does not waive them.
+
 **User result:** reopening the application or restarting the supported computer
 recovers the same objective and completed work.
 
 First integrate ordinary installed-agent startup and task discovery, then test
 controller/agent crash, sleep/wake, hibernation and an actual OS reboot as separate
 cases. A same-boot worker test is not a reboot test.
+
+The first source increment is [ordinary saved-task reopening](docs/saved-task-reopening.md):
+the launcher selects the existing task, creates fresh host/UI bindings and starts
+paused with the original deadline, request counters and native history. Accepted
+results open read-only without another model request. Reuse the current task
+store, safe Stop, mailbox and worker claims; introduce no new recovery framework.
+The recorded trial above qualifies this source path with unchanged installed
+IQ3_S. Its acceptance required a confirmed read before ordinary Stop, actual
+application joins, the same read in the first resumed request, correct remaining
+work and exactly one physical output write. A task already
+completed before Stop does not satisfy unfinished-task recovery.
+
+Source preflight exposed an ordinary-path prerequisite: safe Stop during an
+undispatched resource wait preserves `pending_request`, while the initial saved
+selector refused it. The [bounded correction](provenance/installed-reopen/admission-wait-validation-2026-11-01.json)
+reuses the existing admission-state, paused-task and fully-flushed-native-tool
+checks. It preserves the request until the normal worker rebuild after fresh
+Resume, without renewing the deadline or counters. The meaningful regression
+first failed at the original selector; the corrected wait/Stop/reopen path and
+unknown-dispatch refusal passed, followed by 68 affected component checks.
+The corrected complete source suite passed 1,344 tests. Its first attempt used
+an unsuitable Windows venv redirector and remains failed; the existing direct
+interpreter prerequisite was restored without weakening process-identity checks.
+The corrected package and all 14 original head jobs/12 distribution checks
+passed before its isolated installation and actual IQ3_S application restart.
+Integration with PR #32's fixture fixes requires validation of the combined
+source; it does not transfer physical evidence to a changed runtime.
+
+This first increment requires a matching original boot/profile/package context
+recorded when the task was created. Closed-app time consumes its saved budget;
+an expired task cannot receive a fresh 900 seconds through reopening. Preserve
+the original archives without backfilling this metadata. Keep reboot and the
+other lifecycle cases below separate from this bounded application path.
 
 Persist boot/session identity, trusted task lineage, profile/schema version and
 budget policy. A saved monotonic timestamp cannot be reused across a reboot;

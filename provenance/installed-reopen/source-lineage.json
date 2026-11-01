@@ -1,0 +1,72 @@
+{
+  "addition": {
+    "ast_sha256": "3ff26ff3ba5410fc495b7103002465de0e0ccbc339b81dd56074a462f8a561f8",
+    "sha256": "49fc7aaf793a1c087317bbc086ccd6fce4a644d2d80d019fcc52a399b11e76b3",
+    "source": "src/adaptive_inference/desktop/saved_tasks.py"
+  },
+  "baseline_revision": "c348398089e544bf54add2beaaf73550f8951efc",
+  "baseline_tree": "16ef2a78a4ec0f132e7ab294f7ec3fcad3c10dd1",
+  "files": {
+    "src/adaptive_inference/desktop/composition.py": {
+      "predecessor_ast_sha256": "23949bf1bb39a39b4f459f352b6a149c8d80a67167a45fa391b04bb2744eeec3",
+      "predecessor_sha256": "89398ee41c35e7a813d1f578eda1a799f1efda7f04bee8902af3d695017d6b9b",
+      "predecessor_source": "provenance/installed-reopen/predecessor/src/adaptive_inference/desktop/composition.py",
+      "successor_ast_sha256": "a92e400ede9994f23c8fc165b9f650676eeb90b9fa6a64e5e53885a07ece5141",
+      "successor_sha256": "18736f122419375debd79c6391f5a65ee009e487b1c66b74c2ed6ab541db0b74"
+    },
+    "src/adaptive_inference/desktop/hermes/run_recovery.py": {
+      "predecessor_ast_sha256": "a6baf7964934127f1bc7875e0ef53f08113c3f10983274bebe4a2a77ba0f527a",
+      "predecessor_sha256": "8d400841702ddc2ddaf1dc371bfe23f99e5245fdf916d508687481200dffa552",
+      "predecessor_source": "provenance/installed-reopen/predecessor/src/adaptive_inference/desktop/hermes/run_recovery.py",
+      "successor_ast_sha256": "07d3299af9c9aafac2afe8a0ea14dc8fbb4a29b5c2b5a27cf8b50db081bce34c",
+      "successor_sha256": "c53043931117f0a50ca30af7d53688927c32cd81ef7f21e13a49eae53841de17"
+    },
+    "tests/continuation_timeout_lineage.py": {
+      "predecessor_ast_sha256": "6b0df6184bc422fc8b9407da216843c9394411427d979df855ea560358394273",
+      "predecessor_sha256": "bb452172295677d60822a6e7ef72840573fa7c5c9f8c8bdaebfefa698d03ff03",
+      "predecessor_source": "provenance/installed-reopen/predecessor/tests/continuation_timeout_lineage.py",
+      "successor_ast_sha256": "65fe85cc3611fb54f7a0fbc85c6d750dc615cea076b931bf6e0f98939c95d82e",
+      "successor_sha256": "d63e3a1825d0f75ed5c44105af02b435401b1920e78a2ab521d2f4ef94987ab9"
+    },
+    "tests/test_safe_wait_lineage.py": {
+      "predecessor_ast_sha256": "cbce29a49488f2dad419b14e069d4b9ed5727ae965c0bae6c65a219a122853f0",
+      "predecessor_sha256": "43f2e200d0ccb3690259f3e88b0c656c5dc66db7cc755016d25eefabadb60e22",
+      "predecessor_source": "provenance/installed-reopen/predecessor/tests/test_safe_wait_lineage.py",
+      "successor_ast_sha256": "1d8b39ffe362c88db658e5a52736277c9cb39d87cec48db564b6aa890c78e1a0",
+      "successor_sha256": "968b0a70de21f13a7a14c3d655460742ffebd7fb7fdea85a3dd0c6d139890911"
+    },
+    "tests/test_task_preparation_lineage.py": {
+      "predecessor_ast_sha256": "694a47f083da1d5d8b9158e2a44bdce49f2473cd46c73a225a0dae2c94f09016",
+      "predecessor_sha256": "b3c9278e04b19bfdc8c272b47833f6e6a278c30e87d893ecc26a5639d0ce5092",
+      "predecessor_source": "provenance/installed-reopen/predecessor/tests/test_task_preparation_lineage.py",
+      "successor_ast_sha256": "dd7302b82f3a208dab314f36ad10fdeef35842d520698c096d18f791829c6c17",
+      "successor_sha256": "ebacd63f7d18f56a769146b7c6635b71eba752e3b58955d890c48e296713e6bb"
+    }
+  },
+  "preserved_preparation_record": "provenance/task-preparation/source-lineage.json",
+  "preserved_preparation_record_sha256": "88171eec897810198467e6a193ad0869e2fb2514dc0431cab1155757a097943b",
+  "runtime_changes": [
+    "src/adaptive_inference/desktop/composition.py",
+    "src/adaptive_inference/desktop/hermes/run_recovery.py"
+  ],
+  "schema": "adaptive.installed-reopen.source-lineage.v1",
+  "scope": "Prospective installed saved-task reopening source delta; historical source bytes, preparation record, physical receipts and acceptance remain unchanged. Retained source is parsed, never executed. Current behavior requires separate qualification.",
+  "sources_reused": [
+    "tests/continuation_timeout_lineage.py",
+    "tests/task_file_alias_lineage.py",
+    "provenance/task-preparation/source-lineage.json",
+    "https://docs.python.org/3/library/ast.html",
+    "https://docs.python.org/3/library/hashlib.html"
+  ],
+  "superseded_additions": [
+    {
+      "ast_sha256": "8d3d5afe833b56d6b2e8bbd5dbcd2a347da13f9e784340c94feca5b7d0dea569",
+      "reason": "Initial reader refused the ordinary known-undispatched admission-wait checkpoint after safe Stop. Original source and validation are preserved.",
+      "retained_source": "provenance/installed-reopen/admission-wait-predecessor/saved_tasks.py",
+      "sha256": "7f5d7da8b1343dd24ea2ae574b165d960e0fac48936c0517eb4fd7c0bc3c13a6",
+      "source": "src/adaptive_inference/desktop/saved_tasks.py",
+      "source_revision": "1af6d4a2b5a4431f66ac828318d60be7d6198670"
+    }
+  ],
+  "working_base_revision": "72ac717dbbcb11684e2687a2992a462a0f078f39"
+}

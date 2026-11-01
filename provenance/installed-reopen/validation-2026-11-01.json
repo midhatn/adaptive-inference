@@ -1,0 +1,46 @@
+{
+  "schema": "adaptive.installed-reopen.component-validation.v1",
+  "date": "2026-11-01",
+  "base_revision": "c348398089e544bf54add2beaaf73550f8951efc",
+  "environment": {"platform": "Windows", "python": "3.11.9"},
+  "source_sha256": {
+    "src/adaptive_inference/desktop/composition.py": "18736f122419375debd79c6391f5a65ee009e487b1c66b74c2ed6ab541db0b74",
+    "src/adaptive_inference/desktop/hermes/run_recovery.py": "c53043931117f0a50ca30af7d53688927c32cd81ef7f21e13a49eae53841de17",
+    "src/adaptive_inference/desktop/saved_tasks.py": "7f5d7da8b1343dd24ea2ae574b165d960e0fac48936c0517eb4fd7c0bc3c13a6",
+    "examples/desktop/launch.py": "879d43e492f9c73b77db620159e92edc77dbd44339493ee7ed6c536d8f431b5e",
+    "provenance/installed-reopen/source-lineage.json": "32a8c1debc955c480d54b5c3cc4bce6cb4eeafdb452fc46e629b720958b4ea16"
+  },
+  "functional_checks": {
+    "tests": 51, "passed": true, "elapsed_seconds": 3.797,
+    "fixture_children": 3, "all_children_joined_exit_zero": true,
+    "source_hashes_unchanged": true,
+    "private_receipt_sha256": "06e93244748fd4a600ce6a1cd38a1070be0fe7aeac8d7d806bb2d32d781e6650"
+  },
+  "source_history_checks": {
+    "original_attempt": {"tests": 77, "failures": 1, "preserved": true,
+      "reason": "A historical comparison read current composition syntax without the exact predecessor projection."},
+    "corrected_attempt": {"tests": 77, "passed": true, "elapsed_seconds": 128.856,
+      "original_assertions_preserved": true,
+      "private_receipt_sha256": "07ff4ca203304efcbbe0efc8a67c186cfdc3b44002ded670d0a5613f69bf7be6"}
+  },
+  "complete_core_suite": {
+    "tests": 1342, "passed": true, "skips": 0,
+    "test_seconds": 336.175, "orchestrated_seconds": 337.453,
+    "source_hashes_unchanged": true, "child_joined_exit_zero": true,
+    "private_receipt_sha256": "25070f85fbaf1a39ca73925d22fb1fa692c58b8a32aeb30bb77c583ef99f1387"
+  },
+  "actual_windows_boot_observation": {
+    "passed": true, "elapsed_seconds": 0.781, "child_joined": true,
+    "private_receipt_sha256": "8c7fda7df4a0aa43c8403ea860d73e01a74a7fb352dc389d79b627419994c8e5"
+  },
+  "independent_source_review": {"runtime_hashes_verified": true, "actionable_main_path_findings": 0},
+  "boundaries": {
+    "discovery": "Initial tasks created from the startup launcher with saved-task support.",
+    "pending_execution": "Matching original boot, profile and package; original unexpired deadline and counters.",
+    "completed_results": "Read-only, no worker or provider call, no deadline renewal.",
+    "installed_iq3_s_application_restart_qualified": false,
+    "os_reboot_qualified": false,
+    "m3_foreground_comparison_qualified": false,
+    "speedup_claim": false
+  }
+}

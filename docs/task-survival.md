@@ -45,6 +45,12 @@ For a real external action, a host acquires `store.claim(...)`, commits `begin_o
 
 This is a library integration. The generic HTTP gateway does not secretly persist private conversations or execute/resume agent tools. Existing installations need an adapter to invoke these checkpoints and reconcile their tools. The pinned Hermes adapter below has one accepted [foreground/tool handoff and worker-restart workflow](../provenance/windows-handoff/controlled-11/README.md). Automatic OS login/startup, a real computer reboot, native KV restore and other agents remain separate acceptance work.
 
+The development desktop launcher adds an [ordinary saved-task selection path](saved-task-reopening.md)
+around that adapter: safe same-boot unfinished work reopens paused under fresh
+host ownership, with its original deadline and counters. Accepted results are
+viewed read-only. Its source/component validation and later installed application
+restart acceptance remain distinct from the earlier worker-restart evidence.
+
 The optional [installed-Hermes adapter](../examples/validation/windows_handoff/hermes/README.md)
 now implements those boundaries for a bounded native file task. It retains the
 original objective and native conversation, verifies tool receipts before the
