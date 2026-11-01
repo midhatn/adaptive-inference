@@ -341,6 +341,8 @@ class HostTaskHandover:
             '--task-inputs', source['task_inputs'], '--task-id', payload['task_id'],
             '--session-id', payload['session_id'], '--demand-identity', str(identity_path),
             '--demand-identity-sha256', rec.digest(identity_path.read_bytes())]
+        if c.reopen_context is not None:
+            command.extend(['--reopen-context', str(c.root/'reopen-context.private.json')])
         before = len(c.handles)
         try:
             c.launch(command, 'prepare-task-'+str(grant['selection_revision']))
@@ -351,6 +353,11 @@ class HostTaskHandover:
         await self._until(lambda: child.poll() is not None, None, 60)
         if await c.join_child(child) != 0:
             raise RuntimeError('Fresh task preparation failed')
+        if c.reopen_context is not None:
+            from adaptive_inference.desktop.saved_tasks import claim_host
+            # Retain through every episode until the composition's ordinary
+            # final cleanup; a prepared task must not acquire a second host.
+            c.reopen_locks.append(claim_host(Path(payload['run'])))
         await self.database(lambda: self.authority.prepared(self.owner, grant,
             operation_id=record['prepare_operation']))
         record['prepared'] = True

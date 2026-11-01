@@ -1,0 +1,25 @@
+{
+  "schema": "adaptive.installed-reopen.handover-tasks.integration-validation.v1",
+  "date": "2026-11-01",
+  "base_revision": "8396676dcc55ffbbf09e0ff640db9238519a07ea",
+  "scope": "Complete core/source suite against the later-task reopening change; no installed model trial.",
+  "source_lineage_sha256": "d634c761c6aad3ee4864402e10cb331b46f25d8eba96dfe9e8cf3319978f0201",
+  "component_record_sha256": "b4542c69c29937f74c2d260359ea3f00dc420e0195ab431ec775b85e537b2454",
+  "tests": 1359,
+  "seconds": 413.619,
+  "outer_seconds": 415.03099999999904,
+  "passed": true,
+  "python": "Full Windows Python 3.11.9",
+  "retained_child_joined": true,
+  "retained_child_exit_code": 0,
+  "source_unchanged": true,
+  "private_receipt_sha256": "3f99a5557c1c8858f243bcd4096867172a540fc028d755d34683ef5cdc036fa3",
+  "private_log_sha256": "dd0ba0c3a5c05ccdf7e9f40f11c9ac15b7082911d30689e562d8071e1ec922fe",
+  "private_source_pins_sha256": "23e105e002077a4db83e0065ee5a658cd86fa9bf50e8102c3af9a8b39642dde7",
+  "limits": [
+    "Provider and native fixture coverage is not installed IQ3_S qualification.",
+    "New later-task runtime requires its own ordinary installed recovery trial.",
+    "Package and hosted checks have their own exact candidate evidence.",
+    "No OS reboot, desktop performance or full M5 claim."
+  ]
+}

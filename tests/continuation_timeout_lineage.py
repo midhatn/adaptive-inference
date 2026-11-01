@@ -55,7 +55,8 @@ def preparation_record(root=None):
 def preparation_inputs(root=None):
     root = ROOT if root is None else root
     return ([root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py']
-            + reopen_inputs(root) + fixture_stop_inputs(root) + integration_inputs(root))
+            + reopen_inputs(root) + fixture_stop_inputs(root) + integration_inputs(root)
+            + handover_inputs(root))
 
 
 def preparation_predecessor(relative, data, root=None):
@@ -172,6 +173,7 @@ def reopen_predecessor(relative, data, root=None):
 
 def reopen_runtime_view(current, root=None):
     """Remove only the pinned addition and reverse the two declared modules."""
+    current = handover_runtime_view(current, root)
     rows = reopen_record(root)
     expected = {REOPEN_ADDITION: rows['addition']['sha256']}
     expected.update({name: rows['files']['src/adaptive_inference/' + name]['successor_sha256']
@@ -189,6 +191,7 @@ def reopen_runtime_view(current, root=None):
 
 
 def restore_reopen(tree, relative, root=None):
+    tree = restore_handover(tree, relative, root)
     if relative not in REOPEN_RUNTIME:
         return tree
     root = ROOT if root is None else root
@@ -267,6 +270,7 @@ def integration_inputs(root=None):
 
 def integration_predecessor(relative, data, view, root=None):
     """Expose only a pinned combined reader as one exact retained branch view."""
+    data = handover_predecessor(relative, data, root)
     root = ROOT if root is None else root
     if view not in ('reopen', 'fixture_stop'):
         raise AssertionError('Changed integrated reader view')
@@ -286,3 +290,67 @@ def integration_predecessor(relative, data, view, root=None):
             raise AssertionError('Changed integrated reader successor AST')
         return before
     return data
+
+
+# Later handover tasks reuse reopening; no historical receipt is requalified.
+HANDOVER = 'provenance/installed-reopen/handover-tasks'
+HANDOVER_RUNTIME = ('desktop/task_handover.py', 'desktop/saved_tasks.py')
+HANDOVER_INPUTS = {'src/adaptive_inference/' + name for name in HANDOVER_RUNTIME} | {
+    'tests/continuation_timeout_lineage.py', 'tests/test_task_preparation_lineage.py'}
+
+
+def handover_record(root=None):
+    root = ROOT if root is None else root
+    return json.loads((root / HANDOVER / 'source-lineage.json').read_bytes())
+
+
+def handover_inputs(root=None):
+    root = ROOT if root is None else root
+    path = root / HANDOVER / 'source-lineage.json'
+    if not path.exists():
+        return []
+    return [path, *(root / HANDOVER / 'predecessor' / relative
+                    for relative in sorted(HANDOVER_INPUTS))]
+
+
+def handover_predecessor(relative, data, root=None):
+    """Reverse only exact declared files; unknown bytes reach original checks."""
+    root = ROOT if root is None else root
+    if relative not in HANDOVER_INPUTS or not (root / HANDOVER / 'source-lineage.json').exists():
+        return data
+    row = handover_record(root)['files'][relative]
+    expected = HANDOVER + '/predecessor/' + relative
+    if row['predecessor_source'] != expected:
+        raise AssertionError('Changed handover-reopen predecessor path')
+    before = (root / expected).read_bytes()
+    if (hashlib.sha256(before).hexdigest() != row['predecessor_sha256']
+            or fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']):
+        raise AssertionError('Changed handover-reopen predecessor identity')
+    if hashlib.sha256(data).hexdigest() == row['successor_sha256']:
+        if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:
+            raise AssertionError('Changed handover-reopen successor AST')
+        return before
+    return data
+
+
+def handover_runtime_view(current, root=None):
+    """Project before saved_tasks is removed; preserve every other module."""
+    result = dict(current)
+    for name in HANDOVER_RUNTIME:
+        if name in result:
+            result[name] = handover_predecessor('src/adaptive_inference/' + name, result[name], root)
+    return result
+
+
+def restore_handover(tree, relative, root=None):
+    root = ROOT if root is None else root
+    if relative not in HANDOVER_RUNTIME or not (root / HANDOVER / 'source-lineage.json').exists():
+        return tree
+    source = 'src/adaptive_inference/' + relative
+    row = handover_record(root)['files'][source]
+    if fingerprint(tree) != row['successor_ast_sha256']:
+        return tree
+    data = (root / source).read_bytes()
+    if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
+        raise AssertionError('Changed complete handover-reopen source: ' + relative)
+    return ast.parse(handover_predecessor(source, data, root))

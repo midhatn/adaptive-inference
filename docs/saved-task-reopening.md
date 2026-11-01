@@ -28,10 +28,17 @@ The selected checkpoint and artifacts are verified before use. The existing
 task store and worker claim remain authoritative; no second recovery database
 or agent framework is introduced.
 
-This first selector lists initial tasks created from the startup window with
-saved-task support. Tasks subsequently created through the running controller's
-handover flow are not yet included. Their discovery remains follow-up work;
-this increment is not a complete task browser.
+The selector lists initial tasks created from the startup window and, in the
+current development source, tasks created later through the running controller's
+**New task** flow. Later tasks record the same original recovery context and
+retain the same host ownership lock. Discovery reads only the two known plan
+locations, deduplicates task roots and inspects at most 500 plans; selecting a
+label does not authorize execution. Older tasks without their original recovery
+context are not retrofitted. This is not a complete task browser.
+
+The later-task extension has [component and source-preservation validation](../provenance/installed-reopen/handover-tasks/README.md).
+Its installed IQ3_S trial is still required. The physical result below belongs
+to the initial-task source identified in its record.
 
 ## Current scope
 
@@ -127,3 +134,12 @@ and [unknown-operation handling](https://github.com/NousResearch/hermes-agent/bl
 Those gateway mechanisms already exist at the installed SDK revision; this
 adapter uses direct AIAgent/SessionDB ownership, so gateway recovery is not a
 drop-in replacement. No additional upstream code is copied by this feature.
+
+For later-task discovery, research checked Hermes'
+[bounded session listing](https://github.com/NousResearch/hermes-agent/blob/c627ec84664d43e0b18b95d9d86d8963747d56c7/hermes_cli/session_listing.py)
+and [local recovery](https://github.com/NousResearch/hermes-agent/blob/c627ec84664d43e0b18b95d9d86d8963747d56c7/gateway/session_local_recovery.py)
+at pinned revision `c627ec84664d43e0b18b95d9d86d8963747d56c7`. Their separation of metadata selection from
+canonical ownership/recovery checks supports reusing this adapter's existing
+plan reader, task store and host lock. Hermes is MIT licensed; this extension
+copies no upstream code and does not change the installed SDK revision. The
+sources and applicability are retained in [REFERENCES.bib](../REFERENCES.bib).

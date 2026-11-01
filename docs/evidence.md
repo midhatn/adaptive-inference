@@ -58,6 +58,42 @@ The required existing `tempfile` import was restored during review before any
 focused execution. Package and hosted checks belong to the exact combined
 publication; these source tests neither rerun nor broaden the installed trial.
 
+The exact combined head `c6f20623579021d78cecdd6af8229bbdf2d6ef46` subsequently
+passed package verification for 1,233 source files/62 runtime modules and all
+14 original hosted jobs/12 distribution checks:
+[push](https://github.com/midhatn/adaptive-inference/actions/runs/41327021319),
+[pull request](https://github.com/midhatn/adaptive-inference/actions/runs/41327026749).
+PR #31 merged at `8396676dcc55ffbbf09e0ff640db9238519a07ea`; its tree exactly
+matches that reviewed head. The installed source/runtime claim above is unchanged.
+
+### Later tasks created through the controller
+
+The next development increment extends reopening to tasks created with **New
+task** while the controller is already open. It forwards the existing original
+recovery context, retains the existing task-specific host lock and adds the
+known later-task plan location to bounded discovery. It reuses the original
+paused reopening, conversation/effect checks and deadline accounting.
+
+The [component record](../provenance/installed-reopen/handover-tasks/component-validation-2026-11-01.json)
+retains a meaningful failure on the exact predecessor: worker preparation did
+not receive the recovery context. The extension passed **49 affected checks in
+9.810 seconds**, including two new tests. Actual task admission, preparation,
+storage and Stop/reopen code ran with inert SDK/provider/process/GUI edges. The
+scenario preserves a saved read and pending undispatched request, opens a fresh
+paused host, completes one output write and views the result read-only. Its
+controlled-clock 900-second deadline and consumed counters remain unchanged.
+The output check is format-only; this is not an installed IQ3_S inventory trial.
+
+The [additive source record](../provenance/installed-reopen/handover-tasks/README.md)
+preserves the exact predecessor of both runtime modules and both changed source
+readers. All older manifests and assertions remain intact; **75 affected source
+checks passed in 138.030 seconds**. Both bounded validation children joined with
+exit 0 and their pinned source inputs remained unchanged. These checks do not
+transfer the earlier physical result to the two changed runtime modules. The [complete combined suite](../provenance/installed-reopen/handover-tasks/integration-validation-2026-11-01.json)
+subsequently passed **1,359 tests in 413.619 seconds**, with unchanged source
+inputs and a normal retained child exit. Distribution, hosted checks and
+installed later-task qualification remain separate gates.
+
 ## Ordinary saved-task reopening
 
 **Admission-wait correction, 1 November 2026:** preparation for the installed

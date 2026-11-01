@@ -922,6 +922,13 @@
   note = {Inspected 2026-11-01. Nested test seed cases created through setUp without run can discard cleanup exceptions when no result is attached. Fixture-only correction temporarily shares the running case outcome, preserving the primary test error and additional cleanup errors. No upstream implementation copied; this private unittest detail is confined to tests}
 }
 
+@misc{hermesBoundedSessionListingRecovery,
+  author = {{Nous Research and Hermes contributors}},
+  title = {Hermes bounded session listing and canonical local recovery},
+  url = {https://github.com/NousResearch/hermes-agent/blob/c627ec84664d43e0b18b95d9d86d8963747d56c7/hermes_cli/session_listing.py},
+  note = {MIT, inspected 2026-11-01 with gateway/session_local_recovery.py and website/docs/user-guide/sessions.md at the same revision. Informs the separation of metadata discovery from canonical ownership and recovery checks for later controller-created tasks. Reuses the existing Adaptive Inference plan reader, task store and host lock; no Hermes implementation copied and no SDK upgrade}
+}
+
 @misc{pythonSqliteExplicitConnectionClose,
   author = {{Python Software Foundation}},
   title = {Python 3.11 SQLite connection context management},

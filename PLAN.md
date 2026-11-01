@@ -779,8 +779,8 @@ has now passed at source `6ac601546daf32d96e38b6689a5818e4cc8dafa8`, after its
 68 affected checks, complete 1,344-test suite, package verification and all
 14 original hosted jobs/12 distribution checks. Its saved-read, original-budget,
 single-write and read-only-result evidence is recorded in [M5](#m5--survive-application-and-computer-lifecycle-changes).
-Publish that accepted scope after validating the source integration with PR #32's
-fixture fixes. Do not re-stage or replay the consumed trial. M3 remains open;
+That scope merged in PR #31 after combined-source validation and all 14 original
+head jobs/12 distribution checks passed. Do not re-stage or replay the consumed trial. M3 remains open;
 lifecycle progress does not waive its capture or foreground-quality gates.
 Broader daily-use qualification still depends on those gates and useful-tool work.
 
@@ -912,9 +912,20 @@ and changed none of the eight checked canonical files. All three app parents
 joined normally; bounded observer shutdown errors remain separately recorded.
 This closes the first same-boot application path below, not the complete M5 gate.
 
-**Next lifecycle work:** reuse that accepted path to support discovery of tasks
-created later through the running controller, then design the original durable
-budget policy for changed Windows boots before a separate actual reboot trial.
+**Next lifecycle work:** the current source extends that accepted path to tasks
+created later through the running controller. It forwards the original recovery
+context, retains the existing task-specific host lock and discovers the two
+known plan locations. The meaningful predecessor regression failed at missing
+recovery context; 49 affected component checks and 75 source-preservation checks
+passed on the extension. See the [bounded record](provenance/installed-reopen/handover-tasks/README.md).
+The complete combined suite passed 1,359 tests in 413.619 seconds. Finish its
+package/hosted checks, then qualify a later task with
+the unchanged installed IQ3_S profile. Require a saved read before safe Stop,
+normal closure, paused reopening of that same later task, preserved deadline
+and counters, correct remaining work, one physical write and read-only result
+viewing. Do not use an already completed task as unfinished recovery evidence.
+Then design the original durable budget policy for changed Windows boots before
+a separate actual reboot trial.
 Research existing lifecycle/budget implementations first. Do not replay the
 accepted application trial or silently reset a saved monotonic deadline. M3's
 inert window-switch rehearsal and M4 useful-tool/media gates remain open; this
@@ -951,8 +962,12 @@ an unsuitable Windows venv redirector and remains failed; the existing direct
 interpreter prerequisite was restored without weakening process-identity checks.
 The corrected package and all 14 original head jobs/12 distribution checks
 passed before its isolated installation and actual IQ3_S application restart.
-Integration with PR #32's fixture fixes requires validation of the combined
-source; it does not transfer physical evidence to a changed runtime.
+Integration with PR #32's fixture fixes passed 83 affected checks, all 1,352
+local tests, complete package verification and all 14 original head jobs/12
+distribution checks. PR #31 merged at `8396676dcc55ffbbf09e0ff640db9238519a07ea`
+with the exact reviewed tree; all 62 runtime modules match the physically tested
+source. The later-task extension changes two modules and needs its own installed
+qualification.
 
 This first increment requires a matching original boot/profile/package context
 recorded when the task was created. Closed-app time consumes its saved budget;
