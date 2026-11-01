@@ -255,10 +255,12 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
 
     async def test_pending_reply_precedes_retained_resume_authority_completion(self):
         entered, release, blocked = self.block_observation()
+        authority_entered = asyncio.Event()
         actual_authority = self.runtime.resume_authority
         actual_request = self.request
         responded = asyncio.get_running_loop().create_future()
         async def held_authority(request_id,**kwargs):
+            authority_entered.set()
             with mock.patch.object(self.box, 'snapshot', side_effect=blocked):
                 return await actual_authority(request_id,**kwargs)
         async def observed_request(*args, **kwargs):
@@ -269,6 +271,9 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
                 mock.patch.object(self, 'request', side_effect=observed_request):
             completed = asyncio.create_task(self.completed_control('resume', request_id='resume'))
             try:
+                # Establish authority entry after SQLite submission before the
+                # unchanged two-second held-snapshot entry check.
+                await asyncio.wait_for(authority_entered.wait(), 30)
                 await self.signal(entered)
                 operation = self.transport._records['resume']['task']
                 # Observe the actual response before releasing authority; no sleep

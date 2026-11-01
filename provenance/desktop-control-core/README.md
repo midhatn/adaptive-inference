@@ -37,3 +37,29 @@ remains in the repository's NOTICE and third-party archive. No CPython,
 Microsoft, NVIDIA or Hermes implementation was copied into this component.
 See the [library contract](../../docs/desktop-control-core.md) for its API,
 authority limits and primary research references.
+
+## Pending-reply fixture authority entry, 1 November 2026
+
+The original alpha `ebe0f1a3d165de783fe123aaf5428f0fa2f6dd5c`
+[Windows 3.11 job](https://github.com/midhatn/adaptive-inference/actions/runs/41268742104/job/124736929014)
+failed `test_pending_reply_precedes_retained_resume_authority_completion` at
+the shared two-second snapshot-entry wait. It stopped after 551 tests in
+315.436 seconds. The log does not establish which operation was delayed or
+whether authority had entered; the original attempt remains failed.
+
+The current fixture reuses the authority-entry pattern already present in its
+rotation test: an [`asyncio.Event`](https://docs.python.org/3.11/library/asyncio-sync.html#asyncio.Event)
+signals entry to the authority coroutine, and a bounded
+[`wait_for`](https://docs.python.org/3.11/library/asyncio-task.html#asyncio.wait_for)
+wait establishes that phase before the existing short snapshot-entry check.
+The 30-second setup guard follows
+[CPython 3.12.10's short test timeout](https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py).
+No external implementation is copied or dependency added.
+
+The two-second snapshot-entry and response waits, three-second held read and
+retained-operation completion waits, pending-response ordering, intent and
+single-request assertions remain unchanged. This change is limited to one
+test's setup ordering; runtime settings, product budgets and all historical
+source bytes and hashes remain unchanged. Current local checks and subsequent
+exact-revision CI have their own scope; this is not an installed-model or
+desktop-performance result.

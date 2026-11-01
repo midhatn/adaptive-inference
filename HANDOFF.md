@@ -64,6 +64,15 @@ See the [original outcome and rationale](docs/evidence.md#reference-delivery-che
 Publish this bounded follow-up, require its own complete hosted checks, refresh
 the alpha draft's exact source/assets, then continue M3. No alpha is released yet.
 
+The alpha draft was refreshed to `ebe0f1a` with all five uploaded asset digests
+verified, still unpublished. Its next Windows job failed a separate pending-reply
+fixture's short snapshot-entry wait. The current narrow correction reuses an
+existing authority-entry event before that wait; 29 affected checks passed with
+pinned dependencies and completed fixture cleanup. See the [failure and scope](docs/evidence.md#reference-delivery-checks).
+Independent review accepted this correction. Collect all current original CI
+outcomes before the next batch push. Require corrected-head checks, then refresh the final source assets
+and integrate/release. Do not repeat physical model tests for these fixture edits.
+
 Local PLAN.md and docs/evidence.md describe the selected checkout. For unmerged
 M2 work, verify the active PR's development revision before reading that revision's
 **Current M2 gate**. Earlier entries saying
