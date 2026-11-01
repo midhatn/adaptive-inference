@@ -40,6 +40,23 @@ citations and unsuccessful evidence. The full milestone sequence is in
 
 ## Current continuation state
 
+**Saved-task correction in progress:** preparation found that ordinary Stop could
+safely preserve an undispatched admission wait which the saved-task selector then
+refused. The [bounded correction](provenance/installed-reopen/admission-wait-validation-2026-11-01.json)
+reuses existing wait/tool validation and preserves the original deadline, pending
+request, counters and native history. Its meaningful predecessor regression and
+68 passing affected checks are recorded separately from the original candidate.
+The corrected full source suite passed all 1,344 tests on the full Python 3.11.9
+interpreter, with unchanged source. The earlier attempt using a Windows venv
+redirector remains failed and recorded separately; process-identity assertions
+were preserved. Distribution/hosted checks belong to the exact corrected PR head;
+installed IQ3_S restart acceptance remains required. The original candidate's
+passing checks below do not qualify this correction.
+The later M3 comparison is closed and published separately in
+[PR #32](https://github.com/midhatn/adaptive-inference/pull/32); its capture timing
+and video-surface attribution remain unqualified. Do not replay earlier "next"
+measurement instructions without reconciling that newer result and ownership.
+
 | Item | Dated state and verification boundary |
 | --- | --- |
 | Stable main starting point | Commit `c348398089e544bf54add2beaaf73550f8951efc`, including merged PRs #25, #26, #28, #29 and #30. Verify current `main`; this is a dated anchor, not a claim that it remains HEAD. |

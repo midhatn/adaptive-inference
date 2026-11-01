@@ -1,7 +1,7 @@
 {
   "addition": {
-    "ast_sha256": "8d3d5afe833b56d6b2e8bbd5dbcd2a347da13f9e784340c94feca5b7d0dea569",
-    "sha256": "7f5d7da8b1343dd24ea2ae574b165d960e0fac48936c0517eb4fd7c0bc3c13a6",
+    "ast_sha256": "3ff26ff3ba5410fc495b7103002465de0e0ccbc339b81dd56074a462f8a561f8",
+    "sha256": "49fc7aaf793a1c087317bbc086ccd6fce4a644d2d80d019fcc52a399b11e76b3",
     "source": "src/adaptive_inference/desktop/saved_tasks.py"
   },
   "baseline_revision": "c348398089e544bf54add2beaaf73550f8951efc",
@@ -57,6 +57,16 @@
     "provenance/task-preparation/source-lineage.json",
     "https://docs.python.org/3/library/ast.html",
     "https://docs.python.org/3/library/hashlib.html"
+  ],
+  "superseded_additions": [
+    {
+      "ast_sha256": "8d3d5afe833b56d6b2e8bbd5dbcd2a347da13f9e784340c94feca5b7d0dea569",
+      "reason": "Initial reader refused the ordinary known-undispatched admission-wait checkpoint after safe Stop. Original source and validation are preserved.",
+      "retained_source": "provenance/installed-reopen/admission-wait-predecessor/saved_tasks.py",
+      "sha256": "7f5d7da8b1343dd24ea2ae574b165d960e0fac48936c0517eb4fd7c0bc3c13a6",
+      "source": "src/adaptive_inference/desktop/saved_tasks.py",
+      "source_revision": "1af6d4a2b5a4431f66ac828318d60be7d6198670"
+    }
   ],
   "working_base_revision": "72ac717dbbcb11684e2687a2992a462a0f078f39"
 }

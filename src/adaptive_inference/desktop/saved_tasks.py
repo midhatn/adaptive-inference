@@ -17,7 +17,7 @@ import re
 import sqlite3
 import subprocess
 
-from adaptive_inference.control_mailbox import ACKS, execution_outcome
+from adaptive_inference.control_mailbox import ACKS, ControlBlocked, admission_wait_state, execution_outcome
 from adaptive_inference.demand import NAMESPACE
 from adaptive_inference.execution_clock import CLOCK_ID
 from adaptive_inference.task_store import TaskStore, ReconciliationRequired, _FileLock
@@ -142,8 +142,22 @@ def read_saved(task_root):
         raise ReconciliationRequired('Saved checkpoint has no matching original reopen context')
     if cp.owner_epoch is not None or cp.operation is not None or cp.requires_reconciliation:
         raise ReconciliationRequired('Saved task has an owner or unresolved operation')
-    if execution_outcome(cp.state) is not None or cp.state.get('pending_request') is not None:
-        raise ReconciliationRequired('Saved execution is sealed or has an uncertain request')
+    if execution_outcome(cp.state) is not None:
+        raise ReconciliationRequired('Saved execution is sealed')
+    if cp.state.get('pending_request') is not None:
+        # Ordinary Stop can preserve a known undispatched admission wait. Reuse
+        # its bounded state/accounting and native-tool checks; do not erase the
+        # request or renew its deadline. The owned worker verifies native history
+        # before its normal conversation rebuild after a fresh Resume.
+        from adaptive_inference.desktop.hermes.service_stop import flushed_tools
+        try:
+            admission_wait_state(cp.state)
+            if (cp.state['pending_request']['model'] != cp.metadata.get('model')
+                    or cp.state.get(NAMESPACE, {}).get('state') != 'paused'):
+                raise ControlBlocked('Saved admission wait differs from its paused task')
+            flushed_tools(cp.state)
+        except (ControlBlocked, rec.RecoveryStop) as error:
+            raise ReconciliationRequired('Saved request is not a known stopped admission wait') from error
     if cp.state.get('phase') not in ('ready', 'waiting_admission', 'accepted'):
         raise ReconciliationRequired('Saved task has no safe checkpoint')
     for name, expected_sha in plan['pins'].items():

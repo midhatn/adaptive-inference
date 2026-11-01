@@ -11,7 +11,7 @@ import unittest
 from unittest import mock
 
 from adaptive_inference.control_mailbox import Mailbox, ACKS
-from adaptive_inference.demand import DemandIdentity, DemandRegistry, Registration
+from adaptive_inference.demand import DemandIdentity, DemandRegistry, Registration, NAMESPACE
 from adaptive_inference.task_spec import TaskSpec
 from adaptive_inference.task_store import TaskStore, ReconciliationRequired, TaskBusyError
 from adaptive_inference.desktop import saved_tasks as saved
@@ -21,6 +21,7 @@ from adaptive_inference.desktop.hermes import recovery as rec
 from test_desktop_report_feedback import NativeDB
 from test_desktop_installation import profile_value
 from task_spec_support import spec_data
+import test_desktop_composition as composition_fixture
 
 BOOT = {'source': saved.BOOT_SOURCE, 'boot_utc': '2026-11-01T08:12:13.1234567Z', 'computer_name': 'fixture'}
 PACKAGE = {'version': 'fixture', 'files': {'fixture.py': 'a' * 64}}
@@ -158,6 +159,203 @@ print(json.dumps({'deadline':value['deadline'],'requests':cp.state['requests'],
         self.assertEqual(before, (self.work / 'task.sqlite3').read_bytes())
         self.assertIsNone(case.host); self.assertEqual(case.handles, [])
         self.assertEqual(interpreter.call_count, 1)
+
+
+class AdmissionWaitReopenTests(unittest.IsolatedAsyncioTestCase):
+    """Real wait/Stop/store/rebuild path; only transport and desktop edges are inert."""
+
+    _prepare_order = composition_fixture.CompositionTests._prepare_order
+
+    async def asyncSetUp(self):
+        from adaptive_inference.desktop.hermes import admission
+        from adaptive_inference.desktop.hermes.control_bridge import Controls
+        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name).resolve()
+        self.runs = self.root / 'runs'; self.runs.mkdir()
+        self.work = self.runs / 'session-original/hermes-task'
+        (self.work / 'work').mkdir(parents=True)
+        (self.work / 'work/notes.txt').write_bytes(b'First note.\nSecond note.\n')
+        self.profile = self.root / 'profile.json'
+        self.profile.write_text(json.dumps(profile_value(self.root)), encoding='utf-8')
+        self.package = {'version': 'fixture', 'files': {}}
+        self.context = saved.bind_context(saved.new_context(composition.sha(self.profile), self.package, BOOT), self.work)
+        self.spec = TaskSpec(spec_data())
+        self.identity = DemandIdentity('registration', 'task', 'worker', '2026-11-01T10:00:00Z')
+        self.store = TaskStore(self.work / 'task.sqlite3')
+        prepare_task(self.store, self.identity, self.spec.prompt, 'session', metadata={
+            'model': composition.MODEL, 'quality': composition.QUALITY,
+            **self.spec.metadata(), 'pre_effect_validator': self.spec.validator_identity(),
+            'deadline_clock': saved.CLOCK_ID, saved.CONTEXT: self.context})
+        registry = DemandRegistry((Registration(self.store, self.identity),))
+        self.capability = object()
+        self.box = Mailbox(registry, self.identity.registration_id, requester_capability=self.capability)
+        rec.save(self.work / 'plan.json', {'task_id': 'task', 'session_id': 'session',
+            'deadline_clock': saved.CLOCK_ID, saved.CONTEXT: self.context,
+            'task_spec': self.spec.data, 'task_spec_sha256': self.spec.sha256,
+            'base_python': str(self.root / 'worker.exe'), 'gateway': 'http://127.0.0.1:18100/v1',
+            'demand_identity': {key: getattr(self.identity, key) for key in
+                                ('registration_id', 'task_id', 'owner_id', 'arrived_at_utc')},
+            'pins': {str(self.work / 'work/notes.txt'): rec.digest((self.work / 'work/notes.txt').read_bytes())}})
+        self.db = NativeDB(self.work / 'native.sqlite3')
+        self.addCleanup(self.close_database)
+        self.now, self.deadline = 100.0, 1000.0
+        self.dispatched, self.effects = [], []
+        self.admitted, self.unknown_dispatch, self.stop_queued = True, False, False
+        outer = self
+
+        class Provider(admission.Provider):
+            def __init__(self):
+                # Reuse execute/admitted and actual recovery callbacks. No SDK,
+                # socket or model is constructed by these external edge stubs.
+                self.model, self.instance = composition.MODEL, 'a' * 32
+                self.deadline, self.clock = outer.deadline, lambda: outer.now
+                self.current_attempt = self.body_sha256 = None
+                self.status_reader = lambda: {'service': 'adaptive-inference', 'instance': self.instance,
+                    'scheduler': {'active': False, 'pending': 0, 'closing': False,
+                                  'backend_completion_uncertain': False},
+                    'resources': {'admission_allowed': outer.admitted}}
+                def create(**request):
+                    outer.dispatched.append(deepcopy(request))
+                    if outer.unknown_dispatch:
+                        raise OSError('Dispatched response outcome is unknown')
+                    return {'scripted_transport': True}
+                self.client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+                def sleep(seconds):
+                    outer.now += seconds
+                    if not outer.stop_queued:
+                        outer.stop_queued = True
+                        outer.box.submit(outer.capability, 'ordinary-stop', 'pause')
+                self.sleep = sleep
+
+        self.provider_type = Provider
+        self.controls_type = Controls
+
+    def close_database(self):
+        if self.db is not None:
+            self.db.close(); self.db = None
+
+    def controller(self, owned, box):
+        controls = self.controls_type(box, deadline=self.deadline, deadline_clock=saved.CLOCK_ID,
+            clock=lambda: self.now, utc_now=lambda: '2026-11-01T10:00:00Z',
+            sleep=lambda seconds: self.fail('No unobserved pause loop expected'))
+        value = rec.Recovery(owned, self.db, self.work / 'work', self.work, controls=controls)
+        value.provider = self.provider_type()
+        return value
+
+    def request(self):
+        return {'model': composition.MODEL, 'messages': rec.native_history(self.db, 'session'),
+                'stream': False, 'max_tokens': 10923, 'extra_body': deepcopy(composition.QUALITY)}
+
+    def tool(self, controller, name, args, call_id):
+        self.db.append({'role': 'assistant', 'content': None, 'tool_calls': [{
+            'id': call_id, 'type': 'function', 'function': {'name': name, 'arguments': json.dumps(args)}}]})
+        def effect(value):
+            self.effects.append(name)
+            if name == 'read_file':
+                return json.dumps({'content': (self.work / 'work' / value['path']).read_text()})
+            (self.work / 'work' / value['path']).write_text(value['content'], encoding='utf-8')
+            return json.dumps({'verified': True})
+        result = controller.tool(name, args, effect, session_id='session', tool_call_id=call_id)
+        self.assertNotIn('error', json.loads(result))
+        self.db.append({'role': 'tool', 'tool_call_id': call_id, 'content': result})
+        controller.control_safe_point()
+        return result
+
+    def read_then_stop(self, *, unknown=False):
+        from adaptive_inference.desktop.hermes.service_stop import StopAtPause, ProductStop
+        cp = self.store.load('task')
+        self.box.submit(self.capability, 'initial-resume', 'resume')
+        with self.store.claim('task', expected_revision=cp.revision) as owned:
+            state = deepcopy(owned.checkpoint.state); state['deadline_monotonic'] = self.deadline
+            owned.save_checkpoint(state, expected_revision=owned.checkpoint.revision)
+            controller = self.controller(owned, self.box)
+            controller.controls.safe_boundary = StopAtPause(controller, 'ordinary-stop')
+            controller.bootstrap_controls()
+            self.db.append({'role': 'user', 'content': self.spec.prompt})
+            controller.llm(self.request(), None, session_id='session')
+            self.read_result = self.tool(controller, 'read_file', {'path': 'notes.txt'}, 'confirmed-read')
+            self.pending = self.request()
+            self.admitted, self.unknown_dispatch = unknown, unknown
+            if unknown:
+                with self.assertRaises(rec.RecoveryStop):
+                    controller.llm(self.pending, None, session_id='session')
+            else:
+                with self.assertRaises(ProductStop) as stopped:
+                    controller.llm(self.pending, None, session_id='session')
+                self.stop_receipt = stopped.exception.receipt
+                self.assertEqual(self.stop_receipt['phase'], 'waiting_admission')
+                self.assertEqual(self.box.status('ordinary-stop')['outcome'], 'applied')
+        self.close_database()
+        return self.store.load('task')
+
+    async def test_real_admission_wait_stop_reopens_paused_then_resumes_saved_read(self):
+        original = self.read_then_stop()
+        self.assertIsNone(original.owner_epoch); self.assertIsNone(original.operation)
+        self.assertFalse(original.requires_reconciliation)
+        self.assertEqual(original.state['pending_request'], self.pending)
+        self.assertEqual((original.state['requests'], original.state['attempts'],
+                          original.state['admission_attempts']), (1, 1, 1))
+        self.assertEqual(self.effects, ['read_file']); self.assertEqual(len(self.dispatched), 1)
+        self.assertEqual(saved.discover(self.runs)[0]['saved_task'], str(self.work))
+        old_bytes = (self.work / 'task.sqlite3').read_bytes()
+        selected = saved.inspect_saved(self.work, profile_sha256=composition.sha(self.profile),
+            installed=self.package, boot=BOOT, now=self.now)
+        self.assertEqual(selected['checkpoint'], original)
+        self.assertEqual((self.work / 'task.sqlite3').read_bytes(), old_bytes)
+
+        self.case = composition.DesktopComposition(self.profile, self.runs / 'session-reopened', saved_task=self.work)
+        self.case.root.mkdir()
+        with mock.patch.object(saved, 'observe_boot', return_value=BOOT), \
+                mock.patch.object(composition, 'execution_now', side_effect=lambda: self.now):
+            await self._prepare_order(self.spec, reopened=True)
+        paused = self.store.load('task')
+        self.assertEqual(self.case.deadline, original.state['deadline_monotonic'])
+        self.assertEqual(paused.state['pending_request'], self.pending)
+        self.assertEqual(paused.state['native_history'], original.state['native_history'])
+        self.assertEqual(len(self.dispatched), 1)
+        self.assertEqual(paused.state[NAMESPACE]['state'], 'paused')
+
+        self.db = NativeDB(self.work / 'native.sqlite3')
+        self.admitted = True
+        self.case.box.submit(self.case.capability, 'fresh-resume', 'resume')
+        with self.store.claim('task', expected_revision=paused.revision) as owned:
+            self.assertEqual(rec.resumable(owned, self.db, self.work / 'work'), original.state['native_history'])
+            controller = self.controller(owned, self.case.box)
+            controller.bootstrap_controls()
+            # The ordinary worker passes CONTINUE with the same native history.
+            from adaptive_inference.desktop.hermes.run_recovery import CONTINUE
+            self.db.append({'role': 'user', 'content': CONTINUE})
+            controller.llm(self.request(), None, session_id='session')
+            resumed = self.dispatched[1]
+            self.assertEqual([row['content'] for row in resumed['messages'] if row.get('tool_call_id') == 'confirmed-read'],
+                             [self.read_result])
+            self.tool(controller, 'write_file', {'path': 'answer.txt', 'content': 'Two short notes.'}, 'single-write')
+            controller.llm(self.request(), None, session_id='session')
+            self.db.append({'role': 'assistant', 'content': 'Created answer.txt.'})
+            controller.finish({'completed': True, 'failed': False, 'interrupted': False,
+                               'final_response': 'Created answer.txt.'})
+        self.close_database()
+        final = self.store.load('task')
+        self.assertEqual(final.state['status'], 'accepted')
+        self.assertEqual(final.state['deadline_monotonic'], self.deadline)
+        self.assertEqual((final.state['requests'], final.state['attempts'], final.state['admission_attempts']), (3, 3, 3))
+        self.assertEqual(self.effects, ['read_file', 'write_file'])
+        self.assertEqual(len((self.work / 'effect-receipts.jsonl').read_text().splitlines()), 1)
+        self.assertTrue(any(row['payload']['state'].get('pending_request') == self.pending
+                            for row in self.store.history('task')))
+        self.assertEqual(saved.completed_result(saved.read_saved(self.work))['provider_calls'], 0)
+
+    async def test_dispatched_unknown_generation_stays_refused(self):
+        cp = self.read_then_stop(unknown=True)
+        self.assertEqual(len(self.dispatched), 2)
+        self.assertEqual(cp.operation['kind'], 'generation')
+        self.assertTrue(cp.requires_reconciliation)
+        before = (self.work / 'task.sqlite3').read_bytes()
+        with self.assertRaises(ReconciliationRequired):
+            saved.inspect_saved(self.work, profile_sha256=composition.sha(self.profile),
+                installed=self.package, boot=BOOT, now=self.now)
+        self.assertEqual((self.work / 'task.sqlite3').read_bytes(), before)
+        self.assertEqual(self.effects, ['read_file'])
 
 
 class BootObservationTests(unittest.TestCase):

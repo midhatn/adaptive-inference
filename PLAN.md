@@ -893,6 +893,21 @@ Stop, actual application joins, the same read in the first resumed request,
 correct remaining work and exactly one physical output write. A task already
 completed before Stop does not satisfy unfinished-task recovery.
 
+Source preflight exposed an ordinary-path prerequisite: safe Stop during an
+undispatched resource wait preserves `pending_request`, while the initial saved
+selector refused it. The [bounded correction](provenance/installed-reopen/admission-wait-validation-2026-11-01.json)
+reuses the existing admission-state, paused-task and fully-flushed-native-tool
+checks. It preserves the request until the normal worker rebuild after fresh
+Resume, without renewing the deadline or counters. The meaningful regression
+first failed at the original selector; the corrected wait/Stop/reopen path and
+unknown-dispatch refusal passed, followed by 68 affected component checks.
+The corrected complete source suite passed 1,344 tests. Its first attempt used
+an unsuitable Windows venv redirector and remains failed; the existing direct
+interpreter prerequisite was restored without weakening process-identity checks.
+Require the corrected package and exact-head checks before installing this
+candidate, then qualify the same original IQ3_S task under actual application
+restart.
+
 This first increment requires a matching original boot/profile/package context
 recorded when the task was created. Closed-app time consumes its saved budget;
 an expired task cannot receive a fresh 900 seconds through reopening. Preserve

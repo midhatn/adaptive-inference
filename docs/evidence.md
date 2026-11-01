@@ -4,6 +4,24 @@ This ledger separates portable software tests, source reconstruction, actual SDK
 
 ## Ordinary saved-task reopening
 
+**Admission-wait correction, 1 November 2026:** preparation for the installed
+trial exposed a normal path missed by the original ready-state fixtures. Stop
+can safely preserve a known-undispatched request, but the selector refused every
+pending request. The [correction record](../provenance/installed-reopen/admission-wait-validation-2026-11-01.json)
+retains the meaningful old-behavior failure and 68 passing affected checks.
+The corrected selector reuses the existing bounded wait and flushed-tool checks;
+it neither renews the deadline nor clears the saved request. Unknown dispatched
+operations still require reconciliation. The regression traverses actual store,
+admission, Stop and native-history rebuilding with inert composition/transport
+edges. The corrected complete source suite passed **1,344 tests in 345.251
+seconds**, with unchanged source. An earlier attempt used a Windows venv
+redirector instead of the established full interpreter and stopped in a nested
+startup fixture; its exact hidden assertion was not captured. That failed
+attempt remains recorded, and the process-identity checks were preserved.
+Distribution/hosted checks and installed-model restart remain separate evidence.
+Earlier runner and fixture mistakes are retained as such, not as product
+failures. The original source and validation below remain unchanged evidence.
+
 **1 November 2026, development source:** the [saved-task path](saved-task-reopening.md)
 adds New/Open saved selection to the ordinary desktop launcher. It reuses the
 same task store, native conversation, safe Stop, mailbox and worker claim. A

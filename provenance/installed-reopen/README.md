@@ -39,6 +39,16 @@ Current reopening behavior is tested separately in
 checks do not establish installed application restart, reboot survival, model
 correctness, resource handoff or the absence of duplicate real tool effects.
 
+The admission-wait correction refreshes only the declared `saved_tasks.py`
+addition identity. Its [original source](admission-wait-predecessor/saved_tasks.py)
+from `1af6d4a2b5a4431f66ac828318d60be7d6198670` remains byte-for-byte preserved,
+with the old byte/AST pins recorded in `superseded_additions`. The original
+[validation record](validation-2026-11-01.json) is unchanged. The existing
+62-to-61 module check and all predecessor assertions remain strict; no new
+projection or recovery framework was introduced. The separate
+[correction record](admission-wait-validation-2026-11-01.json) describes the
+ordinary wait → acknowledged Stop → reopen regression and its limits.
+
 To run the affected source-history modules from this checkout with Python 3.11
 or newer and the repository's locked dependencies, use PowerShell:
 

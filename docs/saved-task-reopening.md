@@ -41,6 +41,20 @@ observation, exhausted deadline, live owner, changed input or unresolved effect
 refuses continuation. An old Resume receipt does not start a new host. New GUI,
 process and resource bindings are established before a fresh Resume.
 
+A safely stopped task may still have a request waiting for resources. The
+reader accepts that request only when the existing admission-state validator
+confirms its bounded accounting, the task is paused, its model matches, there
+is no owner or unresolved operation, and native tool calls are fully flushed.
+Selection keeps the saved request, history and deadline unchanged. After a new
+Resume, the ordinary worker rebuilds its conversation from the saved native
+history. An uncertain dispatched request remains refused.
+
+The initial reader rejected this ordinary wait state even after a clean Stop.
+The [correction evidence](../provenance/installed-reopen/admission-wait-validation-2026-11-01.json)
+preserves the failing regression and subsequent component checks. Those checks
+use real task storage, admission and Stop callbacks with inert transport and
+desktop edges; they do not qualify installed IQ3_S restart.
+
 Read-only accepted results are independent of execution authorization. Their
 original stored identity, checkpoint and artifacts must remain valid, but viewing
 them does not renew a deadline or require the old boot to remain current.
