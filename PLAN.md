@@ -129,6 +129,43 @@ reviewed bounded correction, and require the corrected source's hosted checks.
 Hold further draft-asset refreshes until that source has passed, to avoid
 repeatedly packaging intermediate CI follow-ups.
 
+The corrected source then passed all 14 original jobs and PR #25 merged. The
+alpha's original push also passed all seven jobs, but its PR integration run
+exposed a selected CPU-child emergency watchdog firing during the held-timeout
+diagnostic. Preserve that failure and the unknown final delayed operation.
+The [selected-fixture correction](provenance/task-handover/continuation-timeout-diagnostics/README.md#selected-cpu-child-emergency-guard-1-november-2026)
+gives only that child's hang detector 60 seconds, covering already permitted
+30-second entry, five-second hold and 20-second cleanup phases. Original-child
+timing, intentional timeout, cleanup deadline, exact exits and no-kill assertions
+remain unchanged. Forty-eight affected checks passed locally with all retained
+children joined. The original alpha PR run is now closed with six passes and
+one failure. Validate the corrected integration and refresh source assets only
+after its own checks pass.
+No product/model deadline or physical acceptance gate changes.
+
+A later original macOS job exposed an EOF-only assumption in the deliberately
+refused TCP-connection test. Reuse the [TCP standard's allowed reset behavior](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.6.1)
+in that one refusal assertion, retaining the subsequent ownership, next-request
+and cleanup checks. This is a test portability correction, not a controller or
+timeout change. Preserve the original failure, run the existing listener suite,
+collect the original workflows and require corrected-head CI before release.
+The [evidence ledger](docs/evidence.md#refused-tcp-connection-fixture-on-macos)
+records its scope. Keep final archive refresh behind that gate.
+
+The separate NPU research contribution, PR #26, passed all 14 fresh hosted jobs
+and merged into main at `46ecac6`. Its qualification guide and measurement record
+are included in the release candidate; no runtime or tests changed through that
+integration. This supports optional M9 decisions without moving accelerator
+optimization ahead of the foreground, tool-handoff and restart milestones.
+
+The separate `0.4.0a1` release candidate now names the supported scope, reconciles
+the changelog and preserves the old physical source records through the existing
+exact source view. Its fresh isolated regular-wheel check verified all 61 modules
+and an actual installed task-preparation round trip with the original budgets.
+Complete the combined source/archive and hosted checks, then deliver it as a
+prerelease. Package validation is separate from a new physical deployment;
+measured desktop coexistence remains the next functional milestone.
+
 The reference can be delivered as a narrow alpha before the full daily-use
 milestone. Keep the existing IQ3_S quality, budgets, task-effect rules and
 acceptance standards. Validate meaningful changes and reuse completed evidence

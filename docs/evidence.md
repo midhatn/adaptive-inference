@@ -65,6 +65,116 @@ source evidence, not a new native-resource or model result. Independent review
 accepted the bounded correction and its retained evidence. Original CI stays
 failed; the correction still needs its own exact-head hosted checks.
 
+Corrected source `6be262996a3e42851cdf3f31a46342cd235ceca9` passed all 14
+original jobs ([push](https://github.com/midhatn/adaptive-inference/actions/runs/41269784559),
+[PR](https://github.com/midhatn/adaptive-inference/actions/runs/41269789838)) before
+[PR #25](https://github.com/midhatn/adaptive-inference/pull/25) merged. Alpha
+`d5837f9f44dbcf7af3c28149dad0945bc6002f50` passed all seven original
+[push jobs](https://github.com/midhatn/adaptive-inference/actions/runs/41269982741).
+
+Its subsequent [Windows 3.11 PR job](https://github.com/midhatn/adaptive-inference/actions/runs/41270791467/job/124742964115)
+failed an injected-timeout diagnostic: selected-child exit 124 replaced the
+required normal Stop exit 4. The intended five-second timeout was observed;
+the selected child lived approximately 15.187 seconds before its emergency
+watchdog ended it. Both children joined without parent cleanup kills. Saved
+cooperative-cleanup fields precede final owner release and normal exit, so they
+do not qualify this failed attempt. The precise final delay remains unknown.
+
+The [prospective selected-child guard correction](../provenance/task-handover/continuation-timeout-diagnostics/README.md#selected-cpu-child-emergency-guard-1-november-2026)
+passed 48 existing host, timeout-diagnostic and source-lineage checks once in
+48.627 seconds on full Python 3.11.9 with every locked dependency version and
+explicit checkout imports. All 42 retained children joined; the sole forced
+cleanup belonged to the existing deliberately injected setup-failure test.
+Both held diagnostics retained their five-second timeout, required exits
+`[5, 4]` and no cleanup kill. The parent exited 0 and only the main thread
+remained. The host fixture's explanatory comment has an identical AST and uses
+the existing exact byte projection; historical archives and runtime/model
+settings are unchanged. Corrected-head hosted integration remains required.
+
+### Refused TCP connection fixture on macOS
+
+The original alpha `70dc1cdf1225b501e27199887ec47e1d66d28f90`
+[macOS 3.12 job](https://github.com/midhatn/adaptive-inference/actions/runs/41272546653/job/124748107031)
+failed the deliberately refused-connection test with `ConnectionResetError`
+from the client's stream read. It had run 766 tests in 60.354 seconds, with
+37 platform skips. The test had occupied the only transport slot, sent a request
+on another connection and expected empty EOF. Its later ownership and next-request
+assertions were not reached; the original outcome remains failed.
+
+The listener closes and reaps refused streams without reading their payload.
+[RFC 9293 section 3.6.1](https://www.rfc-editor.org/rfc/rfc9293.html#section-3.6.1)
+allows reset behavior when closing with unread received data, and
+[CPython 3.12.10 streams](https://github.com/python/cpython/blob/v3.12.10/Lib/asyncio/streams.py)
+propagate connection-loss errors to the reader. This supports a test portability
+correction; the log does not establish the exact packet timing. Only the first,
+intentionally refused exchange accepts `ConnectionResetError` as an alternative
+to empty EOF. The shared exchange helper and second successful request remain
+strict. Record reaping, refusal count, held-connection count, retained joins,
+closed sockets, no remaining tasks and all timeouts stay required. No runtime,
+source-projection or historical-archive changes are needed.
+
+All 21 existing listener tests passed once in 3.224 seconds on full Python
+3.11.9 with locked dependencies and explicit checkout imports. All 21 fixture
+teardowns completed; all 20 tracked socket observations were closed, with no
+pending tasks and only the main thread remaining. The actual test parent joined
+with exit 0. This is local socket-fixture evidence; the corrected candidate's
+own macOS CI remains required before release.
+
+## NPU research integration
+
+[PR #26](https://github.com/midhatn/adaptive-inference/pull/26) merged at
+`46ecac6012c129601091b647d9f66abe05c3bd84` after all 14 original jobs passed for
+reviewed head `aaabfd83f4ab7e52e162a3f1f8caa1ffd4d591e3`
+([push](https://github.com/midhatn/adaptive-inference/actions/runs/41271397879),
+[PR](https://github.com/midhatn/adaptive-inference/actions/runs/41271400923)).
+Its final delta contains five documentation/data/manifest files; the newer main
+runtime, tests and source mappings were preserved. Ten existing distribution
+checks passed locally, followed by an isolated source/wheel build and verification
+of 1,191 source files and 61 runtime modules at version 0.3.0. Those package
+identities belong to the PR #26 revision, separately from the alpha below.
+
+The [qualification guide](npu-qualification.md) and [measurement record](measurements/phoenix-lfm-drafter-20261029.json)
+retain the limited teacher-forced Phoenix NPU diagnostic and its unqualified
+quality, acceptance and complete-task claims. This contribution enables no NPU
+backend and proves no IQ3_S or agent speedup. Integrating it into the alpha
+changed no runtime or test bytes; that combined release still requires its own
+hosted checks and final source archive.
+
+## Windows reference alpha packaging
+
+The `0.4.0a1` candidate changes the package version and delivery documentation.
+Its only runtime-source difference from the immediate development predecessor
+is the `__version__` assignment. The existing source view declares that exact
+change while retaining the original 60-module physical source record and
+rejecting unknown changes. Forty-three affected source-lineage tests passed
+before integration of the separate test-guard correction; final combined checks
+and hosted CI remain distinct gates.
+
+After combining the release-version and original whole-fixture guard changes,
+all 43 affected lineage tests passed again in 53.723 seconds on Python 3.11.9.
+This predates the selected-child watchdog correction above and is historical
+evidence for that earlier source view. The actual source, helper and test
+origins were recorded, and the captured runtime/test/source-map hashes remained
+unchanged during that run. The later host-comment and source-view changes use
+the separate 48-check result above; the old 43-check source hashes are not
+claimed to match the new candidate. Hosted checks and complete release-archive
+verification remain separate.
+
+A new isolated Python 3.11.9 environment, without inherited site packages,
+installed the locked dependencies and regular candidate wheel. The existing
+wheel verifier and installed-package check agreed on all 61 module hashes and
+the version metadata. An actual installed `prepare-task` command preserved the
+supplied objective, copied input and original task budget through the existing
+TaskSpec validation. Its output retained `not_checked` semantic status. No
+worker, GUI or model was launched. Independent source/package review accepted
+this bounded result.
+
+The candidate wheel SHA-256 is
+`953da66c0dc0840b0eddf5d6d66e158a628a67e5f29540af35b421bb45557fa9`.
+It is a new packaging identity, not another physical case17 or launcher test.
+Use the actual release state and attached source/checksum records when
+downloading; this entry does not assert that the prerelease has been published.
+
 ## Supported desktop setup helper
 
 **1 November 2026:** the [setup and launch helpers](../examples/desktop/README.md)

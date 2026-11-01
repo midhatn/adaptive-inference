@@ -7,8 +7,8 @@ authors:
     given-names: Midhat
 repository-code: https://github.com/midhatn/adaptive-inference
 url: https://github.com/midhatn/adaptive-inference
-version: 0.3.0
-date-released: 2026-10-24
+version: 0.4.0a1
+date-released: 2026-11-01
 license:
   - Apache-2.0
   - MIT

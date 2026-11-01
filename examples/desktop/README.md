@@ -1,5 +1,9 @@
 # Set up the supported desktop launcher
 
+These helpers accompany the `0.4.0a1` reference alpha. Use its matching complete
+source archive and runtime wheel; the small wheel does not contain these example
+scripts or the external model/runtime prerequisites.
+
 This helper creates a local deployment profile and **Start Adaptive Inference**
 launcher from an existing supported installation. It removes manual hash editing
 and run-directory naming. It does not install Python, packages, Hermes, drivers,
@@ -64,8 +68,11 @@ Official sources checked on 1 November 2026:
   launcher check reached the native file-dialog call without a visible picker or
   a task starting. The revised entry follows the existing controller's **New task**
   interaction: a visible parent running its event loop before the user opens the
-  picker. This addresses startup usability; a new installed check must establish
-  its actual behavior. The precise cause of the first invisible dialog is unknown.
+  picker. A fresh [installed startup/Stop check](../../docs/evidence.md#supported-desktop-setup-helper)
+  then displayed the picker and paused controller and closed after one Stop,
+  with zero provider calls and no native backend launch. The precise cause of
+  the first invisible dialog remains unknown; both attempts retain their
+  original installation identities.
 - [Python command-line options](https://docs.python.org/3.11/using/cmdline.html#cmdoption-I)
   document isolated `-I` execution; `-B` avoids bytecode writes. The launcher
   uses an explicit interpreter and ordinary installed imports.

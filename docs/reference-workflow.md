@@ -1,5 +1,9 @@
 # Use the Windows reference workflow
 
+**Reference alpha: `0.4.0a1`.** This guide covers the supported bounded file-task
+workflow. The package is a prerelease; application/reboot recovery and broad
+daily-use qualification remain future work.
+
 The current reference lets one controller stay open while you complete a file
 task, continue saved work after a resource wait, and choose another task. It
 uses the existing IQ3_S model, an explicitly owned Strata backend and the pinned
@@ -22,10 +26,14 @@ the selected installed components and writes a **Start Adaptive Inference**
 launcher. It calculates the required hashes; no manual JSON editing is needed.
 It does not install Python, Hermes, models or the native backend for you.
 
-Use the current development source containing the file-task and handover
-features. The version number alone does not identify those changes: the tested
-runtime and the newer publication source are identified separately in the
-evidence. An older 0.3.0 wheel does not acquire new behavior by sharing its name.
+Use the matching `0.4.0a1` complete source archive and runtime wheel, or the exact
+source revision named by its release. Verify the published artifact identities;
+the version string alone is not a content check. The source archive contains
+the setup helpers and examples, while the wheel installs the runtime. Install
+that same wheel in both selected full interpreters. The original case17 model
+result and the later launcher startup check remain bound to their recorded
+installations; packaging or task-authoring checks do not qualify a different
+physical deployment.
 
 For a first task, use the supplied [inventory specification](../examples/tasks/inventory/task.json)
 and [input folder](../examples/tasks/inventory/inputs). The specification describes
@@ -80,10 +88,10 @@ assuming the task completed or starting another controller.
 
 ## Use your own task
 
-With a build containing `prepare-task`, give the objective and selected files:
+Use the selected host interpreter to prepare an objective and selected files:
 
 ```powershell
-adaptive-inference prepare-task --destination .\summary-task `
+& $HostPython -I -B -m adaptive_inference prepare-task --destination .\summary-task `
   --prompt "Summarize notes.txt into answer.txt." --input .\notes.txt
 ```
 

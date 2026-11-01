@@ -101,3 +101,38 @@ and every continuation success assertion remain unchanged. The existing
 [outer source view](../../task-preparation/source-lineage.json) reverses only
 the declared guard and reader changes before historical checks; historical
 manifests, predecessor bytes and unknown-source refusal remain intact.
+
+## Selected CPU-child emergency guard, 1 November 2026
+
+The original alpha `d5837f9f44dbcf7af3c28149dad0945bc6002f50`
+[Windows 3.11 PR job](https://github.com/midhatn/adaptive-inference/actions/runs/41270791467/job/124742964115)
+failed the held-transition diagnostic after 244 tests in 263.561 seconds.
+Its expected child exits were `[5, 4]`; the actual exits were `[5, 124]`.
+The selected CPU fixture had an emergency timer that exits with code 124.
+Its retained launch and post-join observations were 674.781 and 689.968 seconds;
+the deliberately injected timeout was observed at 680.453 seconds. Both exact
+children joined without a parent cleanup kill. The original attempt remains
+failed.
+
+The selected result already recorded cooperative Stop and resource-cleanup
+fields, but that file is written before `selected.finish(code)` and before the
+owned-claim context exits. It does not prove those remaining steps or normal
+process exit completed. The exact delayed operation is unknown.
+
+The selected continuation fixture now has a 60-second emergency guard, covering
+the already permitted 30-second entry phase, five-second deliberate hold and
+20-second cleanup phase with modest headroom. The original-expiry fixture and
+its readiness record retain 15 seconds. The distinction between test-completion
+limits and hang detection follows
+[CPython 3.12.10 test support](https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py);
+60 seconds is this fixture's phase allowance, not a CPython-prescribed value.
+No CPython implementation is copied or imported.
+
+The injected five-second timeout, 20-second diagnostic cleanup bound, retained
+child waits, expected exits `[5, 4]`, exact ownership and no-cleanup-kill
+assertions remain unchanged. There is no timer lifecycle change, production
+runtime change or model-budget change. The existing
+[outer source view](../../task-preparation/source-lineage.json) reverses the
+host fixture's updated explanatory comment; all earlier source pins and
+historical outcomes remain unchanged. This is prospective CPU-fixture work,
+not installed-agent, native-resource or model qualification.

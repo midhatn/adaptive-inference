@@ -819,3 +819,21 @@
   url = {https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/bug-check-0x141---video-engine-timeout-detected},
   note = {Official live-dump and responsible-driver parameter documentation inspected 2026-10-28. Event-identity guidance only; a later publication is not by itself a new hardware fault or device attribution}
 }
+
+@techreport{rfc9293RefusedConnectionClose,
+  author = {Eddy, Wesley M.},
+  title = {Transmission Control Protocol (TCP)},
+  institution = {Internet Engineering Task Force},
+  number = {RFC 9293},
+  year = {2022},
+  doi = {10.17487/RFC9293},
+  url = {https://www.rfc-editor.org/rfc/rfc9293.html#section-3.6.1},
+  note = {Inspected 2026-11-01 after an original macOS listener-fixture failure. Section 3.6.1 permits reset behavior when closing with unread received data; informs the refusal-only EOF-or-ConnectionResetError test expectation. Controller behavior, timeouts and subsequent ownership assertions remain unchanged. Standard consulted, no implementation copied}
+}
+
+@misc{cpythonStreamResetPropagation,
+  author = {{Python Software Foundation and contributors}},
+  title = {CPython 3.12.10 asyncio stream error propagation and stream tests},
+  url = {https://github.com/python/cpython/blob/v3.12.10/Lib/asyncio/streams.py},
+  note = {Inspected 2026-11-01 with Lib/test/test_asyncio/test_streams.py at the same tag. Connection-loss exceptions reach stream reads; closed-peer tests distinguish connection errors. Supports only the observed ConnectionResetError alternative in the deliberate refused-connection fixture, not broad exception suppression. No source copied}
+}

@@ -58,7 +58,7 @@ def preparation_inputs(root=None):
 
 
 def preparation_predecessor(relative, data, root=None):
-    """Reverse only exact declared CLI/reader bytes, never unknown changes."""
+    """Reverse only exact declared CLI/reader/version bytes, never unknown changes."""
     root = ROOT if root is None else root
     if not (root / PREPARATION / 'source-lineage.json').exists():
         return data  # Legacy disposable roots still face the original checks.
@@ -85,7 +85,7 @@ def preparation_predecessor(relative, data, root=None):
 
 
 def preparation_runtime_view(root=None):
-    """Check the declared addition/CLI delta before historical closure checks.
+    """Check declared addition/CLI/version deltas before historical closure checks.
 
     Every other module and byte passes through to those original assertions.
     No unknown module is omitted and no retained runtime is executed.
@@ -96,25 +96,28 @@ def preparation_runtime_view(root=None):
                for path in runtime.rglob('*.py')}
     rows = preparation_record(root)
     for name, pin in {'task_prepare.py': rows['addition_sha256'],
+                      '__init__.py': rows['files']['src/adaptive_inference/__init__.py']['successor_sha256'],
                       'cli.py': rows['files']['src/adaptive_inference/cli.py']['successor_sha256']}.items():
         if name not in current:
             raise AssertionError('Changed task-preparation runtime closure: ' + name)
         if hashlib.sha256(current[name]).hexdigest() != pin:
             raise AssertionError('Changed task-preparation runtime source: ' + name)
     del current['task_prepare.py']
-    current['cli.py'] = preparation_predecessor('src/adaptive_inference/cli.py', current['cli.py'], root)
+    for name in ('cli.py', '__init__.py'):
+        current[name] = preparation_predecessor('src/adaptive_inference/' + name, current[name], root)
     return current
 
 
 def restore_preparation(tree, relative, root=None):
-    """The existing AST readers also see only the exact declared CLI delta."""
-    if relative != 'cli.py':
+    """Existing AST readers see only the exact declared CLI/version deltas."""
+    if relative not in ('cli.py', '__init__.py'):
         return tree
     root = ROOT if root is None else root
-    row = preparation_record(root)['files']['src/adaptive_inference/cli.py']
+    source = 'src/adaptive_inference/' + relative
+    row = preparation_record(root)['files'][source]
     if fingerprint(tree) != row['successor_ast_sha256']:
         return tree
-    data = (root / 'src/adaptive_inference/cli.py').read_bytes()
+    data = (root / source).read_bytes()
     if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
-        raise AssertionError('Changed complete task-handover source (task-preparation CLI)')
-    return ast.parse(preparation_predecessor('src/adaptive_inference/cli.py', data, root))
+        raise AssertionError('Changed complete task-handover source (task-preparation): ' + relative)
+    return ast.parse(preparation_predecessor(source, data, root))

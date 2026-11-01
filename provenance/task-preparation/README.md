@@ -12,6 +12,14 @@ then supply the original source bytes to those historical checks. Their module
 membership, hashes and acceptance assertions remain intact. Current preparation
 behavior is checked separately by [its functional tests](../../tests/test_task_prepare.py).
 
+The prospective `0.4.0a1` release also changes the package's version assignment
+from `0.3.0`. This record declares that exact byte and AST change and extends the
+same source view to reverse it. The original 60-module runtime hashes, physical
+records and predecessor assertions remain unchanged. Unknown version or source
+changes are not projected. The helper's original replacement rules remain in
+order, followed by the explicit release-metadata edits; this is a packaging
+identity adjustment, not a new installed-runtime qualification.
+
 The correction addresses the actual hosted failure at commit
 `6e17f3185e715013155d355aa05ff289c31bfab4`: historical module enumeration rejected
 the new helper before later tests ran. That failed attempt remains failed.

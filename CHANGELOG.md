@@ -1,6 +1,18 @@
 # Changelog
 
-## Unreleased — foreground handoff and installed-agent continuation
+## 0.4.0a1 — supported Windows reference alpha (2026-11-01)
+
+This prerelease packages the supported Windows/IQ3_S/Hermes reference, ordinary
+task preparation and desktop setup. It is a narrow alpha toward the always-on
+goal. Application/reboot recovery, measured gaming/video coexistence, autonomous
+media handoff and daily-use qualification remain later milestones. The installed
+results below retain their original source and deployment identities; the new
+package version does not relabel them as tests of a new installation.
+
+- Add bounded file-task contracts and `prepare-task`: turn an objective and selected files into a task specification and input snapshots without manual JSON/hash editing. Preparing a task starts no model; free-form task outputs retain explicit `not_checked` semantic status.
+- Accept the [case17 foreground/continuation/two-task workflow](docs/evidence.md#case17-complete-foreground-continuation-and-two-task-handover) on installed source `7306a53085ddc31d53d2ba50e91975c80cfc0014`: both original terminal audits passed, including 99 primary checks. One Continue preserved the correct 23-unit inventory result, a separate welcome task completed with format-only acceptance, and one normal Stop closed the retained controller. Preserve all earlier failed cases and original budgets.
+- Add the [supported setup helper and Start launcher](examples/desktop/README.md) for already installed components. Calculate the existing deployment hashes, choose tasks from a visible startup window and allocate fresh run folders. A separate installed startup/one-Stop check passed with zero provider calls and no native backend launch; its first invisible-picker failure remains recorded.
+- Preserve complete task-handover reproduction sources and scoped replay alongside the ordinary workflow, citations and original failures. Test-only startup-ordering corrections retain shared runtime timeouts and historical acceptance assertions.
 
 - Add [Continue saved task](docs/explicit-continuation.md) for a verified safely expired pending execution in the same host/window. One eligible click grants another 900-second execution and requests its Resume through fresh owner acknowledgements. Preserve the original objective, effect/history records and cumulative eight-request ceiling; retain Stop and exact child ownership during startup. Accept one installed Windows/Hermes/Strata IQ3_S trial after 70 independent terminal checks: three cumulative model requests, one report write, one Continue and normal shutdown after one Stop. See the [source-bound result](provenance/explicit-continuation/acceptance/README.md). This does not reopen completed tasks, renew budgets automatically or establish reboot recovery.
 
@@ -12,9 +24,9 @@
 - Handle an observed Windows process-teardown metadata race through the same retained handle, and distinguish intentional gateway shutdown from uncertain request completion. Preserve the original errors and reject unverified live processes or terminal uncertainty.
 - Reuse the bounded feedback runner for independently rejected completed answers; keep every attempt and unknown-outcome boundary. The accepted hardware run needed no arithmetic correction.
 - Preserve the full validation sources, licensed references, predecessor mechanisms, historical evidence filters and sanitized receipts in this repository. Model assets, native binaries and private histories remain external prerequisites.
-- Add durable task demand using existing task transactions and ownership. Persistent service integration and user controls are the next milestone; a demand observation alone grants neither dispatch nor unloading.
-- Add bounded durable Pause, Resume and Cancel requests through the same task store. Distinguish a saved request from owner acknowledgement, retain ordered requests across worker replacement and refuse unresolved operations. This portable component is not yet wired to the launchers or Hermes runner.
-- Add optional demand-aware handoff: verified cold initialization, restoration without an HTTP queue ticket, and idle release only after confirmed safe absence. Keep dispatch and uncertain ownership independent of demand eligibility. Preserve the full accepted M1 runtime alongside current component development; persistent host/UI acceptance remains separate.
+- Add durable task demand using existing task transactions and ownership, integrated with the retained desktop host. A demand observation alone grants neither dispatch nor unloading; the bounded installed composition retains safe waiting and explicit user controls.
+- Add bounded durable Pause, Resume and Cancel requests through the same task store and connect them to the installed host, GUI and pinned Hermes worker. Distinguish a saved request from owner acknowledgement, retain ordered requests across worker replacement and refuse unresolved operations.
+- Add optional demand-aware handoff: verified cold initialization, restoration without an HTTP queue ticket, and idle release only after confirmed safe absence. Keep dispatch and uncertain ownership independent of demand eligibility. Preserve the accepted M1 runtime and separate installed host/UI evidence; broader daily-use qualification remains pending.
 - Add opt-in timing history for each verified native owner, reusing the existing learner. Capture the executing runtime's learner after admission, preserve queued arrival/rank accounting and label prediction versus execution generations. Native host wiring and live validation remain separate from the component tests.
 
 ## 0.3.0 — generalized integrations and IQ3_S agent-task evidence
