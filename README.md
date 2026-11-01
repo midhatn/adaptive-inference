@@ -41,10 +41,16 @@ the controller. One normal Stop released its owned resources. The original
 99-check handover audit and separate foreground audit both passed in
 [case17](docs/evidence.md#case17-complete-foreground-continuation-and-two-task-handover).
 The inventory result was independently checked; the welcome task had format-only
-validation. This is a bounded development result; its standalone reproduction
-package and a usable installed alpha are the next delivery. The
+validation. The [accepted result and replay](provenance/task-handover/acceptance/README.md)
+and [fresh qualification workflow](examples/validation/task_handover/README.md)
+are preserved in this repository. The fresh workflow still requires actual
+installation records and external model assets; automatic setup and a usable
+installed alpha are the next delivery. The
 [task contracts](docs/task-spec.md), [roadmap](PLAN.md) and
 [handoff](HANDOFF.md) explain the supported scope and remaining work.
+
+For the ordinary controls and one-time prerequisites, start with
+[Use the Windows reference workflow](docs/reference-workflow.md).
 
 This repository is the **canonical source of truth** for the implementation, contracts, documentation, tests and evidence. The portable package works independently of Strata or Hermes. Optional native integrations preserve pinned source baselines, patches and licenses locally; reproducing their source does not depend on an old PR or upstream repository remaining available. See the [source preservation contract](docs/source-of-truth.md).
 

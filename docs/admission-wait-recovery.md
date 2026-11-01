@@ -5,8 +5,10 @@ scenario passed both original terminal audits in case17.** The original task
 kept its saved work through resource-wait expiry and explicit Continue; a
 separate second task finished in the same controller before normal Stop.
 See the [source-bound result](evidence.md#case17-complete-foreground-continuation-and-two-task-handover).
-The standalone reproduction package and broader M2 qualification remain work
-in progress. Earlier results and failed trials retain their original identities.
+The [accepted result/replay](../provenance/task-handover/acceptance/README.md)
+and [fresh qualification sources](../examples/validation/task_handover/README.md)
+are now preserved locally. Automatic installation and broader M2 qualification
+remain work in progress. Earlier results and failed trials retain their original identities.
 
 Suppose an agent has read the input file, then waits because the computer's
 resources are unavailable. Its execution budget ends before it can ask the model

@@ -1,0 +1,47 @@
+{
+  "definition_selection_reuse": {
+    "path": "examples/validation/windows_handoff/native/test_owner_failure.py",
+    "sha256": "1f264e8787fb78d897c831828673888db94e7734d887968accd148e80cebf565"
+  },
+  "foundation": {
+    "path": "provenance/explicit-continuation/acceptance/export.py",
+    "sha256": "1bf1eefdc90919c3bc746bf0ade44c8e52df1ed278641fd08553d193efda820f"
+  },
+  "license": "Apache-2.0 project mechanisms; retained Hermes attribution remains in the reproduction source closure.",
+  "original_foreground_auditor_sha256": "891ce471cc3a08e72c791245f62dafea934f4e08d0e30fc2d614571344e77ab0",
+  "original_harness_manifest_sha256": "75809e201f9b8b6595ea429f605f19b92ded944fb8b16527be4a9ba9ca5fc4f3",
+  "original_primary_auditor_sha256": "4eea07461df0d8d28fc5daf5ff1ec19a14868736968c3b210ef65309598084b4",
+  "predicate_sources": {
+    "checks": {
+      "path": "examples/validation/task_handover/checks.py",
+      "sha256": "78d63d1de72030c2c3f9eb49d2aa640f71430cf9992f9db2d787729b6d0369fa"
+    },
+    "first_inflight": {
+      "path": "examples/validation/task_handover/first_inflight.py",
+      "sha256": "1a4f6456475459eb842e718d600a6688f1794931b226ed54370d96f19fafb634"
+    },
+    "path_lineage": {
+      "path": "examples/validation/task_handover/path_lineage.py",
+      "sha256": "08422916b475ddd90b4afc046bdac5908889e8f689343586f8e28f3275f102b6"
+    },
+    "recovery": {
+      "path": "src/adaptive_inference/desktop/hermes/recovery.py",
+      "sha256": "188a627bda174b75878630a8804445dfff2a2499a277e9104a0417bde881f575"
+    },
+    "safe_wait": {
+      "path": "examples/validation/task_handover/safe_wait.py",
+      "sha256": "c443846ef5116d3c37e9ed1cab8abdf839cf1f42a7634431274129dadcedf921"
+    },
+    "service_stop": {
+      "path": "src/adaptive_inference/desktop/hermes/service_stop.py",
+      "sha256": "29eafae9a081265681caf82446dc0e835e41993fd5a44a23a450faed4bcf9bd5"
+    }
+  },
+  "references": [
+    "https://packaging.python.org/en/latest/specifications/binary-distribution-format/",
+    "https://packaging.python.org/en/latest/specifications/source-distribution-format/",
+    "https://docs.python.org/3.11/library/unittest.html#test-discovery"
+  ],
+  "schema": "adaptive.task-handover.acceptance-source-references.v1",
+  "scope": "Pure definitions are selected unchanged from hash-bound sources. Original disk auditors and database/runtime imports are never executed. Raw path validation is bound by the original foreground audit; saved-read lineage is replayed in memory."
+}

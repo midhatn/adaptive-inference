@@ -79,11 +79,27 @@ qualification source/wheel are distinguished from later release documentation.
 [Case17](evidence.md#case17-complete-foreground-continuation-and-two-task-handover)
 passed the installed foreground, resource-wait continuation and two-task
 handover audits with IQ3_S. The retained evidence and its hashes identify that
-particular run. Its standalone fresh-run workflow and public acceptance replay
-are the next publication step; a public clone does not yet reproduce that
-complete trial from these instructions alone.
+particular run. The [fresh-run source workflow](../examples/validation/task_handover/README.md)
+now supplies the parent, observer, local declarations, actual UI/foreground
+observation steps and both audits. The [accepted result and replay](../provenance/task-handover/acceptance/README.md)
+bind the original case; a custodian with its 33 exact private inputs can replay
+the public result without a model, database or service.
 
-The practical delivery reuses the [installed desktop composition](installed-desktop.md)
+The portable source/projection checks need only the complete repository:
+
+```text
+python -m unittest discover -s provenance -p "test_task_handover_reproduction.py" -v
+python -m unittest discover -s provenance -p "test_task_handover_acceptance.py" -v
+```
+
+These are source/fixture and evidence-replay tools, not a claim that the public
+path adaptation has had another model trial. A fresh physical qualification
+still needs an actual supported installation, IQ3_S model assets and the
+15 source/deployment/input records described in the workflow. The current
+installation instructions do not automatically generate all those records;
+do not replace missing evidence with invented successful values.
+
+The [ordinary user workflow](reference-workflow.md) reuses the [installed desktop composition](installed-desktop.md)
 and [task contracts](task-spec.md): start once, choose a task and inputs, see
 waiting/progress, continue saved work, select the next task and stop normally.
 Ordinary use must not require editing qualification records. The existing

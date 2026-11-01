@@ -1,0 +1,71 @@
+{
+  "case": null,
+  "enabled": false,
+  "harness_manifest": {
+    "path": null,
+    "sha256": null
+  },
+  "inputs": {
+    "clock_probe": {
+      "path": null,
+      "sha256": null
+    },
+    "deployment_gate": {
+      "path": null,
+      "sha256": null
+    },
+    "host_install": {
+      "path": null,
+      "sha256": null
+    },
+    "installed_identity": {
+      "path": null,
+      "sha256": null
+    },
+    "installed_sdk": {
+      "path": null,
+      "sha256": null
+    },
+    "inventory_input": {
+      "path": null,
+      "sha256": null
+    },
+    "inventory_spec": {
+      "path": null,
+      "sha256": null
+    },
+    "package_review": {
+      "path": null,
+      "sha256": null
+    },
+    "profile": {
+      "path": null,
+      "sha256": null
+    },
+    "source_freeze": {
+      "path": null,
+      "sha256": null
+    },
+    "source_review": {
+      "path": null,
+      "sha256": null
+    },
+    "welcome_input": {
+      "path": null,
+      "sha256": null
+    },
+    "welcome_spec": {
+      "path": null,
+      "sha256": null
+    },
+    "wheel": {
+      "path": null,
+      "sha256": null
+    },
+    "worker_install": {
+      "path": null,
+      "sha256": null
+    }
+  },
+  "schema": "private.task-handover.installed-inputs.v1"
+}

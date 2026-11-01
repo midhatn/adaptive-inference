@@ -62,9 +62,25 @@ remain separate from historical acceptance records.
 | Corrected harness manifest | `75809e201f9b8b6595ea429f605f19b92ded944fb8b16527be4a9ba9ca5fc4f3` |
 | Independent terminal review | `4c4d44b689a4fb01bc55c1450b457f54cfd05d1f1f27b8fdec462490c5847cd6` |
 
-These hashes identify retained private evidence, not a completed public replay
-package. The next delivery is its scoped standalone reproduction and a usable
-installed reference using the existing host and task controls. Full M2,
+These hashes identify retained private evidence. The subsequent
+[public acceptance package](../provenance/task-handover/acceptance/README.md)
+preserves the sanitized result, fixed selectors, tested build/runtime map and
+file-only replay. Actual replay and replay with all 33 inputs relocated produced
+identical public result/manifest bytes. The relocated replay attempted no
+database, process, network or shell calls and imported no runtime module.
+The [fresh-run workflow](../examples/validation/task_handover/README.md)
+preserves the exact harness/predicates and five narrowly reversible helper-path
+adaptations. Seven focused source/fixture checks passed on Python 3.11.9 and
+3.12.9; eight exporter checks passed on Python 3.11.9. Those checks are not
+another model trial. Two exporter authoring refusals were retained: selecting a
+binding digest from the wrong receipt field, and substituting a resolved path
+for the model's original raw read argument. Both were corrected without changing
+the original predicates; neither refused attempt created output.
+
+The public source workflow still requires actual installation/deployment
+records and external IQ3_S assets. It does not provide an automatic fresh-machine
+installer or the private inputs for replay. The next practical delivery is a
+usable installed reference using the existing host and task controls. Full M2,
 computer restart, games/video coexistence, autonomous media quality and speedup
 remain separate requirements. Cases14/15/16 below keep their recorded failures.
 
@@ -73,6 +89,12 @@ The checker/reporting head `f049342060b3ae8d04f237bf5632d2b9f459869d` passed all
 and [push run](https://github.com/midhatn/adaptive-inference/actions/runs/41257830828).
 Those are source/CI results for that exact commit, separate from the installed
 runtime identity and from later documentation commits.
+
+The subsequent reporting-only head
+`bd0abd7cee7a4589b13d89f6bee08e0a5f914b95` also passed all 14 original attempt-1
+jobs: [PR run](https://github.com/midhatn/adaptive-inference/actions/runs/41260983340)
+and [push run](https://github.com/midhatn/adaptive-inference/actions/runs/41260978937).
+This is separate from validation of the later public workflow/exporter code.
 
 ## Safe resource-wait expiry and continuation development
 

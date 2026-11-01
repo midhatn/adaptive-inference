@@ -56,9 +56,17 @@ resources. Welcome acceptance is format-only. The [evidence ledger](docs/evidenc
 records the actual controls, six calls, two writes, source identities, joins,
 foreground observations and limitations.
 
-**Next delivery: a usable installed reference.** Preserve the accepted run and
-publish its scoped standalone reproduction using the existing qualification
-sources. Reuse the installed desktop host, task contracts and controls to provide
+The [accepted result and file-only replay](provenance/task-handover/acceptance/README.md)
+and [fresh-run qualification source](examples/validation/task_handover/README.md)
+now preserve that workflow in this repository. The source adaptation changes
+only declared helper locations; the runtime and qualification predicates stay
+unchanged. A fresh physical run still requires an actual supported installation
+and its retained deployment records. The public sources do not fabricate those
+records or automatically install a fresh machine.
+
+**Next delivery: a usable installed reference.** Follow the
+[ordinary user workflow](docs/reference-workflow.md) and remove its practical
+setup/task-preparation obstacles. Reuse the installed desktop host, task contracts and controls to provide
 one documented Windows/IQ3_S/Hermes workflow: start once, submit a useful task,
 see truthful waiting and completion states, continue saved work, accept another
 task and stop normally. Ordinary use must not require private receipt-file
@@ -69,7 +77,8 @@ speculative failure campaign or repeat of the completed physical scenario.
 The reference can be delivered as a narrow alpha before the full daily-use
 milestone. Keep the existing IQ3_S quality, budgets, task-effect rules and
 acceptance standards. Validate meaningful changes and reuse completed evidence
-when its source and deployment remain unchanged. Broader desktop coexistence,
+when its source and deployment remain unchanged. Prefer a straightforward
+setup and task-entry path over additional qualification machinery. Broader desktop coexistence,
 agent tools/media, application/reboot recovery and daily-use qualification remain
 subsequent milestones; the two-task pass does not complete all of M2.
 
@@ -91,7 +100,7 @@ and public reproduction retain their separate evidence boundaries.
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded foreground/continuation/two-task run passed both audits; usable installed reference and public reproduction are next |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded foreground/continuation/two-task run passed both audits; public reproduction source and scoped replay available; usable setup/task entry is next |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |

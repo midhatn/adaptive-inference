@@ -57,9 +57,13 @@ provenance/explicit-continuation/acceptance/** -text whitespace=cr-at-eol
 provenance/explicit-continuation/deadline-arithmetic/predecessor/** -text whitespace=cr-at-eol
 # Preserve exact reusable continuation workflow and source identity.
 examples/validation/explicit_continuation/** -text whitespace=cr-at-eol
+# Preserve the reusable two-task qualification's reviewed source bytes.
+examples/validation/task_handover/** -text whitespace=cr-at-eol
 # Preserve the reviewed task-contract source projection and its manifest bytes.
 provenance/task-contract/** -text whitespace=cr-at-eol
 # Retain the preceding task-contract sources and reviewed handover projection.
 provenance/task-handover/** -text whitespace=cr-at-eol
+# This archived baseline retains its original CRCRLF line endings for identity.
+provenance/task-handover/reproduction/predecessor/harness/baseline/audit_expiry.py -whitespace
 # Preserve the reference bytes exercised by the admission-watchdog SDK validation.
 examples/validation/hermes_admission_activity/sdk-references.json -text whitespace=cr-at-eol

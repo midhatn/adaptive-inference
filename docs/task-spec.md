@@ -14,9 +14,11 @@ settings, choose a new Python module, or install a validator.
 This is development work with one bounded installed result:
 [case17](evidence.md#case17-complete-foreground-continuation-and-two-task-handover)
 passed foreground/resource-wait continuation and inventory-to-welcome handover
-in the same controller using IQ3_S. CPU tests remain separate evidence. A usable
-reference alpha and standalone reproduction are the next delivery; computer
-restart recovery remains a later milestone.
+in the same controller using IQ3_S. CPU tests remain separate evidence. The
+[public qualification sources](../examples/validation/task_handover/README.md)
+and [accepted replay](../provenance/task-handover/acceptance/README.md) preserve
+that bounded result. Usable setup/task entry for the reference alpha is next;
+computer restart recovery remains a later milestone.
 
 ## Try a different file task
 
