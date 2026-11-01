@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video playback observation</title>
+<style>
+  :root { color-scheme: dark; font: 17px system-ui, sans-serif; background: #111827; color: #eef2ff; }
+  body { max-width: 1120px; margin: 28px auto; padding: 0 20px; }
+  h1 { font-size: 1.7rem; margin-bottom: 8px; }
+  p { line-height: 1.5; color: #cbd5e1; }
+  video { width: 100%; max-height: 72vh; background: #000; border-radius: 8px; }
+  button { padding: 12px 18px; margin: 12px 10px 0 0; border: 0; border-radius: 6px; font: inherit; cursor: pointer; }
+  #start { background: #a7f3d0; color: #052e16; }
+  button:disabled { opacity: .5; cursor: default; }
+  #status { min-height: 1.5em; font-weight: 600; color: #eef2ff; }
+</style>
+<h1>Video playback observation</h1>
+<p id="clip">Loading the selected clip…</p>
+<video id="video" controls preload="metadata" playsinline src="video"></video>
+<div><button id="start" disabled>Start measurement</button><button id="stop" disabled>Stop and save incomplete</button></div>
+<p id="status" role="status" aria-live="polite">Waiting for video information.</p>
+<p>Start plays the clip from the beginning, warms up for 10 seconds, then records
+180 seconds of playback. Keep this page visible and leave the playback controls
+unchanged during the run. Playback pauses when the measurement ends.</p>
+<p>This page records video frame counters and playback events. It does not start
+an AI task or measure audio quality, sound synchronization, or physical display latency.</p>
+<script src="page.js"></script>
+</html>

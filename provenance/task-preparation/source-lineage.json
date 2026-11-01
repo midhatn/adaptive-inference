@@ -176,10 +176,15 @@
           "count": 1,
           "new": "            # CPU emergency bounds are 15 s original / 60 s selected;\n",
           "old": "            # Each CPU fixture has its own 15-second emergency failure bound;\n"
+        },
+        {
+          "count": 1,
+          "new": "        # This fixture has no host observation loop to refresh after child exit.\n        await c.runtime.refresh()\n        reply=await self.wire('status')\n        self.assertTrue(reply['ok'],reply)\n        self.assertEqual(reply['status']['execution_id'],record['grant']['payload']['successor_id'])\n",
+          "old": "        self.assertEqual((await self.wire('status'))['status']['execution_id'],record['grant']['payload']['successor_id'])\n"
         }
       ],
-      "successor_ast_sha256": "83c557487073eb96f8905407411a00a5b51e3e1a5dfd333d40c2b2b69fbb2738",
-      "successor_sha256": "7d11bb85d7c59f735fe3bec99cc08b78d252ac75f0de5f9ad8c41c7a81e3874e"
+      "successor_ast_sha256": "71be512171a7de8cc467c5efebbc51a8c4119337a0e75e50a7b03bb9ba8426f4",
+      "successor_sha256": "3dbf913cb62a2d5dd8b1221f7ea691ba34f19b23c566d518e534c9bf6f3bad7d"
     },
     "tests/test_continuation_timeout_lineage.py": {
       "predecessor_ast_sha256": "3a8288094cda5566896c15b955584a45524107365a9416b910eaa20d7f1a4808",

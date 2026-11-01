@@ -460,7 +460,7 @@
   title = {Acquiring high-resolution time stamps},
   author = {{Microsoft}},
   url = {https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps},
-  note = {Inspected 2026-10-25. QueryPerformanceCounter contract informs the shared execution clock and separate wall-clock observations; no external synchronization or performance claim}
+  note = {Inspected 2026-10-25 and rechecked 2026-11-01 with the .NET Stopwatch timestamp/frequency contracts. QueryPerformanceCounter informs the shared execution clock and the first video capture's raw QPC to UTC brackets. Browser time has a separate origin; no external synchronization, optical timing or performance claim}
 }
 
 @misc{hermesPausedWorkerInterruption,
@@ -671,6 +671,13 @@
   note = {Inspected 2026-10-30 for the event-held HTTP disconnect fixture. Waiting suspends the waiting coroutine, not unrelated socket timers; event release belongs in cleanup. Informed a test-only correction, with no runtime implementation copied}
 }
 
+@misc{pythonAsyncioFixtureStatusFreshness,
+  title = {Python 3.12 asyncio Event and wait_for contracts},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.12/library/asyncio-sync.html#asyncio.Event},
+  note = {Inspected 2026-11-01 with https://docs.python.org/3.12/library/asyncio-task.html\#asyncio.wait\_for when diagnosing the continuation fixture's missing status reply. The existing EOF event is already set and the short allowance applies to transport waits; no timeout increase was introduced. Reuses the project's normal explicit runtime refresh in an isolated fixture without the host observation loop. The original error reply was not captured, so its cause remains unknown. No upstream implementation copied}
+}
+
 @misc{aiohttpSocketReadTimeout,
   title = {aiohttp 3.14.5 ClientTimeout socket-read contract},
   author = {{aiohttp contributors}},
@@ -836,4 +843,39 @@
   title = {CPython 3.12.10 asyncio stream error propagation and stream tests},
   url = {https://github.com/python/cpython/blob/v3.12.10/Lib/asyncio/streams.py},
   note = {Inspected 2026-11-01 with Lib/test/test_asyncio/test_streams.py at the same tag. Connection-loss exceptions reach stream reads; closed-peer tests distinguish connection errors. Supports only the observed ConnectionResetError alternative in the deliberate refused-connection fixture, not broad exception suppression. No source copied}
+}
+
+@misc{presentmonVideoObservation,
+  author = {{Intel and PresentMon contributors}},
+  title = {PresentMon 2.6.0 console timing and display metrics},
+  url = {https://github.com/GameTechDev/PresentMon/blob/v2.6.0/README-ConsoleApplication.md},
+  note = {MIT; inspected 2026-11-01 with PresentMon/CsvOutput.cpp and PresentData/PresentMonTraceSession.cpp at v2.6.0. Existing executable used externally for the first no-AI video control, with raw QPC, retained lifecycle and display metadata. DisplayedTime is distinct from CPU and callback cadence; incomplete video-surface attribution leaves physical-stall qualification unknown. No implementation copied or executable bundled}
+}
+
+@misc{w3cVideoPlaybackQuality,
+  author = {{World Wide Web Consortium}},
+  title = {Media Playback Quality},
+  url = {https://w3c.github.io/media-playback-quality/},
+  note = {Inspected 2026-11-01. Native cumulative total and dropped frame counters reused by the video observation example; total includes dropped frames. Specification consulted, no implementation copied}
+}
+
+@misc{wicgVideoFrameCallback,
+  author = {{Web Platform Incubator Community Group}},
+  title = {Video frame request callback},
+  url = {https://wicg.github.io/video-rvfc/},
+  note = {Inspected 2026-11-01. Community Group specification informs best-effort callback diagnostics and their limits; callback gaps are not physical display stalls. No implementation copied}
+}
+
+@misc{blenderSunflowerVideoControl,
+  author = {{Blender Foundation and Janus Bager Kristensen}},
+  title = {Big Buck Bunny Sunflower high-frame-rate reference clip},
+  url = {https://download.blender.org/demo/movies/BBB/},
+  note = {Original 1080p60 normal clip acquired for local comparison on 2026-11-01, SHA256 3aa2d8946ec7cf3b50b7148fb3338ca421e6ec34987b20a4044845d674794e3e. CC BY 3.0, Blender Foundation 2008 and Janus Bager Kristensen 2013; attribution retained. Clip is not bundled; sharing terms at https://peach.blender.org/about/}
+}
+
+@misc{setuptoolsExplicitSourceAssets,
+  author = {{Python Packaging Authority and setuptools contributors}},
+  title = {Controlling files in a source distribution},
+  url = {https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html},
+  note = {Inspected 2026-11-01 after the original video-example archive omitted page.html. Reuses explicit MANIFEST.in include entries for only page.html and page.js, validated by isolated build with setuptools 82.0.1 and the existing source/runtime verifier. No implementation copied and no broad private asset inclusion}
 }

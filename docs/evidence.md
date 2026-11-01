@@ -2,6 +2,202 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## First no-AI video control
+
+**1 November 2026, source `04e2c288fb14ff2d76a02f77bddac763979c7643`:**
+the original Sunflower 1080p60 clip completed a genuine Start, 10.0015-second
+warm-up and 180.001-second observation in Chrome 156.0.8078.79 on the laptop's
+1920×1080, 144-Hz AMD display path. No inference/controller task was running.
+The [sanitized measurement record](../provenance/video-coexistence/baseline-before-2026-11-01.json)
+retains the exact source/input identities, results and qualification limits.
+
+The browser reported **59 dropped frames out of 10,800 (0.546296%)**. This
+**fails the prospectively fixed 0.5% target**; 54 drops would meet that limit.
+Media progressed 179.969066 seconds, counters remained monotonic, the visible
+playback settings were unchanged, no observation buffer was truncated, and no
+pause, seek, waiting, stalled or error event occurred during measurement.
+Thirty-nine drops occurred in a roughly seven-second cluster. The cause is
+unestablished. A completed observation is not a quality pass.
+
+PresentMon 2.6.0 recorded 11,366 rows from the browser GPU process and exited
+normally under its retained parent. Before capture, the operator substituted
+the documented raw QPC time option for date-time output, following source review
+of potentially repeated local-time conversion. The durations and acceptance
+limits did not change. This uses [PresentMon's existing timing output](https://github.com/GameTechDev/PresentMon/blob/v2.6.0/README-ConsoleApplication.md)
+and [Windows' shared performance counter](https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps),
+with retained UTC brackets; no new timing framework was introduced.
+
+The trace changed between two stream identities and later lost its nonzero
+swap-chain identity. A 382.8327-ms displayed-frame residence was recorded, but
+continuous attribution to the actual video surface is unresolved. The
+independent physical-stall verdict is therefore **unknown**, not pass or a
+confirmed visible stall. A 90.4731-ms union-coverage gap at the stream change is
+also a measurement limit. The separate 376-ms browser callback gap cannot
+replace that missing attribution. The page server was intentionally interrupted
+after its terminal save; its shell returned 1, while the capture child and
+parent returned 0. These outcomes remain separate.
+
+Independent reviews confirmed measurement validity, the failed drop target and
+the display-attribution limit. The [revised M3 sequence](../PLAN.md#m3--protect-actual-desktop-activity)
+retains this measured negative control for one matched adaptive functional
+diagnostic and the following no-AI control. It does not repeat the baseline to
+obtain a green result, weaken thresholds, or claim complete video/M3 acceptance.
+Raw machine/UI logs remain private; the public record is a sanitized summary,
+not an independently replayable copy of all private observations.
+
+## Video coexistence preparation
+
+**1 November 2026:** the [video example](../examples/validation/video_coexistence/README.md)
+reuses aiohttp file/range serving and browser media-quality counters for a genuine
+Start, 10-second warm-up and requested 180-second measurement. Five component
+checks passed in 0.539 seconds on Python 3.11.9/aiohttp 3.14.5; the actual test
+parent and HTTP cleanup completed. Source syntax checks also passed. This used
+synthetic counters and file bytes, without real browser playback.
+
+Commit `d82eb7cdcd791e1cbca73f91d069003e9d730650` adds a retained parent for the
+ordinary installed desktop command and a read-only foreground/status observer.
+It reuses the existing TaskSpec/profile validators, activity reader and
+task-handover examples. The task remains 900 seconds with a separate 2,700-second
+outer limit; emergency termination remains a failed attempt. The observer sends
+only bounded GET requests, retains actual sampling gaps and unknown CPU values,
+and does not read active task database or result contents.
+
+Its five focused checks passed in 1.373 seconds on Python 3.11.9 with the pinned
+dependencies and explicit worktree imports. The actual parent, three inert child
+processes and four fake HTTP server threads joined; only the main thread remained.
+Two earlier failed fixture attempts are preserved. Their expectations concerned
+existing validator wording, short connection-refusal timing and a sleep-derived
+gap bound; the helper implementations did not change between attempts. The final
+check compares saved timestamps with the reported gap and preserves an incomplete
+observation. It does not establish successful real-controller shutdown.
+
+Independent source/evidence review accepted both preparation changes. The private
+binding receipt SHA-256 is
+`37230b2f536c914751fdff654d1abe3e64152700f838b2be66ba43341dad3c7a`;
+its hash identifies retained evidence, not public access to its local inputs.
+No real activity sampling, video/capture measurement, IQ3_S task run or native
+resource cleanup is qualified by these checks. The prospective comparison and
+its unchanged acceptance boundaries are in [M3](../PLAN.md#m3--protect-actual-desktop-activity).
+
+The single-task terminal auditor then passed six focused checks in 0.792 seconds
+on the same pinned Python 3.11.9 environment. It reuses the existing task/effect
+projection, task contract checker and independent inventory oracle. The fixtures
+use synthetic closed records and actual read-only SQLite; all 27 audit connections
+closed, the test parent exited normally and only the main thread remained.
+Independent review accepted the source and retained evidence, identified by
+SHA-256 `7b4a313d7c68849ddbd0b3fe85141e66359d0aa579b2dfdb4b3e6a8a4b6e10fe`.
+No installed case was replayed. Genuine Resume/Stop verification requires actual
+operator/window/action observations bound to the durable records; missing or
+ambiguous evidence stays incomplete. Caller-owned handle attestations are
+reported separately from saved child-wait evidence. This checker always leaves
+video and whole-M3 qualification false: those require the physical comparison.
+
+### Ordinary-window observation correction
+
+Operational review before the first adaptive launch found that the original
+auditor required the operator to observe host/session identifiers that the
+ordinary installed window does not display. No physical task was started with
+that assumption. The corrected auditor joins the three observable OS window
+identifiers to a preserved, hashed copy of the ordinary ready record captured
+before Resume. It matches those identities and the ready task to the terminal
+checkpoint and host binding. Host/session identifiers are explicitly reported
+as host-retained data, never invented live observations.
+
+The existing query-only activity reader supplies window/process identity;
+the [example instructions](../examples/validation/video_coexistence/README.md#auditing-one-closed-inventory-task)
+cite the supported Windows APIs. Runtime code, quality, budgets, genuine
+Resume/Stop ordering, sole durable acknowledgement, output oracle, write-count
+and cleanup predicates remain unchanged. Ten focused checks passed in 1.398
+seconds on pinned Python 3.11.9, including mismatched identity/task/readiness,
+changed bytes/hash and post-Resume capture refusals. All 77 read-only SQLite
+connections closed and the actual test parent joined with exit 0; only the main
+thread remained. The private receipt SHA-256 is
+`5223549d0d6e042d7d36e3c465dbd927e1e35e2806a54fc17ecdaa4acbda8c39`.
+This is synthetic component validation, not a completed physical adaptive task.
+Independent source/evidence review accepted the corrected join and verified
+the recorded source hashes, ten outcomes and closed connection records without
+repeating the tests.
+
+### Video example source-archive correction
+
+The first [PR #29](https://github.com/midhatn/adaptive-inference/pull/29) head,
+`d43910be9ad19026105526e2cb9369df5338f13b`, exposed an archive omission:
+`page.html` was not included by the existing extension-based manifest rule.
+The original Ubuntu 3.11 core suite completed successfully (1,326 discovered
+checks, including 39 skipped), followed by the downstream validation/build
+steps, before the unchanged distribution verifier rejected the
+archive. The original failed checks remain failed; they were not rerun.
+
+The correction explicitly includes only this example's `page.html` and `page.js`
+using the existing [setuptools manifest mechanism](https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html).
+A fresh private snapshot of `d43910b` plus that one-line rule passed a standard
+isolated source build and the unchanged archive/runtime verifier: **1,202 source
+files and 61 runtime modules**. The validated runtime wheel stayed unchanged.
+Build, verifier and retained parent all joined with exit 0. The already-passing
+core suite was not repeated locally. The private completion receipt SHA-256 is
+`a7cceceb78b39a08f799e2e9c85f55d36352e01fa26dacfc0266e3a53cf8fe1a`;
+the tested archive SHA-256 is
+`86854031a435003f4afb66cb698242f386ca80c49888dc1edb5662fbe4e41593`.
+This local archive binds that source snapshot; subsequent documentation and
+the final PR revision receive their own hosted archive checks. No runtime,
+model, browser setting or playback acceptance limit changed.
+
+### Continuation fixture observation freshness
+
+The archive-corrected revision `a744657b561a0002c11f43537fc8f917002f8466`
+exposed a separate Windows/Python 3.12 failure in
+[the original PR job](https://github.com/midhatn/adaptive-inference/actions/runs/41282720512/job/124777738128).
+The final status request lacked the expected `status` field after the child
+joins and duplicate-Continue assertions had passed. The actual reply was not
+included in that failure, so its precise cause remains unknown. Both children
+joined with their expected exit codes and no cleanup kill. The original failed
+log and child artifact remain preserved; this is not a rerun of that job.
+
+Source review found that this isolated fixture omits the ordinary host's
+observation loop. It now explicitly refreshes the existing runtime after child
+completion, then checks the full reply before reading its status. This restores
+the normal freshness prerequisite and retains diagnostic output for any future
+failure. It does not prove that stale status caused the original failure.
+The existing source-lineage entry records the exact reversible test change;
+predecessor pins and historical archives remain unchanged.
+
+All **44 existing host and required source-lineage checks passed in 33.948
+seconds**, with no skips, on full Python 3.11.9 and the pinned dependencies.
+All 38 children joined and the parent exited normally; the sole forced cleanup
+belongs to the existing deliberately failed setup case. The unchanged stale
+observation rejection test passed. The one-second freshness limit, 0.1-second
+I/O allowance, other timeouts and product code are unchanged. The private
+validation receipt SHA-256 is
+`f5175e61121b1d94edf77ca7d3fc394092396e980b20c558c62cfa9053e8228c`.
+Independent review verified the exact source change, byte-for-byte reversal,
+retained validation and child joins without repeating the tests.
+Local Python 3.11 validation does not replace the corrected revision's hosted
+Python 3.12 checks. This changes no physical experiment or installed runtime.
+
+## Reference alpha publication
+
+[v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1)
+was published on 1 November 2026 at tested source
+`57f673f8e934e275bc2bd51e85d434dc7025bc9a`. Both original workflows passed all
+seven jobs ([push](https://github.com/midhatn/adaptive-inference/actions/runs/41273495800),
+[PR](https://github.com/midhatn/adaptive-inference/actions/runs/41273498549)),
+with no reruns or cancellations. PR #28 merged at
+`e9d17b7dfadba27b3b572f2ce04a7d1b41d2e506`; its tree exactly matches the tested
+candidate. That merge also passed its seven original
+[main-branch checks](https://github.com/midhatn/adaptive-inference/actions/runs/41275107785).
+A fresh standard isolated source build and the existing verifier
+matched all 1,191 source files and 61 runtime modules, including metadata and
+license notices. The previously validated runtime wheel is unchanged.
+
+All five uploaded assets matched local sizes and SHA-256 digests before
+publication and again in the published release. The public tag points to the
+tested source. The attached manifest, checksums and release validation preserve
+the old failures and distinguish each local, hosted and installed evidence scope.
+Source archive SHA-256: `ddbf4c3c5b8a63e8103c891bfb0577e21f8cf80bf4a33ab672df6e168fa5d058`.
+Wheel SHA-256: `953da66c0dc0840b0eddf5d6d66e158a628a67e5f29540af35b421bb45557fa9`.
+This delivery does not add a physical video, autonomous media, NPU-speedup or
+reboot qualification, and does not silently upgrade the recorded installation.
+
 ## Reference delivery checks
 
 **1 November 2026:** setup predecessor `a9eff31bf4e2257723e34d8b30188dbf8b8efb81`

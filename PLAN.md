@@ -46,6 +46,16 @@ interrupted runs will remain identified as such.
 
 ## Milestones and dependency order
 
+**Reference alpha delivered — 1 November 2026:** [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1)
+is published from `57f673f8e934e275bc2bd51e85d434dc7025bc9a`, after all 14
+original hosted jobs, final source/wheel verification and actual merge-tree
+verification passed. All five uploaded assets and the public tag were checked.
+The following delivery-follow-up paragraphs preserve the earlier sequence;
+their completed gates are not instructions to rebuild or repeat qualification.
+The next functional work is the prepared [M3 video comparison](#m3--protect-actual-desktop-activity):
+no-AI baseline, matched adaptive inventory run and following baseline. This
+delivery does not complete physical desktop, tool/media or reboot acceptance.
+
 **Current M2 gate — 1 November 2026:** case17 passed the complete bounded
 foreground, resource-wait continuation and two-task handover scenario. The
 original primary audit passed all 99 checks, and the separate foreground and
@@ -692,6 +702,42 @@ context or quality configuration.
 
 **User result:** browsing, video playback, gaming and ordinary work coexist with
 background progress within declared responsiveness budgets.
+
+**First measured comparison:** after reference-alpha delivery, use the
+[local video observation example](examples/validation/video_coexistence/README.md)
+for a no-AI baseline, one matched adaptive IQ3_S inventory task, and a following
+no-AI baseline. Keep the original 1080p60 clip, browser/display/power settings,
+10-second warm-up and 180-second requested measurement window. Retain actual
+elapsed times. The adaptive case keeps one Resume, one normal Stop, the original
+900-second execution budget and 2,700-second outer limit. Require more than
+60 seconds of passive foreground playback, correct task completion and exactly
+one output write after ordinary handback.
+
+Freeze these initial video targets before measurement: dropped frames at most
+0.5%, adaptive regression at most 0.25 percentage points, and no independently
+observed display stall of 250 ms or longer. A display-stall verdict requires
+valid process/layer attribution and time alignment from the external capture;
+otherwise that result is unknown. Browser callback gaps are not display stalls.
+Observe admission closure against the proposed two-second onset target, drain,
+actual release/restoration, sustained protection and useful task progress
+separately. Passing the video page alone does not pass this comparison or M3.
+
+The page and bounded parent/observer have passed component checks and independent
+review, as recorded in the [evidence ledger](docs/evidence.md#video-coexistence-preparation).
+The first physical no-AI baseline completed on 1 November: 59 of 10,800 frames
+dropped over 180.001 seconds (0.546296%), exceeding the fixed 0.5% target.
+Its valid, unchanged playback record is a measured negative control, not a
+qualified quality baseline. Preserve that failure and perform the planned
+single adaptive run as a functional diagnostic of passive foreground handling,
+resource handback and original-task progress, followed by the no-AI control.
+Do not repeat the baseline merely to obtain a pass. The absolute quality and
+regression limits remain unchanged; the failed control and any unknown display
+attribution prevent a complete video qualification. Adaptive coexistence remains
+untested until that separate run finishes.
+Use existing task acceptance and lifecycle evidence for the terminal projection.
+Add a passive-media signal only if this comparison demonstrates a missing input;
+do not replace useful resource adaptation with unconditional parking during all
+media playback. This bounded test is separate from the later autonomous H3 test.
 
 Extend observation beyond the foreground PID's CPU counter and recent input.
 Account for relevant renderer/helper processes, GPU utilization and contention,
