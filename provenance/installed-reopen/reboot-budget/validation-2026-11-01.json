@@ -1,0 +1,90 @@
+{
+  "schema": "adaptive.installed-reopen.reboot-budget-validation.v1",
+  "date": "2026-11-01",
+  "source_base": "c7d6493c364b73d2124240992fe11e76fdc585c2",
+  "runtime_identity": {
+    "source_lineage": "source-lineage.json",
+    "source_lineage_sha256": "9477f9692b063e6514f3b947455b4384bdba9ba40a5282e0eefe2f15281b1a95",
+    "changed_predecessor_modules": 7,
+    "new_modules": ["desktop/execution_budget.py"],
+    "complete_current_module_count": 63
+  },
+  "scope": "Controlled-clock source integration with real task/native SQLite and inert SDK, desktop and provider edges. No installed model or physical reboot qualification.",
+  "interpreter": "CPython 3.11.9, Windows AMD64, full interpreter",
+  "combined_behavior": {
+    "passed": true,
+    "tests": 123,
+    "elapsed_seconds": 19.013,
+    "exit_code": 0,
+    "retained_child_joined": true,
+    "recorded_inputs_unchanged": true,
+    "receipt_sha256": "b64be6b067df74395e860a7219e0de57d48030d6c6cbf10352bd0b9a63694476",
+    "log_sha256": "32b03141524da6cd5fe3a6607122e6ca8eefc2bec700101ba06555005d8d4172",
+    "modules": ["test_execution_budget", "test_reboot_saved_tasks", "test_reboot_worker", "test_desktop_saved_tasks", "test_handover_saved_tasks", "test_execution_clock", "test_desktop_composition", "test_task_handover", "test_continuation_storage", "test_admission_wait_continuation_storage"]
+  },
+  "source_preservation": {
+    "passed": true,
+    "tests": 104,
+    "elapsed_seconds": 265.981,
+    "exit_code": 0,
+    "retained_child_joined": true,
+    "recorded_inputs_unchanged": true,
+    "prior_manifests_unchanged": 8,
+    "exact_retained_predecessors": 9,
+    "receipt_sha256": "d75682ff432c44b51c2a90eb7b217a58c3f60af65650aa6715cca60f7e3b0156",
+    "log_sha256": "1519e8ed857e55df4a9d50b35a7631f102d3dcef3353729b2826f2e6b93e06df"
+  },
+  "observed_behavior": [
+    "Fresh observed worker boot creates a versioned allowance in the original deadline checkpoint.",
+    "Clean Stop tightens the cap before hashing its post-save receipt.",
+    "Changed-boot selection is read-only; owned activation commits remaining time before the paused snapshot.",
+    "A confirmed read survived changed-boot recovery; three total provider calls produced one output write.",
+    "Original objective, creation context, native history, effects and consumed counters were preserved.",
+    "Same-current-boot reopening retained its exact deadline; expired or unclean changed boots were refused.",
+    "The actual worker entry accepted a committed episode and refused a mismatched boot or deadline before native database/provider activity.",
+    "Explicit Continue preserved the expired budget in its sealed predecessor and omitted it from the separately authorized successor."
+  ],
+  "preserved_failed_attempts": [
+    {
+      "scope": "Initial affected behavior batch",
+      "tests_run": 74,
+      "exit_code": 1,
+      "cause": "Three new tests incorrectly treated the existing host lock as a context manager; each also reported a cleanup error.",
+      "correction": "Test-only contextlib.closing; six affected store tests passed afterward. Imported fixture classes were changed to module imports to avoid duplicate discovery."
+    },
+    {
+      "scope": "Initial combined batch including actual worker startup",
+      "tests_run": 14,
+      "exit_code": 1,
+      "cause": "The new fixture changed the legacy report task ID without an explicit TaskSpec; production correctly refused startup.",
+      "correction": "The fixture now preserves its original report contract and supplies boot context through normal preparation. Five worker checks and the combined 123-test batch passed afterward."
+    }
+  ],
+  "independent_review": {
+    "material_findings": [],
+    "verified_behavior_receipt_and_inputs": true,
+    "verified_complete_predecessor_and_successor_pins": true,
+    "receipt_sha256": "6aeaae9c0ad16b3d3e3ce0cc06206ac3f4561b9edcdd3d86be142cecf0d61897"
+  },
+  "full_suite": {
+    "passed": true,
+    "tests": 1394,
+    "elapsed_seconds": 517.802,
+    "exit_code": 0,
+    "retained_child_joined": true,
+    "recorded_inputs_unchanged": true,
+    "receipt_sha256": "1c1e3b593893e234ced7a88ce948b7fb07e461e56986bb51e2fbb331cfac4bae",
+    "log_sha256": "17dcb5039bae3f3967aae2e0b842bfd8ec601f38e91b3e0eb628cfea8b5c5c71",
+    "reproduction": "python -B -m unittest discover -s tests -v"
+  },
+  "package": {"status": "reported_separately_in_candidate_pr"},
+  "hosted_checks": {"status": "reported_separately_in_candidate_pr"},
+  "installed_sdk": {"status": "pending"},
+  "physical_reboot": {"status": "not_run"},
+  "limits": [
+    "The first path assumes a valid system clock and an existing clean Stop checkpoint.",
+    "Legacy tasks are not retrofitted with missing expiry metadata.",
+    "Continue successors, crash recovery, sleep, hibernation and Fast Startup remain separate qualification cases.",
+    "These source checks do not qualify M3 desktop performance, a full M5 lifecycle milestone or other engine/agent integrations."
+  ]
+}

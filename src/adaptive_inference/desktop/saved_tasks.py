@@ -1,8 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Ordinary same-boot reopen, using the existing task store and native history.
+"""Ordinary saved-task reopening through the existing store and native history.
 
 Discovery reads plans only. Inspection opens SQLite read-only and never repairs
-an archive or grants a new execution budget. Actual execution still requires
+an archive or grants a new execution budget. New versioned tasks may preserve
+their remaining allowance after a clean Stop and changed boot; legacy tasks
+retain their same-boot rule. Actual execution still requires
 the existing worker claim, native-history verification and user Resume.
 """
 from __future__ import annotations
@@ -19,9 +21,10 @@ import subprocess
 
 from adaptive_inference.control_mailbox import ACKS, ControlBlocked, admission_wait_state, execution_outcome
 from adaptive_inference.demand import NAMESPACE
-from adaptive_inference.execution_clock import CLOCK_ID
+from adaptive_inference.execution_clock import CLOCK_ID, execution_observation
 from adaptive_inference.task_store import TaskStore, ReconciliationRequired, _FileLock
 from adaptive_inference.desktop.hermes import recovery as rec
+from adaptive_inference.desktop.execution_budget import BUDGET, BudgetError, create_budget, reopen_budget, validate_budget
 
 CONTEXT = 'adaptive_inference.desktop_reopen.v1'
 BOOT_SOURCE = 'windows-cim-LastBootUpTime.v1'
@@ -181,19 +184,77 @@ def read_saved(task_root):
             'completed': completed, 'spec': spec}
 
 
-def inspect_saved(task_root, *, profile_sha256, installed, boot, now):
-    """Authorize same-boot pending execution; completed results need no budget."""
+def task_budget(state, context):
+    """Bind the versioned allowance to its immutable creation context and state."""
+    value = validate_budget(state[BUDGET])
+    if (value['origin']['boot_id'] != rec.digest(validate_boot(context['boot']))
+            or value['episode']['deadline'] != state.get('deadline_monotonic')):
+        raise BudgetError('Budget differs from its original context or current deadline')
+    return value
+
+
+def worker_budget(state, context, *, deadline, boot_id, observation=None):
+    """Called by the existing owner before native setup, never renew a grant."""
+    state = deepcopy(state)
+    if BUDGET in state:
+        value = task_budget(state, context)
+        if (boot_id != value['episode']['boot_id'] or value['episode']['deadline'] != deadline
+                or value['clean_stop']):
+            raise BudgetError('Worker lacks the committed current-boot budget transition')
+    elif state.get('deadline_monotonic') is None and boot_id is not None:
+        if context is None or boot_id != rec.digest(validate_boot(context['boot'])):
+            raise BudgetError('Fresh budget requires its observed original boot context')
+        state[BUDGET] = create_budget(boot_id=boot_id, deadline=deadline,
+            observation=execution_observation() if observation is None else observation)
+    return state
+
+
+def inspect_saved(task_root, *, profile_sha256, installed, boot, now, observation=None):
+    """Read-only eligibility; changed-boot time is committed later under ownership."""
     value = read_saved(task_root)
     if value['completed']:
         return value
     expected = bind_context(new_context(profile_sha256, installed, boot), value['work'])
+    if BUDGET in value['checkpoint'].state:
+        original_boot = value['plan'][CONTEXT]['boot']
+        if boot['computer_name'] != original_boot['computer_name']:
+            raise ReconciliationRequired('Saved task belongs to a different computer')
+        expected['boot'] = original_boot
     if value['plan'][CONTEXT] != expected:
         raise ReconciliationRequired('Saved task boot, profile or package context differs or is missing')
     deadline = value['deadline']
+    if BUDGET in value['checkpoint'].state:
+        try:
+            budget = task_budget(value['checkpoint'].state, value['plan'][CONTEXT])
+            proposed = reopen_budget(budget, boot_id=rec.digest(validate_boot(boot)),
+                observation=execution_observation() if observation is None else observation)
+            deadline = proposed['episode']['deadline']
+        except BudgetError as error:
+            raise ReconciliationRequired(str(error)) from error
     if (type(deadline) not in (int, float) or not math.isfinite(deadline)
             or not 0 < deadline - now <= 900):
         raise ReconciliationRequired('Original saved execution budget is exhausted or invalid')
     return value
+
+
+def activate_saved_budget(saved, store, *, boot, observation=None):
+    """Commit only the budget transition before the host's paused snapshot.
+
+    The composition retains its task-specific host lock. TaskStore's revision
+    claim and ordinary checkpoint transaction retain the earlier state in history.
+    No provider, native history, tool effect, prompt or request counter is changed.
+    """
+    cp = saved['checkpoint']
+    if BUDGET not in cp.state:
+        return saved
+    with store.claim(cp.task_id, expected_revision=cp.revision) as owned:
+        state = deepcopy(owned.checkpoint.state)
+        value = task_budget(state, saved['plan'][CONTEXT])
+        state[BUDGET] = reopen_budget(value, boot_id=rec.digest(validate_boot(boot)),
+            observation=execution_observation() if observation is None else observation)
+        state['deadline_monotonic'] = state[BUDGET]['episode']['deadline']
+        owned.save_checkpoint(state, expected_revision=owned.checkpoint.revision)
+    return read_saved(saved['work'])
 
 
 def claim_host(task_root):

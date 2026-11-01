@@ -3,14 +3,24 @@
 import hashlib
 import json
 from pathlib import Path
+import sys
 import unittest
 
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[2]
 ARCHIVE=ROOT/'provenance/explicit-continuation/deadline-arithmetic'
 
+# Reuse the existing exact SHA+AST source view; retained code is never executed.
+sys.path.insert(0,str(ROOT/'tests'))
+try:
+    from continuation_timeout_lineage import reboot_budget_predecessor
+finally:
+    sys.path.pop(0)
+
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def read(path):return json.loads(path.read_bytes())
+def producer_sha(relative,data):
+    return hashlib.sha256(reboot_budget_predecessor(relative,data,ROOT)).hexdigest()
 
 
 class DeadlineSourceTests(unittest.TestCase):
@@ -27,7 +37,16 @@ class DeadlineSourceTests(unittest.TestCase):
         self.assertEqual(current.count(delta['after'].encode()),1)
         restored=current.replace(delta['after'].encode(),delta['before'].encode())
         self.assertEqual(restored,(ARCHIVE/'predecessor/checks.py').read_bytes())
-        self.assertEqual(sha(ROOT/lineage['producer_path']),lineage['producer_sha256'])
+        producer=(ROOT/lineage['producer_path']).read_bytes()
+        self.assertEqual(producer_sha(lineage['producer_path'],producer),lineage['producer_sha256'])
+        # Even an unchanged AST with different bytes must not receive this view.
+        self.assertEqual(producer.count(b'state.pop(BUDGET, None)'),1)
+        for changed in (producer+b'\n# unreviewed producer\n',
+                        producer.replace(b'state.pop(BUDGET, None)',b'state.get(BUDGET, None)',1)):
+            with self.subTest(sha256=hashlib.sha256(changed).hexdigest()):
+                self.assertEqual(reboot_budget_predecessor(lineage['producer_path'],changed,ROOT),changed)
+                with self.assertRaises(AssertionError):
+                    self.assertEqual(producer_sha(lineage['producer_path'],changed),lineage['producer_sha256'])
 
     def test_old_workflow_bindings_remain_and_new_manifest_is_complete(self):
         previous=read(ARCHIVE/'predecessor/source-lineage.json')

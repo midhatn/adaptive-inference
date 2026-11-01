@@ -2,6 +2,95 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Durable reboot-budget source integration
+
+### First physical restart attempt: expired before continuation
+
+The [source-bound attempt record](../provenance/installed-reopen/reboot-budget/physical-restart-expired-2026-11-02.json)
+retains an actual IQ3_S clean Stop followed by normal Windows Restart. Welcome A
+completed; inventory B stopped after one confirmed read, with zero output writes.
+The closed Stop audit passed with about 711.912 seconds remaining from the
+original 900 seconds. The first postboot eligibility check occurred about
+274.452 seconds after the fixed expiration and refused before application launch.
+Independent review found all checked A/B canonical entries and the admission
+database unchanged. No new session, resumed provider call or output write was
+created. The same-computer boot changed; this is actual reboot evidence, but
+**successful task continuation across reboot remains unqualified**.
+
+The app parent joined with exit 0 and reported clean Stop. The separate observer
+joined with exit 1: three retained `URLError(TimeoutError)` observations followed
+shutdown. Its final valid response reported closing; all three timeouts saw the
+terminal file and none proved connection refusal. Preserve those failures and
+the original deadlines. The fixed installation's 63 runtime modules remain
+identical to the reviewed candidate; source archive and wheel-container identities
+remain distinct. This result adds no crash, sleep/wake, desktop-performance or
+full M5 claim.
+
+The [versioned budget implementation](reboot-budget.md) preserves the original
+task expiration across a clean Stop and changed Windows boot. It reuses fixed
+expiration from Temporal and the existing owned TaskStore transaction. The
+worker still requires the supplied deadline to equal its committed checkpoint;
+reopening does not silently reset the allowance.
+
+The [source-bound record](../provenance/installed-reopen/reboot-budget/validation-2026-11-01.json)
+retains **123 combined behavior checks**, **104 source-preservation checks** and
+the complete **1,394-test suite**, which passed in 517.802 seconds on full Windows
+CPython 3.11.9. A controlled changed-boot case preserved the confirmed read in
+the first resumed request and completed with one output write and three requests
+total. Actual worker-entry checks covered initial persistence and committed-boot
+validation through inert SDK edges. Explicit Continue retained the expired policy
+only in its sealed predecessor. Nine exact predecessor files and eight prior
+manifests preserve the earlier source evidence.
+
+The initial new test-lock cleanup error and the worker fixture's invalid legacy
+task ID remain recorded as failed attempts; both corrections were confined to
+tests. Independent source/evidence review found no material issue. Package and
+hosted checks belong to the exact candidate PR. These source results do not
+establish installed SDK behavior, a physical Windows restart, desktop performance
+or full M5 completion. The accepted installed results below retain their original
+runtime identity.
+
+The first PR #34 hosted candidate failed an older historical-producer assertion
+in the explicit-Continue harness, after core discovery. The
+[source-bound correction](../provenance/installed-reopen/reboot-budget/harness-reader-correction.json)
+preserves the old reader/manifest and exact producer expectation, while reusing
+the existing complete SHA/AST predecessor mapping. Comment-only and semantic
+changes still fail that expectation. The corrected 52-check harness and all 90
+provenance checks passed locally. A separate private test-recorder import error
+is retained; removing that optional instrumentation allowed the unchanged
+provenance subprocess contracts to run. Runtime and core-test bytes did not
+change. Corrected source `260187a` passed package verification of 1,280 source
+files/63 runtime modules, all 14 original hosted jobs and all 12 distribution
+checks: [push run](https://github.com/midhatn/adaptive-inference/actions/runs/41348798262)
+and [PR run](https://github.com/midhatn/adaptive-inference/actions/runs/41348802844).
+
+### Installed SDK and initial budget
+
+The [source-bound installed SDK record](../provenance/installed-reopen/reboot-budget/installed-sdk-validation-2026-11-01.json)
+binds a fresh isolated installation and the actual pinned Hermes SDK with
+scripted provider responses. All four requests advertised exactly `read_file`
+and `write_file`. A 19-unit/4,800-cent proposal was rejected before dispatch;
+its feedback was saved before the corrected request, and one write produced
+the correct 17-unit/4,350-cent report. The original prompt, quality settings
+and 900-second deadline were preserved, with request/attempt/admission counters
+of 4/4/4. Both fixture children joined with exit 0, without timeout or forced
+termination.
+
+The initial budget was committed at revision 2, before generation at revision 7,
+and remained identical across 33 budget-bearing history rows. Its initial cap
+was 897,324,039,899 ns: startup had already consumed part of the allowance.
+The fixture used installed wheel `5ae3de8f…`; corrected source `260187a` and
+wheel `de70af59…` are separately bound by equality of all 74 wheel member
+contents and 63 runtime modules. Their container hashes and source archives
+remain distinct.
+
+Independent review accepted this scope after a metadata-only amendment: its
+original 71/72 aggregate incorrectly expected a Boolean instead of the verified
+module count 63. Both records remain preserved; the amendment replayed no
+fixture, auditor or database access. This is installed SDK and initial-budget
+evidence. Episode zero and `clean_stop=false` remained unchanged; model
+inference, clean Stop and physical Windows restart were not exercised.
+
 ## Installed later-task application restart
 
 **1 November 2026, installed source `b35b631aca9ec37da9955903b87463201a6b3630`:**

@@ -16,6 +16,13 @@ def execution_now():
     return time.perf_counter()
 
 
+def execution_observation():
+    """Bracket adjustable UTC with this boot's interval clock, without rounding."""
+    before = execution_now()
+    utc_ns = time.time_ns()
+    return {'utc_ns': utc_ns, 'qpc_before': before, 'qpc_after': execution_now()}
+
+
 def verify_execution_clock():
     info = time.get_clock_info('perf_counter')
     if (os.name != 'nt' or info.implementation != 'QueryPerformanceCounter()'

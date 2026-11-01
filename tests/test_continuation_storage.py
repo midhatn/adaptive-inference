@@ -14,6 +14,7 @@ from adaptive_inference.task_store import TaskStore, RevisionConflict, Reconcili
 from adaptive_inference.control_mailbox import Mailbox, EXECUTION_OUTCOME, ACKS
 from adaptive_inference.demand import DemandIdentity, DemandRegistry, Registration, NAMESPACE
 from adaptive_inference.execution_clock import CLOCK_ID
+from adaptive_inference.desktop.execution_budget import BUDGET, create_budget, tighten_budget
 from adaptive_inference.desktop.hermes.control_bridge import prepare_task
 from adaptive_inference.desktop.hermes.recovery import digest
 from adaptive_inference.desktop.hermes.continuation import ContinuationAuthority, AUTHORITY, LINK
@@ -106,6 +107,31 @@ class ContinuationTests(unittest.TestCase):
         self.assertEqual(new.prompt, self.old.prompt)
         self.assertEqual(new.max_attempts, 8)
         self.assertEqual(new.revision, 0)
+
+    def test_expired_reboot_budget_stays_only_in_original_execution(self):
+        origin_utc = 1_700_000_000_000_000_000
+        budget = create_budget(boot_id='a'*64, deadline=1000.,
+            observation={'utc_ns': origin_utc, 'qpc_before': 100., 'qpc_after': 100.})
+        budget = tighten_budget(budget, boot_id='a'*64,
+            observation={'utc_ns': origin_utc+900_000_000_000, 'qpc_before': 1000., 'qpc_after': 1000.})
+        self.assertEqual(budget['remaining_cap_ns'], 0)
+        self.root = self.root/'versioned'; self.root.mkdir()
+        self.seed(state_changes={BUDGET: budget})
+        before = self.raw_old()
+        grant = self.authorize()
+        new = self.store.load(self.payload['successor_id'])
+        self.assertEqual(self.raw_old(), before)
+        self.assertEqual(self.store.load(self.old.task_id).state[BUDGET], budget)
+        self.assertNotIn(BUDGET, new.state)
+        expected = deepcopy(self.old.state)
+        expected.pop(EXECUTION_OUTCOME); expected.pop(ACKS); expected.pop(BUDGET)
+        expected['deadline_monotonic'] = 2100.; expected[NAMESPACE] = new.state[NAMESPACE]
+        self.assertEqual(new.state, expected)
+        self.assertEqual(grant['predecessor_state_sha256'], digest(self.old.state))
+        with self.authority.claim_selected(grant, host_generation='host-epoch') as (_, owned):
+            self.assertEqual(owned.checkpoint.state['deadline_monotonic'], 2100.)
+            self.assertNotIn(BUDGET, owned.checkpoint.state)
+        self.assertEqual(self.raw_old(), before)
 
     def test_duplicate_lost_reply_returns_same_deadline_without_new_grant(self):
         first = self.authorize()

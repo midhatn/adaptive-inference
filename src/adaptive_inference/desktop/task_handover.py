@@ -395,6 +395,8 @@ class HostTaskHandover:
             'worker','--run',str(work),'--controller-ready',str(episode['first_ready']),
             '--gateway-instance',c.host.gateway.instance,'--deadline-monotonic',str(deadline),
             '--stop-request-id',episode['stop_id']]
+        if c.reopen_context is not None:
+            command.extend(['--execution-boot-id', rec.digest(c.reopen_context['boot'])])
         record['launch_attempted'] = True
         before = len(c.handles)
         try:
