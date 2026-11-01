@@ -36,8 +36,8 @@ class TimeoutLineageTests(unittest.TestCase):
     def test_all_runtime_modules_and_historical_manifests_stay_exact(self):
         rows = lineage.record()
         runtime = lineage.ROOT/'src/adaptive_inference'
-        actual = {p.relative_to(runtime).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
-                  for p in runtime.rglob('*.py')}
+        actual = {name: hashlib.sha256(data).hexdigest()
+                  for name, data in lineage.preparation_runtime_view().items()}
         self.assertEqual(len(actual), 60)
         self.assertEqual(actual, rows['unchanged_runtime'])
         for relative, expected in rows['historical_manifests'].items():

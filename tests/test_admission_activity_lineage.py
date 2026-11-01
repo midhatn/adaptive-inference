@@ -17,13 +17,13 @@ class AdmissionActivityLineageTests(unittest.TestCase):
         self.assertEqual(rows['schema'], 'adaptive.admission-activity.source-lineage.v1')
         runtime = activity.ROOT / 'src/adaptive_inference'
         changed = 'desktop/hermes/pause_activity.py'
-        actual = {p.relative_to(runtime).as_posix(): p for p in runtime.rglob('*.py')}
+        actual = activity.timeout_lineage.preparation_runtime_view()
         self.assertEqual(set(actual), set(rows['unchanged_runtime']) | {changed})
         self.assertEqual(len(actual), 60)
         for relative, expected in rows['unchanged_runtime'].items():
-            self.assertEqual(hashlib.sha256(actual[relative].read_bytes()).hexdigest(), expected)
+            self.assertEqual(hashlib.sha256(actual[relative]).hexdigest(), expected)
         for relative, row in rows['files'].items():
-            data = (activity.ROOT / relative).read_bytes()
+            data = activity.timeout_lineage.preparation_predecessor(relative, (activity.ROOT / relative).read_bytes())
             self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
             self.assertEqual(fingerprint(ast.parse(data)), row['successor_ast_sha256'])
             before = (activity.ROOT / row['predecessor_source']).read_bytes()
@@ -53,7 +53,7 @@ class AdmissionActivityLineageTests(unittest.TestCase):
         self.assertEqual(set(rows['support_edits']), {
             'tests/task_file_alias_lineage.py', 'tests/test_safe_wait_lineage.py'})
         for relative, rules in rows['support_edits'].items():
-            current = (activity.ROOT / relative).read_bytes()
+            current = activity.timeout_lineage.preparation_predecessor(relative, (activity.ROOT / relative).read_bytes())
             for rule in reversed(rules['replacements']):
                 old, new = rule['old'].encode(), rule['new'].encode()
                 self.assertEqual(current.count(new), rule['count'])

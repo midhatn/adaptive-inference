@@ -168,6 +168,8 @@ The implementation uses the existing Python
 and this repository's unchanged TaskSpec validation, bounded reads and hashing.
 These sources were inspected on 1 November 2026. No Aider implementation or
 dependency was copied; the helper adds no execution or task database mechanism.
+The [source preservation record](../provenance/task-preparation/README.md) keeps
+the earlier installed runtime checks separate from this later authoring helper.
 
 File alias handling follows the pinned Hermes
 [file tools](https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/file_tools.py)

@@ -20,12 +20,11 @@ class SafeWaitLineageTests(unittest.TestCase):
     def test_complete_current_runtime_and_declared_predecessors(self):
         rows = lineage.safe_wait_record()
         self.assertEqual(rows['schema'], 'adaptive.safe-admission-wait.source-lineage.v1')
-        actual = {p.relative_to(lineage.ROOT / 'src/adaptive_inference').as_posix(): p
-                  for p in (lineage.ROOT / 'src/adaptive_inference').rglob('*.py')}
+        actual = lineage.admission_activity.timeout_lineage.preparation_runtime_view()
         self.assertEqual(set(actual), set(rows['runtime']))
         self.assertEqual(len(actual), 60)
-        for relative, path in actual.items():
-            data = lineage.continuation_observation_predecessor('src/adaptive_inference/' + relative, path.read_bytes())
+        for relative, raw in actual.items():
+            data = lineage.continuation_observation_predecessor('src/adaptive_inference/' + relative, raw)
             pin = rows['runtime'][relative]
             self.assertEqual(hashlib.sha256(data).hexdigest(), pin['sha256'])
             self.assertEqual(fingerprint(ast.parse(data)), pin['ast_sha256'])

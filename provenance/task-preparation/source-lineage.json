@@ -1,0 +1,146 @@
+{
+  "addition_sha256": "9cddd6e09b3f5435da08316f8d9ccdfbcff67a336f6f74b420108c4c856223b2",
+  "baseline_revision": "6e17f3185e715013155d355aa05ff289c31bfab4",
+  "baseline_runtime_record": "provenance/task-handover/continuation-timeout-diagnostics/source-lineage.json",
+  "baseline_runtime_record_sha256": "6cb899c81dcc4bfb5ed3df8d801b3fcb4bc2bcab718ff3cc2f41bc69ab14a885",
+  "files": {
+    "src/adaptive_inference/cli.py": {
+      "predecessor_ast_sha256": "5e17b139e215257cd55a0ed495c07f5ef15c91995507ead6ffba2c75049b8c3e",
+      "predecessor_sha256": "4777eca5d3d27fa0ae7ee6e84eb3aa7ec422b82220cf1d0eb2cf3b04f7247dd7",
+      "predecessor_source": "provenance/task-preparation/cli.before.py",
+      "successor_ast_sha256": "04bf89298b6d4871412fe549e2f1b57e5542a06779c59524d3cffe772c380e30",
+      "successor_sha256": "a13d6c2c52445884f2ee9897eb7fadb75188339be4472db98bd760c18bce5ecf"
+    },
+    "tests/continuation_timeout_lineage.py": {
+      "predecessor_ast_sha256": "850c1c9ac077533bddcb57035f6422325c26a6d19b7125ff3190670d24bb12c2",
+      "predecessor_sha256": "2fc4b46449a5706a10a816004fd8f0a36032e1849888a0cb57aa606043c9ff7a",
+      "replacements": [
+        {
+          "count": 1,
+          "new": "    data = preparation_predecessor(relative, data, root)\n",
+          "old": ""
+        },
+        {
+          "count": 1,
+          "new": "\n\n# Ordinary task authoring is a later source delta, not installed case17 evidence.\n# Reuse this outer byte view; all inner historical assertions remain unchanged.\nPREPARATION = 'provenance/task-preparation'\n\n\ndef preparation_record(root=None):\n    root = ROOT if root is None else root\n    return json.loads((root / PREPARATION / 'source-lineage.json').read_bytes())\n\n\ndef preparation_inputs(root=None):\n    root = ROOT if root is None else root\n    return [root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py']\n\n\ndef preparation_predecessor(relative, data, root=None):\n    \"\"\"Reverse only exact declared CLI/reader bytes, never unknown changes.\"\"\"\n    root = ROOT if root is None else root\n    if not (root / PREPARATION / 'source-lineage.json').exists():\n        return data  # Legacy disposable roots still face the original checks.\n    row = preparation_record(root)['files'].get(relative)\n    if row is None or hashlib.sha256(data).hexdigest() != row['successor_sha256']:\n        return data\n    if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:\n        raise AssertionError('Changed task-preparation successor AST')\n    if relative == 'src/adaptive_inference/cli.py':\n        if row['predecessor_source'] != PREPARATION + '/cli.before.py':\n            raise AssertionError('Changed task-preparation predecessor path')\n        before = (root / row['predecessor_source']).read_bytes()\n    else:\n        before = data\n        for rule in reversed(row['replacements']):\n            old, new = rule['old'].encode(), rule['new'].encode()\n            if before.count(new) != rule['count']:\n                raise AssertionError('Changed task-preparation reader edit')\n            before = before.replace(new, old)\n    if (hashlib.sha256(before).hexdigest() != row['predecessor_sha256']\n            or fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']):\n        raise AssertionError('Changed task-preparation predecessor identity')\n    return before\n\n\ndef preparation_runtime_view(root=None):\n    \"\"\"Check the declared addition/CLI delta before historical closure checks.\n\n    Every other module and byte passes through to those original assertions.\n    No unknown module is omitted and no retained runtime is executed.\n    \"\"\"\n    root = ROOT if root is None else root\n    runtime = root / 'src/adaptive_inference'\n    current = {path.relative_to(runtime).as_posix(): path.read_bytes()\n               for path in runtime.rglob('*.py')}\n    rows = preparation_record(root)\n    for name, pin in {'task_prepare.py': rows['addition_sha256'],\n                      'cli.py': rows['files']['src/adaptive_inference/cli.py']['successor_sha256']}.items():\n        if name not in current:\n            raise AssertionError('Changed task-preparation runtime closure: ' + name)\n        if hashlib.sha256(current[name]).hexdigest() != pin:\n            raise AssertionError('Changed task-preparation runtime source: ' + name)\n    del current['task_prepare.py']\n    current['cli.py'] = preparation_predecessor('src/adaptive_inference/cli.py', current['cli.py'], root)\n    return current\n\n\ndef restore_preparation(tree, relative, root=None):\n    \"\"\"The existing AST readers also see only the exact declared CLI delta.\"\"\"\n    if relative != 'cli.py':\n        return tree\n    root = ROOT if root is None else root\n    row = preparation_record(root)['files']['src/adaptive_inference/cli.py']\n    if fingerprint(tree) != row['successor_ast_sha256']:\n        return tree\n    data = (root / 'src/adaptive_inference/cli.py').read_bytes()\n    if hashlib.sha256(data).hexdigest() != row['successor_sha256']:\n        raise AssertionError('Changed complete task-handover source (task-preparation CLI)')\n    return ast.parse(preparation_predecessor('src/adaptive_inference/cli.py', data, root))\n",
+          "old": ""
+        }
+      ],
+      "successor_ast_sha256": "6e315d175c7a222a1b7e88ca1b934703e25d3e0b33647a5b72e59fd447864a3b",
+      "successor_sha256": "ea1aca16d3d6fdb491d1940e416621cc919dbb709978d6ebf7e525aa19b3d8c6"
+    },
+    "tests/task_file_alias_lineage.py": {
+      "predecessor_ast_sha256": "308a66fd4bc62fc9b701ccde2fe649eb9f0d1acc12e687256d0559d9698e02d7",
+      "predecessor_sha256": "92ef75e182c02e440184fc91453d4c3df53089a9c2475cefa260c72ad57b67bf",
+      "replacements": [
+        {
+          "count": 1,
+          "new": "    tree = admission_activity.timeout_lineage.restore_preparation(tree, relative, root)\n",
+          "old": ""
+        },
+        {
+          "count": 1,
+          "new": "    current = admission_activity.timeout_lineage.preparation_runtime_view(root)\n    actual = set(current)\n",
+          "old": "    actual = {path.relative_to(runtime).as_posix() for path in runtime.rglob('*.py')}\n"
+        },
+        {
+          "count": 1,
+          "new": "        data = current[relative]\n",
+          "old": "        data = (runtime / relative).read_bytes()\n"
+        },
+        {
+          "count": 1,
+          "new": "            *(root / row['predecessor_source'] for row in rows['files'].values())] + admission_activity.inputs(root) + admission_activity.timeout_lineage.preparation_inputs(root)\n",
+          "old": "            *(root / row['predecessor_source'] for row in rows['files'].values())] + admission_activity.inputs(root)\n"
+        }
+      ],
+      "successor_ast_sha256": "a348fffc0cd1d0425e1557828b1ef19c259a89f9b9e4c086e598c659f9091965",
+      "successor_sha256": "798ba1fad6d66f28e2fd424ccb6dbca936396ed7efe8dd2f4e5ff6f6e683df2f"
+    },
+    "tests/test_admission_activity_lineage.py": {
+      "predecessor_ast_sha256": "f6d4aa53563ba94499925698cb5ff7798442577acdd87c5f4b1bd4ec4333f962",
+      "predecessor_sha256": "01935fdbde44501bb37692717a89ad3bfcb0bcdfe11ede58335fbc928f76c7e0",
+      "replacements": [
+        {
+          "count": 1,
+          "new": "        actual = activity.timeout_lineage.preparation_runtime_view()\n",
+          "old": "        actual = {p.relative_to(runtime).as_posix(): p for p in runtime.rglob('*.py')}\n"
+        },
+        {
+          "count": 1,
+          "new": "            self.assertEqual(hashlib.sha256(actual[relative]).hexdigest(), expected)\n",
+          "old": "            self.assertEqual(hashlib.sha256(actual[relative].read_bytes()).hexdigest(), expected)\n"
+        },
+        {
+          "count": 1,
+          "new": "            data = activity.timeout_lineage.preparation_predecessor(relative, (activity.ROOT / relative).read_bytes())\n",
+          "old": "            data = (activity.ROOT / relative).read_bytes()\n"
+        },
+        {
+          "count": 1,
+          "new": "            current = activity.timeout_lineage.preparation_predecessor(relative, (activity.ROOT / relative).read_bytes())\n",
+          "old": "            current = (activity.ROOT / relative).read_bytes()\n"
+        }
+      ],
+      "successor_ast_sha256": "cd67c8127f211ead62d0385d4aa99311e2e03475dca2bea243faba1d455ee6c1",
+      "successor_sha256": "93282b45ff751718fffd152084a5a628fbf326af19d6c20cb24ffbf65f25262b"
+    },
+    "tests/test_continuation_timeout_lineage.py": {
+      "predecessor_ast_sha256": "3a8288094cda5566896c15b955584a45524107365a9416b910eaa20d7f1a4808",
+      "predecessor_sha256": "d4c3b14fee2484ab14b59c7b6b16da1f286cf6d7de3112ef094ddedc69042b98",
+      "replacements": [
+        {
+          "count": 1,
+          "new": "        actual = {name: hashlib.sha256(data).hexdigest()\n                  for name, data in lineage.preparation_runtime_view().items()}\n",
+          "old": "        actual = {p.relative_to(runtime).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()\n                  for p in runtime.rglob('*.py')}\n"
+        }
+      ],
+      "successor_ast_sha256": "57e8ffb131f5d283aa15ed0d803a137df316f4d36c8cf5a9baec1ffb5c457545",
+      "successor_sha256": "04fb8b7e2204ece89653509a5479b2be4bbca8390897ae8a87da322bb545f826"
+    },
+    "tests/test_pause_observation_lineage.py": {
+      "predecessor_ast_sha256": "55ef55e67a8cf50a70a8376aa3a80a95c0bc3af7627f61ad5da93144981a0580",
+      "predecessor_sha256": "576cea7c3538d1b0c7ec9d57c61ed0013f14a1e080ac1967cd3fa5d0bfbacfc1",
+      "replacements": [
+        {
+          "count": 1,
+          "new": "    data = lineage.admission_activity.timeout_lineage.preparation_predecessor(relative, (lineage.ROOT / relative).read_bytes())\n    data = readiness_support_predecessor(relative, data)\n",
+          "old": "    data = readiness_support_predecessor(relative, (lineage.ROOT / relative).read_bytes())\n"
+        },
+        {
+          "count": 1,
+          "new": "        self.assertEqual(set(lineage.admission_activity.timeout_lineage.preparation_runtime_view()), all_names)\n",
+          "old": "        self.assertEqual({p.relative_to(lineage.ROOT / 'src/adaptive_inference').as_posix()\n                          for p in (lineage.ROOT / 'src/adaptive_inference').rglob('*.py')}, all_names)\n"
+        }
+      ],
+      "successor_ast_sha256": "2b2ccfa6304ca3d6cd2c0deda5094f635faffc45f829ddcd044c0ac59896050e",
+      "successor_sha256": "b0acbc024b51fd6fcadece68d8a06f204531dc28cb1ca80fef76cd59fba584a0"
+    },
+    "tests/test_safe_wait_lineage.py": {
+      "predecessor_ast_sha256": "65e70294a54ea763d60ff360034a281901e3326ab8b839205f7c8f1aa64501cf",
+      "predecessor_sha256": "133db5a8095a9f7e2e7b1e4aa7fb0ce9f08169524711c64e416d209c2663ab78",
+      "replacements": [
+        {
+          "count": 1,
+          "new": "        actual = lineage.admission_activity.timeout_lineage.preparation_runtime_view()\n",
+          "old": "        actual = {p.relative_to(lineage.ROOT / 'src/adaptive_inference').as_posix(): p\n                  for p in (lineage.ROOT / 'src/adaptive_inference').rglob('*.py')}\n"
+        },
+        {
+          "count": 1,
+          "new": "        for relative, raw in actual.items():\n            data = lineage.continuation_observation_predecessor('src/adaptive_inference/' + relative, raw)\n",
+          "old": "        for relative, path in actual.items():\n            data = lineage.continuation_observation_predecessor('src/adaptive_inference/' + relative, path.read_bytes())\n"
+        }
+      ],
+      "successor_ast_sha256": "cbce29a49488f2dad419b14e069d4b9ed5727ae965c0bae6c65a219a122853f0",
+      "successor_sha256": "43f2e200d0ccb3690259f3e88b0c656c5dc66db7cc755016d25eefabadb60e22"
+    }
+  },
+  "preparation_predecessor_revision": "edfa9d70090d334ff26f15806ee4d37627882cb9",
+  "research": [
+    "https://docs.python.org/3.11/library/hashlib.html",
+    "https://docs.python.org/3.11/library/ast.html#ast.dump"
+  ],
+  "reuse": "Existing continuation_timeout_lineage outer byte projection and paused_expiry_lineage cross-version AST fingerprint. No external implementation copied; project Apache-2.0.",
+  "schema": "adaptive.task-preparation.source-lineage.v1",
+  "scope": "Exact ordinary authoring addition and CLI delta; input mapping only for preserved historical runtime assertions. Not installed qualification."
+}

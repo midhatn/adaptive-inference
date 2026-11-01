@@ -11,7 +11,8 @@ from paused_expiry_lineage import fingerprint
 
 
 def old_source(relative):
-    data = readiness_support_predecessor(relative, (lineage.ROOT / relative).read_bytes())
+    data = lineage.admission_activity.timeout_lineage.preparation_predecessor(relative, (lineage.ROOT / relative).read_bytes())
+    data = readiness_support_predecessor(relative, data)
     return lineage.safe_wait_predecessor(relative, data)
 
 
@@ -107,8 +108,7 @@ class PauseObservationLineageTests(unittest.TestCase):
         expected = lineage.record()
         all_names = set().union(*(set(expected[key]) for key in ('modules', 'unchanged_runtime', 'new_modules')))
         self.assertEqual(len(all_names), 60)
-        self.assertEqual({p.relative_to(lineage.ROOT / 'src/adaptive_inference').as_posix()
-                          for p in (lineage.ROOT / 'src/adaptive_inference').rglob('*.py')}, all_names)
+        self.assertEqual(set(lineage.admission_activity.timeout_lineage.preparation_runtime_view()), all_names)
         for relative in all_names - set(rows['modules']):
             row = expected['modules'].get(relative)
             pin = row['successor_sha256'] if row else {**expected['unchanged_runtime'], **expected['new_modules']}[relative]['sha256']

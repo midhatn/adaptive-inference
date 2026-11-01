@@ -44,6 +44,7 @@ def predecessor(relative, data, root=None):
 
 
 def restore_file_aliases(tree, relative, root=None):
+    tree = admission_activity.timeout_lineage.restore_preparation(tree, relative, root)
     tree = restore_observation(tree, relative, root=root)
     row = record(root)['modules'].get(relative)
     if row is None:
@@ -81,12 +82,13 @@ def runtime_view(root=None):
     if any(groups[i] & groups[j] for i in range(3) for j in range(i + 1, 3)):
         raise AssertionError('Overlapping task-file-alias source groups')
     runtime = root / 'src/adaptive_inference'
-    actual = {path.relative_to(runtime).as_posix() for path in runtime.rglob('*.py')}
+    current = admission_activity.timeout_lineage.preparation_runtime_view(root)
+    actual = set(current)
     if actual != set.union(*groups):
         raise AssertionError('Changed complete task-file-alias runtime closure')
     result = {}
     for relative in sorted(actual):
-        data = (runtime / relative).read_bytes()
+        data = current[relative]
         data = observation_predecessor(relative, data, root=root)
         changed = relative in rows['modules']
         row = rows['modules'][relative] if changed else {
@@ -253,7 +255,7 @@ def continuation_observation_inputs(root=None):
     root = ROOT if root is None else root
     rows = continuation_observation_record(root)
     return [root / CONTINUATION_OBSERVATION_ARCHIVE / 'source-lineage.json',
-            *(root / row['predecessor_source'] for row in rows['files'].values())] + admission_activity.inputs(root)
+            *(root / row['predecessor_source'] for row in rows['files'].values())] + admission_activity.inputs(root) + admission_activity.timeout_lineage.preparation_inputs(root)
 
 
 def _continuation_observation_before(relative, root=None):
