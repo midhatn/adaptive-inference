@@ -104,6 +104,17 @@ before scheduling it; this small M2 run does not satisfy that test.
 
 ## First actions for a fresh contributor
 
+The next functional experiment is the [M3 video comparison](PLAN.md#m3--protect-actual-desktop-activity).
+Its local video page and separate adaptive parent/observer passed focused
+component checks and independent review; see [preparation evidence](docs/evidence.md#video-coexistence-preparation).
+The single-task terminal projection also passed six synthetic checks and
+independent review. These results do not establish a physical video, foreground
+resource or task acceptance result. Finish reference-alpha delivery, then
+collect a real no-AI baseline before the matched
+IQ3_S task and following baseline. Root remains the sole physical experiment
+owner in the current local work item; another contributor must check ownership
+and fresh machine state before starting a run.
+
 1. Inspect local changes and branch/revision identities. Read current open work
    before claiming a task; do not overwrite another contributor's files or
    treat an old issue assignment as a live process handle.

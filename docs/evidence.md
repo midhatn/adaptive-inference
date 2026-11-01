@@ -2,6 +2,53 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Video coexistence preparation
+
+**1 November 2026:** the [video example](../examples/validation/video_coexistence/README.md)
+reuses aiohttp file/range serving and browser media-quality counters for a genuine
+Start, 10-second warm-up and requested 180-second measurement. Five component
+checks passed in 0.539 seconds on Python 3.11.9/aiohttp 3.14.5; the actual test
+parent and HTTP cleanup completed. Source syntax checks also passed. This used
+synthetic counters and file bytes, without real browser playback.
+
+Commit `d82eb7cdcd791e1cbca73f91d069003e9d730650` adds a retained parent for the
+ordinary installed desktop command and a read-only foreground/status observer.
+It reuses the existing TaskSpec/profile validators, activity reader and
+task-handover examples. The task remains 900 seconds with a separate 2,700-second
+outer limit; emergency termination remains a failed attempt. The observer sends
+only bounded GET requests, retains actual sampling gaps and unknown CPU values,
+and does not read active task database or result contents.
+
+Its five focused checks passed in 1.373 seconds on Python 3.11.9 with the pinned
+dependencies and explicit worktree imports. The actual parent, three inert child
+processes and four fake HTTP server threads joined; only the main thread remained.
+Two earlier failed fixture attempts are preserved. Their expectations concerned
+existing validator wording, short connection-refusal timing and a sleep-derived
+gap bound; the helper implementations did not change between attempts. The final
+check compares saved timestamps with the reported gap and preserves an incomplete
+observation. It does not establish successful real-controller shutdown.
+
+Independent source/evidence review accepted both preparation changes. The private
+binding receipt SHA-256 is
+`37230b2f536c914751fdff654d1abe3e64152700f838b2be66ba43341dad3c7a`;
+its hash identifies retained evidence, not public access to its local inputs.
+No real activity sampling, video/capture measurement, IQ3_S task run or native
+resource cleanup is qualified by these checks. The prospective comparison and
+its unchanged acceptance boundaries are in [M3](../PLAN.md#m3--protect-actual-desktop-activity).
+
+The single-task terminal auditor then passed six focused checks in 0.792 seconds
+on the same pinned Python 3.11.9 environment. It reuses the existing task/effect
+projection, task contract checker and independent inventory oracle. The fixtures
+use synthetic closed records and actual read-only SQLite; all 27 audit connections
+closed, the test parent exited normally and only the main thread remained.
+Independent review accepted the source and retained evidence, identified by
+SHA-256 `7b4a313d7c68849ddbd0b3fe85141e66359d0aa579b2dfdb4b3e6a8a4b6e10fe`.
+No installed case was replayed. Genuine Resume/Stop verification requires actual
+operator/window/action observations bound to the durable records; missing or
+ambiguous evidence stays incomplete. Caller-owned handle attestations are
+reported separately from saved child-wait evidence. This checker always leaves
+video and whole-M3 qualification false: those require the physical comparison.
+
 ## Reference delivery checks
 
 **1 November 2026:** setup predecessor `a9eff31bf4e2257723e34d8b30188dbf8b8efb81`

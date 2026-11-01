@@ -157,3 +157,64 @@ and [HTTPError response ownership](https://docs.python.org/3.11/library/urllib.e
 Component checks use `python -m unittest discover -s tests -p
 test_video_adaptive_observation.py -v`: actual inert Python children, fake loopback
 status and injected activity only. They do not qualify desktop coexistence.
+
+## Auditing one closed inventory task
+
+After the physical owner has joined the parent and observer handles, use
+`audit_adaptive.py` with that run, the actual operator observations and a fresh
+output file outside the run:
+
+```powershell
+python -I -B examples/validation/video_coexistence/audit_adaptive.py `
+  --run "C:\measurements\adaptive-01" `
+  --ui-observation "C:\measurements\adaptive-01-actions.private.json" `
+  --output "C:\measurements\adaptive-01-terminal-audit.private.json" `
+  --parent-joined --observer-joined
+```
+
+The two flags attest that the caller joined its retained handles; they permit
+terminal reads and are reported separately from the saved child-wait evidence.
+They are not independent operating-system join checks. Do not run this auditor
+against active databases. It uses the existing read-only `task_disk` projection,
+native tool/effect checks, `check_task` and independent inventory oracle. SQLite
+connections use `mode=ro` and explicit closing, as documented by
+[Python sqlite3](https://docs.python.org/3.11/library/sqlite3.html#how-to-work-with-sqlite-uris)
+and [SQLite URI filenames](https://www.sqlite.org/uri.html), reviewed on
+1 November 2026. Existing project sources remain Apache-2.0; no new dependency
+or external implementation is copied.
+
+The operator observation is a JSON object with these actual recorded values:
+
+| Field | Required evidence |
+| --- | --- |
+| `run` | Exact absolute path of this run. |
+| `deadline_clock` | `windows-qpc-seconds-v1`. |
+| `window` | Full observed controller binding: `host_epoch`, `session_id`, `task_id`, `hwnd`, `pid`, and integer `creation_time_100ns`. Preserve the integer exactly. |
+| `actions` | Exactly two entries, in order: `resume`, then `stop`. Retain any extra action in the original observation; it makes this single-control comparison incomplete. |
+| Each action | `method`, observed `hwnd` and `pid`, finite `qpc_before`/`qpc_after`, and timezone-aware `utc_before`/`utc_after`, bracketing the genuine action. |
+
+The audit matches the observed window to the retained binding, and matches the
+sole durable Resume acknowledgement to the action and first provider request.
+This is explicitly an **observation-bound projection**. It is not a saved copy
+of the GUI's internal requests or the transport's in-memory records. Stop is
+bound to the observed action and retained confirmed shutdown; this completed-task
+path has no invented Stop mailbox request. Missing, ambiguous or extra action
+evidence leaves the user-control check incomplete and `passed` false.
+
+A passing terminal audit means this one inventory execution retained its
+original contract, IQ3_S quality, 900/2700-second budgets, independent output
+oracle, one physical write, actual worker-wait records and owned cleanup.
+The audit preserves observer end reasons even when observation ended incomplete.
+It checks the last native owner and the ordinary host's cleanup record; it does
+not independently reconstruct every intermediate release or inspect OS-wide
+processes. Installation qualification and original physical records remain
+separate evidence. A source or synthetic fixture pass is not a new installed run.
+
+Foreground onset, more than 60 seconds of passive video, release/handback timing,
+playback quality and external display capture remain separate comparison gates.
+The receipt always reports `video_qualified: false` and `m3_qualified: false`.
+The historical expiry/Continue/two-task case is not this single-execution run
+and must retain its original scope. Focused checks are
+`python -m unittest discover -s tests -p test_video_adaptive_audit.py -v`;
+they use clearly synthetic closed records and real read-only SQLite, with no
+agent, model, UI or hardware activity.
