@@ -98,3 +98,62 @@ are original project code under Apache-2.0; no external implementation was
 copied. Focused component checks run with
 `python -m unittest discover -s tests -p test_video_coexistence.py -v`.
 Those checks use synthetic counters and file bytes, not actual video playback.
+
+## Preparing the separate adaptive run
+
+`run_adaptive.py` retains one ordinary installed desktop child. Supply the
+existing deployment profile, unchanged 900-second inventory TaskSpec and its
+input folder, and a new absolute run path under an existing directory:
+
+```powershell
+python -I -B examples/validation/video_coexistence/run_adaptive.py `
+  --profile "C:\adaptive\deployment.json" --run "C:\measurements\adaptive-01" `
+  --task-spec "C:\adaptive\inventory\task.json" --task-inputs "C:\adaptive\inventory"
+```
+
+Use an interpreter with the project installed. The profile selects the actual
+installed host interpreter; its ordinary desktop CLI still presents the existing
+Resume and Stop controls. This parent does not click controls or change the model,
+task, policy or scheduling. Its fixed 2700-second outer wait is separate from the
+unchanged 900-second task execution budget. A nonzero child exit or an emergency
+exact-child kill after timeout remains a failed attempt. The receipt retains the
+actual wait result; it cannot prove that all descendants or native resources were
+closed. Do not start another run until the physical owner checks cleanup.
+
+In a separate terminal, start the read-only observer using the same profile and
+run path (it may begin before the parent):
+
+```powershell
+python -I -B examples/validation/video_coexistence/observe_adaptive.py `
+  --profile "C:\adaptive\deployment.json" --run "C:\measurements\adaptive-01"
+```
+
+This command samples the existing `WindowsActivityReader` approximately every
+0.2 seconds and makes at most one GET `/status` request per second on the profile's
+loopback gateway. It records foreground process identity, input-idle timing,
+available activity values and clock brackets. It is an independent reader, not
+the controller's policy-input stream. Blocking HTTP can delay samples; actual
+gaps are saved and missing CPU deltas stay unknown. It reads only the existence
+of the terminal result path while the case runs, never active SQLite or result
+contents. Redirects, oversized responses and a changed gateway instance are
+refused. Its 2700-second loop bound is not a hard operating-system deadline for
+every blocking operation.
+
+Both helpers write fresh private sidecars next to the run. Terminal-path
+existence plus a refused status connection does not establish task correctness
+or cleanup. These helpers do not yet perform terminal acceptance auditing. The
+video page and external PresentMon capture remain separately owned measurements;
+neither helper starts them. Complete the release and no-AI video-baseline gates
+before a real combined experiment. For that later experiment, retain genuine
+foreground onset, more than 60 seconds of passive playback, ordinary handback,
+the unchanged IQ3_S task result, duplicate-write checks and owned cleanup.
+
+The parent and observer adapt the existing project examples in
+`examples/validation/task_handover`; they do not introduce a scheduler. Primary
+Python 3.11 references reviewed on 1 November 2026 are
+[Popen.wait and timeout cleanup](https://docs.python.org/3.11/library/subprocess.html#subprocess.Popen.wait),
+[urllib handlers and disabled proxies](https://docs.python.org/3.11/library/urllib.request.html),
+and [HTTPError response ownership](https://docs.python.org/3.11/library/urllib.error.html#urllib.error.HTTPError).
+Component checks use `python -m unittest discover -s tests -p
+test_video_adaptive_observation.py -v`: actual inert Python children, fake loopback
+status and injected activity only. They do not qualify desktop coexistence.
