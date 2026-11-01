@@ -2,6 +2,40 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## SQLite concurrency fixture ownership
+
+Publishing the closed video evidence exposed a test-only cleanup failure in
+[PR #30's original Windows 3.11 job](https://github.com/midhatn/adaptive-inference/actions/runs/41307228260/job/124849998301)
+at source `fd4d483df65ba8bfe8b581ef27134f2e23141975`. The concurrent task-store
+fixture reached its per-thread ten-second wait with a thread still alive, then
+temporary-directory cleanup raised WinError 32 on its open database. The log
+does not identify which worker or operation was delayed. The original pair of
+hosted runs finished with 13 passes and this one failure; it is not relabelled
+as a runtime defect or a successful run.
+
+The correction reuses that test file's existing owned-child helpers. The same
+writer and three readers now run inside one retained child, with a 60-second
+whole-workload emergency allowance. A timeout still fails, after killing and
+joining the child, and retains its output and diagnostics. This follows Python's
+[documented communicate/timeout cleanup](https://docs.python.org/3.11/library/subprocess.html#subprocess.Popen.communicate).
+Named threads and a best-effort pre-timeout traceback make future failures
+inspectable. Product lock/SQLite timeouts and runtime sources are unchanged.
+The original parent prompt/revision, 20 writes, 75 reader observations, monotonic
+revisions, exact history, final revision 21 and history length 22 remain checked.
+
+All **18 focused checks passed in 3.047 seconds** on Python 3.11.9 with explicit
+worktree imports. A deterministic regression held a real database open, retained
+the expected timeout failure and its stdout/stderr, joined the exact child, then
+deleted the database. All 11 owned children were terminal and temporary roots
+were removed. The tested file SHA-256 is
+`d7518ece8db9e668abdeaf3c311d626582ca2ec2d0bc926effdc35da3815a9de`;
+the private focused receipt is
+`63523490fbe2513f57ff3f8c8161b8c3df2991a766d3797af1671c7986972efd`.
+The original failed-log hash is
+`92de645e70daf36a68f2029be0cd170d73fa572933c750969e3606119c3dc6e9`.
+Use the PR's final exact-head hosted checks for merge readiness. This fixture
+validation makes no new physical inference or video claim.
+
 ## First adaptive video diagnostic
 
 **1 November 2026, observation source `3136e357f2c9cfd16608926dfa0b28b2fbbee7a3`:**

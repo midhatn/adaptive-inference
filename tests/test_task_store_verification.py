@@ -12,6 +12,7 @@ import sys
 import tempfile
 import threading
 import time
+import traceback
 import unittest
 from unittest import mock
 
@@ -42,12 +43,17 @@ class VerificationTests(unittest.TestCase):
             proc.kill()
         return proc.communicate(timeout=10)
 
-    def wait_child(self, proc, expected):
+    def wait_child(self, proc, expected, *, timeout=10):
         try:
-            stdout, stderr = proc.communicate(timeout=10)
+            stdout, stderr = proc.communicate(timeout=timeout)
         except subprocess.TimeoutExpired:
-            self.finish(proc)
-            self.fail("Owned fixture child exceeded its deadline")
+            # communicate() does not kill on timeout: retain the exact child,
+            # kill it, then communicate again before temporary-directory cleanup.
+            # https://docs.python.org/3.11/library/subprocess.html#subprocess.Popen.communicate
+            stdout, stderr = self.finish(proc)
+            self.fail(f"Owned fixture child exceeded its {timeout:g}s deadline "
+                      f"(pid={proc.pid}, returncode={proc.returncode})\n"
+                      f"stdout:\n{stdout}\nstderr:\n{stderr}")
         self.assertEqual(proc.returncode, expected, stderr)
         return stdout
 
@@ -158,6 +164,31 @@ os._exit(19)
         self.assertEqual(observed, [{"committed": True}])
 
     def test_actual_multiple_readers_and_checkpoint_writer_preserve_history(self):
+        # This checks concurrent correctness, not filesystem performance. Keep
+        # the real threads in one owned child so even an uncooperative call can
+        # be contained and joined before the parent deletes its database.
+        proc = self.child('''
+import faulthandler, runpy, sys
+from pathlib import Path
+from adaptive_inference.task_store import TaskStore
+faulthandler.dump_traceback_later(45)
+namespace = runpy.run_path(sys.argv[2])
+case = namespace['VerificationTests']()
+case.path = Path(sys.argv[1])
+case.store = TaskStore(case.path)
+case.initial = case.store.load('task')
+case.assertEqual(case.initial.prompt, sys.argv[3])
+case.assertEqual(case.initial.revision, int(sys.argv[4]))
+case._assert_multiple_readers_and_checkpoint_writer()
+faulthandler.cancel_dump_traceback_later()
+''', self.path, Path(__file__).resolve(), self.initial.prompt, self.initial.revision)
+        # One whole-child emergency allowance; product lock/SQLite timeouts stay
+        # unchanged. A timeout always fails after kill + actual process join.
+        self.wait_child(proc, 0, timeout=60)
+        self.assertEqual(self.store.load("task").revision, 21)
+        self.assertEqual(len(self.store.history("task")), 22)
+
+    def _assert_multiple_readers_and_checkpoint_writer(self):
         start, done = threading.Event(), threading.Event()
         failures, samples = [], []
         def writer():
@@ -168,8 +199,8 @@ os._exit(19)
                         state = copy.deepcopy(owned.checkpoint.state)
                         state["output"] = str(number) + "x" * 8192
                         owned.save_checkpoint(state, expected_revision=owned.checkpoint.revision)
-            except BaseException as exc:
-                failures.append(exc)
+            except BaseException:
+                failures.append(traceback.format_exc())
             finally:
                 done.set()
         def reader():
@@ -185,20 +216,48 @@ os._exit(19)
                     history = other.history("task")
                     self.assertEqual([row["revision"] for row in history], list(range(len(history))))
                     samples.append(last)
-            except BaseException as exc:
-                failures.append(exc)
-        threads = [threading.Thread(target=writer)] + [threading.Thread(target=reader) for _ in range(3)]
+            except BaseException:
+                failures.append(traceback.format_exc())
+        threads = [threading.Thread(target=writer, name="store-writer")] + [
+            threading.Thread(target=reader, name=f"store-reader-{index}") for index in range(3)]
         for thread in threads:
             thread.start()
         start.set()
         for thread in threads:
-            thread.join(10)
+            thread.join()
         self.assertTrue(all(not thread.is_alive() for thread in threads))
-        self.assertEqual(failures, [])
+        self.assertEqual(failures, [], "\n".join(failures))
         self.assertEqual(len(samples), 75)
         self.assertTrue(done.is_set())
         self.assertEqual(self.store.load("task").revision, 21)
         self.assertEqual(len(self.store.history("task")), 22)
+
+    def test_child_timeout_preserves_failure_and_joins_before_database_cleanup(self):
+        path = self.root / "timeout.sqlite"
+        TaskStore(path)
+        marker = self.root / "timeout-child-ready"
+        proc = self.child('''
+import faulthandler, sys, threading
+from pathlib import Path
+from adaptive_inference.task_store import TaskStore
+with TaskStore(sys.argv[1])._connection(write=True):
+    print('holding owned fixture database', flush=True)
+    faulthandler.dump_traceback()
+    print('fixture child diagnostic', file=sys.stderr, flush=True)
+    Path(sys.argv[2]).write_text('held')
+    threading.Event().wait()
+''', path, marker)
+        deadline = time.monotonic() + 10
+        while not marker.exists() and proc.poll() is None and time.monotonic() < deadline:
+            time.sleep(.01)
+        self.assertTrue(marker.exists(), "Child never held its fixture database")
+        with self.assertRaisesRegex(AssertionError, "Owned fixture child exceeded") as failure:
+            self.wait_child(proc, 0, timeout=.2)
+        self.assertIn("holding owned fixture database", str(failure.exception))
+        self.assertIn("fixture child diagnostic", str(failure.exception))
+        self.assertIsNotNone(proc.returncode)
+        path.unlink()
+        self.assertFalse(path.exists())
 
     def test_gate_wait_is_bounded_then_original_lock_can_be_released(self):
         lock = module._FileLock(str(self.path) + ".init.lock")
