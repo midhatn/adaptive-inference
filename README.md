@@ -5,6 +5,13 @@
 [![CI](https://github.com/midhatn/adaptive-inference/actions/workflows/ci.yml/badge.svg)](https://github.com/midhatn/adaptive-inference/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0%20%2B%20MIT-blue)](LICENSE)
 
+**Reference alpha: `0.4.0a1`.** Start the supported Windows/IQ3_S/Hermes
+composition, choose a bounded file task, continue saved work and accept another
+task in the same controller. Begin with the [ordinary workflow](docs/reference-workflow.md)
+and [setup helper](examples/desktop/README.md). This is a prerelease toward the
+always-on goal; application/reboot recovery and broad daily-use qualification
+remain on the [roadmap](PLAN.md).
+
 **Continuing this project with an AI or a team?** Start with
 [AGENTS.md](AGENTS.md), the dated [continuation handoff](HANDOFF.md), and the
 [multi-agent workflow](docs/multi-agent-collaboration.md). They preserve the goal,
@@ -34,7 +41,7 @@ and progress contracts for that integration. Importing the library starts no
 GUI, agent or engine. The explicit `desktop` command composes those lifecycles
 using the [installed profile](docs/installed-desktop.md).
 
-**Latest development result:** the installed IQ3_S service completed a task
+**Accepted continuity result:** the installed IQ3_S service completed a task
 after real foreground activity, safe resource-wait expiry and explicit
 continuation, then accepted and completed a separate task without restarting
 the controller. One normal Stop released its owned resources. The original
@@ -65,7 +72,14 @@ any upstream requirement still outstanding. The optional [Hermes plugin](plugins
 and [OpenClaw configuration composer](examples/agents/openclaw-config.md) use public
 host interfaces to classify background work while preserving model settings.
 
-The standalone [releases](https://github.com/midhatn/adaptive-inference/releases) include the complete source archive, installable runtime, checksums and validation receipts. Version 0.3.0 adds the generalized integrations and current Hermes source supplement. Integrations follow the shared [agent/engine contract](docs/integration-contract.md).
+The standalone [releases](https://github.com/midhatn/adaptive-inference/releases)
+provide the complete source archive, installable runtime, checksums and validation
+receipts. The `0.4.0a1` reference alpha adds the supported desktop workflow and
+task/setup helpers to the generalized integration foundation released in 0.3.0.
+Use the archive and wheel from the same identified release. Packaging checks,
+task-authoring checks and the original installed model/desktop results retain
+their separate evidence scopes. Integrations follow the shared
+[agent/engine contract](docs/integration-contract.md).
 
 ## Start in five minutes
 

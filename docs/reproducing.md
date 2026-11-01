@@ -1,5 +1,23 @@
 # Reproduce and use
 
+## Reference alpha artifacts
+
+The Windows reference uses Python's standard
+[alpha version form](https://packaging.python.org/en/latest/specifications/version-specifiers/#pre-releases),
+`0.4.0a1`. Its GitHub delivery is a
+[prerelease](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository),
+with the complete source archive, runtime wheel, checksums and scoped validation
+records attached together. Use the release's actual publication state and
+artifact hashes; a version entry in a development branch is not proof that a
+release has been published.
+
+The source archive includes setup scripts, tasks, tests and licensed references;
+the wheel contains the runtime. A fresh isolated package installation verifies
+that wheel and its command entry points. It does not establish a new physical
+Windows/engine/agent qualification or transfer the original case17 and launcher
+results to a different installation. The [ordinary workflow](reference-workflow.md)
+and [installed desktop guide](installed-desktop.md) retain those prerequisites.
+
 ## Software-only acceptance
 
 Use a clean clone and Python3.11+. Create a virtual environment, install `requirements.lock`, then install this project with `python -m pip install --no-deps -e .`. The README gives Windows and POSIX activation commands. No existing installation is modified.

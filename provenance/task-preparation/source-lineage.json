@@ -4,6 +4,19 @@
   "baseline_runtime_record": "provenance/task-handover/continuation-timeout-diagnostics/source-lineage.json",
   "baseline_runtime_record_sha256": "6cb899c81dcc4bfb5ed3df8d801b3fcb4bc2bcab718ff3cc2f41bc69ab14a885",
   "files": {
+    "src/adaptive_inference/__init__.py": {
+      "predecessor_ast_sha256": "827bad5084a88ecaee91c0c3e485ba31a75b44a1161267fed99f686b7d422d16",
+      "predecessor_sha256": "5d4569a00e03c044ec5d9ad0b19a5a58c67c27c2f0cb51d94e4e968eb4d8d023",
+      "replacements": [
+        {
+          "count": 1,
+          "new": "__version__ = \"0.4.0a1\"",
+          "old": "__version__ = \"0.3.0\""
+        }
+      ],
+      "successor_ast_sha256": "64e9f8aea6f3543725bd9b69dc1aa328679550601b11715a7e1b5e1a620c3042",
+      "successor_sha256": "1d906cca6d5581290d73292cce949dcaf74001de67bda63b903dfb2e70edacba"
+    },
     "src/adaptive_inference/cli.py": {
       "predecessor_ast_sha256": "5e17b139e215257cd55a0ed495c07f5ef15c91995507ead6ffba2c75049b8c3e",
       "predecessor_sha256": "4777eca5d3d27fa0ae7ee6e84eb3aa7ec422b82220cf1d0eb2cf3b04f7247dd7",
@@ -24,10 +37,60 @@
           "count": 1,
           "new": "\n\n# Ordinary task authoring is a later source delta, not installed case17 evidence.\n# Reuse this outer byte view; all inner historical assertions remain unchanged.\nPREPARATION = 'provenance/task-preparation'\n\n\ndef preparation_record(root=None):\n    root = ROOT if root is None else root\n    return json.loads((root / PREPARATION / 'source-lineage.json').read_bytes())\n\n\ndef preparation_inputs(root=None):\n    root = ROOT if root is None else root\n    return [root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py']\n\n\ndef preparation_predecessor(relative, data, root=None):\n    \"\"\"Reverse only exact declared CLI/reader bytes, never unknown changes.\"\"\"\n    root = ROOT if root is None else root\n    if not (root / PREPARATION / 'source-lineage.json').exists():\n        return data  # Legacy disposable roots still face the original checks.\n    row = preparation_record(root)['files'].get(relative)\n    if row is None or hashlib.sha256(data).hexdigest() != row['successor_sha256']:\n        return data\n    if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:\n        raise AssertionError('Changed task-preparation successor AST')\n    if relative == 'src/adaptive_inference/cli.py':\n        if row['predecessor_source'] != PREPARATION + '/cli.before.py':\n            raise AssertionError('Changed task-preparation predecessor path')\n        before = (root / row['predecessor_source']).read_bytes()\n    else:\n        before = data\n        for rule in reversed(row['replacements']):\n            old, new = rule['old'].encode(), rule['new'].encode()\n            if before.count(new) != rule['count']:\n                raise AssertionError('Changed task-preparation reader edit')\n            before = before.replace(new, old)\n    if (hashlib.sha256(before).hexdigest() != row['predecessor_sha256']\n            or fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']):\n        raise AssertionError('Changed task-preparation predecessor identity')\n    return before\n\n\ndef preparation_runtime_view(root=None):\n    \"\"\"Check the declared addition/CLI delta before historical closure checks.\n\n    Every other module and byte passes through to those original assertions.\n    No unknown module is omitted and no retained runtime is executed.\n    \"\"\"\n    root = ROOT if root is None else root\n    runtime = root / 'src/adaptive_inference'\n    current = {path.relative_to(runtime).as_posix(): path.read_bytes()\n               for path in runtime.rglob('*.py')}\n    rows = preparation_record(root)\n    for name, pin in {'task_prepare.py': rows['addition_sha256'],\n                      'cli.py': rows['files']['src/adaptive_inference/cli.py']['successor_sha256']}.items():\n        if name not in current:\n            raise AssertionError('Changed task-preparation runtime closure: ' + name)\n        if hashlib.sha256(current[name]).hexdigest() != pin:\n            raise AssertionError('Changed task-preparation runtime source: ' + name)\n    del current['task_prepare.py']\n    current['cli.py'] = preparation_predecessor('src/adaptive_inference/cli.py', current['cli.py'], root)\n    return current\n\n\ndef restore_preparation(tree, relative, root=None):\n    \"\"\"The existing AST readers also see only the exact declared CLI delta.\"\"\"\n    if relative != 'cli.py':\n        return tree\n    root = ROOT if root is None else root\n    row = preparation_record(root)['files']['src/adaptive_inference/cli.py']\n    if fingerprint(tree) != row['successor_ast_sha256']:\n        return tree\n    data = (root / 'src/adaptive_inference/cli.py').read_bytes()\n    if hashlib.sha256(data).hexdigest() != row['successor_sha256']:\n        raise AssertionError('Changed complete task-handover source (task-preparation CLI)')\n    return ast.parse(preparation_predecessor('src/adaptive_inference/cli.py', data, root))\n",
           "old": ""
+        },
+        {
+          "count": 1,
+          "new": "Reverse only exact declared CLI/reader/version bytes, never unknown changes.",
+          "old": "Reverse only exact declared CLI/reader bytes, never unknown changes."
+        },
+        {
+          "count": 1,
+          "new": "Check declared addition/CLI/version deltas before historical closure checks.",
+          "old": "Check the declared addition/CLI delta before historical closure checks."
+        },
+        {
+          "count": 1,
+          "new": "    for name, pin in {'task_prepare.py': rows['addition_sha256'],\n                      '__init__.py': rows['files']['src/adaptive_inference/__init__.py']['successor_sha256'],\n",
+          "old": "    for name, pin in {'task_prepare.py': rows['addition_sha256'],\n"
+        },
+        {
+          "count": 1,
+          "new": "    for name in ('cli.py', '__init__.py'):\n        current[name] = preparation_predecessor('src/adaptive_inference/' + name, current[name], root)\n",
+          "old": "    current['cli.py'] = preparation_predecessor('src/adaptive_inference/cli.py', current['cli.py'], root)\n"
+        },
+        {
+          "count": 1,
+          "new": "Existing AST readers see only the exact declared CLI/version deltas.",
+          "old": "The existing AST readers also see only the exact declared CLI delta."
+        },
+        {
+          "count": 1,
+          "new": "    if relative not in ('cli.py', '__init__.py'):\n",
+          "old": "    if relative != 'cli.py':\n"
+        },
+        {
+          "count": 1,
+          "new": "    source = 'src/adaptive_inference/' + relative\n    row = preparation_record(root)['files'][source]\n",
+          "old": "    row = preparation_record(root)['files']['src/adaptive_inference/cli.py']\n"
+        },
+        {
+          "count": 1,
+          "new": "    data = (root / source).read_bytes()\n",
+          "old": "    data = (root / 'src/adaptive_inference/cli.py').read_bytes()\n"
+        },
+        {
+          "count": 1,
+          "new": "        raise AssertionError('Changed complete task-handover source (task-preparation): ' + relative)\n",
+          "old": "        raise AssertionError('Changed complete task-handover source (task-preparation CLI)')\n"
+        },
+        {
+          "count": 1,
+          "new": "    return ast.parse(preparation_predecessor(source, data, root))\n",
+          "old": "    return ast.parse(preparation_predecessor('src/adaptive_inference/cli.py', data, root))\n"
         }
       ],
-      "successor_ast_sha256": "6e315d175c7a222a1b7e88ca1b934703e25d3e0b33647a5b72e59fd447864a3b",
-      "successor_sha256": "ea1aca16d3d6fdb491d1940e416621cc919dbb709978d6ebf7e525aa19b3d8c6"
+      "successor_ast_sha256": "6b0df6184bc422fc8b9407da216843c9394411427d979df855ea560358394273",
+      "successor_sha256": "bb452172295677d60822a6e7ef72840573fa7c5c9f8c8bdaebfefa698d03ff03"
     },
     "tests/task_file_alias_lineage.py": {
       "predecessor_ast_sha256": "308a66fd4bc62fc9b701ccde2fe649eb9f0d1acc12e687256d0559d9698e02d7",
