@@ -85,6 +85,8 @@ class DiagnosticBoundaryTests(unittest.TestCase):
 class TimeoutCleanupTests(unittest.TestCase):
     def run_held_transition(self, *, capture_fails=False):
         class HeldTransition(fixture.HostTests):
+            continuation_timeout_s = 5
+
             async def asyncSetUp(self):
                 self.hold_entered = asyncio.Event()
                 await super().asyncSetUp()
@@ -140,7 +142,8 @@ class TimeoutCleanupTests(unittest.TestCase):
         self.assertEqual(result.testsRun, 1)
         self.assertFalse(result.failures)
         self.assertEqual(len(result.errors), 1)
-        self.assertIn('await asyncio.wait_for(asyncio.shield(task),5)', result.errors[0][1])
+        self.assertEqual(case.continuation_timeout_s, 5)
+        self.assertIn('await asyncio.wait_for(asyncio.shield(task), self.continuation_timeout_s)', result.errors[0][1])
         self.assertTrue(result.errors[0][1].rstrip().endswith('TimeoutError'))
         self.assertTrue(case.hold_entered.is_set())
         self.assertTrue(case.c.runtime._stopping)

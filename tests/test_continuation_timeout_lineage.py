@@ -21,7 +21,7 @@ class TimeoutLineageTests(unittest.TestCase):
         replacements = json.loads((lineage.ROOT/lineage.ARCHIVE/'replacements.json').read_bytes())
         self.assertEqual(set(replacements), lineage.INPUTS)
         for relative, row in rows['files'].items():
-            data = (lineage.ROOT/relative).read_bytes()
+            data = lineage.preparation_predecessor(relative, (lineage.ROOT/relative).read_bytes())
             self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
             self.assertEqual(fingerprint(ast.parse(data)), row['successor_ast_sha256'])
             before = (lineage.ROOT/row['predecessor_source']).read_bytes()
@@ -46,7 +46,7 @@ class TimeoutLineageTests(unittest.TestCase):
     def test_unknown_changes_are_not_projected_and_old_validator_refuses(self):
         relative = diagnostics.FIXTURE; current = (lineage.ROOT/relative).read_bytes()
         for data in (current+b'\n# unknown\n',
-                     current.replace(b'asyncio.shield(task),5)', b'asyncio.shield(task),6)', 1)):
+                     current.replace(b'continuation_timeout_s = 30', b'continuation_timeout_s = 31', 1)):
             self.assertNotEqual(data, current)
             self.assertEqual(lineage.predecessor(relative, data), data)
             with self.assertRaisesRegex(AssertionError, 'complete CI diagnostic fixture'):
