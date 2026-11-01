@@ -705,6 +705,81 @@ This leaves installed `7306a53` unchanged and does not explain or erase the prio
 `4d2f5a7` result of 13 successes and one actual timeout failure. Later reporting
 commits require their own applicable checks; these CI results are exact-revision evidence.
 
+#### Case16: original task completed; exact-duration checker failed
+
+The next fresh run retained installed source `7306a53`, the V6 owner, IQ3_S
+assets, quality and all original limits. It reached verified safe resource-wait
+expiry, displayed the saved-work screen and received one Continue. The continued
+inventory worker completed with the independently checked 23-unit result. The
+private qualification checker then rejected `one_exact_wait_grant` before
+publishing recovery acceptance or selecting the second task. There was no New
+Task, Task B or user Stop. The original primary audit ran once and failed
+`normal_parent`; the additive foreground audit was not run. **The whole case
+remains failed**, including its `clean_stop` claim.
+
+Closed-data diagnosis evaluated all fourteen conjuncts of the rejected grant
+check. Thirteen passed. The sole failure was the assertion that subtracting the
+stored authorization time from the stored deadline must equal exactly 900.
+The runtime constructed its deadline by adding 900 to the authorization time;
+that producer-form equality holds exactly in the saved grant. Binary floating
+point subtraction instead yielded `900.0000000000018`, about 1.82 picoseconds
+above 900. This is a checker arithmetic defect, not evidence of an added runtime
+allowance. The stored predecessor, history, single grant and successor deadline
+remained exact in the separate diagnosis.
+
+Python documents that each floating-point operation can introduce rounding and
+that reversing an operation need not recover the original value exactly.
+The prospective correction checks the producer's addition identity, with finite
+numeric timestamps and a deadline strictly after authorization. It keeps the
+exact 900-second budget and all other identity, history, quality and request
+checks. It adds no tolerance, clock conversion or budget extension. The
+[deadline-arithmetic source record](../provenance/explicit-continuation/deadline-arithmetic/README.md)
+preserves the original public checker and cites the existing producer and
+[Python arithmetic contract](https://docs.python.org/3.11/tutorial/floatingpoint.html).
+It cannot retroactively supply the missing second task, Stop or acceptance.
+
+The corrected public example passed its existing aggregate wrapper on Python
+3.11.9 and 3.12.9: 52 checks on each, comprising 45 existing checks and seven
+focused regression/source-preservation checks. The prospective private
+safe-wait checker passed 24 checks on each interpreter, comprising its 19
+existing predicate cases and five deadline regressions. These use complete
+synthetic fixtures; no model or installed runtime was changed or rerun. The
+private successor is not an activated qualification harness. Independent review
+cleared the correction and reporting; source preparation and the next functional
+model run remain pending.
+
+The closed foreground record contains 27 actual document actions. Its maximum
+adjacent start-to-next-end interval was **48.813776 seconds**, with nine misses
+of the 30-second operating target and no interval reaching the strict 60-second
+boundary. The last completed preseal action began **8.759196 seconds** before
+sealing. The first complete activation/inspection/navigation bracket lasted
+**8.3366181 seconds**. A separate descriptive trace review found the same first
+request active with open admission before that full bracket and foreground
+draining afterward. All 749 subsequent preseal hold rows had closed admission,
+`foreground_activity` and no pending request: 25 draining, seven releasing and
+717 parked. These descriptive checks do not substitute for the unexecuted
+additive audit or qualify the combined scenario.
+
+The actual parent joined with exit 1 after **1,143.609 seconds**, without timeout
+or emergency termination. The observer joined with exit 2 after 1,116 valid
+responses and three connection errors; its terminal-path observation was still
+false at its own endpoint. Independent cleanup review confirmed the retained
+worker, GUI, listener, transport and two native-release records, including
+5 + 9 descendant exits. A separate later availability observation found no
+remaining test processes or listeners. Failure cleanup is not a normal user
+Stop. The failed path did not retain the success-only final job enumeration or
+all worker birth-identity rows; the review preserves those limits.
+
+Independent terminal review confirmed the inventory oracle, three cumulative
+provider calls (one before continuation and two afterward), one physical write,
+the exact grant diagnosis and the failed overall outcome. It passed 322
+evidence-consistency checks across 110 input pins; these are review checks, not
+additional model trials. Receipt SHA-256:
+`50d8839ae7c219ab350236146146162df9c5008521c4fd4ff57bbe9c7797667f`.
+The separate cleanup-review receipt is
+`e7098f6b85bb19b084deef13a50d709e040f2335e61ae16d02bb0d19cd2046a9`.
+These hashes identify retained private evidence, not a public reproduction pass.
+
 ### CI diagnostics and isolated HTTP fixture validation
 
 At documentation head `938a9a123c2b9ad3991a8863856650e601798cf4`, the

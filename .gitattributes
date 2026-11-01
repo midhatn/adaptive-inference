@@ -54,6 +54,7 @@ tests/test_desktop_mailbox_runtime.py -text whitespace=cr-at-eol
 tests/test_continuation_protocol.py -text whitespace=cr-at-eol
 # Preserve exact accepted continuation evidence and predicate bytes.
 provenance/explicit-continuation/acceptance/** -text whitespace=cr-at-eol
+provenance/explicit-continuation/deadline-arithmetic/predecessor/** -text whitespace=cr-at-eol
 # Preserve exact reusable continuation workflow and source identity.
 examples/validation/explicit_continuation/** -text whitespace=cr-at-eol
 # Preserve the reviewed task-contract source projection and its manifest bytes.

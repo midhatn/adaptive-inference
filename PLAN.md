@@ -72,19 +72,43 @@ pass therefore does not qualify this combined scenario. The delay's cause is
 unknown; the records do not justify a runtime change. Case14's distinct early
 recovery-margin/dwell failure remains preserved in the [evidence ledger](docs/evidence.md#case14-primary-recoveryhandover-passed-foreground-supplement-failed).
 
-Before another costly model trial, review the operator's critical path using the
-existing observe/inspect/input/refresh workflow. Keep contemporaneous action
-notes short, defer polished analysis, and put necessary commentary after a
-completed action and before the next fresh observation. These are prospective
-operating changes, not a proven explanation or timing guarantee. Use a bounded
-operator-only check with genuine remaining work to assess feasibility before a
-new physical case. Keep the 30-second operating target, strict 60-second gate,
-full first-action bracket, installed source, IQ3_S quality and all original
-budgets. Do not add artificial activity, retry consumed cases or relabel their
-results. The [case15 evidence](docs/evidence.md#case15-primary-recovery-passed-foreground-coverage-failed)
-records the measured limit. Publish the reproducible validation entry only after
-complete acceptance. Broader desktop coexistence, media work and physical reboot
-recovery remain later gates.
+The subsequent operator-only check ended naturally after 554.940 seconds without
+a strict coverage failure. Its shorter duration and lack of concurrent model
+load left sustained feasibility inconclusive. Case16 then used a genuine review
+of the existing evidence ledger, short timely notes and the full first-action
+bracket. It reached safe expiry and one Continue, and the inventory task produced
+the correct 23-unit result. A different gate failed before the second task:
+the qualification checker required subtraction of two floating-point timestamps
+to equal exactly 900, although the saved deadline exactly matched the runtime's
+original authorization-time-plus-900 calculation. The original primary audit
+failed, the additive audit was not run, and there was no second task or user
+Stop. [Case16 remains a failed qualification](docs/evidence.md#case16-original-task-completed-exact-duration-checker-failed).
+
+The bounded checker correction is implemented using that existing
+producer-form identity, finite numeric inputs and a deadline after authorization.
+Preserve the 900-second contract without a tolerance or runtime clock change.
+The same assumption exists in the reusable explicit-continuation example; its
+historical acceptance copy must remain unchanged, with the correction and
+citations recorded in [source preservation](provenance/explicit-continuation/deadline-arithmetic/README.md).
+The small regression, existing relevant checks and bounded independent review
+have passed. The public wrapper passed 52 tests and the private checker 24 tests
+on each supported interpreter. Return directly to the functional integrated
+workflow: yield resources, preserve work, continue
+the original task and accept the next task. Do not expand this into an exhaustive
+edge-case or timing investigation. Assemble the corrected harness and use
+current host/readiness observations for a fresh attempt. Do
+not replay case16 or combine components from different failed runs into an
+acceptance pass.
+
+Case16's closed operator records have 27 actions, maximum adjacent interval
+48.813776 seconds and an 8.759196-second preseal tail. Descriptive status review
+found closed admission and foreground activity in all 749 post-draining hold
+rows; this is useful evidence for the next attempt, not the missing additive
+audit. Retain the 30-second target, strict 60-second gate, full first-action
+bracket, exact installed source, IQ3_S quality and all original budgets. No
+artificial activity or deadline extension is introduced. Publish the
+reproducible validation entry only after complete acceptance. Broader desktop
+coexistence, media work and physical reboot recovery remain later gates.
 
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |

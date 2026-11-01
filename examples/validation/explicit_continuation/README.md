@@ -3,7 +3,7 @@
 This is the reusable source workflow for one Windows, same-window, IQ3_S
 orders-report qualification. The [accepted evidence record](../../../provenance/explicit-continuation/acceptance/README.md)
 belongs to the original independently audited private run. This public path
-adaptation has source-equivalence and CPU-fixture validation; it has not been
+adaptation has CPU-fixture validation and a prospective deadline-check correction; it has not been
 rerun with a model. A fresh run produces new evidence and must be evaluated on
 its own results.
 
@@ -15,12 +15,19 @@ required to use the feature.
 ## Source and installation prerequisites
 
 Use a complete repository checkout. `run_continue.py`, `qualify_continue.py`,
-`observe_continue.py`, `audit_continue.py` and `checks.py` are byte-for-byte the
-accepted workflow sources. Only `bindings.baseline` changes helper resolution:
+`observe_continue.py` and `audit_continue.py` are byte-for-byte the
+accepted workflow sources. `checks.py` now checks the producer's exact
+`deadline == authorized_at + 900` calculation, with finite numeric inputs and
+a strictly increasing deadline. This replaces a subtraction that can reject
+the producer's own floating-point result. The 900-second budget and all other
+predicates remain unchanged. The [preserved predecessor and source correction](../../../provenance/explicit-continuation/deadline-arithmetic/README.md)
+are separate from historical acceptance evidence.
+
+`bindings.baseline` changes only helper resolution:
 it uses the existing seven-file public qualification predecessor and two exact
 pure QPC predicates extracted from the earlier auditor. `source-lineage.json`
 records original source hashes, the narrow fixture-path change and helper AST
-identities. No accepted manifest is overwritten. Original bindings are retained
+identities and the prospective checker correction. No accepted manifest is overwritten. Original bindings are retained
 as a source-equivalence reference, not executed.
 
 Install and verify the desktop package, full host Python/Tk, worker Python,
@@ -137,7 +144,8 @@ python -m unittest discover -s provenance -p test_explicit_continuation_harness.
 
 The second command is the normal-discovery wrapper for the same tests, not an
 additional independent test set. Source checks compare exact preserved bytes,
-the one changed loader function, the one fixture path and the two unchanged
+the changed loader function, fixture path, narrowly reversible deadline
+expression and the two unchanged
 QPC function ASTs. The fixtures test audit predicates and refusal paths without
 loading the model, SDK, native engine or GUI.
 
