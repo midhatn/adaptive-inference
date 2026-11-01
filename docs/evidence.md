@@ -28,6 +28,17 @@ establish installed SDK behavior, a physical Windows restart, desktop performanc
 or full M5 completion. The accepted installed results below retain their original
 runtime identity.
 
+The first PR #34 hosted candidate failed an older historical-producer assertion
+in the explicit-Continue harness, after core discovery. The
+[source-bound correction](../provenance/installed-reopen/reboot-budget/harness-reader-correction.json)
+preserves the old reader/manifest and exact producer expectation, while reusing
+the existing complete SHA/AST predecessor mapping. Comment-only and semantic
+changes still fail that expectation. The corrected 52-check harness and all 90
+provenance checks passed locally. A separate private test-recorder import error
+is retained; removing that optional instrumentation allowed the unchanged
+provenance subprocess contracts to run. Runtime and core-test bytes did not
+change. Corrected-head packaging and hosted checks are reported in PR #34.
+
 ## Installed later-task application restart
 
 **1 November 2026, installed source `b35b631aca9ec37da9955903b87463201a6b3630`:**

@@ -1,0 +1,121 @@
+{
+  "schema": "adaptive.installed-reopen.reboot-budget.harness-reader-correction.v1",
+  "base_revision": "5e686a787134738dc601c8c485905a28980d3a8c",
+  "scope": "Historical harness reader only. Preserve the original producer expectation and all runtime/qualification bytes; project only the already-reviewed complete source before the historical SHA check. No installed or reboot qualification.",
+  "files": {
+    "examples/validation/explicit_continuation/test_deadline_lineage.py": {
+      "predecessor_source": "provenance/installed-reopen/reboot-budget/harness-reader-predecessor/test_deadline_lineage.py",
+      "predecessor_sha256": "60453f55f7401b67d53f1136717f170a8ffd4de47054b70149e31da811c622d3",
+      "successor_sha256": "3665f8a3b93c703a70d5b917db4d6185a863b348ecccd7188f301153937920ea"
+    },
+    "examples/validation/explicit_continuation/source-manifest.json": {
+      "predecessor_source": "provenance/installed-reopen/reboot-budget/harness-reader-predecessor/source-manifest.json",
+      "predecessor_sha256": "3fa2bfd1959980657b6deffd84e150b357a5f1e074cf9a35a4fc9d32e5c5f2ad",
+      "successor_sha256": "7884bc3abe9bec7282176366c8b0620760c6874d2ac635c358056ca5c87048c1"
+    }
+  },
+  "producer": {
+    "path": "src/adaptive_inference/desktop/hermes/continuation.py",
+    "current_sha256": "6355952c0ba29c9046e5806728f9bcc6c94097429288c46bbc287eb32c57b91a",
+    "historical_sha256": "b7bd7b67f7e05e10d7dbf7c310b72f4c8c03955e3cf64f426197751a96ea6012",
+    "historical_source": "provenance/installed-reopen/reboot-budget/predecessor/src/adaptive_inference/desktop/hermes/continuation.py",
+    "historical_lineage": "provenance/explicit-continuation/deadline-arithmetic/source-lineage.json",
+    "historical_lineage_sha256": "f7a5157a1ccdd7900631a58872021e21482d062773dd9b16105c764228c3bead"
+  },
+  "reuse": {
+    "path": "tests/continuation_timeout_lineage.py",
+    "function": "reboot_budget_predecessor",
+    "sha256": "ee4b7b513e6c15931805db14f80481c6baa6f6c14e3a1730fb35ff52e9191778",
+    "revision": "5e686a787134738dc601c8c485905a28980d3a8c",
+    "url": "https://github.com/midhatn/adaptive-inference/blob/5e686a787134738dc601c8c485905a28980d3a8c/tests/continuation_timeout_lineage.py",
+    "license": "Apache-2.0",
+    "record": "provenance/installed-reopen/reboot-budget/source-lineage.json",
+    "record_sha256": "9477f9692b063e6514f3b947455b4384bdba9ba40a5282e0eefe2f15281b1a95",
+    "semantics": "Recognize exact successor SHA and portable AST; verify retained predecessor SHA/AST; pass unknown bytes unchanged to the original strict hash assertion.",
+    "hashlib_reference": "https://docs.python.org/3.11/library/hashlib.html"
+  },
+  "reader_change": {
+    "before": "self.assertEqual(sha(ROOT/lineage['producer_path']),lineage['producer_sha256'])",
+    "after": "self.assertEqual(producer_sha(lineage['producer_path'],producer),lineage['producer_sha256'])",
+    "historical_expectation_changed": false,
+    "unknown_source_checks": [
+      "Comment-only byte mutation with unchanged AST",
+      "Semantic mutation retaining expired budget via state.get instead of state.pop"
+    ],
+    "test_count_unchanged": true
+  },
+  "original_ci_failure": {
+    "run_id": 41347353781,
+    "job_id": 124969922575,
+    "attempt": 1,
+    "head": "5e686a787134738dc601c8c485905a28980d3a8c",
+    "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41347353781/job/124969922575",
+    "platform": "ubuntu-latest",
+    "python": "3.12",
+    "result": "failure",
+    "log_sha256": "992364550b2a3c97992b33a33573d4480baa84266c473de9fd9b29eac6425ce6",
+    "reason": "Historical reader directly compared current continuation source with the unchanged predecessor SHA.",
+    "harness_tests": 52,
+    "provenance_tests": 90,
+    "failed_harness_tests": 1
+  },
+  "local_predecessor_reproduction": {
+    "tests": 2,
+    "failures": 1,
+    "errors": 0,
+    "log_sha256": "5621a995fe7436edd93065126e09d24c80bf069065970feeb36b9ff27fc269c2",
+    "child_receipt_sha256": "4550f1d6b537262c509ce46076585a37d621441294acaa29ddd7be3e672ba6ec",
+    "parent_receipt_sha256": "cb7133d29f69a91b931f871b0219960598dbe4b1752c355dfdcfb7cc600fea66",
+    "result": "failure",
+    "source_unchanged": true
+  },
+  "runtime_and_existing_lineage_manifest_modified": false,
+  "retained_sources_executed": false,
+  "local_validation": {
+    "python": "3.11.9",
+    "dependencies": "All requirements.lock pins matched; package import originated in the reviewed checkout.",
+    "harness": {
+      "tests": 52,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "unittest_elapsed_s": 0.38,
+      "passed": true,
+      "parent_exit_code": 0,
+      "child_exit_code": 0,
+      "joined": true,
+      "source_unchanged": true,
+      "parent_receipt_sha256": "417c195f2a0dd731f51a5b7b71c92b2041726f815c5ec110d96b8d46377b4366",
+      "child_receipt_sha256": "05e53ce2d3f6454286d32f4d5f9446da6aa04df26cdc940304050fff1f7a63bc",
+      "log_sha256": "a45b64ef40b7e915dd8bca256d5b09b72f1bd741b0bf399e9489522e0f2cd5f7",
+      "source_pins_sha256": "afdf6a8a65a434fc61afea6258e4e1fe27265917f472bb327b191b5fd4e0128e"
+    },
+    "provenance": {
+      "tests": 90,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "unittest_elapsed_s": 32.131,
+      "passed": true,
+      "parent_exit_code": 0,
+      "child_exit_code": 0,
+      "joined": true,
+      "source_unchanged": true,
+      "parent_receipt_sha256": "8e4c1f3377a0f09866d2b4b7536cb29006eb30907ee87b629753c6fb3f59849d",
+      "child_receipt_sha256": "7d049fd8caaa75d2511e03889a7686c1856557292c10fd331c9ac8607bac7ec5",
+      "log_sha256": "154234140cf2e619553fdf084bd2bdfdd05af34896d8c29eec988fe5838b6f4a",
+      "source_pins_sha256": "afdf6a8a65a434fc61afea6258e4e1fe27265917f472bb327b191b5fd4e0128e"
+    },
+    "preserved_private_runner_failure": {
+      "tests": 32,
+      "errors": 4,
+      "result": "failure",
+      "log_sha256": "5b13d47ca910aa8dc15d36a619008b76a287851729b051fa8ca2da18a9ffffaf",
+      "reason": "The optional private recorder replaced subprocess.Popen with a function before asyncio imported its Windows Popen subclass. The correction removed instrumentation; project source stayed unchanged.",
+      "runtime_or_product_failure": false
+    },
+    "source_binding": "Reader, harness manifest, producer, projector and existing lineage bytes stayed unchanged through both successful suites. This validation-only metadata was appended after joins; the pre-metadata record and complete source-pin sets remain retained.",
+    "nested_process_scope": "The successful provenance run kept unchanged synchronous subprocess.run behavior. The private runner directly retained and joined the suite process; it did not independently instrument nested children.",
+    "physical_model_sdk_reboot_performed": false
+  }
+}

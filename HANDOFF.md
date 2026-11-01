@@ -110,6 +110,14 @@ Stop/reopen/resume test and one output write. This is source-level evidence;
 1,394-test suite passed. See the [source-bound validation record](provenance/installed-reopen/reboot-budget/validation-2026-11-01.json).
 Package and hosted publication checks are tracked separately in the candidate
 PR; installed-worker and physical reboot gates remain pending.
+The first PR #34 hosted candidate exposed an older explicit-Continue harness
+reader that compared the changed producer directly with its historical hash.
+The [reader correction](provenance/installed-reopen/reboot-budget/harness-reader-correction.json)
+reuses the existing exact source projection and preserves that historical hash.
+All 52 harness checks and all 90 provenance checks passed after the correction;
+runtime and core-test bytes are unchanged. Run the provenance discovery gate
+locally before packaging future source changes. The original failed hosted
+candidate remains failed; corrected-head hosted checks are a separate gate.
 Explicit Continue preserves the old budget in its sealed predecessor and does
 not copy that execution-specific allowance into its successor. Existing tasks
 must not receive invented expiry metadata or renewed budgets.

@@ -976,6 +976,15 @@ integration passed 123 behavior checks, 104 source-preservation checks and all
 1,394 tests in the complete suite. Close package/current-head CI, fresh isolated
 installation and actual pinned-SDK smoke before the separately coordinated
 IQ3_S reboot trial. Preserve the existing installed result and its source.
+**Publication feedback:** the first PR #34 hosted candidate reached an older
+explicit-Continue evidence reader that still hashed the current producer as its
+historical version. The [bounded reader correction](provenance/installed-reopen/reboot-budget/harness-reader-correction.json)
+uses the existing exact SHA/AST predecessor view; the historical producer pin,
+runtime and qualification predicates remain unchanged. Its 52 harness checks
+and all 90 provenance checks passed. Include local provenance discovery alongside
+core discovery before the next package/publication gate, then require the
+corrected head's original hosted checks. Preserve the failed head and private
+runner failure separately; neither changes earlier runtime results.
 Research existing lifecycle/budget implementations first. Do not replay the
 accepted application trial or silently reset a saved monotonic deadline. M3's
 inert window-switch rehearsal and M4 useful-tool/media gates remain open; this

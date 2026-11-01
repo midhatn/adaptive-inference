@@ -29,6 +29,22 @@ normally; input hashes remained unchanged, and its emergency guard was not used.
 The combined behavior and source results are recorded in
 [validation-2026-11-01.json](validation-2026-11-01.json).
 
+The first hosted candidate also exposed a historical explicit-Continue reader
+that compared the current producer directly with the old producer hash. The
+[reader correction](harness-reader-correction.json) preserves its exact earlier
+reader and manifest, then reuses this same source view before the unchanged old
+hash assertion. Both comment-only and semantic mutations remain unrecognized
+and fail. The corrected public harness passed 52 checks; the complete provenance
+suite passed 90 checks. Runtime and core-test files are unchanged. The original
+hosted failure and separate private-recorder failure are retained in that record.
+
+Run both core and provenance discovery before packaging a later change:
+
+```console
+python -B -m unittest discover -s tests -v
+python -B -m unittest discover -s provenance -p "test_*.py" -v
+```
+
 These checks establish source preservation and refusal boundaries. Behavior
 fixtures, installed SDK checks and actual computer-reboot qualification remain
 separate evidence. The changed runtime needs fresh installed qualification; no
