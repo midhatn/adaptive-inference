@@ -1,0 +1,42 @@
+{
+  "schema": "adaptive-inference.validation-summary.v1",
+  "date": "2026-11-01",
+  "base_revision": "50232cfaccd4bbe34cded6a368a0bb2eab22d204",
+  "runtime_sha256": "237311ba527f9bbe36f4bf90fe99cca28f1d242caef863b610783e10ffa63018",
+  "environment": "Windows, full Python 3.11.9",
+  "first_complete_suite": {
+    "passed": false,
+    "tests_run": 879,
+    "test_seconds": 221.268,
+    "errors": 1,
+    "joined_exit_code": 1,
+    "source_inputs_unchanged": true,
+    "receipt_sha256": "7a371e8d56f4c3d4f429cd8a1891e763573ca6fef4db34b649c5a3f63df92072",
+    "error": "The older clock mutation fixture replaced a call suffix with pass, producing invalid controller.pass before its guard-removal assertion."
+  },
+  "test_only_correction": {
+    "file": "tests/test_execution_clock_lineage.py",
+    "sha256": "c969946509367ad1b167f0492861d85ce573a358a36ee808ef9778235da19c25",
+    "change": "Target the complete current call expression and read the source as UTF-8; preserve original deadline mutations and guard-refusal assertions.",
+    "tests_passed": 2,
+    "test_seconds": 6.578,
+    "joined_exit_code": 0,
+    "source_inputs_unchanged": true,
+    "receipt_sha256": "a8af5f79b23983de67264b4aad016dbc388b256c820fa2ff3ec2b6ad3ab4b0d9",
+    "runtime_changed": false,
+    "historical_manifests_and_archival_test_changed": false
+  },
+  "corrected_complete_suite": {
+    "passed": true,
+    "tests_passed": 1369,
+    "test_seconds": 430.480,
+    "outer_seconds": 431.859,
+    "retained_child_joined": true,
+    "joined_exit_code": 0,
+    "source_inputs_unchanged": true,
+    "receipt_sha256": "c8246155c672c7054defc920571746d0cb1319014603008ddd53e7eea7e10da8",
+    "log_sha256": "71958cacec851510f2dcf4e26bbd830846dd0923dc645163da07eb30905ae8ad"
+  },
+  "scope": "Complete local core/source test suite; no installed Hermes SDK, real model, UI, foreground performance or restart qualification.",
+  "publication_boundary": "Subsequent documentation and result records form a publication overlay. Package, hosted, fresh installation, scripted actual-SDK and physical IQ3_S results require their own evidence. Earlier failed attempts remain unchanged."
+}

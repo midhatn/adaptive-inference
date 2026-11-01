@@ -8,6 +8,7 @@ import time
 from types import ModuleType, SimpleNamespace
 import unittest
 from unittest import mock
+from recovery_capability_support import ReadWriteToolsets
 
 from adaptive_inference.control_mailbox import Mailbox, EXECUTION_OUTCOME, WAIT_EXPIRY_SCHEMA
 from adaptive_inference.demand import DemandIdentity, DemandRegistry, Registration
@@ -38,6 +39,7 @@ class SelectedWaitTests(unittest.TestCase):
 
     def wait_patches(self, *, close_error=False, stop=False):
         outer, f = self, self.f
+        toolsets = ReadWriteToolsets()
         class Boundary:
             def __init__(self, *a): self.rows=[]; self.steps={'parent':0}; self.seen=set()
         base = SimpleNamespace(Boundary=Boundary, git=lambda *a: worker.SDK_REV if a[0]=='rev-parse' else '',
@@ -66,6 +68,7 @@ class SelectedWaitTests(unittest.TestCase):
                 self.session_id=kwargs['session_id'];self._session_db=kwargs['session_db']
                 self._active_session_turn_lease_holder='selected-holder'
                 self.activity=[]
+                self.tools,self.valid_tool_names=toolsets.agent_tools(kwargs['enabled_toolsets'])
             def _touch_activity(self,label):
                 self.activity.append(label)  # Scripted SDK activity; no watchdog thread.
             def run_conversation(self, prompt, conversation_history=None):
@@ -86,7 +89,8 @@ class SelectedWaitTests(unittest.TestCase):
         interrupt=ModuleType('tools.interrupt');interrupt.is_interrupted=lambda:False
         return (mock.patch.object(worker,'setup',return_value=(rec,base)),
                 mock.patch.object(admission,'Provider',Provider),
-                mock.patch.dict(sys.modules,{'run_agent':sdk,'hermes_cli.plugins':plugins,'tools.interrupt':interrupt}))
+                mock.patch.dict(sys.modules,{'run_agent':sdk,'toolsets':toolsets,
+                    'hermes_cli.plugins':plugins,'tools.interrupt':interrupt}))
 
     def expire(self, *, extra=(), close_error=False, stop=False):
         class DB(existing.existing.ClosingDB):

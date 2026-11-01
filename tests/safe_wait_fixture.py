@@ -14,6 +14,7 @@ import time
 from types import ModuleType, SimpleNamespace
 import unittest
 from unittest import mock
+from recovery_capability_support import ReadWriteToolsets
 
 from adaptive_inference.control_mailbox import EXECUTION_OUTCOME
 from adaptive_inference.execution_clock import CLOCK_ID
@@ -51,6 +52,7 @@ class SafeWaitCases(unittest.TestCase):
     def exercise(self, mode):
         self.mode = mode
         f, outer = self.fixture, self
+        toolsets = ReadWriteToolsets()
         f.now = 899.0
         f.args.deadline_monotonic = 900.0
         f.args.stop_request_id = 'service-stop'
@@ -115,6 +117,7 @@ class SafeWaitCases(unittest.TestCase):
                 self._session_db = kwargs['session_db']
                 self._active_session_turn_lease_holder = 'scripted-holder'
                 self.activity = []
+                self.tools,self.valid_tool_names=toolsets.agent_tools(kwargs['enabled_toolsets'])
             def _touch_activity(self, label):
                 self.activity.append(label)  # Scripted SDK activity; no watchdog thread.
             def run_conversation(self, prompt, conversation_history=None, **unused):
@@ -153,7 +156,7 @@ class SafeWaitCases(unittest.TestCase):
             mock.patch.object(worker, 'setup', return_value=(rec, base)),
             mock.patch.object(admission, 'Provider', Provider),
             mock.patch.object(rec, 'ACTIVE', None),
-            mock.patch.dict(sys.modules, {'run_agent': agent_module, 'hermes_cli.plugins': plugins,
+            mock.patch.dict(sys.modules, {'run_agent': agent_module, 'toolsets': toolsets, 'hermes_cli.plugins': plugins,
                                           'tools.interrupt': interrupt})))
         self.code, self.result = code, f.result()
         self.cp = f.store.load('orders-report')

@@ -66,9 +66,27 @@ now receive the same recovery context and host lock, and appear in the bounded
 saved-task selector. Its 49 affected component checks and 75 source-preservation
 checks passed; the predecessor regression failed at the missing context as
 expected. The [source-bound record](provenance/installed-reopen/handover-tasks/README.md)
-separates these checks from the accepted initial-task physical trial. The complete combined suite passed 1,359 tests in 413.619 seconds. Finish
-package/hosted validation, then qualify the ordinary later-task
-path on unchanged installed IQ3_S. No later-task physical claim is made yet.
+separates these checks from the accepted initial-task physical trial. The complete
+combined suite passed 1,359 tests in 413.619 seconds. Package checks passed for
+1,244 source files/62 runtime modules; the original hosted runs passed all 14
+jobs and 12 distribution checks on `50232cf`. PR #33 remains draft. The first
+installed A-to-B attempt stopped normally but failed its closed checker because
+of an admission JSON digest mismatch in that checker. The
+[failed attempt](provenance/installed-reopen/handover-tasks/first-installed-attempt-2026-11-01.json)
+is retained without reopening or a renewed budget. Corrected checker copies
+passed five focused checks and a separate clock-independent closed diagnostic.
+The fresh second attempt then exposed a runtime capability mismatch: Hermes
+advertised search and patch alongside read/write, while recovery supports only
+read/write. Inventory B chose search, was refused before a tool operation, and
+exited before a read or normal Stop. A later missing-output check hid the primary
+failure. See the [second attempt](provenance/installed-reopen/handover-tasks/second-installed-attempt-2026-11-01.json).
+The correction uses Hermes' existing custom toolset API, verifies the advertised
+capabilities, and checks native failure before output acceptance. It passed 35
+behavior checks, 80 source checks and the [complete 1,369-test suite](provenance/installed-reopen/tool-capabilities/integration-validation-2026-11-01.json).
+The first full-suite mutation-fixture failure and its two-check correction remain
+retained. Complete package/hosted and actual-SDK gates before a new IQ3_S trial;
+both consumed attempts remain closed. No later-task restart qualification is
+claimed yet.
 M3's capture timing/video attribution, broader useful tools, computer reboot and
 daily-use qualification remain open.
 
@@ -77,7 +95,7 @@ daily-use qualification remain open.
 | Stable main starting point | Commit `8396676dcc55ffbbf09e0ff640db9238519a07ea`, including merged PR #31/#32 and their earlier prerequisites. Verify current `main`; this is a dated anchor, not a claim that it remains HEAD. |
 | Released reference and active work | [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1) is published at tested source `57f673f8e934e275bc2bd51e85d434dc7025bc9a`; PR #28's merged tree matches it exactly. PR #29's measurement preparation merged after its exact-head checks. The first adaptive diagnostic and following control are closed; their scoped results and unmet comparison gates are recorded in the [evidence ledger](docs/evidence.md#first-adaptive-video-diagnostic). |
 | Installed source used for the latest experiments | M5 used `6ac601546daf32d96e38b6689a5818e4cc8dafa8`; the earlier M3 video sequence used `7306a53085ddc31d53d2ba50e91975c80cfc0014`. Both preserved IQ3_S and quality. Source, package, controlled-clock SDK and physical evidence are separate levels. |
-| Current work | Qualify saved-task recovery for later controller-created tasks, after the package/hosted checks (the complete 1,359-test suite passed). The accepted initial-task restart merged in PR #31. The second M3 sequence is closed with failed adaptive capture timing; an inert ordinary window-switch rehearsal is required before another timed run. M3 and broader useful-tool/reboot/daily-use gates remain open. |
+| Current work | Package and qualify the corrected advertised capabilities and failure reporting, then repeat later-task lifecycle qualification in a fresh session. The correction passed the complete 1,369-test suite; package/hosted/actual-SDK/physical gates remain separate. The predecessor `50232cf` retains its own earlier checks and failed physical attempts. The accepted initial-task restart merged in PR #31. M3's inert window-switch rehearsal and broader useful-tool/reboot/daily-use gates remain open. |
 | Latest accepted single-task result | The installed same-boot application restart preserved one input read, the task/native session and original deadline; three calls total completed the correct 23-unit answer with one physical write. A third launch viewed the result without additional calls or changes to the eight canonical files. All three app parents joined normally; bounded observer shutdown errors remain retained. See the source-bound M5 record above. |
 | Preserved M2 recovery result | Case17 passed both original audits: 99 primary recovery/handover checks plus the foreground/lineage supplement. Its correct inventory result survived safe expiry and one Continue; a separate welcome task completed before one normal Stop. Six calls produced two physical writes. Welcome has format-only acceptance. Full M2 is broader than that run. |
 | Preserved limits and failures | Original quality, 900-second execution budgets, 2,700-second outer bound and task accounting remain unchanged. Cases14/15/16 keep their original failed outcomes. Case17 retains the rejected file-picker input and 30-second operating-target misses; neither repeated a task control nor violated the strict foreground gate. |

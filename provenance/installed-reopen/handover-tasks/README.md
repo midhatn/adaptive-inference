@@ -38,5 +38,15 @@ later-task recovery claim.
 
 The [complete integrated suite](integration-validation-2026-11-01.json) passed
 1,359 tests in 413.619 seconds with unchanged source inputs and a normal retained
-child exit. Distribution, hosted and installed later-task qualification remain
-separate gates.
+child exit. The same source's package and original hosted checks subsequently
+passed. The [first installed attempt](first-installed-attempt-2026-11-01.json)
+retains the unqualified first-app result and independent diagnosis of a private
+audit digest mismatch. Its original failed gate remains preserved; later-task
+restart qualification is still pending. Corrected separate checker copies
+subsequently passed five focused checks and a clock-independent closed
+diagnostic. The [second attempt](second-installed-attempt-2026-11-01.json)
+failed before Stop because the SDK advertised an unsupported search tool and
+the worker masked that refusal with a missing-output error. Its unresolved
+host admission state is retained. A prospective runtime correction and its own
+source/SDK/package/installed validation are required; neither failed attempt is
+reclassified or reopened.

@@ -32,6 +32,31 @@ PROMPT = ('Read orders.csv with read_file. Compute quantity times unit_cents for
           'Finish only after the write succeeds. Reply briefly describing the created artifact.')
 CONTINUE = ('Continue the original saved task from this exact conversation. Preserve completed tool results '
             'and do not repeat completed writes. Finish the original objective and report its outcome.')
+TASK_TOOLSET = 'adaptive_file_read_write'
+TASK_TOOLS = ('read_file', 'write_file')
+
+
+def verify_task_tools(agent):
+    """The advertised SDK capabilities must match this consumer's operations."""
+    from adaptive_inference.desktop.hermes.recovery import RecoveryStop
+    definitions = getattr(agent, 'tools', None)
+    if (type(definitions) is not list or len(definitions) != len(TASK_TOOLS)
+            or any(type(row) is not dict or row.get('type') != 'function'
+                   or type(row.get('function')) is not dict for row in definitions)):
+        raise RecoveryStop('SDK tool declarations differ from the supported read/write capabilities')
+    names = [row['function'].get('name') for row in definitions]
+    if (any(type(name) is not str for name in names)
+            or set(names) != set(TASK_TOOLS)
+            or getattr(agent, 'valid_tool_names', None) != set(TASK_TOOLS)):
+        raise RecoveryStop('SDK tool declarations differ from the supported read/write capabilities')
+
+
+def finish_native_turn(controller, outcome):
+    """Retain native failures before checking artifacts the turn did not finish."""
+    from adaptive_inference.desktop.hermes.recovery import RecoveryStop
+    if controller.fatal:
+        raise RecoveryStop('Recovery refused the native task: ' + str(controller.fatal))
+    controller.controls.wait_activity.finish_turn(outcome)
 
 
 def prepared_contract(plan):
@@ -545,14 +570,20 @@ def _worker(args, *, selected=None):
                         controller.barrier=controlled_safe_hold
                     rec.ACTIVE = controller
                     from run_agent import AIAgent
+                    from toolsets import create_custom_toolset
                     verify_sdk_imports(plan['sdk'])
+                    # Public SDK selection: the broader 'file' group also exposes
+                    # patch/search, which this bounded recovery consumer cannot execute.
+                    create_custom_toolset(TASK_TOOLSET, 'Task-scoped file reads and writes',
+                                          tools=list(TASK_TOOLS), includes=[])
                     agent = AIAgent(base_url=plan['gateway'], api_key='local-no-key', provider='custom:adaptive',
-                        model=MODEL, api_mode='chat_completions', max_iterations=8, enabled_toolsets=['file'],
+                        model=MODEL, api_mode='chat_completions', max_iterations=8, enabled_toolsets=[TASK_TOOLSET],
                         quiet_mode=True, platform='cli', skip_context_files=True, skip_memory=True,
                         skip_background_review=True, max_tokens=10923, reasoning_config={'enabled': True, 'effort': 'high'},
                         request_overrides={'extra_body': QUALITY}, cwd=str(run / 'work'),
                         session_id=plan['session_id'], session_db=db)
                     controller.agent = agent
+                    verify_task_tools(agent)
                     if plan['fixture']:
                         def private_transport_forbidden(*_args,**_kwargs):
                             raise AssertionError('Private Hermes watchdog/transport was invoked')
@@ -568,6 +599,7 @@ def _worker(args, *, selected=None):
                         'adaptive_inference.execution_authorization.v1', {}).get('logical_task_id', cp.task_id)}
                     outcome = agent.run_conversation(CONTINUE if history else original_prompt,
                                                      conversation_history=history or None, **task_identity)
+                    finish_native_turn(controller, outcome)
                     if task_spec is None:
                         report = json.loads((run / 'work/report.json').read_text(encoding='utf-8'))
                         if report != base.REPORT:
@@ -578,7 +610,6 @@ def _worker(args, *, selected=None):
                         completion = task_spec.completion(run / 'work', owned.checkpoint.state['tools'],
                                                           outcome.get('final_response', ''))
                         completion['task_spec_sha256'] = task_spec.sha256
-                    controls.wait_activity.finish_turn(outcome)
                     controller.finish(outcome)
                     result.update(passed=True, provider_calls=len(boundary.rows) - before,
                         resumed=bool(history), original_prompt_sha256=rec.digest(original_prompt),

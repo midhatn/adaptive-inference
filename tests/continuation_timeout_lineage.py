@@ -56,7 +56,7 @@ def preparation_inputs(root=None):
     root = ROOT if root is None else root
     return ([root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py']
             + reopen_inputs(root) + fixture_stop_inputs(root) + integration_inputs(root)
-            + handover_inputs(root))
+            + handover_inputs(root) + tool_capabilities_inputs(root))
 
 
 def preparation_predecessor(relative, data, root=None):
@@ -199,7 +199,7 @@ def restore_reopen(tree, relative, root=None):
     row = reopen_record(root)['files'][source]
     if fingerprint(tree) != row['successor_ast_sha256']:
         return tree
-    data = (root / source).read_bytes()
+    data = handover_predecessor(source, (root / source).read_bytes(), root)
     if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
         raise AssertionError('Changed complete task-handover source (installed-reopen): ' + relative)
     return ast.parse(reopen_predecessor(source, data, root))
@@ -315,6 +315,7 @@ def handover_inputs(root=None):
 
 def handover_predecessor(relative, data, root=None):
     """Reverse only exact declared files; unknown bytes reach original checks."""
+    data = tool_capabilities_predecessor(relative, data, root)
     root = ROOT if root is None else root
     if relative not in HANDOVER_INPUTS or not (root / HANDOVER / 'source-lineage.json').exists():
         return data
@@ -335,7 +336,7 @@ def handover_predecessor(relative, data, root=None):
 
 def handover_runtime_view(current, root=None):
     """Project before saved_tasks is removed; preserve every other module."""
-    result = dict(current)
+    result = tool_capabilities_runtime_view(current, root)
     for name in HANDOVER_RUNTIME:
         if name in result:
             result[name] = handover_predecessor('src/adaptive_inference/' + name, result[name], root)
@@ -343,6 +344,7 @@ def handover_runtime_view(current, root=None):
 
 
 def restore_handover(tree, relative, root=None):
+    tree = restore_tool_capabilities(tree, relative, root)
     root = ROOT if root is None else root
     if relative not in HANDOVER_RUNTIME or not (root / HANDOVER / 'source-lineage.json').exists():
         return tree
@@ -354,3 +356,68 @@ def restore_handover(tree, relative, root=None):
     if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
         raise AssertionError('Changed complete handover-reopen source: ' + relative)
     return ast.parse(handover_predecessor(source, data, root))
+
+
+# Capability selection is prospective; installed and handover records stay exact.
+TOOL_CAPABILITIES = 'provenance/installed-reopen/tool-capabilities'
+TOOL_CAPABILITIES_RUNTIME = ('desktop/hermes/run_recovery.py',)
+TOOL_CAPABILITIES_INPUTS = {'src/adaptive_inference/' + name for name in TOOL_CAPABILITIES_RUNTIME} | {
+    'tests/continuation_timeout_lineage.py', 'tests/test_task_preparation_lineage.py',
+    'tests/test_continuation_worker.py', 'tests/test_admission_wait_continuation_worker.py',
+    'tests/safe_wait_fixture.py'}
+
+
+def tool_capabilities_record(root=None):
+    root = ROOT if root is None else root
+    return json.loads((root / TOOL_CAPABILITIES / 'source-lineage.json').read_bytes())
+
+
+def tool_capabilities_inputs(root=None):
+    root = ROOT if root is None else root
+    path = root / TOOL_CAPABILITIES / 'source-lineage.json'
+    if not path.exists():
+        return []
+    return [path, *(root / TOOL_CAPABILITIES / 'predecessor' / relative
+                    for relative in sorted(TOOL_CAPABILITIES_INPUTS))]
+
+
+def tool_capabilities_predecessor(relative, data, root=None):
+    """Reverse only reviewed complete source; preserve unknown bytes for refusal."""
+    root = ROOT if root is None else root
+    if relative not in TOOL_CAPABILITIES_INPUTS or not (root / TOOL_CAPABILITIES / 'source-lineage.json').exists():
+        return data
+    row = tool_capabilities_record(root)['files'][relative]
+    expected = TOOL_CAPABILITIES + '/predecessor/' + relative
+    if row['predecessor_source'] != expected:
+        raise AssertionError('Changed tool-capability predecessor path')
+    before = (root / expected).read_bytes()
+    if (hashlib.sha256(before).hexdigest() != row['predecessor_sha256']
+            or fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']):
+        raise AssertionError('Changed tool-capability predecessor identity')
+    if hashlib.sha256(data).hexdigest() == row['successor_sha256']:
+        if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:
+            raise AssertionError('Changed tool-capability successor AST')
+        return before
+    return data
+
+
+def tool_capabilities_runtime_view(current, root=None):
+    result = dict(current)
+    for name in TOOL_CAPABILITIES_RUNTIME:
+        if name in result:
+            result[name] = tool_capabilities_predecessor('src/adaptive_inference/' + name, result[name], root)
+    return result
+
+
+def restore_tool_capabilities(tree, relative, root=None):
+    root = ROOT if root is None else root
+    if relative not in TOOL_CAPABILITIES_RUNTIME or not (root / TOOL_CAPABILITIES / 'source-lineage.json').exists():
+        return tree
+    source = 'src/adaptive_inference/' + relative
+    row = tool_capabilities_record(root)['files'][source]
+    if fingerprint(tree) != row['successor_ast_sha256']:
+        return tree
+    data = (root / source).read_bytes()
+    if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
+        raise AssertionError('Changed complete tool-capability source: ' + relative)
+    return ast.parse(tool_capabilities_predecessor(source, data, root))

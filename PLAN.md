@@ -918,9 +918,33 @@ context, retains the existing task-specific host lock and discovers the two
 known plan locations. The meaningful predecessor regression failed at missing
 recovery context; 49 affected component checks and 75 source-preservation checks
 passed on the extension. See the [bounded record](provenance/installed-reopen/handover-tasks/README.md).
-The complete combined suite passed 1,359 tests in 413.619 seconds. Finish its
-package/hosted checks, then qualify a later task with
-the unchanged installed IQ3_S profile. Require a saved read before safe Stop,
+The complete combined suite passed 1,359 tests in 413.619 seconds. Package checks
+passed for 1,244 source files/62 runtime modules; both original hosted runs
+passed all 14 jobs and 12 distribution checks. The first installed attempt
+closed normally after B's read, but its private checker used the wrong JSON
+digest for admission records and failed before the remaining Stop gates.
+Preserve that [unqualified attempt](provenance/installed-reopen/handover-tasks/first-installed-attempt-2026-11-01.json).
+Separate corrected checker copies passed five focused checks and a read-only,
+clock-independent diagnostic. A fresh second attempt exposed a product gap:
+the SDK advertised four file tools while recovery handles only read/write.
+Inventory B chose advertised search, was denied before any tool operation and
+exited without a read or safe Stop. Output acceptance then masked that failure.
+Preserve the [second failed attempt](provenance/installed-reopen/handover-tasks/second-installed-attempt-2026-11-01.json),
+including its unresolved host admission state; neither failed trial may be
+reopened or receive a renewed budget.
+
+**Immediate adjustment:** use Hermes' existing public custom toolset API for
+read/write, verify the final advertised definitions before conversation, and
+apply the existing native success/lease gate before artifact acceptance. Prove
+the capability boundary and original-error reporting in focused tests, then
+check the real pinned SDK with scripted read/incorrect-write/corrected-write
+responses. Keep model, quality, budgets, effect tracking and uncertainty checks
+unchanged. The correction passed 35 behavior checks, 80 source checks and the
+complete 1,369-test suite; a test-only mutation correction and the failed first
+suite are retained in the [integration record](provenance/installed-reopen/tool-capabilities/integration-validation-2026-11-01.json).
+Complete the changed package/hosted gates and a fresh isolated
+installation before another physical trial. Then qualify a later task with the
+same IQ3_S profile. Require a saved read before safe Stop,
 normal closure, paused reopening of that same later task, preserved deadline
 and counters, correct remaining work, one physical write and read-only result
 viewing. Do not use an already completed task as unfinished recovery evidence.

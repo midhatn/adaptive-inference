@@ -1,0 +1,70 @@
+{
+  "schema": "adaptive-inference.validation-summary.v1",
+  "date": "2026-11-01",
+  "source_revision": "50232cfaccd4bbe34cded6a368a0bb2eab22d204",
+  "wheel_sha256": "7e682356a28599d3365c8d9749195287be06c57eca1caeb45b0062378766466f",
+  "outcome": "closed_failed_advertised_capability_mismatch",
+  "scope": "Ordinary welcome A then inventory B in the same application; failed before Stop and any restart phase",
+  "model": "IQ3_S",
+  "quality_baseline_changed": false,
+  "welcome_acceptance": "format-only",
+  "inventory": {
+    "provider_calls": 1,
+    "requests": 1,
+    "attempts": 1,
+    "admission_attempts": 1,
+    "advertised_tools": ["patch", "read_file", "search_files", "write_file"],
+    "selected_tool": "search_files",
+    "recovery_supported_tools": ["read_file", "write_file"],
+    "native_tool_result": "Recovery stopped before another effect",
+    "tool_operations_started": 0,
+    "confirmed_reads": 0,
+    "output_present": false,
+    "canonical_state": "pending/ready with unmatched native tool intent",
+    "canonical_tool_receipts": 0,
+    "canonical_owner": null,
+    "canonical_operation": null,
+    "canonical_reconciliation_required": false,
+    "host_admission_state": "running with unresolved launch effect",
+    "host_admission_reconciliation_required": true,
+    "stop_acknowledged": false,
+    "worker_exit": 2
+  },
+  "failure_reporting": {
+    "observed_worker_error": "ValueError: Required output has no durable write receipt",
+    "cause": "Artifact completion ran before native outcome/fatal validation and masked the earlier recovery refusal.",
+    "source_inference": "The observed search arguments lack args.path, which the wrapper requires before its supported read/write dispatch.",
+    "exact_original_exception_and_sdk_outcome_saved": false,
+    "cooperative_cleanup_confirmed": false
+  },
+  "closure": {
+    "app_parent_exit": 1,
+    "app_parent_joined": true,
+    "execution_expired": false,
+    "outer_timeout_or_emergency_cleanup": false,
+    "observer_exit": 1,
+    "observer_joined": true,
+    "observer_end_reason": "three_connection_errors_after_response",
+    "observer_activity_errors": 0,
+    "observer_sources_unchanged": true,
+    "native_fallback_release_completed": true,
+    "selected_owned_processes_and_listeners_absent": true,
+    "reopened_app_started": false,
+    "completed_view_started": false,
+    "closed_trial_inspector_started": false
+  },
+  "independent_diagnosis": {
+    "receipt_sha256": "95b7516659d41f2c46f9916abdc262a8942c4e9922f60d710ae52df4065beeb6",
+    "databases_checked_read_only": 3,
+    "database_hashes_unchanged": true,
+    "source_and_installed_worker_identity_checked": true
+  },
+  "disposition": "Preserve the failed attempt without retry, reconciliation, deadline renewal or retroactive qualification. Correct capability advertisement and primary-failure ordering prospectively, then validate a fresh source/package/installation before another physical trial.",
+  "limitations": [
+    "Process exit and native fallback release do not establish successful cooperative product Stop.",
+    "No read checkpoint, task completion, later-task restart or completed-result viewing was qualified.",
+    "The first attempt's checker errors are distinct; this attempt failed in the runtime before any closed checker ran.",
+    "Foreground activity was observed, but no causal claim is made that it produced the capability mismatch.",
+    "M3, complete M5, reboot, media quality and performance remain separate gates."
+  ]
+}

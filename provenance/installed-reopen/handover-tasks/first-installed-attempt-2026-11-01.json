@@ -1,0 +1,66 @@
+{
+  "schema": "adaptive-inference.validation-summary.v1",
+  "date": "2026-11-01",
+  "source_revision": "50232cfaccd4bbe34cded6a368a0bb2eab22d204",
+  "wheel_sha256": "7e682356a28599d3365c8d9749195287be06c57eca1caeb45b0062378766466f",
+  "outcome": "closed_unqualified_audit_error",
+  "scope": "Ordinary welcome task A followed by New task inventory B; first app only",
+  "source_gates": {
+    "local_tests_passed": 1359,
+    "package_source_files": 1244,
+    "package_runtime_modules": 62,
+    "original_hosted_jobs_passed": 14,
+    "original_hosted_distribution_checks_passed": 12,
+    "push_run": "https://github.com/midhatn/adaptive-inference/actions/runs/41329947561",
+    "pull_request_run": "https://github.com/midhatn/adaptive-inference/actions/runs/41329953447"
+  },
+  "installed_first_phase": {
+    "model": "IQ3_S",
+    "quality_baseline_changed": false,
+    "A_acceptance": "format-only",
+    "later_task_selection_count": 1,
+    "B_state_at_stop": "pending/waiting_admission",
+    "B_confirmed_reads": 1,
+    "B_output_present": false,
+    "B_requests": 1,
+    "B_attempts": 1,
+    "B_admission_attempts": 1,
+    "normal_app_parent_exit": 0,
+    "retained_child_exits": [0, 0, 0, 4],
+    "observer_exit": 1,
+    "observer_end_reason": "three_connection_errors_after_response",
+    "observer_activity_errors": 0,
+    "observer_sources_unchanged": true,
+    "reopened_app_started": false,
+    "completed_view_started": false
+  },
+  "failed_gate": {
+    "message": "ValueError: Canonical later task/reservation differs",
+    "original_failed_receipt_sha256": "105a23cb39f2b89a144448c61b929e6cadd820384ff6ac47ada61dcafe494484",
+    "cause": "Private auditor used recovery's spaced JSON digest for admission records that use compact JSON.",
+    "affected_admission_values": ["reservation payload", "task/session identity suffix", "predecessor checkpoint", "stopped checkpoint"],
+    "independent_diagnosis": "All four stored values match the application's admission digest; all other predicates in the initially failing conjunction matched.",
+    "follow_up_closed_diagnostic": "A separate read-only diagnostic with the corrected digest reached the next predicate and exposed a lexical path comparison: the ordinary Windows picker used forward slashes for the same input directory. All other values in that predicate matched; databases and the original failed receipt stayed unchanged.",
+    "disposition": "Preserve failed gate, helpers, plan, supplemental diagnostic and attempt. Correct separate checker copies using the original admission digest and resolved path identity, then qualify them before a fresh trial. No product change is established by these audit errors."
+  },
+  "subsequent_checker_validation": {
+    "tests_passed": 5,
+    "test_seconds": 0.495,
+    "retained_child_exit": 0,
+    "source_inputs_unchanged": true,
+    "receipt_sha256": "d0905939603b39dad594e7595782bdf933c21a02e95f0efbe5ab77567abe30ce",
+    "coverage": "Actual SQLite admission/Stop records, old digest mismatch, wrong-domain and changed-checkpoint refusal, equivalent source paths without payload mutation, different-path/hash refusal, terminal reporting fragment",
+    "closed_diagnostic_checks_passed": true,
+    "closed_diagnostic_receipt_sha256": "b563be20f5f91e51d9850afad8345f453691658fb5f730573a00092f5899ace3",
+    "closed_diagnostic_scope": "Original read/native history/no-output state, admission records, normal cleanup and exact worker Stop receipt; no current deadline gate or restart",
+    "databases_and_original_failure_unchanged": true,
+    "original_trial_reclassified_as_passed": false
+  },
+  "limitations": [
+    "The first failed predicate prevented the remaining closed Stop gates from executing.",
+    "This record is not a complete Stop/reopen pass or a later-task recovery qualification.",
+    "No original deadline was renewed and this consumed attempt was not reopened.",
+    "Foreground observation is not a desktop performance, video quality or GPU preemption measurement.",
+    "Computer reboot, full M5 and M3 remain separate gates."
+  ]
+}
