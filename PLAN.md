@@ -775,13 +775,16 @@ all acceptance thresholds. Missing display attribution stays unknown.
 Do not keep replaying the inventory task to chase green counters. Preserve this
 closed sequence, finish the independent evidence review, and continue the
 separately scoped installed application-restart work in [PR #31](https://github.com/midhatn/adaptive-inference/pull/31)
-using an isolated candidate installation. Its preflight must first reconcile
-the ordinary Stop checkpoint with saved-task eligibility: source review found
-that Stop during an undispatched admission wait can preserve a pending request
-which the initial reopening reader refuses. Exercise the actual provider-wait,
-safe Stop and reopen path before a physical trial; a manually prepared ready
-checkpoint is insufficient. Preserve original deadlines and counters and refuse
-uncertain dispatched work. M3 remains open; lifecycle progress
+using an isolated candidate installation. Source preflight found that Stop during
+an undispatched admission wait can preserve a pending request which the initial
+reopening reader refused. The correction at `6ac601546daf32d96e38b6689a5818e4cc8dafa8`
+now exercises actual provider-wait, safe Stop and reopening in a component
+regression. It passed 68 affected checks, the complete 1,344-test local suite
+and source/wheel verification; all 14 original exact-head hosted jobs and 12
+distribution checks also passed. Stage the isolated candidate and qualify the
+installed trial; fixture transport/GUI edges do not establish a physical
+restart. Preserve original deadlines and counters and refuse uncertain
+dispatched work. M3 remains open; lifecycle progress
 does not waive its capture or foreground-quality gates. Broader daily-use
 qualification still depends on those gates and the later useful-tool work.
 

@@ -68,6 +68,47 @@ installed application-restart qualification. It preserves every threshold and
 the unaccepted M3 gate. Private raw records remain local and hash-identified;
 the public summary is not a complete replay archive.
 
+## Continuation fixture verification and cleanup
+
+The original [PR #32 Windows/Python 3.12 push job](https://github.com/midhatn/adaptive-inference/actions/runs/41318388842/job/124883207088)
+failed because a timeout-regression fixture directory remained after cleanup.
+The original pair ended with **13 jobs passed and one failed**; 11 distribution
+checks passed and one was skipped. The uploaded receipts show both CPU children
+joined naturally, with expected exits and closed logs. They do not capture the
+underlying deletion error, so the exact trigger remains unknown.
+
+Source review found a reachable ordering problem: the bounded Stop wait can
+return while its retained post-exit verifier still reads SQLite and result files.
+Joining the child process alone does not finish that verification. The bounded
+fixture correction awaits the existing verifier before removing its directory,
+following the documented [shielded-task behavior](https://docs.python.org/3.12/library/asyncio-task.html#shielding-from-cancellation).
+The injected five-second timeout and twenty-second regression teardown guard
+remain unchanged; there is no runtime or model change.
+
+Nested seed cases had also swallowed cleanup errors because their `doCleanups`
+calls lacked the running test's result. The correction routes those existing
+cleanups through the active outcome and includes nested failure details in the
+outer assertions, consistent with the pinned [CPython implementation](https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/case.py).
+This exposed a separate, actual WinError 32 in the selected-result fixture:
+two transaction context managers had left their SQLite connections open. Those
+connections now explicitly close while retaining commit/rollback semantics,
+as described in the [SQLite connection-context documentation](https://docs.python.org/3.11/library/sqlite3.html#how-to-use-the-connection-context-manager).
+That focused failure remains distinct from the original hosted failure.
+
+The [additive source record](../provenance/task-handover/fixture-stop-verification/README.md)
+preserves the prior complete fixtures and readers, with the old source assertions
+unchanged. The final two-module batch passed **36 checks in 41.864 seconds**.
+All 42 retained children joined and all 30 fixture directories were removed;
+one intentionally failed setup required its expected cleanup kill. The
+[validation record](../provenance/task-handover/fixture-stop-verification/validation-2026-11-01.json)
+retains the earlier focused failure and an intervening import error separately.
+The additive historical-source mapping passed **60 checks in 83.749 seconds**,
+with unchanged checked sources and no remaining helper thread. The complete
+corrected source suite then passed **1,332 tests in 322.037 seconds**, with frozen
+source and its retained child joined at exit 0. Package and hosted checks belong
+to that corrected source. These
+software-fixture checks confer no new physical restart or video qualification.
+
 ## SQLite concurrency fixture ownership
 
 Publishing the closed video evidence exposed a test-only cleanup failure in

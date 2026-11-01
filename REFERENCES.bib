@@ -886,3 +886,24 @@
   url = {https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html},
   note = {Inspected 2026-11-01 after the original video-example archive omitted page.html. Reuses explicit MANIFEST.in include entries for only page.html and page.js, validated by isolated build with setuptools 82.0.1 and the existing source/runtime verifier. No implementation copied and no broad private asset inclusion}
 }
+
+@misc{pythonShieldedStopVerification,
+  author = {{Python Software Foundation}},
+  title = {Python 3.12 shield and bounded task waits},
+  url = {https://docs.python.org/3.12/library/asyncio-task.html#shielding-from-cancellation},
+  note = {Inspected 2026-11-01. Reuses the retained Stop verification task in the continuation test fixture: a bounded caller wait does not imply that shielded post-exit verification finished. Await it before removing its files. No upstream implementation copied; runtime deadlines are unchanged}
+}
+
+@misc{cpythonNestedCleanupOutcome,
+  author = {{Python Software Foundation}},
+  title = {CPython 3.12.10 unittest cleanup outcome handling},
+  url = {https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/case.py},
+  note = {Inspected 2026-11-01. Nested test seed cases created through setUp without run can discard cleanup exceptions when no result is attached. Fixture-only correction temporarily shares the running case outcome, preserving the primary test error and additional cleanup errors. No upstream implementation copied; this private unittest detail is confined to tests}
+}
+
+@misc{pythonSqliteExplicitConnectionClose,
+  author = {{Python Software Foundation}},
+  title = {Python 3.11 SQLite connection context management},
+  url = {https://docs.python.org/3.11/library/sqlite3.html#how-to-use-the-connection-context-manager},
+  note = {Inspected 2026-11-01 after propagated cleanup errors exposed WinError 32 in the selected-result fixture. The connection context commits or rolls back but does not close; the fixture combines it with contextlib.closing. No upstream implementation copied and no transaction assertion removed}
+}

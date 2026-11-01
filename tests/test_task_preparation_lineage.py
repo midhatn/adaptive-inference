@@ -1,7 +1,9 @@
 """Ordinary authoring sources stay separate from the historical runtime view."""
 import ast
+from copy import deepcopy
 import hashlib
 from pathlib import Path
+import tempfile
 import unittest
 from unittest import mock
 
@@ -33,7 +35,7 @@ class TaskPreparationLineageTests(unittest.TestCase):
             'tests/test_continuation_host.py'})
         for relative, row in rows['files'].items():
             with self.subTest(relative=relative):
-                current = (lineage.ROOT / relative).read_bytes()
+                current = lineage.fixture_stop_predecessor(relative, (lineage.ROOT / relative).read_bytes())
                 self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
                 before = lineage.preparation_predecessor(relative, current)
                 self.assertEqual(hashlib.sha256(before).hexdigest(), row['predecessor_sha256'])
@@ -75,6 +77,46 @@ class TaskPreparationLineageTests(unittest.TestCase):
         self.assertEqual(lineage.preparation_predecessor(relative, unknown), unknown)
         self.assertEqual(fingerprint(lineage.restore_preparation(ast.parse(unknown), '__init__.py')),
                          fingerprint(ast.parse(unknown)))
+
+
+class FixtureStopVerificationLineageTests(unittest.TestCase):
+    def test_exact_four_file_view_preserves_original_records(self):
+        rows = lineage.fixture_stop_record()
+        self.assertEqual(rows['schema'], 'adaptive.fixture-stop-verification.source-lineage.v1')
+        self.assertEqual(rows['runtime_changes'], [])
+        self.assertEqual(set(rows['files']), lineage.FIXTURE_STOP_INPUTS)
+        for relative, row in rows['files'].items():
+            with self.subTest(relative=relative):
+                current = (lineage.ROOT / relative).read_bytes()
+                before = (lineage.ROOT / row['predecessor_source']).read_bytes()
+                self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
+                self.assertEqual(fingerprint(ast.parse(current)), row['successor_ast_sha256'])
+                self.assertEqual(lineage.fixture_stop_predecessor(relative, current), before)
+                self.assertEqual(lineage.fixture_stop_predecessor(relative, before), before)
+        for relative, expected in rows['preserved_manifests'].items():
+            self.assertEqual(hashlib.sha256((lineage.ROOT / relative).read_bytes()).hexdigest(), expected)
+
+    def test_unknown_bytes_and_legacy_roots_are_not_projected(self):
+        for relative in lineage.FIXTURE_STOP_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            unknown = current + b'\n# unreviewed fixture change\n'
+            with self.subTest(relative=relative):
+                self.assertEqual(lineage.fixture_stop_predecessor(relative, unknown), unknown)
+                self.assertEqual(lineage.preparation_predecessor(relative, unknown), unknown)
+                with tempfile.TemporaryDirectory() as directory:
+                    self.assertEqual(lineage.preparation_predecessor(relative, current, Path(directory)), current)
+
+    def test_predecessor_and_successor_ast_tampering_is_refused(self):
+        rows = lineage.fixture_stop_record()
+        for relative in lineage.FIXTURE_STOP_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            for field in ('predecessor_source', 'predecessor_sha256', 'predecessor_ast_sha256',
+                          'successor_ast_sha256'):
+                changed = deepcopy(rows); changed['files'][relative][field] = '0' * 64
+                with self.subTest(relative=relative, field=field), mock.patch.object(
+                        lineage, 'fixture_stop_record', return_value=changed):
+                    with self.assertRaisesRegex(AssertionError, 'fixture Stop verification'):
+                        lineage.fixture_stop_predecessor(relative, current)
 
 
 if __name__ == '__main__':

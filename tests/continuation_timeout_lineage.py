@@ -54,11 +54,12 @@ def preparation_record(root=None):
 
 def preparation_inputs(root=None):
     root = ROOT if root is None else root
-    return [root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py']
+    return [root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py'] + fixture_stop_inputs(root)
 
 
 def preparation_predecessor(relative, data, root=None):
     """Reverse only exact declared CLI/reader/version bytes, never unknown changes."""
+    data = fixture_stop_predecessor(relative, data, root)
     root = ROOT if root is None else root
     if not (root / PREPARATION / 'source-lineage.json').exists():
         return data  # Legacy disposable roots still face the original checks.
@@ -121,3 +122,45 @@ def restore_preparation(tree, relative, root=None):
     if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
         raise AssertionError('Changed complete task-handover source (task-preparation): ' + relative)
     return ast.parse(preparation_predecessor(source, data, root))
+
+
+# Test-only cleanup correction, outside every retained preparation/runtime view.
+FIXTURE_STOP = 'provenance/task-handover/fixture-stop-verification'
+FIXTURE_STOP_INPUTS = {'tests/test_continuation_host.py',
+                       'tests/test_continuation_timeout_diagnostics.py',
+                       'tests/continuation_timeout_lineage.py',
+                       'tests/test_task_preparation_lineage.py'}
+
+
+def fixture_stop_record(root=None):
+    root = ROOT if root is None else root
+    return json.loads((root / FIXTURE_STOP / 'source-lineage.json').read_bytes())
+
+
+def fixture_stop_inputs(root=None):
+    root = ROOT if root is None else root
+    path = root / FIXTURE_STOP / 'source-lineage.json'
+    if not path.exists():
+        return []
+    return [path, *(root / FIXTURE_STOP / 'predecessor' / relative
+                    for relative in sorted(FIXTURE_STOP_INPUTS))]
+
+
+def fixture_stop_predecessor(relative, data, root=None):
+    """Map only complete approved fixture/reader bytes to their retained source."""
+    root = ROOT if root is None else root
+    if relative not in FIXTURE_STOP_INPUTS or not (root / FIXTURE_STOP / 'source-lineage.json').exists():
+        return data
+    row = fixture_stop_record(root)['files'][relative]
+    expected = FIXTURE_STOP + '/predecessor/' + relative
+    if row['predecessor_source'] != expected:
+        raise AssertionError('Changed fixture Stop verification predecessor path')
+    before = (root / expected).read_bytes()
+    if (hashlib.sha256(before).hexdigest() != row['predecessor_sha256']
+            or fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']):
+        raise AssertionError('Changed fixture Stop verification predecessor identity')
+    if hashlib.sha256(data).hexdigest() == row['successor_sha256']:
+        if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:
+            raise AssertionError('Changed complete fixture Stop verification successor AST')
+        return before
+    return data

@@ -1,0 +1,63 @@
+{
+  "baseline_revision": "81fd7a28ee2c3b600017b55070b7fdbd5008f7a2",
+  "files": {
+    "tests/continuation_timeout_lineage.py": {
+      "predecessor_ast_sha256": "6b0df6184bc422fc8b9407da216843c9394411427d979df855ea560358394273",
+      "predecessor_sha256": "bb452172295677d60822a6e7ef72840573fa7c5c9f8c8bdaebfefa698d03ff03",
+      "predecessor_source": "provenance/task-handover/fixture-stop-verification/predecessor/tests/continuation_timeout_lineage.py",
+      "successor_ast_sha256": "71069ca8937db5410dd843698908f92559172d479d05f13425d6b3fbeb00ad2a",
+      "successor_sha256": "a5c6f5f6117278c46af01fd95ae43f319d0f4b2d4837293ab8c049f91e9dce4b"
+    },
+    "tests/test_continuation_host.py": {
+      "predecessor_ast_sha256": "71be512171a7de8cc467c5efebbc51a8c4119337a0e75e50a7b03bb9ba8426f4",
+      "predecessor_sha256": "3dbf913cb62a2d5dd8b1221f7ea691ba34f19b23c566d518e534c9bf6f3bad7d",
+      "predecessor_source": "provenance/task-handover/fixture-stop-verification/predecessor/tests/test_continuation_host.py",
+      "successor_ast_sha256": "6be2fd0e3a69a03d3d7c6753bb47bfd71406bf4b11d1356c8b24ab77b5cfa92b",
+      "successor_sha256": "c59b04e3ac2ccce5f3ee2f21a94bc569838998c7c4b839d096da1161a123e075"
+    },
+    "tests/test_continuation_timeout_diagnostics.py": {
+      "predecessor_ast_sha256": "f324d38e40bcd6d7135f571a15f3c80bc6b8a4d4f240ff267e3730eee00e5cd5",
+      "predecessor_sha256": "749d2d6a408fe36629af2055e9c20278a5b64d008afe9b3fb9819157da8be42a",
+      "predecessor_source": "provenance/task-handover/fixture-stop-verification/predecessor/tests/test_continuation_timeout_diagnostics.py",
+      "successor_ast_sha256": "640010f3feaba011a103d7bc989410a23e9800efb3287e01dee1aedd3c0b4c22",
+      "successor_sha256": "400bb2a43132940c4900d3be80cf6966625ca4368b1eec45847721cbfc5f237c"
+    },
+    "tests/test_task_preparation_lineage.py": {
+      "predecessor_ast_sha256": "694a47f083da1d5d8b9158e2a44bdce49f2473cd46c73a225a0dae2c94f09016",
+      "predecessor_sha256": "b3c9278e04b19bfdc8c272b47833f6e6a278c30e87d893ecc26a5639d0ce5092",
+      "predecessor_source": "provenance/task-handover/fixture-stop-verification/predecessor/tests/test_task_preparation_lineage.py",
+      "successor_ast_sha256": "898455e5d9dc55091d3179560d64bdc73f7ca2a3945bf61004fc5dbe293ba816",
+      "successor_sha256": "143410817ab3567d40faf650516c0c1d9b748b6cf3767aab3636bee9fcd9e00a"
+    }
+  },
+  "original_failure": {
+    "aggregate_jobs_failed": 1,
+    "aggregate_jobs_passed": 13,
+    "attempt": 1,
+    "diagnostic_artifact": 13088437029,
+    "diagnostic_zip_sha256": "770edd61f7ebcca130d43780ab7882736c0dcce30aee4840d998ed48335a6393",
+    "distribution_passed": 11,
+    "distribution_skipped": 1,
+    "event": "push",
+    "job": 124883207088,
+    "precise_windows_removal_error": "not captured by original job",
+    "run": 41318388842,
+    "source_revision": "81fd7a28ee2c3b600017b55070b7fdbd5008f7a2"
+  },
+  "preserved_manifests": {
+    "provenance/task-handover/continuation-timeout-diagnostics/replacements.json": "64d6be2237dc5c25fad00b61bcbf4a1a1e79252c8eae43c0887af50ecc8c46b5",
+    "provenance/task-handover/continuation-timeout-diagnostics/source-lineage.json": "6cb899c81dcc4bfb5ed3df8d801b3fcb4bc2bcab718ff3cc2f41bc69ab14a885",
+    "provenance/task-handover/fixture-readiness/source-lineage.json": "6d261a23cd05577b4ea780f5a62dbe42ee788e05075eba3157957367b16c4341",
+    "provenance/task-handover/fixture-readiness/support-source-lineage.json": "b2e7aac79a6e5797b4323e69a54c5f54cd779d6a3ba7d4a840d6a6159a8992ea",
+    "provenance/task-handover/task-file-aliases/ci-diagnostics/source-lineage.json": "4c681cb0161a0f4afa19f228cfbb422bc476d7991c382e0ad0aba884fc6b93d7",
+    "provenance/task-preparation/source-lineage.json": "88171eec897810198467e6a193ad0869e2fb2514dc0431cab1155757a097943b"
+  },
+  "reuse": "Existing continuation_timeout_lineage complete-file byte/AST projection and paused_expiry_lineage cross-version fingerprint. No external implementation copied; project Apache-2.0.",
+  "runtime_changes": [],
+  "schema": "adaptive.fixture-stop-verification.source-lineage.v1",
+  "scope": "Exact fixture-only retained Stop verification/cleanup correction and its two historical readers. Original runtime, manifests, assertions and failed CI remain unchanged. Retained predecessors are parsed, never executed.",
+  "sources": [
+    "https://docs.python.org/3.11/library/hashlib.html",
+    "https://docs.python.org/3.11/library/ast.html#ast.dump"
+  ]
+}
