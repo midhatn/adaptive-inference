@@ -2,6 +2,72 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Second video sequence
+
+**1 November 2026, observation source `72ac717dbbcb11684e2687a2992a462a0f078f39`:**
+the planned before-control, adaptive IQ3_S task and following control are closed.
+The [sanitized sequence record](../provenance/video-coexistence/comparison-followup-2026-11-01.json)
+retains source identities, measured counters, task acceptance and the failed
+capture gate. The helper tree matches merged `c348398089e544bf54add2beaaf73550f8951efc`;
+the physical runtime remains 0.3.0/source `7306a53085ddc31d53d2ba50e91975c80cfc0014`.
+The saved-task reopening candidate in PR #31 was not installed for this run.
+
+| Condition | Dropped / total frames | Dropped frames | Measured duration |
+| --- | ---: | ---: | ---: |
+| Before, no AI | 33 / 10,801 | 0.305527% | 180.0078 s |
+| Adaptive IQ3_S task | 30 / 10,799 | 0.277804% | 180.0005 s |
+| After, no AI | 33 / 10,800 | 0.305556% | 180.0090 s |
+
+All three browser observations meet the original 0.5% absolute drop limit,
+with matching actual 1536×730 viewports, 1.25 scaling, full video visible at
+Start, normal playback speed and unmuted volume 1. The small differences are
+descriptive observations; this sequence establishes no causal speedup or complete
+regression acceptance. The original failed control and earlier diagnostics remain
+preserved.
+
+The original inventory task passed all **19 terminal checks**, including the
+correct 23-unit result, three provider calls, exactly one physical write,
+unchanged 900-second execution allowance, one Resume and one normal Stop.
+Its parent joined normally after 688.125 seconds. The worker, GUI and owned
+native processes closed; selected listeners were absent and sampled GPU use
+returned to 0 MiB. The observer's exit 1 after three post-shutdown connection
+errors is retained separately. Page servers were deliberately interrupted after
+their terminal saves; those shell exits also remain 1.
+
+The **post-handback write requirement was met**. Ordinary handback was recorded
+at 14:31:27.091–14:31:27.192 UTC; the persisted native write intent and successful
+receipt followed at 14:32:18.643344 and 14:32:20.789477 UTC. The canonical task
+history joins these to the one nonreused effect. These are persisted agent
+timestamps, not filesystem syscall timing. The second provider request had
+already begun before handback, so the handback did not initiate that request.
+No provider request overlapped the measured video window. Native restoration
+and release activity did overlap it: all 177 measured-window status samples
+showed closed admission and no active inference, with 84 restoring, seven
+releasing, 85 parked and one awaiting. This distinguishes useful preserved task
+progress from proof of concurrent model execution during measured playback.
+
+The operator verified the full video and Start before the model run, but the
+later explicit browser activation restored Chrome to a smaller window. A
+genuine Maximize action restored the original geometry before Start. This
+repair delayed the trusted Start to **65.880451 seconds after capture creation**,
+violating the fixed 20-second lead. The 240-second capture closed normally but
+missed the end of playback. It was neither restarted nor extended. The failure
+is an operator/capture problem, not evidence that the engine policy needs changing.
+
+Both controls started within the capture lead. Their process lifetimes alone
+do not prove display-surface coverage. PresentMon's retained Chrome swapchain
+has no established mapping to the actual video surface; metadata identities are
+zero. In the following control, 292.3586-ms and 257.5028-ms display-residence
+candidates remain visible, without being labelled confirmed video stalls.
+Physical-stall acceptance remains **unknown**. No audio quality, synchronization,
+gaming, reboot or complete M3 qualification follows from these observations.
+
+The [revised plan](../PLAN.md#m3--protect-actual-desktop-activity) requires an inert
+window-switch rehearsal before any further timed attempt and continues isolated
+installed application-restart qualification. It preserves every threshold and
+the unaccepted M3 gate. Private raw records remain local and hash-identified;
+the public summary is not a complete replay archive.
+
 ## SQLite concurrency fixture ownership
 
 Publishing the closed video evidence exposed a test-only cleanup failure in
