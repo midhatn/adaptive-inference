@@ -3,6 +3,7 @@
 No installed SDK/model/native engine/network service/real UI acceptance.
 """
 import asyncio
+from contextlib import closing
 from copy import deepcopy
 import ctypes
 from ctypes import wintypes
@@ -85,7 +86,7 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
 
     async def asyncSetUp(self):
         self.seed=seed_fixture.SelectedWorkerTests();self.seed.setUp();self.seed.seed_report()
-        self.addCleanup(self.seed.doCleanups)
+        self.addCleanup(self.cleanup_seed)
         f=self.seed.f
         f.plan['base_python']=sys.executable
         (f.run/'plan.json').write_text(json.dumps(f.plan),encoding='utf-8')
@@ -182,6 +183,7 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         if c.runtime._continuation_tasks:
             c.runtime.fence_admission()
             await asyncio.gather(*(asyncio.shield(task) for task in tuple(c.runtime._continuation_tasks)),return_exceptions=True)
+        binding=None
         if c.facade._selected is not None and c.facade._selected.get('binding') is not None:
             binding=c.facade._selected['binding']
             if binding.worker.poll() is None:
@@ -191,11 +193,26 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
             # CPU emergency bounds are 15 s original / 60 s selected;
             # cleanup always joins the exact retained Popen, never PID lookup.
             await asyncio.to_thread(child.wait,18)
+        # join(timeout=3) can return while its shielded post-exit SQLite
+        # verification still runs. Join that exact retained obligation before
+        # synchronous seed cleanup removes the files it is verifying.
+        # https://docs.python.org/3.12/library/asyncio-task.html#shielding-from-cancellation
+        if binding is not None and binding._work is not None:
+            await asyncio.shield(binding._work)
         if c.facade._wake is not None:await c.facade._wake
         if c.facade._stop is not None:
             await asyncio.gather(asyncio.shield(c.facade._stop),return_exceptions=True)
         for task in self.tasks:
             await asyncio.gather(asyncio.shield(task),return_exceptions=True)
+
+    def cleanup_seed(self):
+        # These nested TestCases were setUp(), not run(). Their default
+        # doCleanups() catches exceptions without a TestResult. Route both
+        # levels through this running case's existing outcome instead.
+        # https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/case.py
+        with mock.patch.object(self.seed,'_outcome',self._outcome), \
+                mock.patch.object(self.seed.f,'_outcome',self._outcome):
+            self.seed.doCleanups()
 
     def cleanup_retained(self):
         # This also runs after incomplete setup or an asyncTearDown exception.
@@ -681,11 +698,13 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         authority=record['authority'];history=c.store.history(authority.task_id)
         completed=next(row for row in reversed(history) if row['event']=='operation_completed')
         changed=deepcopy(completed['payload']);changed['event_data']['result']['returncode']=4
-        with sqlite3.connect(c.store.path) as db:
+        # Connection's transaction context does not close the SQLite handle.
+        # https://docs.python.org/3.11/library/sqlite3.html#how-to-use-the-connection-context-manager
+        with closing(sqlite3.connect(c.store.path)) as db, db:
             db.execute('UPDATE history SET payload=? WHERE task_id=? AND revision=?',
                 (json.dumps(changed),authority.task_id,completed['revision']))
         with self.assertRaisesRegex(ReconciliationRequired,'exact result'):record['binding']._verify_exit(0)
-        with sqlite3.connect(c.store.path) as db:
+        with closing(sqlite3.connect(c.store.path)) as db, db:
             db.execute('UPDATE history SET payload=? WHERE task_id=? AND revision=?',
                 (json.dumps(completed['payload']),authority.task_id,completed['revision']))
 
@@ -727,9 +746,10 @@ class FixtureStartupTests(unittest.TestCase):
         with mock.patch.object(sys.modules[__name__],'wait_original_ready',
                                side_effect=RuntimeError('injected readiness failure')):
             case.run(result)
-        self.assertEqual(len(result.errors),1)
+        nested='\n'.join(trace for _,trace in result.errors+result.failures)
+        self.assertEqual(len(result.errors),1,nested)
         self.assertIn('injected readiness failure',result.errors[0][1])
-        self.assertFalse(result.failures)
+        self.assertFalse(result.failures,nested)
         self.assertIsNotNone(case.c.worker.returncode)
         self.assertTrue(all(stream.closed for stream in case.c.logs))
         self.assertFalse(case.c.work.exists())
@@ -756,9 +776,10 @@ class FixtureStartupTests(unittest.TestCase):
                     await asyncio.gather(*self.tasks,return_exceptions=True)
         case=FailedBody('test_injected_body_failure');result=unittest.TestResult()
         case.run(result)
-        self.assertEqual(len(result.errors),1)
+        nested='\n'.join(trace for _,trace in result.errors+result.failures)
+        self.assertEqual(len(result.errors),1,nested)
         self.assertIn('injected failure after initial Pause before Resume',result.errors[0][1])
-        self.assertFalse(result.failures)
+        self.assertFalse(result.failures,nested)
         self.assertTrue(case.c.runtime._stopping)
         self.assertTrue(all(task.done() and not task.cancelled() for task in case.tasks))
         self.assertFalse(case.c.runtime._continuation_tasks)

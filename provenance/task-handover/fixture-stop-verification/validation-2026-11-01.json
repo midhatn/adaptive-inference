@@ -1,0 +1,69 @@
+{
+  "schema": "adaptive.fixture-stop-verification.validation.v1",
+  "date": "2026-11-01",
+  "predecessor_revision": "81fd7a28ee2c3b600017b55070b7fdbd5008f7a2",
+  "scope": "Test fixture cleanup, diagnostics and exact historical-source projection; runtime and physical evidence unchanged.",
+  "original_hosted_failure": {
+    "push_run": "https://github.com/midhatn/adaptive-inference/actions/runs/41318388842",
+    "pr_run": "https://github.com/midhatn/adaptive-inference/actions/runs/41318415453",
+    "job": "https://github.com/midhatn/adaptive-inference/actions/runs/41318388842/job/124883207088",
+    "attempt": 1,
+    "jobs_passed": 13,
+    "jobs_failed": 1,
+    "distribution_checks_passed": 11,
+    "distribution_checks_skipped": 1,
+    "observed": "The timeout regression's fixture directory remained after cleanup. Both retained CPU children joined naturally with expected exits 5 and 4; their logs were closed.",
+    "uncertainty": "The underlying deletion exception was not retained. The reachable verifier/cleanup race is not proven to be this exact run's trigger.",
+    "artifact_sha256": "770edd61f7ebcca130d43780ab7882736c0dcce30aee4840d998ed48335a6393",
+    "private_final_receipt_sha256": "e0df095f3196c813415469254c53913e3cca073dd275c25d6a606185f95e6bb4"
+  },
+  "correction": [
+    "Await the exact retained post-exit Stop verification task before fixture files are removed.",
+    "Route nested seed cleanup errors to the active test outcome while retaining primary test errors.",
+    "Explicitly close two fixture SQLite connections while preserving their transaction contexts.",
+    "Include nested errors and failures in existing assertions without changing acceptance."
+  ],
+  "preserved_focused_attempts": [
+    {"attempt": "focused-01", "tests": 6, "passed": true, "scope": "Diagnostic module before the separate SQLite cleanup fix."},
+    {"attempt": "focused-02", "tests": 30, "seconds": 29.069, "passed": false, "errors": 1, "classification": "Newly propagated WinError 32 exposed two unclosed SQLite connections in the selected-result fixture.", "private_log_sha256": "132e08d68d3baad4285f0393e122198f27fdd37d9b4de9599deafa191b4779de"},
+    {"attempt": "focused-03", "passed": false, "classification": "Indentation error during correction prevented test import; repaired before final validation."}
+  ],
+  "final_focused_batch": {
+    "modules": ["test_continuation_host", "test_continuation_timeout_diagnostics"],
+    "platform": "Windows", "python": "3.11.9", "full_interpreter": true,
+    "tests": 36, "seconds": 41.864, "passed": true,
+    "parent_joined_exit_zero": true,
+    "unique_retained_children": 42, "all_children_joined": true,
+    "expected_setup_failure_cleanup_kills": 1,
+    "all_other_children_exited_naturally": true,
+    "fixture_roots": 30, "all_fixture_roots_removed": true,
+    "source_sha256": {
+      "tests/test_continuation_host.py": "c59b04e3ac2ccce5f3ee2f21a94bc569838998c7c4b839d096da1161a123e075",
+      "tests/test_continuation_timeout_diagnostics.py": "400bb2a43132940c4900d3be80cf6966625ca4368b1eec45847721cbfc5f237c"
+    },
+    "private_summary_sha256": "c8da9572b910604d2332747b3ad5d4c4dc86b5a61d61e0f29710173cde4e61e8"
+  },
+  "source_history_batch": {
+    "tests": 60, "seconds": 83.749, "orchestrated_seconds": 84.469,
+    "passed": true, "failures": 0, "errors": 0, "skips": 0,
+    "source_unchanged": true, "remaining_threads": ["MainThread"],
+    "transport_exit_receipt_available": false,
+    "transport_limit": "Original transport metadata was truncated; the completed test receipt and subsequent process absence were observed. The later complete suite has its own retained successful join.",
+    "source_record_sha256": "688f1b1a0232b251b42be0aafaadd2f6a97963e627a5112ae42ee3c5415fcef5",
+    "private_receipt_sha256": "e4bb1ee714b2eeef76cb9a33c9f88824a0ff42500fc745d80faabd36fcb6e929"
+  },
+  "unchanged": [
+    "Five-second injected timeout and twenty-second diagnostic teardown guard",
+    "Process identity, exact child exit and directory-removal assertions",
+    "Product runtime, model, quality, task budgets and physical experiment records"
+  ],
+  "complete_source_suite": {
+    "tests": 1332, "seconds": 322.037, "orchestrated_seconds": 323.359,
+    "passed": true, "full_interpreter": true, "python": "3.11.9",
+    "source_unchanged_during_suite": true, "child_joined_exit_zero": true,
+    "private_receipt_sha256": "513aaa8474e9aba2f194dd685084fb7f069fac2e50a91c76fdefb77468c91be5",
+    "private_source_pins_sha256": "4da83c2d45be6cd0c9e27088fede5afee1fb22adf8b381fc7e995cb4e8eca95f"
+  },
+  "distribution_and_hosted_checks": "Reported separately for the exact corrected PR head.",
+  "physical_qualification": false
+}

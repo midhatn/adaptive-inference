@@ -746,17 +746,47 @@ meet the absolute drop target for their own observations. Their descriptive
 difference is not a matched-regression acceptance or a causal performance claim.
 The original failed control and unknown physical-stall attribution remain intact.
 
-**Next bounded step:** correct the operator sequence before another fresh
-comparison. Observe the actual viewport and make Start visibly reachable before
-Resume or capture. Prepare the browser, observer and original task while paused;
-then keep first-inflight observation, capture start and genuine playback Start
-adjacent, within the existing 20-second capture lead. If that window is missed,
-retain the deviation instead of relabelling or restarting the same attempt.
-Require the original output write after ordinary handback, actual capture
-coverage and source-bound cleanup. A fresh comparison is justified by these
-documented timing/setup failures, not by searching for a green frame count.
-Retain the same IQ3_S quality, task budgets, clip and acceptance thresholds.
-Verify display-surface attribution separately; missing attribution stays unknown.
+**Second sequence closed:** the [three-condition follow-up](docs/evidence.md#second-video-sequence)
+kept the same actual 1536×730 playback viewport across its two controls and
+adaptive run. Dropped frames were respectively 33/10,801 (0.305527%),
+30/10,799 (0.277804%) and 33/10,800 (0.305556%). The original IQ3_S task again
+passed all 19 terminal checks, with three provider calls, one correct physical
+write after ordinary handback and normal owned cleanup. No provider request
+overlapped measured video, although native restoration/release did. This does
+not qualify the complete comparison:
+bringing Chrome forward unexpectedly restored its smaller window, and repairing
+that geometry delayed Start to 65.880 seconds after capture creation. The
+unchanged capture ended before the measurement finished. Both timing failure
+and unknown video-surface attribution remain explicit; good browser counters
+do not override either.
+
+**Next bounded step:** verify an ordinary foreground-switch round trip before
+consuming another comparison. Microsoft documents [Alt+Tab task switching](https://support.microsoft.com/en-us/windows/experience/how-to-multitask-in-windows)
+and distinguishes [showing a window at its current geometry from restoring it](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow).
+That suggests a minimal operator correction, not proof of the automation tool's
+internals or a qualified fix. With the task paused and no capture running,
+observe that the actual switch preserves the intended window, full video,
+reachable Start and enough timing margin. If this rehearsal fails, stop before
+another model attempt. Reuse the verified switch in the timed sequence, without
+an additional activation or geometry repair. Preserve the existing 20-second
+capture lead, quality, task budgets, clip, post-handback write requirement and
+all acceptance thresholds. Missing display attribution stays unknown.
+
+Do not keep replaying the inventory task to chase green counters. Preserve this
+closed sequence, finish the independent evidence review, and continue the
+separately scoped installed application-restart work in [PR #31](https://github.com/midhatn/adaptive-inference/pull/31)
+using an isolated candidate installation. Source preflight found that Stop during
+an undispatched admission wait can preserve a pending request which the initial
+reopening reader refused. The correction at `6ac601546daf32d96e38b6689a5818e4cc8dafa8`
+now exercises actual provider-wait, safe Stop and reopening in a component
+regression. It passed 68 affected checks, the complete 1,344-test local suite
+and source/wheel verification; all 14 original exact-head hosted jobs and 12
+distribution checks also passed. Stage the isolated candidate and qualify the
+installed trial; fixture transport/GUI edges do not establish a physical
+restart. Preserve original deadlines and counters and refuse uncertain
+dispatched work. M3 remains open; lifecycle progress
+does not waive its capture or foreground-quality gates. Broader daily-use
+qualification still depends on those gates and the later useful-tool work.
 
 Do not change scheduling merely because restoration occurred during passive
 video: useful background work within the foreground quality budget is the goal.

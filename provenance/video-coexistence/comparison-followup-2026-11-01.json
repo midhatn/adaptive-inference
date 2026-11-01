@@ -1,0 +1,310 @@
+{
+  "schema": "adaptive.video-comparison-followup-summary.v1",
+  "date": "2026-11-01",
+  "scope": "Three closed browser observations and one installed IQ3_S task. Sanitized summary, not a private raw replay archive or complete M3 qualification.",
+  "observation_source_revision": "72ac717dbbcb11684e2687a2992a462a0f078f39",
+  "identical_merged_tree_revision": "c348398089e544bf54add2beaaf73550f8951efc",
+  "installed_runtime": {
+    "version": "0.3.0",
+    "source_revision": "7306a53085ddc31d53d2ba50e91975c80cfc0014",
+    "hermes_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "pr31_installed": false
+  },
+  "clip": {
+    "name": "bbb_sunflower_1080p_60fps_normal.mp4",
+    "bytes": 355856562,
+    "sha256": "3aa2d8946ec7cf3b50b7148fb3338ca421e6ec34987b20a4044845d674794e3e",
+    "attribution": "Blender Foundation 2008 and Janus Bager Kristensen 2013; CC BY 3.0. Clip not bundled."
+  },
+  "external_capture": {
+    "name": "PresentMon",
+    "version": "2.6.0",
+    "license": "MIT",
+    "sha256": "b2a706bc6ad475749e3b7e3409263aa1e6906d45bdcf993f6dbc0f660188f1af",
+    "duration_s": 240
+  },
+  "conditions_in_prospective_order": [
+    {
+      "condition": "baseline-before",
+      "browser_summary": {
+        "outcome": "completed",
+        "reason": "window_elapsed",
+        "frames": {
+          "total_frames": 10801,
+          "dropped_frames": 33,
+          "displayed_frames": 10768,
+          "dropped_fraction": 0.0030552726599388947
+        },
+        "elapsed_s": 180.0077999999998,
+        "media_progress_s": 179.997219,
+        "finish_timer_lateness_ms": 7.7999999998137355
+      },
+      "browser_start": {
+        "trusted_start_click": true,
+        "clicked_utc": "2026-11-01T14:18:36.599Z",
+        "settings": {
+          "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+          "performance_time_origin_ms": 1793542669917.4,
+          "viewport": [
+            1536,
+            730
+          ],
+          "screen": [
+            1536,
+            864
+          ],
+          "device_pixel_ratio": 1.25,
+          "video_element": [
+            1120,
+            525.2999877929688
+          ],
+          "video_pixels": [
+            1920,
+            1080
+          ],
+          "duration_s": 634.566666,
+          "playback_rate": 1,
+          "muted": false,
+          "volume": 1,
+          "visibility": "visible",
+          "fullscreen": false
+        }
+      },
+      "capture": {
+        "start_after_creation_s": 13.969265,
+        "lead_target_s": 20,
+        "lead_passed": true,
+        "joined": true,
+        "exit_code": 0,
+        "forced_stop": false,
+        "physical_video_stall_verdict": "unknown",
+        "attribution": "No retained mapping from the captured Chrome swapchain to the actual video surface; display metadata identifiers are zero."
+      },
+      "private_record_sha256": {
+        "page": "2b8614f76f23c7c12ca56601cb96647bb041ad23042d07f5d5a2c0df3fcc4ff4",
+        "capture_start": "ab0b709a38701ac18840edc2ca4b193db8a21e637acabe58c931ca3f8b12feff",
+        "capture_exit": "db55e038cad55533b12300bf4e25a62fef641c920ba436870c3b8bd4a133f910",
+        "csv": "9636ced6828cc9c9e4baccd9388c66f5f65d40ac71debe1612575f3727162444"
+      }
+    },
+    {
+      "condition": "adaptive",
+      "browser_summary": {
+        "outcome": "completed",
+        "reason": "window_elapsed",
+        "frames": {
+          "total_frames": 10799,
+          "dropped_frames": 30,
+          "displayed_frames": 10769,
+          "dropped_fraction": 0.002778035003241041
+        },
+        "elapsed_s": 180.0005,
+        "media_progress_s": 179.989211,
+        "finish_timer_lateness_ms": 0.5
+      },
+      "browser_start": {
+        "trusted_start_click": true,
+        "clicked_utc": "2026-11-01T14:27:40.940Z",
+        "settings": {
+          "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+          "performance_time_origin_ms": 1793543000476.5,
+          "viewport": [
+            1536,
+            730
+          ],
+          "screen": [
+            1536,
+            864
+          ],
+          "device_pixel_ratio": 1.25,
+          "video_element": [
+            1120,
+            525.2999877929688
+          ],
+          "video_pixels": [
+            1920,
+            1080
+          ],
+          "duration_s": 634.566666,
+          "playback_rate": 1,
+          "muted": false,
+          "volume": 1,
+          "visibility": "visible",
+          "fullscreen": false
+        }
+      },
+      "capture": {
+        "start_after_creation_s": 65.880452,
+        "lead_target_s": 20,
+        "lead_passed": false,
+        "joined": true,
+        "exit_code": 0,
+        "forced_stop": false,
+        "physical_video_stall_verdict": "unknown",
+        "attribution": "No retained mapping from the captured Chrome swapchain to the actual video surface; display metadata identifiers are zero."
+      },
+      "private_record_sha256": {
+        "page": "353c4a1d9805f9f124a2257a5e72053fc867ecc97d5b727bb2c119ff28154045",
+        "capture_start": "93909f35fc73c2cf5afa63d84cb7390e31c32a69d0951a2382450df7a6601680",
+        "capture_exit": "d9fae12424fb0ed75d8176fcd837a9e4db5c35aabe5d1f3bb0d1808580babaa5",
+        "csv": "c90dfaaa245fbe9d9e04223226a8b7224daf7922cf0e3b4e7a725444c91b9eaf"
+      }
+    },
+    {
+      "condition": "baseline-after",
+      "browser_summary": {
+        "outcome": "completed",
+        "reason": "window_elapsed",
+        "frames": {
+          "total_frames": 10800,
+          "dropped_frames": 33,
+          "displayed_frames": 10767,
+          "dropped_fraction": 0.0030555555555555557
+        },
+        "elapsed_s": 180.009,
+        "media_progress_s": 179.997209,
+        "finish_timer_lateness_ms": 9.0
+      },
+      "browser_start": {
+        "trusted_start_click": true,
+        "clicked_utc": "2026-11-01T14:37:46.436Z",
+        "settings": {
+          "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+          "performance_time_origin_ms": 1793543820645.8,
+          "viewport": [
+            1536,
+            730
+          ],
+          "screen": [
+            1536,
+            864
+          ],
+          "device_pixel_ratio": 1.25,
+          "video_element": [
+            1120,
+            525.2999877929688
+          ],
+          "video_pixels": [
+            1920,
+            1080
+          ],
+          "duration_s": 634.566666,
+          "playback_rate": 1,
+          "muted": false,
+          "volume": 1,
+          "visibility": "visible",
+          "fullscreen": false
+        }
+      },
+      "capture": {
+        "start_after_creation_s": 15.142726,
+        "lead_target_s": 20,
+        "lead_passed": true,
+        "joined": true,
+        "exit_code": 0,
+        "forced_stop": false,
+        "physical_video_stall_verdict": "unknown",
+        "attribution": "No retained mapping from the captured Chrome swapchain to the actual video surface; display metadata identifiers are zero."
+      },
+      "private_record_sha256": {
+        "page": "91e711a5a32e63fada0bbbce6445095f0b85a936d304f2ad60d3aa2387d0d7a7",
+        "capture_start": "e99921914a8e4ccc52d612a7a6da638914d504b5850c78001b089d13ed57a3f1",
+        "capture_exit": "a21601965d35df2018dcb931bff137d1131cb914ba9d3df2dfccedf8c2d8ade5",
+        "csv": "f78636ac5b500a9065e0a5c7fce8e9a8708baeda8cd76b4331d1c15bf5dfa05f"
+      }
+    }
+  ],
+  "task": {
+    "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+    "quality_unchanged": true,
+    "audit_passed": true,
+    "audit_checks": 19,
+    "provider_calls": 3,
+    "physical_writes": 1,
+    "correct_total_units": 23,
+    "one_resume_one_stop": true,
+    "execution_budget_s": 900,
+    "outer_deadline_s": 2700,
+    "parent_elapsed_s": 688.125,
+    "parent_exit_code": 0,
+    "normal_owned_cleanup": true,
+    "final_sampled_gpu_used_mib": 0,
+    "observer_exit_code": 1,
+    "observer_reason": "three_connection_errors_after_response following shutdown",
+    "page_servers_exit_code": 1,
+    "page_servers_reason": "intentional interrupt after terminal save"
+  },
+  "ordering": {
+    "handback_before_utc": "2026-11-01T14:31:27.091Z",
+    "handback_after_utc": "2026-11-01T14:31:27.192Z",
+    "native_write_intent_utc": "2026-11-01T14:32:18.643344Z",
+    "native_successful_write_receipt_utc": "2026-11-01T14:32:20.789477Z",
+    "output_write_after_handback": true,
+    "write_time_scope": "Persisted Hermes intent/receipt timestamps joined to the TaskStore effect and one nonreused physical effect receipt; not filesystem syscall timing.",
+    "second_provider_started_utc": "2026-11-01T14:31:08.892929Z",
+    "handback_initiated_second_request": false,
+    "provider_request_overlap_with_measured_video": false,
+    "native_lifecycle_activity_overlap_with_measured_video": true
+  },
+  "measured_window_status": {
+    "samples": 177,
+    "admission_allowed_true": 0,
+    "scheduler_active_true": 0,
+    "states": {
+      "restoring": 84,
+      "releasing": 7,
+      "parked": 85,
+      "awaiting": 1
+    },
+    "scope": "Sampled GET-only observations, not continuous controller-input or GPU-residency proof."
+  },
+  "acceptance": {
+    "absolute_browser_drop_limit_fraction": 0.005,
+    "all_three_absolute_drop_checks_passed": true,
+    "regression_limit_percentage_points": 0.25,
+    "adaptive_minus_before_percentage_points": -0.02772376566978537,
+    "difference_scope": "Descriptive only; adaptive capture/lead failed, so no complete regression acceptance or causal speedup claim.",
+    "adaptive_capture_lead_passed": false,
+    "adaptive_complete_capture_coverage": false,
+    "physical_video_stall_verdict": "unknown",
+    "video_qualified": false,
+    "m3_qualified": false,
+    "audio_quality_or_sync_qualified": false,
+    "application_restart_or_reboot_qualified": false
+  },
+  "preserved_deviation": "Explicit browser activation restored a smaller window. Geometry repaired before trusted Start, but Start occurred 65.880451 seconds after capture creation, beyond the fixed20-second limit. Capture missed the final part of playback. No reset, extension or rerun of that attempt.",
+  "following_control_capture_limits": {
+    "residence_candidates_ms": [
+      292.3586,
+      257.5028
+    ],
+    "last_recorded_residence_end_minus_nominal_window_end_ms": -10.5005,
+    "interpretation": "Candidates not attributed to the actual video surface; endpoint coverage is not continuous-video proof."
+  },
+  "private_task_record_sha256": {
+    "terminal_audit": "e03d7548019d47520a23a0a5f4825ed410cc202b1890d818bdcd8f098baa3896",
+    "task_result": "0fffa13457683154e4389d94903bc2b8bdfd7754bec2c8e816bb9189adfc25d8",
+    "supervisor": "c62194b6f1d0a586c1372b805b4c5fd2646aa52a2b766f5e5538bc08dc19ddb0",
+    "observer": "10305961fdab6165b724ad192c0b86abed134044eb70b37884d75aee86ed6caf",
+    "foreground_trace": "051bd18e9217779ff34b14a688a5db5e2b7621b46e33bc6ebaf3ec622b32f641",
+    "task_store": "2495060a0b29c89da2d689194c8b76b018c2263f3380ef2c497e6cedce77e3b5",
+    "native_history": "49bb426c80d6e4dc5bb71a6ee7f8b8f1dcf2fab4b5f8df44c7ba33a8641bb0c8",
+    "effects": "f9357630eec5dbebe2aed5a26d316f7e976331c7867b0c095eebea9d0ab2791c",
+    "wire": "86144126ee7165f06ef12c101a0940bbdc7601943203b2aa04b475d15d4a1bd9",
+    "handback": "527084c8258f13a44d30b45482d93bf997bdf3e08d51a6ada80c4d186b9161bc",
+    "deviation": "34d98a7a37d57c7cf82a4f4fc4d72aff3032ff504649df12fff22b0bbbd557f6",
+    "joins_cleanup": "4f9c4f3c22a7e458649f145f067534908c1baaffda2d57398b68ee13e5c8de67"
+  },
+  "independent_review_sha256": {
+    "before_control": "5f6c45c3a91b82aa44c8d40769ca41dfe38c7103ea6be7645a4a1cf5fe36fbe6",
+    "adaptive_page_capture": "fcb2c078b13f881674b4b6ee1f82daa2f2b19d77fb0830eb78fc84baf8ce0af5",
+    "adaptive_task_order": "2b3cc7ea0484648d1aa399121cd53776624cc522ce1cb592582464bf8e21b6f1",
+    "after_control": "e2f6cbab4a380a6b76d51a4c5ccba7c7376ae863d62f80c27129634c4d091f21"
+  },
+  "sources": [
+    "https://github.com/GameTechDev/PresentMon/blob/v2.6.0/README-ConsoleApplication.md",
+    "https://w3c.github.io/media-playback-quality/",
+    "https://support.microsoft.com/en-us/windows/experience/how-to-multitask-in-windows",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow"
+  ]
+}
