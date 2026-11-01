@@ -1,0 +1,49 @@
+{
+  "accepted_private_manifest_sha256": "7be5e034385ffc75919a19193bf909e6c39075e65218ce5e0cc99a40e687204b",
+  "accepted_private_terminal_audit_sha256": "f0ba3661c4f19ddf9cfdac703f64f77bcfa7703442d0f52abe8c30573472fb3b",
+  "changed_function": "bindings.baseline",
+  "exact_workflow_files": [
+    "run_continue.py",
+    "qualify_continue.py",
+    "observe_continue.py",
+    "audit_continue.py",
+    "checks.py",
+    "bindings.template.private.json"
+  ],
+  "fixture_path_substitution": {
+    "after": "root.parents[2]/'provenance/explicit-continuation/qualification-predecessor/qualify.py'",
+    "before": "root/'baseline/installed_desktop/qualify.py'"
+  },
+  "license": "Apache-2.0 project mechanisms; existing upstream notices unchanged",
+  "private_predecessor_files": {
+    "audit_continue.py": "b6758dc3aa631e60cd5405132b97f499e399c72c91ed70eadd52ed4c96517908",
+    "bindings.py": "6368c283aa1b2852c8c0fd12c8d6ecabcbd0e0fa7278aee6aca11819c3bda3d7",
+    "bindings.template.private.json": "3e37df0818f3f16dff8662ad6a7be9c6865700238615818fa55757e2328e2886",
+    "checks.py": "dc795462df84516d5a8f3ffac9dd0b30f74ee29d98902e4dbdb07328b95cfae8",
+    "observe_continue.py": "6a47e2d38897bf44ad15da90c21d2f462346b3c831486191c335901fcc1076f5",
+    "qualify_continue.py": "b0b75a6edbeb820c0ca3143c17fc8e075be732aa7f4462f6496fedb90f8fb414",
+    "run_continue.py": "59f713ff3d9778095b77b9a0b97b3e185937f541a7fb9352bdae6e35eceed354",
+    "test_checks.py": "ca277f30ce50cf1ac8d58a38dd5f46daf9ca1971e226fd16b48bb14960cb5ef6"
+  },
+  "qpc_function_ast_sha256": {
+    "finite_time": "b5ad9709e2fc561270914a3224068941f679b390e62ed548b242ec1190a0dd87",
+    "qpc_bracket": "a4223c42c224e30a44919c7a3ddbbf6df9af45d1df58d6ca34488a0e0ca7f53d"
+  },
+  "qpc_helpers_sha256": "aa9eb3f0e0bb9e51cc761919497be029c768336b351792758219c481c4796939",
+  "qpc_source_sha256": "5593a2ca7055087dc04068f5b2ef04264d0a1e8b3e90134af9f39f11d59df9c4",
+  "qualification_predecessor": {
+    "README.md": "b766b3160d6e66ca979bc906ec95deefb02f102929c650cdc1f957e105617ae8",
+    "qualify.py": "452c81c384c7e91b1c57a4b9442c804ecb53fd95014ae21b97ba3ba9c14ee45f",
+    "source-lineage.json": "a29e2da5e9c1dc9b52c74445d07d810b776ff22c52c292b8ce3caea2957073cb",
+    "source-manifest.json": "d8ccc7f2ed6f4cc1c64896be9e660483b1b40f28c24df140df9ff31eaf931f16",
+    "test_cold.py": "641830d183e40e88ee38714d2bf2f1a46e113ebe4a11f822e55b4b0a9e77b594",
+    "test_expiry.py": "a240fe5a0e20de4f1ee5ce0e23c63ba73f94dd1c1fefe3eace490da4fa342f9c",
+    "test_full.py": "777a097f7959661dcb0e9f70673bdc4960d83ab25f87d9ef3cb8592d0bd1a0f3"
+  },
+  "research": [
+    "https://docs.python.org/3.11/library/importlib.html#importing-a-source-file-directly",
+    "https://docs.python.org/3.11/library/unittest.html#test-discovery"
+  ],
+  "schema": "adaptive.continuation.public-harness-lineage.v1",
+  "scope": "Public path adaptation; source/CPU equivalence only, no new live trial"
+}

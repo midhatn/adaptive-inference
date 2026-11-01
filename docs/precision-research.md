@@ -80,6 +80,22 @@ bottleneck of the actual workload before selecting an optimization.
 
 ## Reversible qualification
 
+Status, 26 October 2026: isolated control, candidate and restored-control packages
+were prepared with the same native build and model assets. This establishes
+configuration readiness only. The first instrumented host failed its GUI
+startup deadline before loading the native engine. An OS permission prompt
+also obstructed the unprofiled control; its paused worker reached the original
+execution limit, and the unchanged outer diagnostic guard later terminated
+the retained host and drained its owned processes. Neither run is accepted as
+a normal GUI Stop, successful task or precision comparison. The startup failure
+cannot be attributed solely to profiling overhead.
+
+No actual FP16 kernel coverage, quality comparison or end-to-end speed gain has
+been established. A future capture can start at the existing server-child
+boundary after the GUI is ready, but that narrower wrapper must first preserve
+stdin/EOF shutdown and retained-process cleanup. General task support remains
+the functional priority.
+
 1. Preserve the accepted installed continuation qualification as the baseline.
    Use new experiment runs, the same IQ3_S assets, exact native build/libraries,
    request bodies and independent task validators. Preserve context 65,536,

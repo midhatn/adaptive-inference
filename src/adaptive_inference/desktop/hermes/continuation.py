@@ -17,7 +17,8 @@ from adaptive_inference.task_store import (
 )
 from adaptive_inference.control_mailbox import (
     EXECUTION_OUTCOME, ACKS, CLOCK_EXPIRY_SCHEMA, COMMANDS,
-    execution_outcome, control_prefix_digest,
+    execution_outcome, control_prefix_digest, WAIT_EXPIRY_SCHEMA,
+    Mailbox, MailboxSnapshot,
 )
 from adaptive_inference.demand import DemandIdentity, NAMESPACE, _record, _utc
 from adaptive_inference.execution_clock import CLOCK_ID, execution_now
@@ -26,6 +27,7 @@ from adaptive_inference.desktop.hermes.recovery import digest, verify_tool_rows,
 AUTHORITY = 'adaptive_inference.continuation_authority.v1'
 LINK = 'adaptive_inference.execution_authorization.v1'
 MAX_GRANTS = 32
+PENDING_DISPOSITION = 'adaptive.pending-request-supersession.v1'
 STATE_REQUIRED = frozenset(('status', 'messages', 'attempts', 'feedback', 'output', 'phase',
     'session_id', 'native_history', 'tools', 'requests', 'admission_attempts', 'admission_deferrals',
     'pending_request', 'deadline_monotonic', 'deadline_clock', NAMESPACE))
@@ -58,8 +60,13 @@ def identity(metadata):
 def safe_state(cp, *, sealed):
     state = cp.state
     require(STATE_REQUIRED <= set(state) <= STATE_REQUIRED | STATE_OPTIONAL, 'Unknown recovery state field')
-    require(cp.max_attempts == 8 and state['status'] == 'pending' and state['phase'] == 'ready'
-            and state['pending_request'] is None and cp.operation is None and not cp.requires_reconciliation,
+    marker = execution_outcome(state)
+    waiting = sealed and marker is not None and marker['schema'] == WAIT_EXPIRY_SCHEMA
+    safe_phase = (state['phase'] == 'waiting_admission' and type(state['pending_request']) is dict
+                  and state['pending_request'].get('model') == cp.metadata.get('model')) if waiting else (
+                  state['phase'] == 'ready' and state['pending_request'] is None)
+    require(cp.max_attempts == 8 and state['status'] == 'pending' and safe_phase
+            and cp.operation is None and not cp.requires_reconciliation,
             'Execution is not a complete safe checkpoint')
     require(state['deadline_clock'] == CLOCK_ID and cp.metadata.get('deadline_clock') == CLOCK_ID,
             'Execution clock changed')
@@ -69,7 +76,6 @@ def safe_state(cp, *, sealed):
             state['attempts'] == state['requests'] and
             state['admission_attempts'] == state['requests'] + len(state['admission_deferrals']),
             'Cumulative admission/request accounting differs')
-    marker = execution_outcome(state)
     require((marker is not None) is sealed, 'Execution seal state differs')
     verify_tool_rows(state['native_history'], state['tools'])
     verify_validation_rows(state['native_history'], state, cp.metadata.get('pre_effect_validator'))
@@ -222,7 +228,8 @@ class ContinuationAuthority:
         self.store._revision(cp, payload['predecessor_revision'])
         require(cp.owner_epoch is None, 'Predecessor still has an owner')
         marker = safe_state(cp, sealed=True)
-        require(marker['schema'] == CLOCK_EXPIRY_SCHEMA and digest(marker) == payload['predecessor_seal_sha256']
+        require(marker['schema'] in (CLOCK_EXPIRY_SCHEMA, WAIT_EXPIRY_SCHEMA)
+                and digest(marker) == payload['predecessor_seal_sha256']
                 and cp.revision == marker['pre_seal_revision'] + 1, 'Exact predecessor seal required')
         history = list(db.execute('SELECT revision,event,payload FROM history WHERE task_id=? ORDER BY revision', (cp.task_id,)))
         require(len(history) == cp.revision + 1 and [row[0] for row in history] == list(range(cp.revision + 1)),
@@ -246,22 +253,41 @@ class ContinuationAuthority:
         old_identity = identity(cp.metadata); new_identity = identity({NAMESPACE: payload['demand_identity']})
         require(new_identity.registration_id != old_identity.registration_id
                 and new_identity.owner_id == old_identity.owner_id, 'Fresh demand registration and same host lineage required')
-        require(_record(cp, old_identity)['state'] == 'paused', 'Predecessor demand is not paused')
-        acks = cp.state[ACKS]['receipts']
-        requests = [{k: receipt[k] for k in ('sequence', 'request_id', 'command')} for receipt in acks]
-        require(bool(acks) and len(acks) <= 32 and [r['sequence'] for r in requests] == list(range(1, len(acks)+1))
-                and len({r['request_id'] for r in requests}) == len(acks), 'Pause prefix is incomplete')
-        for receipt in acks:
-            require(set(receipt) == {'sequence', 'request_id', 'command', 'outcome', 'demand_state', 'acknowledged_at_utc'}
-                    and type(receipt['sequence']) is int and receipt['command'] in COMMANDS
-                    and receipt['outcome'] in ('applied', 'rejected'), 'Pause receipt changed')
-            _utc(receipt['acknowledged_at_utc'])
-        require(acks[-1]['command'] == 'pause' and acks[-1]['outcome'] == 'applied'
-                and acks[-1]['request_id'] == marker['pause_request_id'] and acks[-1]['sequence'] == marker['pause_sequence']
-                and control_prefix_digest(requests, acks) == marker['control_prefix_sha256'], 'Sealed Pause prefix changed')
+        if marker['schema'] == WAIT_EXPIRY_SCHEMA:
+            self._wait_prefix(db, cp)
+        else:
+            require(_record(cp, old_identity)['state'] == 'paused', 'Predecessor demand is not paused')
+            acks = cp.state[ACKS]['receipts']
+            requests = [{k: receipt[k] for k in ('sequence', 'request_id', 'command')} for receipt in acks]
+            require(bool(acks) and len(acks) <= 32 and [r['sequence'] for r in requests] == list(range(1, len(acks)+1))
+                    and len({r['request_id'] for r in requests}) == len(acks), 'Pause prefix is incomplete')
+            for receipt in acks:
+                require(set(receipt) == {'sequence', 'request_id', 'command', 'outcome', 'demand_state', 'acknowledged_at_utc'}
+                        and type(receipt['sequence']) is int and receipt['command'] in COMMANDS
+                        and receipt['outcome'] in ('applied', 'rejected'), 'Pause receipt changed')
+                _utc(receipt['acknowledged_at_utc'])
+            require(acks[-1]['command'] == 'pause' and acks[-1]['outcome'] == 'applied'
+                    and acks[-1]['request_id'] == marker['pause_request_id'] and acks[-1]['sequence'] == marker['pause_sequence']
+                    and control_prefix_digest(requests, acks) == marker['control_prefix_sha256'], 'Sealed Pause prefix changed')
         require(cp.state['requests'] < 8 and cp.state['attempts'] < 8 and cp.state['admission_attempts'] < 32,
                 'Cumulative capacity is spent')
         return cp, marker, history
+
+    def _wait_prefix(self, db, cp):
+        """Use existing validators without provisioning or opening a second SQL view."""
+        # Mailbox.__init__ is the trusted provisioning API. Authorization must
+        # instead fail when its existing mailbox is missing, so bind only the
+        # identity needed by its pure checkpoint/prefix validators.
+        box = object.__new__(Mailbox)
+        box.identity = identity(cp.metadata)
+        box.declaration = {'schema': 1, 'target': box.identity.metadata()}
+        box.task_id = 'control.' + digest(json.dumps(box.declaration, sort_keys=True, separators=(',', ':')).encode())
+        box.prompt = 'Record trusted host controls for ' + box.identity.task_id + '.'
+        mailbox, requests = box._request_checkpoint(self.store._read(db, box.task_id))
+        receipts = box._acks(cp, requests)
+        snapshot = MailboxSnapshot(cp, mailbox.revision, tuple(requests), tuple(receipts),
+                                  deepcopy(_record(cp, box.identity)))
+        return box.admission_wait_candidate(snapshot, allow_sealed=True)
 
     def authorize(self, owned_authority, payload):
         payload = self._payload(payload)
@@ -290,6 +316,13 @@ class ContinuationAuthority:
                      'wire_body_sha256': [row['body_sha256'] for row in rows],
                      'wire_file_sha256': digest(raw), 'release_proven_by_store': False}
             state = deepcopy(cp.state)
+            if marker['schema'] == WAIT_EXPIRY_SCHEMA:
+                grant['pending_request_disposition'] = {
+                    'schema': PENDING_DISPOSITION, 'mode': 'rebuild_from_saved_conversation',
+                    'request_sha256': marker['pending_request_sha256']}
+                # Hermes rebuilds its next turn from saved native history. The
+                # exact superseded provider request remains in the predecessor.
+                state.update(phase='ready', pending_request=None)
             del state[EXECUTION_OUTCOME]; state.pop(ACKS, None)
             state['deadline_monotonic'] = grant['deadline_monotonic']
             state[NAMESPACE] = {**payload['demand_identity'], 'state': 'paused',
@@ -337,6 +370,36 @@ class ContinuationAuthority:
         require(digest(first['state']) == grant['successor_initial_state_sha256']
                 and first['metadata'] == current.metadata and first['prompt'] == current.prompt
                 and first['max_attempts'] == current.max_attempts, 'Successor creation record changed')
+        predecessor = self.store._read(db, payload['predecessor_id'])
+        marker = execution_outcome(predecessor.state)
+        require(marker is not None and digest(marker) == payload['predecessor_seal_sha256'],
+                'Inherited predecessor seal changed')
+        if marker['schema'] == WAIT_EXPIRY_SCHEMA:
+            safe_state(predecessor, sealed=True)
+            require(predecessor.owner_epoch is None and predecessor.revision == payload['predecessor_revision']
+                    and predecessor.revision == marker['pre_seal_revision'] + 1
+                    and digest(predecessor.state) == grant['predecessor_state_sha256'],
+                    'Superseded predecessor identity changed')
+            history = list(db.execute('SELECT revision,event,payload FROM history WHERE task_id=? ORDER BY revision',
+                                      (predecessor.task_id,)))
+            require(digest([list(row) for row in history]) == grant['predecessor_history_sha256'],
+                    'Superseded predecessor history changed')
+            self._wait_prefix(db, predecessor)
+            require(grant.get('pending_request_disposition') == {
+                'schema': PENDING_DISPOSITION, 'mode': 'rebuild_from_saved_conversation',
+                'request_sha256': marker['pending_request_sha256']}, 'Pending request disposition changed')
+            expected = deepcopy(predecessor.state)
+            expected.pop(EXECUTION_OUTCOME); expected.pop(ACKS, None)
+            expected.update(phase='ready', pending_request=None, deadline_monotonic=grant['deadline_monotonic'])
+            expected[NAMESPACE] = {**payload['demand_identity'], 'state': 'paused',
+                'updated_at_utc': payload['demand_identity']['arrived_at_utc'],
+                'reason': 'Explicit continuation selected; awaiting retained launch and fresh Resume'}
+            require(first['state'] == expected, 'Superseded successor projection changed')
+            expected_metadata = deepcopy(predecessor.metadata)
+            expected_metadata[NAMESPACE] = payload['demand_identity']; expected_metadata[LINK] = expected_link
+            require(first['metadata'] == expected_metadata, 'Superseded successor metadata changed')
+        else:
+            require('pending_request_disposition' not in grant, 'Unexpected pending request disposition')
         for name in ('messages', 'native_history', 'tools', 'feedback', 'admission_deferrals', 'validation_rejections'):
             original, actual = first['state'].get(name, []), current.state.get(name, [])
             require(type(actual) is list and actual[:len(original)] == original, 'Inherited task/effect history changed')

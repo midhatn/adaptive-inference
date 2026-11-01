@@ -546,6 +546,224 @@
   note = {MIT documentation, inspected revision 4506df5fb4105a39b84c2b7390d21bed89e28668, src/oss/langgraph/interrupts.mdx, blob 32b562c8c91387fc5aa274700d98181cbcadbf54; official page rechecked 2026-10-26. Saved-state resume and repeated-effect hazards inform preserved effect/history checks. No dependency, copied implementation or inherited exactly-once guarantee}
 }
 
+@article{fu2026akv,
+  title = {Cache Engineering for Agents},
+  author = {Fu, Tianyu and Wang, Ruoxi and Min, Zihan and Ren, Zhongqi and Li, Zhihao and Liu, Tengxuan and Mu, Shengxu and Zhang, Hanling and Wang, Yu},
+  year = {2026},
+  journal = {arXiv preprint arXiv:2610.28577},
+  url = {https://arxiv.org/abs/2610.28577v1},
+  note = {Version 1, inspected 2026-10-26. Informs planned operation-history identity and quality qualification for optional cache operations; no reported result reproduced. Paper uses the arXiv non-exclusive distribution license}
+}
+
+@misc{akvImplementation,
+  title = {AKV: agent cache policy and SGLang cache-operation implementation},
+  author = {{thu-nics and AKV contributors}},
+  url = {https://github.com/thu-nics/AKV/tree/c567a429a058f1abce3b2879e69978b09e0fda4c},
+  note = {Root Apache-2.0 with SGLang attribution; inspected reposition kernel has an MIT notice. Revision c567a429a058f1abce3b2879e69978b09e0fda4c, inspected 2026-10-26. Reuse candidate; no implementation copied or enabled. Current Drop/Reposition architecture support does not qualify our hybrid IQ3_S Windows composition}
+}
+
+@misc{windowsTerminationExitRace,
+  title = {TerminateProcess and WaitForSingleObject process completion contracts},
+  author = {{Microsoft}},
+  url = {https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess},
+  note = {Inspected 2026-10-26 with https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject. Termination is asynchronous and may return access denied after termination; only a signalled retained handle proves exit. Informs the existing owner cleanup correction with no additional process rights or cleanup budget. API semantics adapted; no documentation text copied}
+}
+
+@misc{cpythonWindowsTerminationVerification,
+  title = {CPython 3.11.9 Windows multiprocessing termination and wait verification},
+  author = {{Python Software Foundation and contributors}},
+  url = {https://github.com/python/cpython/blob/v3.11.9/Lib/multiprocessing/popen_spawn_win32.py},
+  note = {PSF license, inspected 2026-10-26. Reuses the principle of verification through the retained handle following termination denial, alongside the project's existing bounded wait. No CPython implementation copied; exit-code observations alone are not treated as wait-confirmed release}
+}
+
+@misc{huggingfacePapersWithCodeCatalog,
+  title = {Papers with Code catalog and public API},
+  author = {{Hugging Face and contributors}},
+  url = {https://github.com/huggingface/paperswithcode/tree/885539fec00ed12c19baca8f7a08f5355b8ef7cd},
+  note = {Apache-2.0 application, inspected 2026-10-26. Used bounded public keyword searches and selected paper records as discovery leads; implementation ownership, license and compatibility checked separately. A repository clone is not a hosted catalog snapshot; no catalog implementation copied}
+}
+
+@article{riverStreamingLearning,
+  title = {River: machine learning for streaming data in Python},
+  author = {Montiel, Jacob and Halford, Max and Mastelini, Saulo Martiello and Bolmier, Geoffrey and Sourty, Raphael and Vaysse, Robin and Zouitine, Adil and Gomes, Heitor Murilo and Read, Jesse and Abdessalem, Talel and Bifet, Albert},
+  year = {2020},
+  journal = {arXiv preprint arXiv:2012.04740},
+  url = {https://arxiv.org/abs/2012.04740v1},
+  note = {Discovered through Papers with Code record 4702; inspected 2026-10-26. The maintained River implementation, rather than a new detector, supplies the optional offline timing-drift experiment}
+}
+
+@misc{riverPageHinkleyAudit,
+  title = {River Page-Hinkley change detector},
+  author = {{River contributors}},
+  url = {https://github.com/online-ml/river/blob/950984786649806bfdc446062fcc830235f8131b/river/drift/page_hinkley.py},
+  note = {BSD-3-Clause, inspected 2026-10-26 with detector base, running mean and upstream up/down/both tests. Git blob c14c82121e19afc9d251fdb5339a00a89f3f48f8. Public API reuse is restricted to offline advisory timing analysis; no live controller dependency or performance claim}
+}
+
+@misc{riverPageHinkleyRelease,
+  title = {River 0.26.1 released change-detector implementation},
+  author = {{River contributors}},
+  url = {https://github.com/online-ml/river/tree/64285b9dd6c606804753235fe992bcf25b9856ee},
+  note = {BSD-3-Clause, inspected 2026-10-26. The published Windows wheel is matched to this release separately from current main; Page-Hinkley, Mean and detector-base files agree after CRLF normalization. The initialization difference from main is retained explicitly. Optional offline CPU experiment only, not a controller dependency}
+}
+
+@article{flowPrefill2026,
+  title = {FlowPrefill: Decoupling Preemption from Prefill Scheduling Granularity to Mitigate Head-of-Line Blocking in LLM Serving},
+  author = {Hsieh, Chia-chi and Zong, Zan and Chen, Xinyang and Li, Jianjiang and Zhai, Jidong and Wen, Lijie},
+  year = {2026},
+  journal = {arXiv preprint arXiv:2602.16603},
+  url = {https://arxiv.org/abs/2602.16603v1},
+  note = {Discovered through Papers with Code record 56294; inspected 2026-10-26 with Apache-2.0 author implementation ChiachiHsieh/FlowPrefill at d8a1c417c04469287c39abb63e8d3a3791c70f1a. Native-capability research only; no code imported or published performance reproduced on our Windows hybrid IQ3_S stack}
+}
+
+@misc{windowsSessionInputAge,
+  title = {GetLastInputInfo session input observation},
+  author = {{Microsoft}},
+  url = {https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getlastinputinfo},
+  note = {Inspected 2026-10-30 alongside existing foreground policy. Session input age is distinct from QPC operator brackets; actual trace and action coverage remain required. No documentation or implementation copied}
+}
+
+@misc{windowsForegroundActivation,
+  title = {SetForegroundWindow foreground activation contract},
+  author = {{Microsoft}},
+  url = {https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow},
+  note = {Inspected 2026-10-30 after case14's standalone document activation and early recovery-state observations. Activation and input routing are distinct from a guaranteed new session input event. Informs a prospective operator procedure only; no Windows implementation copied or raw historical input-age measurement claimed}
+}
+
+@misc{windowsInputEvents,
+  title = {SendInput keyboard and mouse event contract},
+  author = {{Microsoft}},
+  url = {https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput},
+  note = {Inspected 2026-10-30 with GetLastInputInfo and SetForegroundWindow to distinguish meaningful document navigation from foreground activation. Existing supported computer-use actions are retained; no custom input injector, automatic key loop, runtime change or acceptance relaxation was added}
+}
+
+@misc{pythonProfilingDiagnostics,
+  title = {Python cProfile and pstats profiling tools},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.11/library/profile.html},
+  note = {Inspected 2026-10-30 as a proposed diagnostic for repeated cumulative Windows CI timeouts. Profiling is not a benchmark and no profiling result or optimization is claimed}
+}
+
+@misc{githubActionsBoundedJobs,
+  title = {GitHub Actions workflow job timeouts and matrix scheduling},
+  author = {{GitHub}},
+  url = {https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes},
+  note = {Inspected 2026-10-30 after two Windows CI cumulative 15-minute timeouts. Supports a possible future measured workload partition with complete test coverage preserved; no workflow change or rerun performed for this research}
+}
+
+@misc{pythonUnittestFailFast,
+  title = {Python unittest command-line fail-fast option},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.12/library/unittest.html#command-line-options},
+  note = {Inspected with the Python 3.11 documentation on 2026-10-30. Reuses the standard discovery option to stop a failed core suite after its first failure or error; passing collection and assertions, sibling matrix jobs and timeout are unchanged. Unexecuted tests are not passes}
+}
+
+@misc{cpythonUnittestErrorReporting,
+  title = {CPython 3.12.10 unittest TextTestRunner},
+  author = {{Python Software Foundation}},
+  url = {https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/runner.py#L235},
+  note = {Inspected alongside v3.11.9 on 2026-10-30. Stored errors are printed after the test call returns, including cleanup. Fail-fast therefore improves reporting opportunity but cannot guarantee a traceback before blocked cleanup or job termination. No runner code copied}
+}
+
+@misc{pythonAsyncioEventLifecycle,
+  title = {Python 3.11 asyncio Event synchronization},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.11/library/asyncio-sync.html#asyncio.Event},
+  note = {Inspected 2026-10-30 for the event-held HTTP disconnect fixture. Waiting suspends the waiting coroutine, not unrelated socket timers; event release belongs in cleanup. Informed a test-only correction, with no runtime implementation copied}
+}
+
+@misc{aiohttpSocketReadTimeout,
+  title = {aiohttp 3.14.5 ClientTimeout socket-read contract},
+  author = {{aiohttp contributors}},
+  url = {https://github.com/aio-libs/aiohttp/blob/v3.14.5/docs/client_reference.rst#L2235},
+  note = {Inspected 2026-10-30 at documentation blob 5ac57a0cfd766ef5425665c4875845f16caf6649. The wait for a portion of peer data is bounded independently of the test's EOF event. Supports a separate bounded lifecycle-test timeout while preserving the dedicated short-timeout test; does not prove the original hosted failure's cause}
+}
+
+@misc{aiohttpSocketReadTimer,
+  title = {aiohttp 3.14.5 client protocol read-timeout implementation},
+  author = {{aiohttp contributors}},
+  url = {https://github.com/aio-libs/aiohttp/blob/v3.14.5/aiohttp/client_proto.py#L287},
+  note = {Inspected 2026-10-30 at source blob e30183dafdb1f915bde943091b61407341b2791c. The existing scheduled timeout and SocketTimeoutError path informed the fixture correction. Source consulted, not copied; gateway and scheduler behavior are unchanged}
+}
+
+@misc{hermesTurnLivenessContract,
+  title = {Hermes turn liveness watchdog and activity configuration},
+  author = {{Nous Research and Hermes contributors}},
+  url = {https://hermes-agent.nousresearch.com/docs/user-guide/configuration#turn-liveness-watchdog},
+  note = {Inspected 2026-10-30 with installed MIT-licensed SDK revision 14e1e43a23761b369641208e204365cd6cb9399d. Activity and session-lease renewal are separate signals. The existing adaptive Pause bridge uses pinned private activity and interruption interfaces; reporting safe admission waits must preserve original execution deadlines and committed interruption checks. No SDK code copied}
+}
+
+@misc{hermesMoaActivityBridge,
+  title = {Hermes PR 131916: stamp turn-liveness activity from the MoA reference fan-out},
+  author = {{Hermes contributors}},
+  url = {https://github.com/NousResearch/hermes-agent/pull/131916},
+  note = {Merged 2026-10-03 as ba3c22b324908a5023122e8aa0aecd8910bb73aa; actual agent/moa_loop.py patch inspected 2026-10-30. Credits original contributions in PR 110056 by kokhlo and PR 110041 by KoNit-K. The principle of forwarding verified activity to the existing watchdog informs the proposed admission-wait bridge; MoA code was not copied and waiting is not reported as token or tool progress. Upstream MIT license retained by its authors}
+}
+
+@misc{hermesWatchdogControlledClockTests,
+  title = {Hermes turn-liveness watchdog controlled-clock and abort-claim tests},
+  author = {{Nous Research and Hermes contributors}},
+  url = {https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tests/agent/test_turn_liveness_watchdog.py},
+  note = {Inspected 2026-10-30, source SHA256 cf966c0bb3cb9c39bc952221b31281302e982f76e19bd9f3a1a267c69d6dd41c. The optional hermes_admission_activity component check adapts per-module clocks and the bounded ParkingReleaseLock test pattern while executing actual extracted SDK components. MIT notice retained with the example. No full agent, model, periodic scheduler, durable SessionDB heartbeat or hardware elapsed-time claim}
+}
+
+@misc{pythonExplicitTextEncoding,
+  title = {Python 3.11 text-file encoding and Path.read_text contracts},
+  author = {{Python Software Foundation and contributors}},
+  url = {https://docs.python.org/3.11/library/functions.html#open},
+  note = {Inspected 2026-10-30 with pathlib.Path.read_text documentation and CPython v3.11.9 Lib/pathlib.py. A private task-handover checker must read the existing producer's UTF-8 JSONL receipts explicitly as UTF-8; locale decoding can corrupt non-ASCII content before strict equality. No runtime producer, comparison rule or upstream implementation was changed or copied}
+}
+
+@misc{pep597EncodingWarning,
+  title = {PEP 597: Add optional EncodingWarning},
+  author = {Inada, Naoki},
+  year = {2019},
+  url = {https://peps.python.org/pep-0597/},
+  note = {Inspected 2026-10-30 for the documented Windows portability error caused by omitting an encoding for UTF-8 text. Informs the private receipt-reader correction and non-ASCII regression; no global locale change, replacement decoding or acceptance relaxation}
+}
+
+@misc{agentsMarkdownConvention,
+  title = {AGENTS.md: an open format for guiding coding agents},
+  author = {{AGENTS.md contributors}},
+  url = {https://agents.md/},
+  note = {Inspected 2026-10-30. Adopted a predictable Markdown instruction entry point with manual onboarding fallback; automatic discovery depends on the AI client. No upstream implementation copied}
+}
+
+@misc{gitWorktreeCollaboration,
+  title = {Git worktree documentation},
+  author = {{Git contributors}},
+  url = {https://git-scm.com/docs/git-worktree},
+  note = {Inspected 2026-10-30. Separate working trees, HEADs and indexes inform concurrent source ownership. Worktrees and worktree administrative locks do not reserve hardware or isolate live services. No Git implementation copied}
+}
+
+@misc{githubIssueOwnership,
+  title = {Assigning issues and pull requests to other GitHub users},
+  author = {{GitHub}},
+  url = {https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/assigning-issues-and-pull-requests-to-other-github-users},
+  note = {Inspected 2026-10-30. Existing issues and PRs carry human ownership and bounded work records; local worker names and offline Markdown remain supported. Assignment is coordination, not an atomic resource lock. No implementation copied}
+}
+
+@misc{longRunningAgentHarnesses,
+  title = {Effective harnesses for long-running agents},
+  author = {{Anthropic}},
+  year = {2025},
+  url = {https://www.anthropic.com/research/effective-harnesses-for-long-running-agents},
+  note = {Inspected 2026-10-30. Adapted incremental tasks, explicit acceptance and durable progress artifacts alongside Git history. No agent harness code copied; this does not establish automatic multi-agent success or transfer private execution capabilities}
+}
+
+@misc{aiderTaskEntry,
+  title = {Aider usage and options reference},
+  author = {{Aider contributors}},
+  url = {https://aider.chat/docs/usage.html},
+  note = {Inspected 2026-11-01 with https://aider.chat/docs/config/options.html. Reused the objective plus explicitly selected files interaction, including a message-file option, for prepare-task. No upstream code or dependency copied; task validation and execution remain the existing Adaptive Inference contracts}
+}
+
+@misc{pythonArgparseTaskPreparation,
+  title = {Python 3.11 argparse documentation},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.11/library/argparse.html},
+  note = {Inspected 2026-11-01. Existing subcommands, mutually exclusive prompt options and repeated input arguments support task preparation without an additional CLI framework. Standard library API use; no implementation copied}
+}
+
 @misc{gufoNpuPrefillQualification,
   title = {Gufo XDNA2 prefill offload and whole-mode quality feedback},
   author = {{Gufo contributors}},

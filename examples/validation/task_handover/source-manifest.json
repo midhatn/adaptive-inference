@@ -1,0 +1,33 @@
+{
+  "enabled": false,
+  "files": {
+    "LICENSE-Hermes.txt": "e29dfaf6905a8d396a58ea4bd84ad27057756bbd9599b5bec0971ae34d2a2118",
+    "README.md": "c6501c336df8c4664a883b5c02707399c28e29370063f6be5018719ffd28049f",
+    "actions-only.template.private.json": "9997b073026c2bbdd8e29f0be7c5c0587adc89cba8db7d330b06daa09cc48c17",
+    "audit_first_inflight.py": "bd603ce5f59901de9b54773048a3ceceea112e2a3321548dc569ef1cf0627583",
+    "audit_handover.py": "4eea07461df0d8d28fc5daf5ff1ec19a14868736968c3b210ef65309598084b4",
+    "bindings.py": "d28f28a3a63bcffb394132f6d564a11a32db7a3826f600b5a7bb908019515534",
+    "bindings.template.private.json": "a7165fb9254084b4fbf222e32c58a7fe87169cd343289b26ac242db493795532",
+    "capture_binding.py": "9ae7292abcda53a19ab0b0e4a0bcc0a2f82e4e0b0443918f593e3e58a70616fd",
+    "checks.py": "78d63d1de72030c2c3f9eb49d2aa640f71430cf9992f9db2d787729b6d0369fa",
+    "cue_status.py": "3082ac478fd94abfc821e366029f433e02f3ffc5157113239c742f0d257fe795",
+    "evidence.py": "75810aba31ca0f05bd598df12283324de222a05d6db87fd6fe0d54a3603f7f0d",
+    "expiry_ready.py": "f3fd2b41f39c3927427b7ec78114e81669b8747c1e46a0c340568c03b395e06c",
+    "first_inflight.py": "1a4f6456475459eb842e718d600a6688f1794931b226ed54370d96f19fafb634",
+    "foreground.template.private.json": "79384bcca37ad19d955f44a6e3ba7fd8608b094f3d6699b2bbf46ab929c101ed",
+    "observe_handover.py": "6a47e2d38897bf44ad15da90c21d2f462346b3c831486191c335901fcc1076f5",
+    "path_lineage.py": "08422916b475ddd90b4afc046bdac5908889e8f689343586f8e28f3275f102b6",
+    "pre-resume-observation.template.private.json": "ddebf85156445b8b8fe2d777125c4af5b2cb81597424d6d7d48c16e13f8a9b7b",
+    "qpc.py": "d52fc9c724a192fd1e674135655a49308abe61b2a9d6a25c161c96301738b69c",
+    "qualify_handover.py": "a7ff2a73e9817bcb8b1575ea81e2d608c6239bb3ef0414383ebb8e96cd1f51f9",
+    "record_ui.py": "8c25c4e9901d8f20ee93b753b25b3b074987094e75cc272d6227c41c27c557b4",
+    "run_handover.py": "a70f627601f920973a27ac9f0c848e2c907be32b5b0f4eccf2ab79110b17cc3f",
+    "safe_wait.py": "c443846ef5116d3c37e9ed1cab8abdf839cf1f42a7634431274129dadcedf921",
+    "selected_source.py": "68364a90ea8ac777d3c8e29e58c3ad330a8c4bb393a76658c1548843887cf029",
+    "source-lineage.json": "423678590132986c8558eed4d93193f45035ba162b6d1779b83bc38040b86047",
+    "test_reproduction.py": "c0af70da1aa303ef7137ce0c776a056095b6c95dfcfc6899692c262c02a726b1",
+    "ui.template.private.json": "9997b073026c2bbdd8e29f0be7c5c0587adc89cba8db7d330b06daa09cc48c17"
+  },
+  "schema": "private.task-handover.harness-source.v1",
+  "scope": "Public fresh-run source closure with exact predicates and declared location-only adaptations; no new physical result."
+}

@@ -5,6 +5,11 @@
 [![CI](https://github.com/midhatn/adaptive-inference/actions/workflows/ci.yml/badge.svg)](https://github.com/midhatn/adaptive-inference/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0%20%2B%20MIT-blue)](LICENSE)
 
+**Continuing this project with an AI or a team?** Start with
+[AGENTS.md](AGENTS.md), the dated [continuation handoff](HANDOFF.md), and the
+[multi-agent workflow](docs/multi-agent-collaboration.md). They preserve the goal,
+current evidence, next work and coordination rules across tools and sessions.
+
 ## The goal: start your agent and leave it running
 
 You should be able to start your AI agent and keep using your computer normally: browse the internet, play a game, watch a video, or do your own work. The agent should adapt to your activity, make progress when resources are available, and back off when you need them. You should not have to manage competing model servers or repeatedly stop and restart the agent yourself.
@@ -17,7 +22,7 @@ That continuity must also survive closing the application or restarting the comp
 
 This is the long-term goal across engines such as Strata and llama.cpp, and agents such as Hermes and OpenClaw. Shared hardware has limits; the project aims to minimize interference through measured adaptation, rather than promise unlimited simultaneous work. See the [always-on vision and acceptance criteria](docs/always-on-controller.md).
 
-**Current status:** one complete Windows workflow now passes independent acceptance using the existing IQ3_S model, an explicitly owned Strata backend and installed Hermes. It detects real foreground interaction, releases and restores its backend, makes room for a checked GPU video encode, and finishes the agent's saved task after a worker restart. The [source-bound result](provenance/windows-handoff/controlled-11/README.md) includes the complete shutdown checks and retained unsuccessful attempts. This is a bounded qualification; persistent everyday operation, games and video playback, and computer-restart recovery are the next milestones. The [automatic handoff controller](docs/automatic-handoff.md), [resource waiting](docs/resource-waiting.md) and [durable demand](docs/durable-demand.md) build on the existing request queue, execution-time feedback and independently checked task results. Model weights and quality settings remain unchanged.
+**Accepted reference workflow:** one complete Windows workflow passes independent acceptance using the existing IQ3_S model, an explicitly owned Strata backend and installed Hermes. It detects real foreground interaction, releases and restores its backend, makes room for a checked GPU video encode, and finishes the agent's saved task after a worker restart. The [source-bound result](provenance/windows-handoff/controlled-11/README.md) includes the complete shutdown checks and retained unsuccessful attempts. This is a bounded qualification; persistent everyday operation, games and video playback, and computer-restart recovery are later milestones. The [automatic handoff controller](docs/automatic-handoff.md), [resource waiting](docs/resource-waiting.md) and [durable demand](docs/durable-demand.md) build on the existing request queue, execution-time feedback and independently checked task results. Model weights and quality settings remain unchanged.
 
 The [task-control component](docs/task-controls.md) saves Pause, Resume and Cancel requests, and a cooperating task owner acknowledges them at a safe checkpoint. It retains pending requests across owner replacement. The [installed Windows profile](docs/installed-desktop.md) connects these controls to the existing host, retained GUI and bounded Hermes report worker. It starts paused and uses explicit local interpreter, SDK and native-owner configuration. Its IQ3_S orders-report workflow has passed separate installed qualification. The [retained-command interface](docs/desktop-control-intent.md) retains one eligible user command during a background status check; its [source-bound successor result](provenance/desktop-control-intent/acceptance/README.md) includes actual GUI controls, task completion, worker replacement and normal shutdown.
 
@@ -28,6 +33,27 @@ authenticated transport, serialized listener, mailbox adapter and window-intent
 and progress contracts for that integration. Importing the library starts no
 GUI, agent or engine. The explicit `desktop` command composes those lifecycles
 using the [installed profile](docs/installed-desktop.md).
+
+**Latest development result:** the installed IQ3_S service completed a task
+after real foreground activity, safe resource-wait expiry and explicit
+continuation, then accepted and completed a separate task without restarting
+the controller. One normal Stop released its owned resources. The original
+99-check handover audit and separate foreground audit both passed in
+[case17](docs/evidence.md#case17-complete-foreground-continuation-and-two-task-handover).
+The inventory result was independently checked; the welcome task had format-only
+validation. The [accepted result and replay](provenance/task-handover/acceptance/README.md)
+and [fresh qualification workflow](examples/validation/task_handover/README.md)
+are preserved in this repository. The fresh workflow still requires actual
+installation records and external model assets. The
+[supported setup helper](examples/desktop/README.md) now creates the deployment
+profile and Start launcher from installed components. Its separate
+[startup/Stop check](docs/evidence.md#supported-desktop-setup-helper) now passes
+on the retained installation without loading the model. The
+[task contracts](docs/task-spec.md), [roadmap](PLAN.md) and
+[handoff](HANDOFF.md) explain the supported scope and remaining work.
+
+For the ordinary controls and one-time prerequisites, start with
+[Use the Windows reference workflow](docs/reference-workflow.md).
 
 This repository is the **canonical source of truth** for the implementation, contracts, documentation, tests and evidence. The portable package works independently of Strata or Hermes. Optional native integrations preserve pinned source baselines, patches and licenses locally; reproducing their source does not depend on an old PR or upstream repository remaining available. See the [source preservation contract](docs/source-of-truth.md).
 
@@ -81,6 +107,14 @@ The second command requires Git and a new output directory. It restores and veri
 
 ## What works
 
+For a new bounded file task, [prepare-task](docs/task-spec.md#prepare-your-own-task)
+takes an objective and explicitly selected files, copies the inputs and creates
+the task configuration automatically. The existing desktop and **New task**
+controls consume it. This authoring command does not start inference; the
+[ordinary reference guide](docs/reference-workflow.md) explains setup and use.
+The [desktop setup helper](examples/desktop/README.md) calculates deployment
+hashes and provides a reusable launcher with a task picker and fresh run folder.
+
 | Capability | Implementation |
 | --- | --- |
 | User/background scheduling | Bounded pending queue; stable arrival-offset ordering; one active upstream HTTP request |
@@ -122,7 +156,7 @@ The latest [complete handoff qualification](provenance/windows-handoff/controlle
 
 An earlier [IQ3_S parent/child file task](provenance/hermes-iq3-s/README.md) separately completed six model requests and five native file operations through the released gateway and optional routing plugin. The host-created child independently checked the parent report. Its exact source, cleanup and reproduction limits remain preserved; it is a distinct composition from the handoff qualification.
 
-Version 0.3.0 added general client routing and protected identity settings, with **110 core tests, 17 source-preservation checks and 12 task-boundary checks** at that revision. The current handoff implementation passes **174 core, 64 native-owner/host, 20 harness, 11 foreground, 17 preservation and 12 task-boundary tests** locally, plus the historical evidence-filter suites. Installed SDK fixtures and native host-schema checks are recorded separately in the [integration evidence](docs/evidence.md#generalized-client-and-host-integrations). These software tests run no inference model; the source-bound IQ3_S receipts supply the distinct hardware evidence.
+Version 0.3.0 added general client routing and protected identity settings, with **110 core tests, 17 source-preservation checks and 12 task-boundary checks** at that revision. An earlier handoff revision recorded **174 core, 64 native-owner/host, 20 harness, 11 foreground, 17 preservation and 12 task-boundary tests** locally, plus the historical evidence-filter suites. These are historical counts, not an aggregate for the current revision. Installed SDK fixtures, native host-schema checks and subsequent validation are recorded separately in the [integration evidence](docs/evidence.md#generalized-client-and-host-integrations). These software tests run no inference model; the source-bound IQ3_S receipts supply the distinct hardware evidence.
 
 The v0.2.0 durable-task foundation passed **95 software tests** across Windows, Linux and macOS on Python 3.11 and 3.12. Its runnable demonstration kills and restarts real worker processes, retains the original task and corrective feedback, and refuses automatic replay of an uncertain external action. These use deterministic generation/tool fixtures; installed-agent boot recovery remains future integration work.
 
@@ -133,6 +167,11 @@ The [evidence ledger](docs/evidence.md) links exact CI and model receipts, retai
 ## Research and contributions
 
 Research references and reuse decisions live in [docs/research.md](docs/research.md) and [REFERENCES.bib](REFERENCES.bib). [NOTICE](NOTICE) and `third_party/` preserve source attribution and licenses. [CITATION.cff](CITATION.cff) describes how to cite this project.
+
+The [Papers with Code assessment](docs/paperswithcode-assessment.md) records
+implementation audits and their practical fit: an optional offline timing-drift
+experiment, deferred native prefill interruption, and explicit limits on what
+catalog links or external benchmarks establish.
 
 See [portable policy setup](docs/portable-policies.md) for the optional memory gate and context-budget command, and [task survival](docs/task-survival.md) for durable continuation. Citations remain beside each reused mechanism, with licensed source references preserved locally. The [changelog](CHANGELOG.md) distinguishes release contents and acceptance boundaries.
 

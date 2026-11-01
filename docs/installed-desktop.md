@@ -7,15 +7,22 @@ still requires fresh foreground/capacity observations and the existing recovery
 dwell. Pause waits for a safe task boundary. Stop joins the retained worker,
 window, pipes and native resources before reporting a clean shutdown.
 
-This first profile runs the **orders-report task** with the existing **IQ3_S**
-model. It preserves context 65,536, output allowance 10,923, high reasoning with
+The retained default profile runs the **orders-report task** with the existing
+**IQ3_S** model. The current development source also accepts bounded
+[user file tasks and same-host New task](task-spec.md), with a separate
+[case17 installed result](evidence.md#case17-complete-foreground-continuation-and-two-task-handover).
+It preserves context 65,536, output allowance 10,923, high reasoning with
 an 8,192-token budget, the original report oracle and at most eight cumulative
 model requests. Each execution has a 900-second budget. After verified safe
 expiry, [Continue saved task](explicit-continuation.md) can explicitly authorize
 a successor in the same window; it does not reset the request allowance. Rejected report proposals
-use the existing feedback mechanism before a file effect. It is not yet an
-arbitrary-task launcher, general Hermes service installer or computer-reboot
-recovery service.
+use the existing feedback mechanism before a file effect. The file-task adapter
+supports its declared read/write capabilities; it is not a general Hermes
+service installer or computer-reboot recovery service. The ordinary task and
+New task steps are in the task guide. The
+[setup helper](../examples/desktop/README.md) generates the explicit profile and
+Start launcher from already installed components. A fresh-machine installer
+and broader daily-use qualification remain later deliveries.
 
 The product code reuses the previously qualified composition. A source promotion
 or fixture pass does not transfer real-process acceptance to a new installation.
@@ -64,6 +71,18 @@ Use `requirements.lock` for the host's dependency versions. Hermes dependencies
 remain its explicit existing installation; only canonical Adaptive Inference
 code must come from the regular wheel. The worker verifies package contents
 before loading that dependency directory and verifies origins again afterward.
+
+When replacing a development wheel that still has the same version number,
+pip may keep the older installed package. After installing the locked
+dependencies, explicitly reinstall the selected wheel into each chosen target
+interpreter with `python -m pip install --force-reinstall --no-deps <wheel>`.
+Use that interpreter's full path and verify the imported package origin and
+contents. This uses pip's documented
+[reinstallation option](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-force-reinstall);
+the task-preparation package check reproduced the same-version skip before
+confirming installation of the selected wheel. A version string alone is not
+proof that the new source was installed.
+
 The exact Hermes revision is
 `14e1e43a23761b369641208e204365cd6cb9399d`; the existing
 [offline source supplement](../integrations/hermes/current-source/README.md)
@@ -106,9 +125,14 @@ a model, weaken driver pins or claim native support for other HTTP engines.
 
 ## Explicit profile
 
-Create a local JSON file with these exact fields, replacing the example paths
-and the SHA-256 placeholders with the actual selected artifacts. There is one
-host interpreter field; it is also the GUI interpreter.
+Use the [setup helper](../examples/desktop/README.md) to select the installed
+components and calculate their hashes. It writes the same profile shown below
+and a reusable launcher. The helper and launch script travel in the repository
+and full source distribution; the runtime wheel is unchanged.
+
+For manual configuration, create a local JSON file with these exact fields,
+replacing the example paths and SHA-256 placeholders with the actual selected
+artifacts. There is one host interpreter field; it is also the GUI interpreter.
 
 ```json
 {

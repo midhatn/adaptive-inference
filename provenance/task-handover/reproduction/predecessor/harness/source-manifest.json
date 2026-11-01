@@ -1,0 +1,19 @@
+{
+  "files": {
+    "README.private.md": "198c2a7018e3d3a1152b818db36f60b7b41e57e986deabf27706d467aeb3586e",
+    "audit_handover.py": "4eea07461df0d8d28fc5daf5ff1ec19a14868736968c3b210ef65309598084b4",
+    "bindings.py": "d28f28a3a63bcffb394132f6d564a11a32db7a3826f600b5a7bb908019515534",
+    "checks.py": "78d63d1de72030c2c3f9eb49d2aa640f71430cf9992f9db2d787729b6d0369fa",
+    "evidence.py": "75810aba31ca0f05bd598df12283324de222a05d6db87fd6fe0d54a3603f7f0d",
+    "observe_handover.py": "6a47e2d38897bf44ad15da90c21d2f462346b3c831486191c335901fcc1076f5",
+    "qpc.py": "d52fc9c724a192fd1e674135655a49308abe61b2a9d6a25c161c96301738b69c",
+    "qualify_handover.py": "a7ff2a73e9817bcb8b1575ea81e2d608c6239bb3ef0414383ebb8e96cd1f51f9",
+    "run_handover.py": "a70f627601f920973a27ac9f0c848e2c907be32b5b0f4eccf2ab79110b17cc3f",
+    "safe_wait.py": "c443846ef5116d3c37e9ed1cab8abdf839cf1f42a7634431274129dadcedf921",
+    "selected_source.py": "68364a90ea8ac777d3c8e29e58c3ad330a8c4bb393a76658c1548843887cf029",
+    "ui.template.private.json": "9997b073026c2bbdd8e29f0be7c5c0587adc89cba8db7d330b06daa09cc48c17"
+  },
+  "predecessor_manifest_sha256": "27789eb7d9b57eee782c66d1ba31b392af504dd09b91cf1ab6ba1e92ff9685d8",
+  "schema": "private.task-handover.harness-source.v1",
+  "scope": "Author04: reviewed exact producer-form 900-second deadline check with finite numeric inputs and strict increase. Every other executable byte and all seven baseline files unchanged. No activation or new physical result."
+}

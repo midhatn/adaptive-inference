@@ -5,6 +5,7 @@ from dataclasses import asdict
 import itertools
 import json
 import unittest
+from unittest import mock
 
 from adaptive_inference.desktop import control_transport as ct, control_client as cc
 from adaptive_inference.control_mailbox import ControlNotRecorded
@@ -179,14 +180,20 @@ class ProtocolTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((await self.call(other))['error'],'stale_execution')
         self.assertEqual(self.runtime.selection_count,1)
     async def test_queued_old_control_is_rechecked_before_dispatch(self):
-        await self.host._serial.acquire()
         request=self.frame('pause',request_id='old')
-        task=asyncio.create_task(self.call(request))
-        await asyncio.sleep(.005)
-        self.runtime.selected=selected('new',1)
-        self.host._serial.release()
-        result=await task
-        self.assertEqual(result['error'],'stale_execution');self.assertEqual(self.runtime.commits,[])
+        # Hold dispatch until the bounded response proves this exact operation
+        # is retained; scheduler timing cannot turn the response into an error.
+        async with self.host._serial:
+            reply=await self.call(request)
+            self.assertEqual(reply,{'ok':True,'state':'pending','request_id':'old',
+                'recorded':None,'execution_id':'task','execution_generation':0})
+            operation=self.host._records['old']['task']
+            self.assertFalse(operation.done())
+            self.runtime.selected=selected('new',1)
+        with self.assertRaisesRegex(ct.Refused,'^stale_execution$'):
+            await asyncio.wait_for(asyncio.shield(operation),.5)
+        self.assertEqual(await self.call(request),{'ok':False,'error':'stale_execution'})
+        self.assertEqual(self.runtime.commits,[])
         self.assertEqual(self.host.lifecycle()['unknown_mutations'],0)
     async def test_inflight_old_control_reply_stamped_old_never_activates_new(self):
         self.runtime.release=asyncio.Event();request=self.frame('resume',request_id='old')
@@ -218,6 +225,29 @@ class ProtocolTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse((await self.call(request))['ok'])
         self.assertEqual((await self.call(request))['continuation']['phase'],'selected')
         self.assertFalse((await self.host.aclose(timeout=.5))['closed'])
+    async def test_completed_failure_at_response_deadline_is_not_a_successful_grant_reply(self):
+        loop=asyncio.get_running_loop();clock=loop.time;offset=0.0
+        original=self.runtime.continue_selected
+        self.runtime.transition_error=True
+        async def failure_at_deadline(value,*,intent_valid):
+            nonlocal offset
+            # Deterministic ordering: the operation fails as the request's
+            # response deadline passes, without sleeps or cancelling that task.
+            offset+=self.host.io_timeout*2
+            return await original(value,intent_valid=intent_valid)
+        self.runtime.continue_selected=failure_at_deadline
+        request=self.frame('continue')
+        with mock.patch.object(loop,'time',side_effect=lambda:clock()+offset):
+            reply=await self.call(request)
+        operation=self.host._records['one']['task']
+        self.assertTrue(operation.done());self.assertIsInstance(operation.exception(),OSError)
+        self.assertEqual(reply,{'ok':False,'error':'runtime_error'})
+        self.assertEqual(self.host._records['one']['outcome'],'unknown')
+        self.assertIn('continuation_failed',self.host.lifecycle()['faults'])
+        self.assertEqual((await self.call(request))['continuation']['phase'],'selected')
+        self.assertEqual(self.runtime.selection_count,1);self.assertEqual(self.runtime.launch_count,0)
+        self.assertEqual(self.runtime.resumes,[])
+        self.assertFalse((await self.host.aclose(timeout=.5))['closed'])
     async def test_failed_transition_refuses_new_task_controls_but_keeps_service_stop(self):
         self.runtime.transition_error=True;request=self.frame('continue')
         await self.call(request)
@@ -239,9 +269,26 @@ class ProtocolTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.runtime.selection_count,0)
     async def test_typed_refusal_is_scoped_generic_error_is_two_fields(self):
         self.runtime.return_refusal=True
-        reply=await self.call(self.frame('resume'))
+        request=self.frame('resume')
+        # A bounded response may precede the retained operation's refusal.
+        # Queue it explicitly and await that exact operation before schema checks.
+        async with self.host._serial:
+            reply=await self.call(request)
+            self.assertEqual(reply,{'ok':True,'state':'pending','request_id':'one',
+                'recorded':None,'execution_id':'task','execution_generation':0})
+            operation=self.host._records['one']['task']
+            self.assertFalse(operation.done())
+        refusal=await asyncio.wait_for(asyncio.shield(operation),.5)
+        self.assertEqual(refusal,{'request_id':'one','command':'resume',
+            'reason':'execution_budget_expired','recorded':False})
+        # Ordinary retries reobserve the runtime. Supply this completed retained
+        # task only for the wire-schema check, without another scheduling race.
+        with mock.patch.object(self.host,'_retain_control',return_value=operation) as retain:
+            reply=await self.call(request)
+            retain.assert_called_once_with(request)
         self.assertEqual(set(reply),{'ok','execution_id','execution_generation','refusal'})
         self.assertIs(reply['refusal']['recorded'],False)
+        self.assertEqual(self.runtime.commits,[])
         error=await self.call(self.frame('pause',request_id='stale',execution_id='old'))
         self.assertEqual(error,{'ok':False,'error':'stale_execution'})
     async def test_id_and_mutation_capacities_not_reset_by_continuation(self):

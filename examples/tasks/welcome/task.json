@@ -1,0 +1,28 @@
+{
+  "budget": {
+    "execution_seconds": 900,
+    "max_admission_attempts": 32,
+    "max_attempts": 8,
+    "max_requests": 8
+  },
+  "inputs": [
+    {
+      "bytes": 157,
+      "name": "brief.txt",
+      "sha256": "695e9ef02b930db03a65015fe50c1e5e62201d3b7b22603883c531d636f57815"
+    }
+  ],
+  "outputs": [
+    {
+      "format": "text",
+      "max_chars": 1000,
+      "name": "welcome.txt",
+      "required": true
+    }
+  ],
+  "prompt": "Read brief.txt using read_file. Write a friendly, concise welcome for new volunteers to welcome.txt using write_file. Include the opening time and where to get the first assignment. Use only read_file and write_file. Finish after the write succeeds.",
+  "schema": "adaptive.task-spec.v1",
+  "validation": {
+    "validator": null
+  }
+}

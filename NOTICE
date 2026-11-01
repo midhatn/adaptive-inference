@@ -3,6 +3,17 @@ Copyright 2026 Midhat Nashar and contributors
 
 Original project code is provided under Apache License 2.0.
 
+The optional offline latency-drift example retains selected River 0.26.1 test
+statements under BSD-3-Clause, Copyright (c) 2020, the river developers.
+Its exact source revision, original license and scope are recorded in
+examples/validation/latency_drift/source-lock.json and LICENSE.river.
+These example/test sources are included in the complete source distribution,
+not the runtime wheel. The River notice is included in both archives for
+attribution. River itself is an optional separately installed dependency.
+The archives therefore have different source-license contents; no single
+shared SPDX expression is asserted in their package metadata. This does not
+change the licenses of original project code or retained upstream sources.
+
 src/adaptive_inference/desktop contains the original Apache-2.0 control, GUI,
 foreground, native-lifecycle and bounded Hermes consumer components promoted
 with canonical imports. provenance/installed-desktop retains their source

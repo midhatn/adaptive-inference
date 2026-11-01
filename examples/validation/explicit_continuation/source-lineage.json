@@ -2,12 +2,15 @@
   "accepted_private_manifest_sha256": "7be5e034385ffc75919a19193bf909e6c39075e65218ce5e0cc99a40e687204b",
   "accepted_private_terminal_audit_sha256": "f0ba3661c4f19ddf9cfdac703f64f77bcfa7703442d0f52abe8c30573472fb3b",
   "changed_function": "bindings.baseline",
+  "deadline_arithmetic_correction": {
+    "path": "provenance/explicit-continuation/deadline-arithmetic/source-lineage.json",
+    "sha256": "f7a5157a1ccdd7900631a58872021e21482d062773dd9b16105c764228c3bead"
+  },
   "exact_workflow_files": [
     "run_continue.py",
     "qualify_continue.py",
     "observe_continue.py",
     "audit_continue.py",
-    "checks.py",
     "bindings.template.private.json"
   ],
   "fixture_path_substitution": {
@@ -45,5 +48,5 @@
     "https://docs.python.org/3.11/library/unittest.html#test-discovery"
   ],
   "schema": "adaptive.continuation.public-harness-lineage.v1",
-  "scope": "Public path adaptation; source/CPU equivalence only, no new live trial"
+  "scope": "Public path adaptation plus prospective producer-form deadline check; CPU/source validation only, no new live trial"
 }

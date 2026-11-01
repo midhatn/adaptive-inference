@@ -1,0 +1,33 @@
+{
+  "budget": {
+    "execution_seconds": 900,
+    "max_admission_attempts": 32,
+    "max_attempts": 8,
+    "max_requests": 8
+  },
+  "inputs": [
+    {
+      "bytes": 70,
+      "name": "inventory.csv",
+      "sha256": "9eeecbcb7b3c56e9a5fb7df518e856279cac287c0b2abe8b9bd9568d1bf9bc40"
+    }
+  ],
+  "outputs": [
+    {
+      "format": "json",
+      "max_chars": 4096,
+      "name": "replenishment.json",
+      "required": true
+    }
+  ],
+  "prompt": "Read inventory.csv using read_file. For each row in its original order, compute packs as max(0, ceil((target-on_hand)/pack_size)), and units as packs times pack_size. Write replenishment.json using write_file with exactly reorder (a list of item, packs, units objects) and total_units (sum of units). Use integers. Use only read_file and write_file. Finish after the write succeeds.",
+  "schema": "adaptive.task-spec.v1",
+  "validation": {
+    "validator": {
+      "expected": {
+        "replenishment.json": "e9effa1c968bfcf88d7398a6e7c7698de4d34d97e73c32f171d8dc0ca4dc3c7f"
+      },
+      "id": "json-equals.v1"
+    }
+  }
+}

@@ -12,6 +12,7 @@ import unittest
 from unittest import mock
 
 from aiohttp import ClientConnectionError
+from historical_native_sources import historical_native_source
 
 HERE=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('arithmetic_harness_v5',HERE/'run_validation.py')
@@ -208,7 +209,7 @@ class ArithmeticFeedbackTests(unittest.IsolatedAsyncioTestCase):
         for row in manifest:
             self.assertEqual(hashlib.sha256((previous/row['path']).read_bytes()).hexdigest(),row['predecessor_sha256'])
             if row['path']!='run_validation.py':
-                self.assertEqual((HERE/row['path']).read_bytes(),(previous/row['path']).read_bytes())
+                self.assertEqual(historical_native_source(row['path']).read_bytes(),(previous/row['path']).read_bytes())
 
 
 if __name__=='__main__': unittest.main(verbosity=2)

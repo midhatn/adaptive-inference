@@ -22,7 +22,7 @@ SUBPROCESS_SHA256 = '4f08d583a95b415762d888fff499c19103040d4b7027e25a73d46c7e3d7
 # relative to the installed adaptive_inference package, not the checkout.
 CHILD_SOURCES = frozenset(('__init__.py', 'desktop/__init__.py',
     'desktop/run_gui.py', 'desktop/gui_session.py', 'desktop/startup_pipe.py',
-    'desktop/window_marker.py', 'desktop/control_client.py'))
+    'desktop/window_marker.py', 'desktop/control_client.py', 'task_spec.py', 'feedback.py'))
 
 
 @dataclass(frozen=True)

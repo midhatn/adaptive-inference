@@ -62,7 +62,8 @@ class ExpiryCompositionTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_active_or_unknown_expiry_remains_failure(self):
         c=self.case
-        with mock.patch.object(c,'_paused_expiry_candidate',new=mock.AsyncMock(return_value=False)):
+        with mock.patch.object(c,'_paused_expiry_candidate',new=mock.AsyncMock(return_value=False)), \
+                mock.patch.object(c,'_admission_wait_expiry_candidate',new=mock.AsyncMock(return_value=False)):
             with self.assertRaises(TimeoutError):await c.interact()
         self.assertFalse(c.result['execution_expired']);c.stop_binding._verify_exit.assert_not_called()
 

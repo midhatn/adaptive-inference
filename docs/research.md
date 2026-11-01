@@ -11,11 +11,38 @@ keeps approximate cross-model transfer unenabled, and records existing native
 and LMCache mechanisms to reuse. This is design integration, not a new runtime
 benchmark or a reproduced paper result.
 
+The 26 October [AKV assessment](cache-state-research.md#akv-agent-directed-cache-operations)
+adds agent-directed cache relief as a later capability-gated option. It records
+the inspected implementation, current hybrid-model compatibility gap and the
+need to preserve cache-operation history. No AKV runtime integration is enabled.
+
+The same day's [Papers with Code assessment](paperswithcode-assessment.md)
+uses the supplied catalog to find implementations, then checks their primary
+sources. It selects River's existing Page-Hinkley API for an isolated offline
+timing-drift comparison, defers FlowPrefill behind native compatibility gates,
+and records one mismatched catalog implementation link that was rejected.
+These decisions preserve the current controller and model baseline.
+
 The [precision assessment](precision-research.md), added 26 October 2026,
 identifies the mixed precision already present in the retained IQ3_S engine
 and an existing optional FP16 expert-prompt path to evaluate after the current
 continuation milestone. It separates the user-reported GPU environment change
 and dense matrix measurements from unmeasured application performance.
+
+## Durable contributor and AI collaboration
+
+On 30 October 2026, the [collaboration workflow](multi-agent-collaboration.md)
+adopted the [AGENTS.md entry-point convention](https://agents.md/),
+[Git worktree isolation](https://git-scm.com/docs/git-worktree) for source edits,
+and [existing GitHub issue/PR assignment](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/assigning-issues-and-pull-requests-to-other-github-users)
+for human ownership. [Long-running agent harness research](https://www.anthropic.com/research/effective-harnesses-for-long-running-agents)
+informs bounded incremental tasks, explicit acceptance and durable handoffs.
+These are documented coordination practices; no upstream code or new orchestration
+runtime was copied. The guide explains them locally and includes reusable task
+and return records, so an external link is not required to follow the workflow.
+Separate source trees do not reserve shared hardware. Instructions are context,
+not enforcement or a promise of automatic loading by every AI client. Sources
+and the exact scope of reuse are recorded in REFERENCES.bib.
 
 The [heterogeneous-inference qualification guide](npu-qualification.md), added
 28 October 2026, uses public Gufo and Phoenix counterevidence to define

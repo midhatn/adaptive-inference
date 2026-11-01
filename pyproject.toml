@@ -8,8 +8,10 @@ version = "0.3.0"
 description = "Adaptive resource coordination and durable task continuation for local AI agents"
 readme = "README.md"
 requires-python = ">=3.11"
-license = "Apache-2.0 AND MIT"
-license-files = ["LICENSE", "NOTICE", "third_party/*/LICENSE", "third_party/*/NOTICE"]
+# The complete source archive and runtime wheel contain different licensed code.
+# Omit a shared expression; LICENSE, NOTICE and the retained upstream notices
+# describe their scopes. See https://packaging.python.org/en/latest/specifications/pyproject-toml/#license
+license-files = ["LICENSE", "NOTICE", "third_party/*/LICENSE", "third_party/*/NOTICE", "examples/validation/latency_drift/LICENSE.river"]
 authors = [{name = "Midhat Nashar and contributors"}]
 dependencies = ["aiohttp==3.14.5", "psutil==7.2.2"]
 keywords = ["inference", "scheduling", "agents", "llama-cpp", "adaptive"]
