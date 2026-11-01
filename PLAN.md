@@ -97,6 +97,15 @@ does not change product deadlines, child watchdogs, IQ3_S or task allowances.
 Complete its exact-revision checks before merging the source and packaging the
 reference alpha. Do not repeat the accepted physical scenario for this change.
 
+The next original Windows job passed those continuation checks, then exposed a
+different snapshot-fixture completion guard: a four-second thread join was
+shorter than an individual allowed SQLite wait. Preserve that failure and its
+unknown delayed thread/operation. Give the retained joins the same standard
+30-second test completion allowance, keep the transaction/50-millisecond
+non-commit assertions and product settings intact, and validate the existing
+snapshot module. Collect the current CI outcomes before publishing another
+correction, so independent failures can be addressed in one bounded follow-up.
+
 The reference can be delivered as a narrow alpha before the full daily-use
 milestone. Keep the existing IQ3_S quality, budgets, task-effect rules and
 acceptance standards. Validate meaningful changes and reuse completed evidence

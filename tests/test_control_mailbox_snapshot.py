@@ -69,6 +69,9 @@ class SnapshotTests(DataFixture, unittest.TestCase):
 
     def test_writer_cannot_commit_between_two_snapshot_reads(self):
         self.submit('resume', 'resume')
+        # Completion guard for real SQLite/thread work, not a latency assertion.
+        # Follow CPython's SHORT_TIMEOUT; retain the separate 50 ms read check.
+        thread_join_timeout_s = 30
         entered, release, writer_started, writer_done = (threading.Event() for _ in range(4))
         snapshots, failures = [], []
         actual_read = self.store._read
@@ -110,10 +113,12 @@ class SnapshotTests(DataFixture, unittest.TestCase):
                 self.assertFalse(writer_done.wait(.05))
             finally:
                 release.set()
-                reader_thread.join(4)
+                reader_thread.join(thread_join_timeout_s)
                 if writer_thread.ident is not None:
-                    writer_thread.join(4)
-        self.assertFalse(reader_thread.is_alive() or writer_thread.is_alive())
+                    writer_thread.join(thread_join_timeout_s)
+        self.assertFalse(reader_thread.is_alive() or writer_thread.is_alive(),
+            f'Completion guard expired: reader_alive={reader_thread.is_alive()}, '
+            f'writer_alive={writer_thread.is_alive()}, failures={failures!r}')
         self.assertEqual(failures, [])
         before = snapshots[0]
         self.assertEqual(len(before.requests), 1)
