@@ -46,6 +46,16 @@ interrupted runs will remain identified as such.
 
 ## Milestones and dependency order
 
+**Reference alpha delivered — 1 November 2026:** [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1)
+is published from `57f673f8e934e275bc2bd51e85d434dc7025bc9a`, after all 14
+original hosted jobs, final source/wheel verification and actual merge-tree
+verification passed. All five uploaded assets and the public tag were checked.
+The following delivery-follow-up paragraphs preserve the earlier sequence;
+their completed gates are not instructions to rebuild or repeat qualification.
+The next functional work is the prepared [M3 video comparison](#m3--protect-actual-desktop-activity):
+no-AI baseline, matched adaptive inventory run and following baseline. This
+delivery does not complete physical desktop, tool/media or reboot acceptance.
+
 **Current M2 gate — 1 November 2026:** case17 passed the complete bounded
 foreground, resource-wait continuation and two-task handover scenario. The
 original primary audit passed all 99 checks, and the separate foreground and

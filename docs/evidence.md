@@ -49,6 +49,28 @@ ambiguous evidence stays incomplete. Caller-owned handle attestations are
 reported separately from saved child-wait evidence. This checker always leaves
 video and whole-M3 qualification false: those require the physical comparison.
 
+## Reference alpha publication
+
+[v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1)
+was published on 1 November 2026 at tested source
+`57f673f8e934e275bc2bd51e85d434dc7025bc9a`. Both original workflows passed all
+seven jobs ([push](https://github.com/midhatn/adaptive-inference/actions/runs/41273495800),
+[PR](https://github.com/midhatn/adaptive-inference/actions/runs/41273498549)),
+with no reruns or cancellations. PR #28 merged at
+`e9d17b7dfadba27b3b572f2ce04a7d1b41d2e506`; its tree exactly matches the tested
+candidate. A fresh standard isolated source build and the existing verifier
+matched all 1,191 source files and 61 runtime modules, including metadata and
+license notices. The previously validated runtime wheel is unchanged.
+
+All five uploaded assets matched local sizes and SHA-256 digests before
+publication and again in the published release. The public tag points to the
+tested source. The attached manifest, checksums and release validation preserve
+the old failures and distinguish each local, hosted and installed evidence scope.
+Source archive SHA-256: `ddbf4c3c5b8a63e8103c891bfb0577e21f8cf80bf4a33ab672df6e168fa5d058`.
+Wheel SHA-256: `953da66c0dc0840b0eddf5d6d66e158a628a67e5f29540af35b421bb45557fa9`.
+This delivery does not add a physical video, autonomous media, NPU-speedup or
+reboot qualification, and does not silently upgrade the recorded installation.
+
 ## Reference delivery checks
 
 **1 November 2026:** setup predecessor `a9eff31bf4e2257723e34d8b30188dbf8b8efb81`
