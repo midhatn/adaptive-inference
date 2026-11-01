@@ -2,6 +2,32 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Durable reboot-budget source integration
+
+The [versioned budget implementation](reboot-budget.md) preserves the original
+task expiration across a clean Stop and changed Windows boot. It reuses fixed
+expiration from Temporal and the existing owned TaskStore transaction. The
+worker still requires the supplied deadline to equal its committed checkpoint;
+reopening does not silently reset the allowance.
+
+The [source-bound record](../provenance/installed-reopen/reboot-budget/validation-2026-11-01.json)
+retains **123 combined behavior checks**, **104 source-preservation checks** and
+the complete **1,394-test suite**, which passed in 517.802 seconds on full Windows
+CPython 3.11.9. A controlled changed-boot case preserved the confirmed read in
+the first resumed request and completed with one output write and three requests
+total. Actual worker-entry checks covered initial persistence and committed-boot
+validation through inert SDK edges. Explicit Continue retained the expired policy
+only in its sealed predecessor. Nine exact predecessor files and eight prior
+manifests preserve the earlier source evidence.
+
+The initial new test-lock cleanup error and the worker fixture's invalid legacy
+task ID remain recorded as failed attempts; both corrections were confined to
+tests. Independent source/evidence review found no material issue. Package and
+hosted checks belong to the exact candidate PR. These source results do not
+establish installed SDK behavior, a physical Windows restart, desktop performance
+or full M5 completion. The accepted installed results below retain their original
+runtime identity.
+
 ## Installed later-task application restart
 
 **1 November 2026, installed source `b35b631aca9ec37da9955903b87463201a6b3630`:**

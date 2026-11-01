@@ -963,3 +963,17 @@
   url = {https://docs.python.org/3.11/library/stdtypes.html#str.replace},
   note = {Inspected 2026-11-01 with https://docs.python.org/3.11/library/ast.html#ast.parse after the clock mutation fixture replaced a call suffix and produced controller.pass. The prospective test-only correction selects the complete current call, keeping the original assertion that guard removal is rejected. No upstream implementation copied or runtime change}
 }
+
+@misc{temporalFixedExecutionExpiry,
+  author = {{Temporal Technologies and contributors}},
+  title = {Persisted timers and original workflow execution expiration},
+  url = {https://docs.temporal.io/workflow-execution/timers-delays},
+  note = {Refreshed 2026-11-01 with Temporal server revision e0233ff6658fcab7b4e7ecc1c16af40baf629b78, common/util.go expiration creation and service/history/workflow/retry.go expiration inheritance. MIT server and documentation; reuse of fixed-expiry and durable-state policy for clean Windows reboot recovery, with no copied implementation or Temporal dependency. This reference does not establish physical reboot qualification}
+}
+
+@misc{windowsUtcBudgetBoundary,
+  author = {{Microsoft}},
+  title = {Windows system time and high-resolution interval measurements},
+  url = {https://learn.microsoft.com/en-us/windows/win32/sysinfo/system-time},
+  note = {Refreshed 2026-11-01 with acquiring-high-resolution-time-stamps and the precise UTC API. QPC remains the current-boot execution clock; fixed UTC expiry supports a changed-boot budget under a valid system clock. UTC can move backward or forward, so detectable rollback must refuse automatic continuation and a saved remaining cap does not prove arbitrary offline duration. Documentation attribution only, no copied Windows code}
+}

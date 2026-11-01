@@ -56,7 +56,7 @@ def preparation_inputs(root=None):
     root = ROOT if root is None else root
     return ([root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py']
             + reopen_inputs(root) + fixture_stop_inputs(root) + integration_inputs(root)
-            + handover_inputs(root) + tool_capabilities_inputs(root))
+            + handover_inputs(root) + tool_capabilities_inputs(root) + reboot_budget_inputs(root))
 
 
 def preparation_predecessor(relative, data, root=None):
@@ -352,7 +352,7 @@ def restore_handover(tree, relative, root=None):
     row = handover_record(root)['files'][source]
     if fingerprint(tree) != row['successor_ast_sha256']:
         return tree
-    data = (root / source).read_bytes()
+    data = reboot_budget_predecessor(source, (root / source).read_bytes(), root)
     if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
         raise AssertionError('Changed complete handover-reopen source: ' + relative)
     return ast.parse(handover_predecessor(source, data, root))
@@ -383,6 +383,7 @@ def tool_capabilities_inputs(root=None):
 
 def tool_capabilities_predecessor(relative, data, root=None):
     """Reverse only reviewed complete source; preserve unknown bytes for refusal."""
+    data = reboot_budget_predecessor(relative, data, root)
     root = ROOT if root is None else root
     if relative not in TOOL_CAPABILITIES_INPUTS or not (root / TOOL_CAPABILITIES / 'source-lineage.json').exists():
         return data
@@ -402,7 +403,7 @@ def tool_capabilities_predecessor(relative, data, root=None):
 
 
 def tool_capabilities_runtime_view(current, root=None):
-    result = dict(current)
+    result = reboot_budget_runtime_view(current, root)
     for name in TOOL_CAPABILITIES_RUNTIME:
         if name in result:
             result[name] = tool_capabilities_predecessor('src/adaptive_inference/' + name, result[name], root)
@@ -410,6 +411,7 @@ def tool_capabilities_runtime_view(current, root=None):
 
 
 def restore_tool_capabilities(tree, relative, root=None):
+    tree = restore_reboot_budget(tree, relative, root)
     root = ROOT if root is None else root
     if relative not in TOOL_CAPABILITIES_RUNTIME or not (root / TOOL_CAPABILITIES / 'source-lineage.json').exists():
         return tree
@@ -417,7 +419,87 @@ def restore_tool_capabilities(tree, relative, root=None):
     row = tool_capabilities_record(root)['files'][source]
     if fingerprint(tree) != row['successor_ast_sha256']:
         return tree
-    data = (root / source).read_bytes()
+    data = reboot_budget_predecessor(source, (root / source).read_bytes(), root)
     if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
         raise AssertionError('Changed complete tool-capability source: ' + relative)
     return ast.parse(tool_capabilities_predecessor(source, data, root))
+
+
+# Versioned reboot allowance is a new contract, not a renewal of historical runs.
+REBOOT_BUDGET = 'provenance/installed-reopen/reboot-budget'
+REBOOT_BUDGET_RUNTIME = ('execution_clock.py', 'desktop/saved_tasks.py',
+    'desktop/composition.py', 'desktop/task_handover.py', 'desktop/hermes/run_recovery.py',
+    'desktop/hermes/service_stop.py', 'desktop/hermes/continuation.py')
+REBOOT_BUDGET_ADDITION = 'desktop/execution_budget.py'
+REBOOT_BUDGET_INPUTS = {'src/adaptive_inference/' + name for name in REBOOT_BUDGET_RUNTIME} | {
+    'tests/continuation_timeout_lineage.py', 'tests/test_task_preparation_lineage.py'}
+
+
+def reboot_budget_record(root=None):
+    root = ROOT if root is None else root
+    return json.loads((root / REBOOT_BUDGET / 'source-lineage.json').read_bytes())
+
+
+def reboot_budget_inputs(root=None):
+    root = ROOT if root is None else root
+    path = root / REBOOT_BUDGET / 'source-lineage.json'
+    if not path.exists():
+        return []
+    return [path, *(root / REBOOT_BUDGET / 'predecessor' / relative
+                    for relative in sorted(REBOOT_BUDGET_INPUTS))]
+
+
+def reboot_budget_predecessor(relative, data, root=None):
+    """Restore only exact reviewed bytes; unknown changes reach old validators."""
+    root = ROOT if root is None else root
+    if relative not in REBOOT_BUDGET_INPUTS or not (root / REBOOT_BUDGET / 'source-lineage.json').exists():
+        return data
+    row = reboot_budget_record(root)['files'][relative]
+    expected = REBOOT_BUDGET + '/predecessor/' + relative
+    if row['predecessor_source'] != expected:
+        raise AssertionError('Changed reboot-budget predecessor path')
+    before = (root / expected).read_bytes()
+    if (hashlib.sha256(before).hexdigest() != row['predecessor_sha256']
+            or fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']):
+        raise AssertionError('Changed reboot-budget predecessor identity')
+    if hashlib.sha256(data).hexdigest() == row['successor_sha256']:
+        if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:
+            raise AssertionError('Changed reboot-budget successor AST')
+        return before
+    return data
+
+
+def reboot_budget_runtime_view(current, root=None):
+    """Remove only the exact addition before the unchanged historical closures."""
+    root = ROOT if root is None else root
+    result = dict(current)
+    if not (root / REBOOT_BUDGET / 'source-lineage.json').exists():
+        return result
+    addition = reboot_budget_record(root)['addition']
+    if addition['source'] != 'src/adaptive_inference/' + REBOOT_BUDGET_ADDITION:
+        raise AssertionError('Changed reboot-budget addition path')
+    if REBOOT_BUDGET_ADDITION not in result:
+        raise AssertionError('Changed reboot-budget runtime closure: ' + REBOOT_BUDGET_ADDITION)
+    data = result[REBOOT_BUDGET_ADDITION]
+    if (hashlib.sha256(data).hexdigest() != addition['sha256']
+            or fingerprint(ast.parse(data)) != addition['ast_sha256']):
+        raise AssertionError('Changed reboot-budget runtime source: ' + REBOOT_BUDGET_ADDITION)
+    del result[REBOOT_BUDGET_ADDITION]
+    for name in REBOOT_BUDGET_RUNTIME:
+        if name in result:
+            result[name] = reboot_budget_predecessor('src/adaptive_inference/' + name, result[name], root)
+    return result
+
+
+def restore_reboot_budget(tree, relative, root=None):
+    root = ROOT if root is None else root
+    if relative not in REBOOT_BUDGET_RUNTIME or not (root / REBOOT_BUDGET / 'source-lineage.json').exists():
+        return tree
+    source = 'src/adaptive_inference/' + relative
+    row = reboot_budget_record(root)['files'][source]
+    if fingerprint(tree) != row['successor_ast_sha256']:
+        return tree
+    data = (root / source).read_bytes()
+    if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
+        raise AssertionError('Changed complete reboot-budget source: ' + relative)
+    return ast.parse(reboot_budget_predecessor(source, data, root))

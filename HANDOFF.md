@@ -69,7 +69,7 @@ expected. The [source-bound record](provenance/installed-reopen/handover-tasks/R
 separates these checks from the accepted initial-task physical trial. The complete
 combined suite passed 1,359 tests in 413.619 seconds. Package checks passed for
 1,244 source files/62 runtime modules; the original hosted runs passed all 14
-jobs and 12 distribution checks on `50232cf`. PR #33 remains draft. The first
+jobs and 12 distribution checks on `50232cf`. These are predecessor checks. The first
 installed A-to-B attempt stopped normally but failed its closed checker because
 of an admission JSON digest mismatch in that checker. The
 [failed attempt](provenance/installed-reopen/handover-tasks/first-installed-attempt-2026-11-01.json)
@@ -96,10 +96,23 @@ result without work or changes to the eight B files, eight A files or admission
 database. All three app parents joined normally; both observers' bounded
 post-shutdown connection-error exits remain recorded. Earlier attempts remain
 closed and failed. Do not replay the accepted third trial.
-Next, finish publication of PR #33 without changing the qualified runtime, then
-reuse the recorded lifecycle/budget research to design durable allowance across
-Windows boots before a separate clean-reboot trial. Existing tasks must not
-receive invented expiry metadata or renewed budgets.
+PR #33 merged at `3aad3146a5902ad564f830cbe3d6e046a2261a8d` with exactly the
+reviewed `c7d6493` tree, after all 14 original hosted jobs and 12 distribution
+checks passed. The publication preserved all 62 qualified runtime modules.
+Its original post-merge run also passed all seven jobs and six distribution
+checks: [run 41344255013](https://github.com/midhatn/adaptive-inference/actions/runs/41344255013).
+
+The next bounded change is [durable allowance across Windows boots](docs/reboot-budget.md).
+It reuses fixed expiration and existing owned checkpoint transactions. The
+working integration preserves a confirmed read through a controlled changed-boot
+Stop/reopen/resume test and one output write. This is source-level evidence;
+123 combined behavior checks, 104 source-preservation checks and the complete
+1,394-test suite passed. See the [source-bound validation record](provenance/installed-reopen/reboot-budget/validation-2026-11-01.json).
+Package and hosted publication checks are tracked separately in the candidate
+PR; installed-worker and physical reboot gates remain pending.
+Explicit Continue preserves the old budget in its sealed predecessor and does
+not copy that execution-specific allowance into its successor. Existing tasks
+must not receive invented expiry metadata or renewed budgets.
 M3's capture timing/video attribution, broader useful tools, computer reboot and
 daily-use qualification remain open.
 
@@ -108,7 +121,7 @@ daily-use qualification remain open.
 | Stable main starting point | Commit `8396676dcc55ffbbf09e0ff640db9238519a07ea`, including merged PR #31/#32 and their earlier prerequisites. Verify current `main`; this is a dated anchor, not a claim that it remains HEAD. |
 | Released reference and active work | [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1) is published at tested source `57f673f8e934e275bc2bd51e85d434dc7025bc9a`; PR #28's merged tree matches it exactly. PR #29's measurement preparation merged after its exact-head checks. The first adaptive diagnostic and following control are closed; their scoped results and unmet comparison gates are recorded in the [evidence ledger](docs/evidence.md#first-adaptive-video-diagnostic). |
 | Installed source used for the latest experiments | Later-task M5 used `b35b631aca9ec37da9955903b87463201a6b3630`; initial-task M5 used `6ac601546daf32d96e38b6689a5818e4cc8dafa8`; the earlier M3 video sequence used `7306a53085ddc31d53d2ba50e91975c80cfc0014`. All preserved IQ3_S and quality. Source, package, actual-SDK and physical evidence remain separate levels. |
-| Current work | Publish the independently accepted later-task application-restart result in PR #33, retaining the qualified runtime and both failed predecessors. Then implement durable budget accounting for a separate clean computer-restart path. M3's inert window-switch rehearsal and broader useful-tool/daily-use gates remain open. |
+| Current work | PR #33 is merged with its reviewed tree and accepted later-task result. Validate the working durable budget integration for a separate clean computer-restart path, preserving the earlier runtime and failed predecessors. M3's inert window-switch rehearsal and broader useful-tool/daily-use gates remain open. |
 | Latest accepted single-task result | The installed same-boot application restart preserved one input read, the task/native session and original deadline; three calls total completed the correct 23-unit answer with one physical write. A third launch viewed the result without additional calls or changes to the eight canonical files. All three app parents joined normally; bounded observer shutdown errors remain retained. See the source-bound M5 record above. |
 | Preserved M2 recovery result | Case17 passed both original audits: 99 primary recovery/handover checks plus the foreground/lineage supplement. Its correct inventory result survived safe expiry and one Continue; a separate welcome task completed before one normal Stop. Six calls produced two physical writes. Welcome has format-only acceptance. Full M2 is broader than that run. |
 | Preserved limits and failures | Original quality, 900-second execution budgets, 2,700-second outer bound and task accounting remain unchanged. Cases14/15/16 keep their original failed outcomes. Case17 retains the rejected file-picker input and 30-second operating-target misses; neither repeated a task control nor violated the strict foreground gate. |

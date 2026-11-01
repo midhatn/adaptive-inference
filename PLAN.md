@@ -955,12 +955,27 @@ parents joined normally. Independent closed review accepted this same-boot
 scope; both bounded observer shutdown errors and prior failures are retained.
 The model, quality, prompt and budgets were unchanged. Do not replay this trial.
 
-**Next lifecycle step:** publish the qualified runtime and evidence, then design
+**Next lifecycle step:** PR #33 is merged at `3aad3146` with its exact reviewed
+tree after all 14 original hosted jobs and 12 distribution checks passed. Implement
 the original durable budget policy for changed Windows boots before a separate
 actual reboot trial. Reuse existing persisted-expiration and owned transaction
 patterns; keep original elapsed-time limits and consumed work across boots.
+The [bounded implementation plan](docs/reboot-budget.md) reuses Temporal's fixed
+execution-expiry policy and the existing owned TaskStore transaction. Keep the
+worker's exact committed-deadline check and use a versioned boot transition;
+same-boot reopening must never rebase a deadline.
 Start with clean Stop and fresh paused Resume. Crash/uncertain-effect recovery
 remains a separate case, and old tasks without expiry metadata stay unchanged.
+The first integrated controlled-boot test preserves a confirmed read and finishes
+with one write after fresh paused reopening. Explicit Continue must retain the
+expired policy only in its sealed predecessor; its separately granted successor
+remains outside this first reboot qualification. Complete source/package/installed
+gates before a physical reboot. A test-only lock cleanup error was corrected;
+the original failed affected-suite result remains retained. The combined
+integration passed 123 behavior checks, 104 source-preservation checks and all
+1,394 tests in the complete suite. Close package/current-head CI, fresh isolated
+installation and actual pinned-SDK smoke before the separately coordinated
+IQ3_S reboot trial. Preserve the existing installed result and its source.
 Research existing lifecycle/budget implementations first. Do not replay the
 accepted application trial or silently reset a saved monotonic deadline. M3's
 inert window-switch rehearsal and M4 useful-tool/media gates remain open; this

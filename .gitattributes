@@ -67,3 +67,6 @@ provenance/task-handover/** -text whitespace=cr-at-eol
 provenance/task-handover/reproduction/predecessor/harness/baseline/audit_expiry.py -whitespace
 # Preserve the reference bytes exercised by the admission-watchdog SDK validation.
 examples/validation/hermes_admission_activity/sdk-references.json -text whitespace=cr-at-eol
+# Preserve the exact reboot-budget manifest and predecessor bytes reviewed locally.
+# Reuse Git's no-conversion rule: https://git-scm.com/docs/gitattributes#_text
+provenance/installed-reopen/reboot-budget/** -text whitespace=cr-at-eol

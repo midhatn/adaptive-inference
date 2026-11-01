@@ -22,6 +22,7 @@ from adaptive_inference.control_mailbox import (
 )
 from adaptive_inference.demand import DemandIdentity, NAMESPACE, _record, _utc
 from adaptive_inference.execution_clock import CLOCK_ID, execution_now
+from adaptive_inference.desktop.execution_budget import BUDGET, BudgetError, validate_budget
 from adaptive_inference.desktop.hermes.recovery import digest, verify_tool_rows, verify_validation_rows
 
 AUTHORITY = 'adaptive_inference.continuation_authority.v1'
@@ -31,7 +32,7 @@ PENDING_DISPOSITION = 'adaptive.pending-request-supersession.v1'
 STATE_REQUIRED = frozenset(('status', 'messages', 'attempts', 'feedback', 'output', 'phase',
     'session_id', 'native_history', 'tools', 'requests', 'admission_attempts', 'admission_deferrals',
     'pending_request', 'deadline_monotonic', 'deadline_clock', NAMESPACE))
-STATE_OPTIONAL = frozenset(('validation_rejections', 'completion_candidate', ACKS, EXECUTION_OUTCOME))
+STATE_OPTIONAL = frozenset(('validation_rejections', 'completion_candidate', ACKS, EXECUTION_OUTCOME, BUDGET))
 SCOPE_FIELDS = frozenset(('plan_sha256', 'session_id', 'native_db', 'work_dir',
                           'effect_receipts', 'wire_observations', 'gateway'))
 WIRE_FIELDS = frozenset(('phase', 'url', 'method', 'class', 'model', 'quality', 'body_sha256',
@@ -70,6 +71,13 @@ def safe_state(cp, *, sealed):
             'Execution is not a complete safe checkpoint')
     require(state['deadline_clock'] == CLOCK_ID and cp.metadata.get('deadline_clock') == CLOCK_ID,
             'Execution clock changed')
+    if BUDGET in state:
+        try:
+            budget = validate_budget(state[BUDGET])
+        except BudgetError as error:
+            raise ReconciliationRequired('Invalid execution-budget record') from error
+        require(budget['episode']['deadline'] == state['deadline_monotonic'],
+                'Execution-budget deadline changed')
     for field, maximum in (('attempts', 8), ('requests', 8), ('admission_attempts', 32)):
         require(type(state[field]) is int and 0 <= state[field] <= maximum, 'Cumulative counter malformed')
     require(type(state['admission_deferrals']) is list and
@@ -324,6 +332,9 @@ class ContinuationAuthority:
                 # exact superseded provider request remains in the predecessor.
                 state.update(phase='ready', pending_request=None)
             del state[EXECUTION_OUTCOME]; state.pop(ACKS, None)
+            # Continue grants a distinct execution. Preserve the expired policy
+            # only in its sealed predecessor; this grant is not reboot-qualified.
+            state.pop(BUDGET, None)
             state['deadline_monotonic'] = grant['deadline_monotonic']
             state[NAMESPACE] = {**payload['demand_identity'], 'state': 'paused',
                 'updated_at_utc': payload['demand_identity']['arrived_at_utc'],
@@ -390,6 +401,7 @@ class ContinuationAuthority:
                 'request_sha256': marker['pending_request_sha256']}, 'Pending request disposition changed')
             expected = deepcopy(predecessor.state)
             expected.pop(EXECUTION_OUTCOME); expected.pop(ACKS, None)
+            expected.pop(BUDGET, None)
             expected.update(phase='ready', pending_request=None, deadline_monotonic=grant['deadline_monotonic'])
             expected[NAMESPACE] = {**payload['demand_identity'], 'state': 'paused',
                 'updated_at_utc': payload['demand_identity']['arrived_at_utc'],
