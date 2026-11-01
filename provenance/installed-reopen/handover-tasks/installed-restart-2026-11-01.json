@@ -1,0 +1,255 @@
+{
+  "schema": "adaptive.installed-reopen.handover-tasks.application-restart.v1",
+  "recorded_date": "2026-11-01",
+  "result": "accepted_at_stated_scope",
+  "scope": "Ordinary same-boot application restart of a later task created through New task in an already running controller, using the installed IQ3_S profile. Initial task A, later task B and result viewing remain distinct.",
+  "source": {
+    "revision": "b35b631aca9ec37da9955903b87463201a6b3630",
+    "worker_sha256": "237311ba527f9bbe36f4bf90fe99cca28f1d242caef863b610783e10ffa63018",
+    "installed_hermes_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "model_quantization": "IQ3_S",
+    "model_id": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+    "model_assets_and_quality_unchanged": true,
+    "quality": {
+      "max_tokens": 10923,
+      "reasoning_effort": "high",
+      "reasoning_budget_tokens": 8192,
+      "experimental_speed_projection": false,
+      "strata_tune": {
+        "pcie_frac": 0.37
+      }
+    },
+    "host_python": "3.11.9",
+    "worker_python": "3.14.7"
+  },
+  "prior_gates": {
+    "package": {
+      "passed": true,
+      "source_files": 1258,
+      "runtime_modules": 62,
+      "wheel_sha256": "cddcf53fc6ee8c5b7731b711fb7abb91769896dcb728ce5f712a5e491dac9d05",
+      "receipt_sha256": "e15f458e8e122cd03be885c3fcf535c1e3c5d93494a4a2f87510e032acf64357"
+    },
+    "original_hosted_checks": {
+      "passed": true,
+      "source_revision": "b35b631aca9ec37da9955903b87463201a6b3630",
+      "push_run_id": 41338608374,
+      "pull_request_run_id": 41338612079,
+      "jobs_passed": 14,
+      "distribution_checks_passed": 12,
+      "receipt_sha256": "5fe9faf313a9eb62b6f9cb49710c10c291bd55c05150f41bcda938f24cd95563"
+    },
+    "installation": {
+      "passed": true,
+      "modules_verified_per_role": 62,
+      "receipt_sha256": "7f07d1d67898038011fb26e79bc439da5b6c9a1f97715d504dbd0fe2a7e6eca4",
+      "independent_review_sha256": "54d9bf7dab5abc00842f13bb887073781ed9a1915ff1b9f42dc1fedf9236a209"
+    },
+    "scripted_sdk_record": "../tool-capabilities/installed-sdk-validation-2026-11-01.json"
+  },
+  "ordinary_flow": [
+    "Complete the initial welcome task A, then select New task and the unchanged inventory task B in the same application.",
+    "Run B until its input read is confirmed; obtain a safe admission wait and use ordinary Stop engine.",
+    "Start the application again, select B through Open saved task, observe it initially paused, then Resume once.",
+    "Complete the original inventory objective, stop normally, and open B once more for read-only result viewing."
+  ],
+  "progress_preservation": {
+    "same_canonical_later_task": true,
+    "original_prompt_and_task_spec_preserved": true,
+    "task_spec_sha256": "de9f5f153e4331e9dc4b77c8f68ece17bfe9ba7c10a1b53e4c40bf855ff23238",
+    "original_task_budget_seconds": 900,
+    "shared_outer_budget_seconds": 2700,
+    "outer_elapsed_through_completed_view_seconds": 765.672,
+    "original_deadline_preserved": true,
+    "deadline_clock": "windows-qpc-seconds-v1",
+    "remaining_seconds_at_closed_stop": 743.158869,
+    "stopped_state": {
+      "revision": 19,
+      "phase": "waiting_admission",
+      "confirmed_reads": 1,
+      "requests": 1,
+      "attempts": 1,
+      "admission_attempts": 1,
+      "physical_writes": 0,
+      "owner_released": true,
+      "pending_operation": false,
+      "reconciliation_required": false
+    },
+    "completed_state": {
+      "revision": 38,
+      "requests": 3,
+      "attempts": 3,
+      "admission_attempts": 3
+    },
+    "provider_calls": {
+      "before_stop": 1,
+      "after_reopen": 2,
+      "total_for_B": 3
+    },
+    "saved_read_in_first_resumed_serialized_request": true,
+    "request_budget_not_renewed": true,
+    "deadline_not_renewed": true
+  },
+  "output": {
+    "artifact": "replenishment.json",
+    "reorder_units": {
+      "pens": 8,
+      "paper": 15,
+      "clips": 0
+    },
+    "total_units": 23,
+    "physical_writes": 1,
+    "input_sha256": "9eeecbcb7b3c56e9a5fb7df518e856279cac287c0b2abe8b9bd9568d1bf9bc40",
+    "output_sha256": "48de85ae982b910b3f88139528b182c45fdce62c0e005428e0aea2d49c7d1af9"
+  },
+  "completed_result_view": {
+    "read_only": true,
+    "provider_calls": 0,
+    "new_worker": false,
+    "new_effects": false,
+    "later_B_canonical_files_unchanged_during_view": 8,
+    "initial_A_canonical_files_unchanged_through_later_apps": 8,
+    "admission_bytes_unchanged_during_view": true,
+    "initial_A_acceptance_scope": "Format-only welcome task; not an additional inventory semantic result."
+  },
+  "closure": {
+    "application_parents": [
+      {
+        "role": "first-app",
+        "exit_code": 0,
+        "retained_handle_exited": true,
+        "normal_parent_exit": true,
+        "timed_out": false,
+        "emergency_termination_attempted": false,
+        "supervision_errors": []
+      },
+      {
+        "role": "reopened-app",
+        "exit_code": 0,
+        "retained_handle_exited": true,
+        "normal_parent_exit": true,
+        "timed_out": false,
+        "emergency_termination_attempted": false,
+        "supervision_errors": []
+      },
+      {
+        "role": "completed-view",
+        "exit_code": 0,
+        "retained_handle_exited": true,
+        "normal_parent_exit": true,
+        "timed_out": false,
+        "emergency_termination_attempted": false,
+        "supervision_errors": []
+      }
+    ],
+    "task_prepare_worker_exits": [
+      {
+        "role": "initial_A_prepare",
+        "exit_code": 0
+      },
+      {
+        "role": "initial_A_worker",
+        "exit_code": 0
+      },
+      {
+        "role": "later_B_prepare",
+        "exit_code": 0
+      },
+      {
+        "role": "later_B_worker_safe_stop",
+        "exit_code": 4
+      },
+      {
+        "role": "reopened_B_worker",
+        "exit_code": 0
+      }
+    ],
+    "task_child_handles_joined": true,
+    "expected_safe_stop_worker_exit_code": 4,
+    "observers": [
+      {
+        "role": "first-app",
+        "exit_code": 1,
+        "ending": "three_connection_errors_after_response following application shutdown",
+        "terminal_path_present": true,
+        "activity_errors": 0,
+        "sources_unchanged": true,
+        "scope": "Bounded shutdown ending; not a successful zero-exit observer run."
+      },
+      {
+        "role": "reopened-app",
+        "exit_code": 1,
+        "ending": "three_connection_errors_after_response following application shutdown",
+        "terminal_path_present": true,
+        "activity_errors": 0,
+        "sources_unchanged": true,
+        "scope": "Bounded shutdown ending; not a successful zero-exit observer run."
+      }
+    ],
+    "native_release_and_selected_listener_cleanup_confirmed": true,
+    "native_release_scope": "Recorded final native owner per application phase and selected listeners; not every intermediate owner or an OS-wide process proof.",
+    "optional_B_identity_observation": {
+      "passed": true,
+      "scope": "Fresh query-handle observation only; not the product retained launch handle or containing-job proof.",
+      "receipt_sha256": "b8786ae68553e4df29549abd20b55406b410499541eabca8a75aaef79edeab2d"
+    }
+  },
+  "evidence_sha256": {
+    "plan": "c1c0a5e9c84a228fe3c9c46a26334404ea9a930ef153fea40c0e442817196822",
+    "closed_stop": "56331a52df64f6b8e181c63f1f08c0b643ef66af99b753088105e31ea67a8ded",
+    "closed_cross_phase_audit": "695eb9e1d22520df57e6084e86c5312cc15f295cde8d52e719b8539122f6dfdb",
+    "independent_closed_review": "4fa707eb9cdbaefb56303f4d29a2a745eb2606195dd32e1faee590d96cde492d",
+    "operator_through_reopened_resume": "017586bad64972f3ff3f838f62c069b8a30c8c3f8955b894625a51d97b832bea",
+    "operator_closed_observations": "e0f7433150a50db31338b26970ff6cb87c8537247ebfc8d7d5bcc47c7f30d739",
+    "phases": {
+      "first-app": {
+        "phase": "b46644f4fa420669dfda53fae9d394cd84afbf5d8c4776eb7892c71774805f34",
+        "supervisor": "fc6cc09d3a154f26048e356b0c0877f125b7e53fc1581d81b33b27bad27e5571",
+        "result": "9b7536041bb7f7544843e7b9366e4120a18ad837ab0272a99e9f2a19a8f9aabb"
+      },
+      "reopened-app": {
+        "phase": "968ca2ebd4a56ab5ee169acce45c63df689a1a4239acf15acc2304b06c95eb00",
+        "supervisor": "1ad8da5f5cce9aa743f43a2951f5a9dc6f7f25bd481b0b8c03e12ff8d9920b88",
+        "result": "ce6cb8834a40f291bfeb64314da42ad75db8227b706c73af04555c02b9b29235"
+      },
+      "completed-view": {
+        "phase": "f1f743611ef773911488df7d8ee608b69671606af04a3edada7911b152a2d6b7",
+        "supervisor": "53b19457c269e0eb4bc8284bdb4063cfe5426e945c6c2d8887b6ab54d8fc69f3",
+        "result": "54e6fd394fc66c30c6435486abcc1e8ad54d32b2e1109bd75315f4f3edb3c54b"
+      }
+    }
+  },
+  "limits": [
+    "Same Windows boot and ordinary application Stop/reopen only; no computer reboot, crash, sleep or hibernation result.",
+    "The closed auditor covers recorded task/native/artifact evidence. Visible picker, controls and result observations come from the coordinator; these are not independent GUI observations.",
+    "No pre-stop raw wire snapshot was retained. Prior message continuity is bound through canonical generation history and the saved read in the resumed serialized request, not a claimed byte-identical old wire file.",
+    "The first application top-level ready/retained identity belongs to initial task A. Later task B has its own canonical evidence; its optional creation-time query does not replace retained-handle proof.",
+    "Foreground activity was used to reach a safe admission wait. No video measurement was started, and no foreground quality, resource-performance or full M3/M5 qualification is claimed.",
+    "Both observer exit-1 outcomes remain recorded. No timeout, emergency kill, budget reset or additional Continue is relabeled as normal completion.",
+    "Raw prompts/transcripts, machine paths, local process and tool identifiers, and absolute QPC values remain private."
+  ],
+  "earlier_attempts": {
+    "first": "first-installed-attempt-2026-11-01.json",
+    "second": "second-installed-attempt-2026-11-01.json",
+    "status": "Both remain unsuccessful and unqualified; neither was replayed or relabeled."
+  },
+  "related_records": {
+    "later_task_source": "source-lineage.json",
+    "tool_capability_correction": "../tool-capabilities/source-lineage.json",
+    "accepted_initial_task_restart": "../application-restart-2026-11-01.json"
+  },
+  "reused_methods": [
+    {
+      "method": "Existing same-boot saved-task discovery, ownership and paused reopen",
+      "source": "https://github.com/midhatn/adaptive-inference/blob/b35b631aca9ec37da9955903b87463201a6b3630/src/adaptive_inference/desktop/saved_tasks.py"
+    },
+    {
+      "method": "Existing later-task admission/handover and canonical task history",
+      "source": "https://github.com/midhatn/adaptive-inference/blob/b35b631aca9ec37da9955903b87463201a6b3630/src/adaptive_inference/desktop/task_handover.py"
+    },
+    {
+      "method": "Existing recovery, original budget and native session checks",
+      "source": "https://github.com/midhatn/adaptive-inference/blob/b35b631aca9ec37da9955903b87463201a6b3630/src/adaptive_inference/desktop/hermes/run_recovery.py"
+    }
+  ]
+}

@@ -50,3 +50,13 @@ source review found no material blocker. The [complete suite](integration-valida
 passed 1,369 tests after a test-only complete-call mutation correction. The first
 suite's syntax error and its two-check correction remain recorded. Package,
 hosted, actual-SDK and installed-model gates remain separate.
+
+Those later gates passed at source `b35b631`: package verification, all 14
+original hosted jobs/12 distribution checks and fresh installation preceded
+the [actual pinned SDK fixture](installed-sdk-validation-2026-11-01.json).
+Its four scripted responses exercised durable rejection feedback and one
+corrected write using only the advertised read/write functions. The independent
+[physical later-task trial](../handover-tasks/installed-restart-2026-11-01.json)
+then qualified ordinary same-boot Stop/reopen and read-only completed viewing
+with IQ3_S. Each record retains its own inputs, joins and limitations; the
+earlier failed attempts and source-only evidence remain unchanged.

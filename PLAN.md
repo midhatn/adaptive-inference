@@ -942,14 +942,25 @@ responses. Keep model, quality, budgets, effect tracking and uncertainty checks
 unchanged. The correction passed 35 behavior checks, 80 source checks and the
 complete 1,369-test suite; a test-only mutation correction and the failed first
 suite are retained in the [integration record](provenance/installed-reopen/tool-capabilities/integration-validation-2026-11-01.json).
-Complete the changed package/hosted gates and a fresh isolated
-installation before another physical trial. Then qualify a later task with the
-same IQ3_S profile. Require a saved read before safe Stop,
-normal closure, paused reopening of that same later task, preserved deadline
-and counters, correct remaining work, one physical write and read-only result
-viewing. Do not use an already completed task as unfinished recovery evidence.
-Then design the original durable budget policy for changed Windows boots before
-a separate actual reboot trial.
+**Later-task path accepted, 1 November:** corrected source `b35b631` passed
+package verification, all 14 original hosted jobs/12 distribution checks, a
+fresh installation and the [actual pinned SDK correction fixture](provenance/installed-reopen/tool-capabilities/installed-sdk-validation-2026-11-01.json).
+The separate [IQ3_S application trial](provenance/installed-reopen/handover-tasks/installed-restart-2026-11-01.json)
+then completed A and created B through ordinary New task. B's confirmed read
+survived safe Stop; a fresh paused app continued the same task with its original
+deadline and counters. Three provider calls total, two after reopening,
+produced one correct 23-unit write. Completed-result viewing made no call or
+write and changed none of the checked A/B/admission bytes. All three app
+parents joined normally. Independent closed review accepted this same-boot
+scope; both bounded observer shutdown errors and prior failures are retained.
+The model, quality, prompt and budgets were unchanged. Do not replay this trial.
+
+**Next lifecycle step:** publish the qualified runtime and evidence, then design
+the original durable budget policy for changed Windows boots before a separate
+actual reboot trial. Reuse existing persisted-expiration and owned transaction
+patterns; keep original elapsed-time limits and consumed work across boots.
+Start with clean Stop and fresh paused Resume. Crash/uncertain-effect recovery
+remains a separate case, and old tasks without expiry metadata stay unchanged.
 Research existing lifecycle/budget implementations first. Do not replay the
 accepted application trial or silently reset a saved monotonic deadline. M3's
 inert window-switch rehearsal and M4 useful-tool/media gates remain open; this
@@ -990,8 +1001,8 @@ Integration with PR #32's fixture fixes passed 83 affected checks, all 1,352
 local tests, complete package verification and all 14 original head jobs/12
 distribution checks. PR #31 merged at `8396676dcc55ffbbf09e0ff640db9238519a07ea`
 with the exact reviewed tree; all 62 runtime modules match the physically tested
-source. The later-task extension changes two modules and needs its own installed
-qualification.
+source. The later-task extension and supported-tool correction have their own
+installed qualification above; neither result broadens the earlier source claim.
 
 This first increment requires a matching original boot/profile/package context
 recorded when the task was created. Closed-app time consumes its saved budget;

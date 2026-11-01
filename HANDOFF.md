@@ -84,9 +84,22 @@ The correction uses Hermes' existing custom toolset API, verifies the advertised
 capabilities, and checks native failure before output acceptance. It passed 35
 behavior checks, 80 source checks and the [complete 1,369-test suite](provenance/installed-reopen/tool-capabilities/integration-validation-2026-11-01.json).
 The first full-suite mutation-fixture failure and its two-check correction remain
-retained. Complete package/hosted and actual-SDK gates before a new IQ3_S trial;
-both consumed attempts remain closed. No later-task restart qualification is
-claimed yet.
+retained. The corrected source `b35b631aca9ec37da9955903b87463201a6b3630`
+subsequently passed package verification, all 14 original hosted jobs and 12
+distribution checks, fresh installation, and the [actual pinned SDK fixture](provenance/installed-reopen/tool-capabilities/installed-sdk-validation-2026-11-01.json).
+The fresh [later-task IQ3_S trial](provenance/installed-reopen/handover-tasks/installed-restart-2026-11-01.json)
+also passed independent review: A completed, ordinary New task created B, one
+confirmed B read survived safe Stop, and a new paused application resumed that
+same B within its original 900-second deadline. Three model calls total, two
+after reopening, produced one correct 23-unit write. A third launch viewed the
+result without work or changes to the eight B files, eight A files or admission
+database. All three app parents joined normally; both observers' bounded
+post-shutdown connection-error exits remain recorded. Earlier attempts remain
+closed and failed. Do not replay the accepted third trial.
+Next, finish publication of PR #33 without changing the qualified runtime, then
+reuse the recorded lifecycle/budget research to design durable allowance across
+Windows boots before a separate clean-reboot trial. Existing tasks must not
+receive invented expiry metadata or renewed budgets.
 M3's capture timing/video attribution, broader useful tools, computer reboot and
 daily-use qualification remain open.
 
@@ -94,13 +107,13 @@ daily-use qualification remain open.
 | --- | --- |
 | Stable main starting point | Commit `8396676dcc55ffbbf09e0ff640db9238519a07ea`, including merged PR #31/#32 and their earlier prerequisites. Verify current `main`; this is a dated anchor, not a claim that it remains HEAD. |
 | Released reference and active work | [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1) is published at tested source `57f673f8e934e275bc2bd51e85d434dc7025bc9a`; PR #28's merged tree matches it exactly. PR #29's measurement preparation merged after its exact-head checks. The first adaptive diagnostic and following control are closed; their scoped results and unmet comparison gates are recorded in the [evidence ledger](docs/evidence.md#first-adaptive-video-diagnostic). |
-| Installed source used for the latest experiments | M5 used `6ac601546daf32d96e38b6689a5818e4cc8dafa8`; the earlier M3 video sequence used `7306a53085ddc31d53d2ba50e91975c80cfc0014`. Both preserved IQ3_S and quality. Source, package, controlled-clock SDK and physical evidence are separate levels. |
-| Current work | Package and qualify the corrected advertised capabilities and failure reporting, then repeat later-task lifecycle qualification in a fresh session. The correction passed the complete 1,369-test suite; package/hosted/actual-SDK/physical gates remain separate. The predecessor `50232cf` retains its own earlier checks and failed physical attempts. The accepted initial-task restart merged in PR #31. M3's inert window-switch rehearsal and broader useful-tool/reboot/daily-use gates remain open. |
+| Installed source used for the latest experiments | Later-task M5 used `b35b631aca9ec37da9955903b87463201a6b3630`; initial-task M5 used `6ac601546daf32d96e38b6689a5818e4cc8dafa8`; the earlier M3 video sequence used `7306a53085ddc31d53d2ba50e91975c80cfc0014`. All preserved IQ3_S and quality. Source, package, actual-SDK and physical evidence remain separate levels. |
+| Current work | Publish the independently accepted later-task application-restart result in PR #33, retaining the qualified runtime and both failed predecessors. Then implement durable budget accounting for a separate clean computer-restart path. M3's inert window-switch rehearsal and broader useful-tool/daily-use gates remain open. |
 | Latest accepted single-task result | The installed same-boot application restart preserved one input read, the task/native session and original deadline; three calls total completed the correct 23-unit answer with one physical write. A third launch viewed the result without additional calls or changes to the eight canonical files. All three app parents joined normally; bounded observer shutdown errors remain retained. See the source-bound M5 record above. |
 | Preserved M2 recovery result | Case17 passed both original audits: 99 primary recovery/handover checks plus the foreground/lineage supplement. Its correct inventory result survived safe expiry and one Continue; a separate welcome task completed before one normal Stop. Six calls produced two physical writes. Welcome has format-only acceptance. Full M2 is broader than that run. |
 | Preserved limits and failures | Original quality, 900-second execution budgets, 2,700-second outer bound and task accounting remain unchanged. Cases14/15/16 keep their original failed outcomes. Case17 retains the rejected file-picker input and 30-second operating-target misses; neither repeated a task control nor violated the strict foreground gate. |
 | Foreground evidence | Case17 retained 25 real document actions, 24 wholly preseal, maximum adjacent interval 54.680872 seconds and preseal tail 37.453106 seconds. The original supplement passed onset, continuous hold and saved-read lineage; the postseal action is excluded from coverage. This is not a desktop-performance or GPU-preemption measurement. |
-| Next experiment | Follow the [revised sequence](PLAN.md#m3--protect-actual-desktop-activity): rehearse ordinary foreground switching without a model/capture before consuming another video comparison, then follow the separately recorded later-task lifecycle qualification. The accepted initial-task application path is merged. The latest before/adaptive/after drops were 33/10,801, 30/10,799 and 33/10,800 at the same actual playback viewport. The adaptive capture missed the end; physical video attribution remains unknown. Preserve all prior controls and failures. |
+| Next experiment | The later-task application path is now accepted; do not repeat it. For M5, first implement and validate durable budget accounting before a clean reboot trial. Separately follow the [M3 sequence](PLAN.md#m3--protect-actual-desktop-activity): rehearse ordinary foreground switching without a model/capture before another video comparison. Latest before/adaptive/after drops were 33/10,801, 30/10,799 and 33/10,800 at the same viewport; the adaptive capture missed the end, so physical video attribution remains unknown. Preserve prior controls and failures. |
 | Latest release validation | Corrected source `57f673f` passed all 14 original hosted jobs, final archive/runtime verification and merge-tree verification. All five uploaded assets and the tag were verified at publication. The 48-check watchdog and 21-check refusal corrections retain their own local scope; earlier failed runs remain failed. |
 | M3 publication | [PR #29](https://github.com/midhatn/adaptive-inference/pull/29) merged at `f6c0da1` with the tested `3136e35` tree. Its original 14 head jobs and seven post-merge jobs passed, including portable archive checks. Earlier archive/fixture failures remain retained; these preparation checks do not requalify the installed runtime. |
 | Diagnostic publication and test correction | [PR #30](https://github.com/midhatn/adaptive-inference/pull/30) merged at `c348398` with the tested `72ac717` tree after 14 head jobs and seven post-merge jobs passed. Its original `fd4d483` pair retains 13 passes and one Windows SQLite concurrency-fixture failure. The [bounded correction](docs/evidence.md#sqlite-concurrency-fixture-ownership) keeps test threads in a retained child and joins before cleanup; 18 focused checks passed. Runtime, models and physical records are unchanged. |

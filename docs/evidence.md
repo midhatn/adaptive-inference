@@ -2,6 +2,44 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Installed later-task application restart
+
+**1 November 2026, installed source `b35b631aca9ec37da9955903b87463201a6b3630`:**
+the [independently accepted trial](../provenance/installed-reopen/handover-tasks/installed-restart-2026-11-01.json)
+extends application reopening to a task created through **New task** in an
+already running controller. The same IQ3_S model and quality were preserved.
+This is a separate result from the initial-task trial below and the two failed
+later-task attempts; none of those records is replaced or relabeled.
+
+The welcome task A completed, then ordinary New task created inventory B.
+After B's first request read its input, actual Chrome foreground activity held
+the next request. Normal Stop saved that read with no output write, no unresolved
+operation or owner, and about 743 seconds remaining from the original 900-second
+allowance. A new application selected the same B, started paused and accepted
+one Resume. Its first resumed request contained the exact saved read.
+
+B completed with three requests/attempts/admission attempts total, including
+two provider calls after reopening. Its original deadline, task and native
+conversation remained intact. Exactly one physical write produced the checked
+answer: pens 8, paper 15, clips 0, total 23 units. A third ordinary launch showed
+the completed answer and file reference with no worker/provider call. The eight
+checked canonical B files, eight A files and admission database remained unchanged.
+
+All three application parents joined normally. The safe-Stop worker exited 4
+as intended; the other four preparation/worker children exited 0. Both observers
+ended with exit 1 after three post-shutdown connection errors; they had zero
+activity-reading errors and unchanged sources. These bounded observer failures
+are retained separately from the normal owned cleanup. Independent closed
+review accepted the result without replaying a helper or workload.
+
+Before installation, this source passed 1,369 local tests, complete package
+verification and all 14 original hosted jobs/12 distribution checks. Both
+installed interpreter roles matched all 62 runtime modules. The actual-SDK
+scripted test below remains separate from this physical model result.
+This qualifies same-boot application reopening for the exercised later task;
+it does not qualify computer reboot, M3 desktop/video performance, every task,
+or the full M5 milestone. Follow the [reproduction sequence](saved-task-reopening.md#reproduce-the-bounded-application-restart-check).
+
 ## Installed application restart
 
 **1 November 2026, installed source `6ac601546daf32d96e38b6689a5818e4cc8dafa8`:**
@@ -168,6 +206,27 @@ test-process exit. No historical manifest or runtime code changed. The fresh
 then passed **1,369 tests in 430.480 seconds**, with unchanged inputs and a normal
 retained child exit. Package, hosted, actual-SDK and physical qualification are
 separate gates; the first full suite remains failed.
+
+### Installed Hermes SDK: durable correction feedback
+
+The [installed SDK record](../provenance/installed-reopen/tool-capabilities/installed-sdk-validation-2026-11-01.json)
+binds source `b35b631`, pinned Hermes `14e1e43` and a scripted provider. All four
+serialized requests exposed exactly `read_file` and `write_file`, matching the
+durable request definitions. This checks supported function names and dispatch
+eligibility, not complete parameter-schema equivalence.
+
+After a confirmed input read, an incorrect 19-unit/4,800-cent write was rejected
+before dispatch. Its exact feedback reached native history and the next request
+before the corrected generation. One physical write then produced the correct
+17-unit/4,350-cent report. The original prompt, quality, eight-request ceiling
+and one original deadline were preserved; both retained children joined with
+exit 0. Independent closed review found unchanged canonical files.
+
+This is actual-SDK correction-feedback evidence with scripted responses, not a
+model-reasoning result. The custom-toolset API and its pinned sources are cited
+above and in the record. Arbitrary unsupported-tool retries remain unqualified;
+the existing native-history and effect checks were not relaxed. The physical
+later-task result has its own record at the top of this ledger.
 
 ## Ordinary saved-task reopening
 

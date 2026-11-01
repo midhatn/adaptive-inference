@@ -36,9 +36,11 @@ locations, deduplicates task roots and inspects at most 500 plans; selecting a
 label does not authorize execution. Older tasks without their original recovery
 context are not retrofitted. This is not a complete task browser.
 
-The later-task extension has [component and source-preservation validation](../provenance/installed-reopen/handover-tasks/README.md).
-Its installed IQ3_S trial is still required. The physical result below belongs
-to the initial-task source identified in its record.
+The later-task extension has [component and source-preservation validation](../provenance/installed-reopen/handover-tasks/README.md)
+and its own [accepted installed IQ3_S trial](../provenance/installed-reopen/handover-tasks/installed-restart-2026-11-01.json)
+at `b35b631`. That trial preserved the saved read, original deadline and consumed
+counters, completed one correct 23-unit write, and viewed the result without
+another worker/model call. The initial-task result retains its original source.
 
 ## Current scope
 
@@ -110,6 +112,16 @@ source/package identity with the result. This repository retains the code and
 sanitized findings; private machine records/model assets are not a public
 replay bundle. A different installation earns its own result. Preserve a failed
 or expired attempt rather than using Continue to renew its budget for this test.
+
+To exercise the later-task path, first run the repository's
+[welcome task](../examples/tasks/welcome/task.json) and its inputs to completion.
+In that same controller choose **New task**, then the inventory task and inputs.
+Confirm the new task starts paused, select **Resume** once, then continue steps
+2–5 above for that task.
+Keep the first task's evidence separate; its welcome-output check is format-only.
+Also verify the first task and admission records remain unchanged while the
+completed inventory result is viewed. This is application reopening on the same
+boot; it does not substitute for a computer-restart test.
 
 ## Mechanisms and sources
 

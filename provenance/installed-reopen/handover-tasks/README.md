@@ -50,3 +50,13 @@ the worker masked that refusal with a missing-output error. Its unresolved
 host admission state is retained. A prospective runtime correction and its own
 source/SDK/package/installed validation are required; neither failed attempt is
 reclassified or reopened.
+
+The later correction and its own qualification are now complete at `b35b631`.
+See the [supported-tool source and SDK evidence](../tool-capabilities/README.md)
+and the [accepted installed later-task restart](installed-restart-2026-11-01.json).
+The fresh third trial completed A, created B in the same controller, stopped B
+after one confirmed read and reopened that same task paused. Two resumed calls
+completed the correct 23-unit output with one physical write overall, preserving
+the original deadline and counters. Completed viewing changed no checked A/B
+or admission bytes. Independent review accepted only this same-boot application
+scope. The two historical failures above retain their original outcomes.
