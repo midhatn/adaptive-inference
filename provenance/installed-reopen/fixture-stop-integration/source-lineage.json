@@ -1,0 +1,45 @@
+{
+  "schema": "adaptive.installed-reopen.fixture-stop-integration.v1",
+  "reopen_revision": "6ac601546daf32d96e38b6689a5818e4cc8dafa8",
+  "fixture_stop_merge_revision": "3400501bb8ae47802aa87616b55b123db4fc46a5",
+  "runtime_changes": [],
+  "scope": "Exact combined test-reader views only; no runtime or installed-evidence requalification.",
+  "preserved_manifests": {
+    "provenance/installed-reopen/source-lineage.json": "27ec409d26b4fd1c2c3344474ea7d825297dc55cc8ebead12075465e79b1c214",
+    "provenance/task-handover/fixture-stop-verification/source-lineage.json": "688f1b1a0232b251b42be0aafaadd2f6a97963e627a5112ae42ee3c5415fcef5"
+  },
+  "files": {
+    "tests/continuation_timeout_lineage.py": {
+      "successor_sha256": "e9213868aa98cd1a302b54b6b6b94573f79d348be42b97c51c4cd0110a66cc6b",
+      "successor_ast_sha256": "2734b75593552c119db558eddd3c3db3509b48be1508abfe383f30da97334c2d",
+      "views": {
+        "reopen": {
+          "source": "provenance/installed-reopen/fixture-stop-integration/reopen/tests/continuation_timeout_lineage.py",
+          "sha256": "d63e3a1825d0f75ed5c44105af02b435401b1920e78a2ab521d2f4ef94987ab9",
+          "ast_sha256": "65fe85cc3611fb54f7a0fbc85c6d750dc615cea076b931bf6e0f98939c95d82e"
+        },
+        "fixture_stop": {
+          "source": "provenance/installed-reopen/fixture-stop-integration/fixture_stop/tests/continuation_timeout_lineage.py",
+          "sha256": "a5c6f5f6117278c46af01fd95ae43f319d0f4b2d4837293ab8c049f91e9dce4b",
+          "ast_sha256": "71069ca8937db5410dd843698908f92559172d479d05f13425d6b3fbeb00ad2a"
+        }
+      }
+    },
+    "tests/test_task_preparation_lineage.py": {
+      "successor_sha256": "61856081c561997d7c630112903acce4e0d26e0b471f4318cf6877f3c5043821",
+      "successor_ast_sha256": "134b6f56398da81bbddfaa75abf91efa5a558d43f1c8e6a314f5c216541b0444",
+      "views": {
+        "reopen": {
+          "source": "provenance/installed-reopen/fixture-stop-integration/reopen/tests/test_task_preparation_lineage.py",
+          "sha256": "ebacd63f7d18f56a769146b7c6635b71eba752e3b58955d890c48e296713e6bb",
+          "ast_sha256": "dd7302b82f3a208dab314f36ad10fdeef35842d520698c096d18f791829c6c17"
+        },
+        "fixture_stop": {
+          "source": "provenance/installed-reopen/fixture-stop-integration/fixture_stop/tests/test_task_preparation_lineage.py",
+          "sha256": "143410817ab3567d40faf650516c0c1d9b748b6cf3767aab3636bee9fcd9e00a",
+          "ast_sha256": "898455e5d9dc55091d3179560d64bdc73f7ca2a3945bf61004fc5dbe293ba816"
+        }
+      }
+    }
+  }
+}

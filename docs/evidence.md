@@ -2,6 +2,62 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Installed application restart
+
+**1 November 2026, installed source `6ac601546daf32d96e38b6689a5818e4cc8dafa8`:**
+the ordinary Windows launcher closed and reopened an unfinished IQ3_S inventory
+task on the same boot. The [source-bound record](../provenance/installed-reopen/application-restart-2026-11-01.json)
+records the normal wheel installation, fixed model/quality, actual joins,
+closed audit and retained limitations. The original corrected source passed
+1,344 local tests, 14 original hosted jobs and all 12 distribution checks before
+installation; those results remain distinct from this physical trial.
+
+The first application read the input once, then waited while ordinary browser
+scrolling had foreground priority. One normal Stop left a known-undispatched
+request, one confirmed read and no output write. The closed checkpoint retained
+about 700 seconds of its original 900-second allowance. A fresh application
+opened that same task paused; one new Resume continued it. The first resumed
+provider request contained the exact saved read. The original task, native
+session, deadline and consumed counters survived; three provider calls total
+(one before closure, two after reopening) produced the independently checked
+23-unit answer and exactly one physical output write.
+
+A third ordinary launch opened the completed answer and file reference read-only.
+It made no provider call, created no worker/gateway, and left all eight checked
+canonical database, history, configuration, input/output and receipt files byte
+identical. All three retained application parents joined with exit 0. Both
+execution sessions recorded normal worker, GUI, control-transport and native
+cleanup; a fresh check found no selected owned processes or listeners.
+
+The two bounded observers ended with exit 1 after three post-shutdown connection
+errors; their traces and unchanged-source receipts remain retained. They are
+not relabelled successful observer exits. The independent cleanup result uses
+the actual retained joins and native receipts. A separate initial wrapper-hash
+preparation failure occurred before any app/task/model launch and remains failed.
+
+This establishes the bounded **same-boot application-restart path**. It does not
+establish computer reboot, crash, sleep/wake, hibernation, Fast Startup, desktop
+performance, video/audio quality, general exactly-once tools, or full M3/M5
+acceptance. Closed-app time still consumes the original allowance. See the
+[ordinary reproduction sequence](saved-task-reopening.md#reproduce-the-bounded-application-restart-check).
+
+### Combining the reviewed source branches
+
+After PR #32 merged, the reopening branch incorporated its test-only Stop
+cleanup fix. The [additive reader integration](../provenance/installed-reopen/fixture-stop-integration/README.md)
+retains both exact branch views and every older source record. Only the two
+pinned combined readers are mapped back to those existing validators; unknown
+changes remain rejected. All 62 runtime modules remain byte-identical to the
+physically tested `6ac6015` source.
+
+The [source-bound validation](../provenance/installed-reopen/fixture-stop-integration/validation-2026-11-01.json)
+passed **83 affected checks in 148.204 seconds** and the complete **1,352-test
+suite in 392.122 seconds**, using the full Windows Python 3.11.9 interpreter.
+Both retained runs joined exit 0 and their checked source hashes were unchanged.
+The required existing `tempfile` import was restored during review before any
+focused execution. Package and hosted checks belong to the exact combined
+publication; these source tests neither rerun nor broaden the installed trial.
+
 ## Ordinary saved-task reopening
 
 **Admission-wait correction, 1 November 2026:** preparation for the installed
@@ -49,7 +105,9 @@ host only, not persistence across a restart or a unique boot identity. The
 helper source SHA-256 was
 `7f5d7da8b1343dd24ea2ae574b165d960e0fac48936c0517eb4fd7c0bc3c13a6`.
 Historical source identities remain separate from this new runtime increment.
-Actual unchanged-IQ3_S application restart and OS reboot remain open M5 gates.
+At that source-only checkpoint, installed IQ3_S application restart and OS reboot
+were unqualified. The later installed result above qualifies only the same-boot
+application path; OS reboot remains open.
 
 The complete local core/source suite then passed **1,342 tests in 336.175
 seconds** (337.453 seconds including process orchestration), with exit 0,
@@ -65,6 +123,113 @@ one-read correction retained the original assertions and passed all 77 checks
 in 128.856 seconds. The original failed batch remains preserved. The corrected
 private source-history receipt SHA-256 is
 `07ff4ca203304efcbbe0efc8a67c186cfdc3b44002ded670d0a5613f69bf7be6`.
+
+## Second video sequence
+
+**1 November 2026, observation source `72ac717dbbcb11684e2687a2992a462a0f078f39`:**
+the planned before-control, adaptive IQ3_S task and following control are closed.
+The [sanitized sequence record](../provenance/video-coexistence/comparison-followup-2026-11-01.json)
+retains source identities, measured counters, task acceptance and the failed
+capture gate. The helper tree matches merged `c348398089e544bf54add2beaaf73550f8951efc`;
+the physical runtime remains 0.3.0/source `7306a53085ddc31d53d2ba50e91975c80cfc0014`.
+The saved-task reopening candidate in PR #31 was not installed for this run.
+
+| Condition | Dropped / total frames | Dropped frames | Measured duration |
+| --- | ---: | ---: | ---: |
+| Before, no AI | 33 / 10,801 | 0.305527% | 180.0078 s |
+| Adaptive IQ3_S task | 30 / 10,799 | 0.277804% | 180.0005 s |
+| After, no AI | 33 / 10,800 | 0.305556% | 180.0090 s |
+
+All three browser observations meet the original 0.5% absolute drop limit,
+with matching actual 1536×730 viewports, 1.25 scaling, full video visible at
+Start, normal playback speed and unmuted volume 1. The small differences are
+descriptive observations; this sequence establishes no causal speedup or complete
+regression acceptance. The original failed control and earlier diagnostics remain
+preserved.
+
+The original inventory task passed all **19 terminal checks**, including the
+correct 23-unit result, three provider calls, exactly one physical write,
+unchanged 900-second execution allowance, one Resume and one normal Stop.
+Its parent joined normally after 688.125 seconds. The worker, GUI and owned
+native processes closed; selected listeners were absent and sampled GPU use
+returned to 0 MiB. The observer's exit 1 after three post-shutdown connection
+errors is retained separately. Page servers were deliberately interrupted after
+their terminal saves; those shell exits also remain 1.
+
+The **post-handback write requirement was met**. Ordinary handback was recorded
+at 14:31:27.091–14:31:27.192 UTC; the persisted native write intent and successful
+receipt followed at 14:32:18.643344 and 14:32:20.789477 UTC. The canonical task
+history joins these to the one nonreused effect. These are persisted agent
+timestamps, not filesystem syscall timing. The second provider request had
+already begun before handback, so the handback did not initiate that request.
+No provider request overlapped the measured video window. Native restoration
+and release activity did overlap it: all 177 measured-window status samples
+showed closed admission and no active inference, with 84 restoring, seven
+releasing, 85 parked and one awaiting. This distinguishes useful preserved task
+progress from proof of concurrent model execution during measured playback.
+
+The operator verified the full video and Start before the model run, but the
+later explicit browser activation restored Chrome to a smaller window. A
+genuine Maximize action restored the original geometry before Start. This
+repair delayed the trusted Start to **65.880451 seconds after capture creation**,
+violating the fixed 20-second lead. The 240-second capture closed normally but
+missed the end of playback. It was neither restarted nor extended. The failure
+is an operator/capture problem, not evidence that the engine policy needs changing.
+
+Both controls started within the capture lead. Their process lifetimes alone
+do not prove display-surface coverage. PresentMon's retained Chrome swapchain
+has no established mapping to the actual video surface; metadata identities are
+zero. In the following control, 292.3586-ms and 257.5028-ms display-residence
+candidates remain visible, without being labelled confirmed video stalls.
+Physical-stall acceptance remains **unknown**. No audio quality, synchronization,
+gaming, reboot or complete M3 qualification follows from these observations.
+
+The [revised plan](../PLAN.md#m3--protect-actual-desktop-activity) requires an inert
+window-switch rehearsal before any further timed attempt and continues isolated
+installed application-restart qualification. It preserves every threshold and
+the unaccepted M3 gate. Private raw records remain local and hash-identified;
+the public summary is not a complete replay archive.
+
+## Continuation fixture verification and cleanup
+
+The original [PR #32 Windows/Python 3.12 push job](https://github.com/midhatn/adaptive-inference/actions/runs/41318388842/job/124883207088)
+failed because a timeout-regression fixture directory remained after cleanup.
+The original pair ended with **13 jobs passed and one failed**; 11 distribution
+checks passed and one was skipped. The uploaded receipts show both CPU children
+joined naturally, with expected exits and closed logs. They do not capture the
+underlying deletion error, so the exact trigger remains unknown.
+
+Source review found a reachable ordering problem: the bounded Stop wait can
+return while its retained post-exit verifier still reads SQLite and result files.
+Joining the child process alone does not finish that verification. The bounded
+fixture correction awaits the existing verifier before removing its directory,
+following the documented [shielded-task behavior](https://docs.python.org/3.12/library/asyncio-task.html#shielding-from-cancellation).
+The injected five-second timeout and twenty-second regression teardown guard
+remain unchanged; there is no runtime or model change.
+
+Nested seed cases had also swallowed cleanup errors because their `doCleanups`
+calls lacked the running test's result. The correction routes those existing
+cleanups through the active outcome and includes nested failure details in the
+outer assertions, consistent with the pinned [CPython implementation](https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/case.py).
+This exposed a separate, actual WinError 32 in the selected-result fixture:
+two transaction context managers had left their SQLite connections open. Those
+connections now explicitly close while retaining commit/rollback semantics,
+as described in the [SQLite connection-context documentation](https://docs.python.org/3.11/library/sqlite3.html#how-to-use-the-connection-context-manager).
+That focused failure remains distinct from the original hosted failure.
+
+The [additive source record](../provenance/task-handover/fixture-stop-verification/README.md)
+preserves the prior complete fixtures and readers, with the old source assertions
+unchanged. The final two-module batch passed **36 checks in 41.864 seconds**.
+All 42 retained children joined and all 30 fixture directories were removed;
+one intentionally failed setup required its expected cleanup kill. The
+[validation record](../provenance/task-handover/fixture-stop-verification/validation-2026-11-01.json)
+retains the earlier focused failure and an intervening import error separately.
+The additive historical-source mapping passed **60 checks in 83.749 seconds**,
+with unchanged checked sources and no remaining helper thread. The complete
+corrected source suite then passed **1,332 tests in 322.037 seconds**, with frozen
+source and its retained child joined at exit 0. Package and hosted checks belong
+to that corrected source. These
+software-fixture checks confer no new physical restart or video qualification.
 
 ## SQLite concurrency fixture ownership
 

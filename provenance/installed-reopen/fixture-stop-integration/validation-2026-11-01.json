@@ -1,0 +1,42 @@
+{
+  "schema": "adaptive.installed-reopen.fixture-stop-integration.validation.v1",
+  "date": "2026-11-01",
+  "scope": "Combined source integration of saved-task reopening and merged test-only Stop cleanup; no changed runtime or repeated model trial.",
+  "parents": {
+    "reopen": "6ac601546daf32d96e38b6689a5818e4cc8dafa8",
+    "merged_main": "3400501bb8ae47802aa87616b55b123db4fc46a5"
+  },
+  "runtime_modules_unchanged_from_installed_source": 62,
+  "preserved_manifests_unchanged": true,
+  "focused": {
+    "passed": true,
+    "tests": 83,
+    "seconds": 148.204,
+    "python": "3.11.9 full Windows interpreter",
+    "retained_exit_code": 0,
+    "source_unchanged": true,
+    "private_receipt_sha256": "20e308a4536610a11538fa6ae7a4a3369bc83bcbd2f7a4ab70418260cf76652e"
+  },
+  "complete_suite": {
+    "passed": true,
+    "tests": 1352,
+    "seconds": 392.122,
+    "outer_seconds": 393.5789999999997,
+    "python": "3.11.9 full Windows interpreter",
+    "retained_exit_code": 0,
+    "source_unchanged": true,
+    "private_receipt_sha256": "a2cdd14d6ae31562ed734e1228ecb1dbd01e039af6fdfbf019f141662078410a",
+    "log_sha256": "861a91c6e66f6aa0b13cd7f2826fc0ea806f5fd840ddec3a88e493e9c9edf46a",
+    "source_pins_sha256": "83e43463c50e95c64d2a987884b888cc1ae313a19e0d9597f3474acd55a9be26"
+  },
+  "changed_reader_sha256": {
+    "tests/continuation_timeout_lineage.py": "e9213868aa98cd1a302b54b6b6b94573f79d348be42b97c51c4cd0110a66cc6b",
+    "tests/test_task_preparation_lineage.py": "61856081c561997d7c630112903acce4e0d26e0b471f4318cf6877f3c5043821"
+  },
+  "record_sha256": "1355b2d945c00358602ebc3de316237a8c9b863e5d0151ec9fb603d47ee9857a",
+  "qualification_limits": [
+    "These are source checks, not a new installed-model run.",
+    "Source archive and hosted checks belong to the exact published combined head.",
+    "The earlier branch failures and failed physical observations remain recorded separately."
+  ]
+}

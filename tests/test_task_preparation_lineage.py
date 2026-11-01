@@ -3,6 +3,7 @@ import ast
 from copy import deepcopy
 import hashlib
 from pathlib import Path
+import tempfile
 import unittest
 from unittest import mock
 
@@ -36,6 +37,7 @@ class TaskPreparationLineageTests(unittest.TestCase):
             with self.subTest(relative=relative):
                 current = (lineage.ROOT / relative).read_bytes()
                 current = lineage.reopen_predecessor(relative, current)
+                current = lineage.fixture_stop_predecessor(relative, current)
                 self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
                 before = lineage.preparation_predecessor(relative, current)
                 self.assertEqual(hashlib.sha256(before).hexdigest(), row['predecessor_sha256'])
@@ -95,6 +97,7 @@ class InstalledReopenLineageTests(unittest.TestCase):
         for relative, row in rows['files'].items():
             with self.subTest(relative=relative):
                 data = (lineage.ROOT / relative).read_bytes()
+                data = lineage.integration_predecessor(relative, data, 'reopen')
                 self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
                 self.assertEqual(fingerprint(ast.parse(data)), row['successor_ast_sha256'])
                 before = (lineage.ROOT / row['predecessor_source']).read_bytes()
@@ -149,6 +152,98 @@ class InstalledReopenLineageTests(unittest.TestCase):
                         lineage, 'reopen_record', return_value=changed):
                     with self.assertRaisesRegex(AssertionError, 'installed-reopen predecessor'):
                         lineage.reopen_predecessor(relative, current)
+
+
+class FixtureStopVerificationLineageTests(unittest.TestCase):
+    def test_exact_four_file_view_preserves_original_records(self):
+        rows = lineage.fixture_stop_record()
+        self.assertEqual(rows['schema'], 'adaptive.fixture-stop-verification.source-lineage.v1')
+        self.assertEqual(rows['runtime_changes'], [])
+        self.assertEqual(set(rows['files']), lineage.FIXTURE_STOP_INPUTS)
+        for relative, row in rows['files'].items():
+            with self.subTest(relative=relative):
+                current = (lineage.ROOT / relative).read_bytes()
+                current = lineage.integration_predecessor(relative, current, 'fixture_stop')
+                before = (lineage.ROOT / row['predecessor_source']).read_bytes()
+                self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
+                self.assertEqual(fingerprint(ast.parse(current)), row['successor_ast_sha256'])
+                self.assertEqual(lineage.fixture_stop_predecessor(relative, current), before)
+                self.assertEqual(lineage.fixture_stop_predecessor(relative, before), before)
+        for relative, expected in rows['preserved_manifests'].items():
+            self.assertEqual(hashlib.sha256((lineage.ROOT / relative).read_bytes()).hexdigest(), expected)
+
+    def test_unknown_bytes_and_legacy_roots_are_not_projected(self):
+        for relative in lineage.FIXTURE_STOP_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            unknown = current + b'\n# unreviewed fixture change\n'
+            with self.subTest(relative=relative):
+                self.assertEqual(lineage.fixture_stop_predecessor(relative, unknown), unknown)
+                self.assertEqual(lineage.preparation_predecessor(relative, unknown), unknown)
+                with tempfile.TemporaryDirectory() as directory:
+                    self.assertEqual(lineage.preparation_predecessor(relative, current, Path(directory)), current)
+
+    def test_predecessor_and_successor_ast_tampering_is_refused(self):
+        rows = lineage.fixture_stop_record()
+        for relative in lineage.FIXTURE_STOP_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            for field in ('predecessor_source', 'predecessor_sha256', 'predecessor_ast_sha256',
+                          'successor_ast_sha256'):
+                changed = deepcopy(rows); changed['files'][relative][field] = '0' * 64
+                with self.subTest(relative=relative, field=field), mock.patch.object(
+                        lineage, 'fixture_stop_record', return_value=changed):
+                    with self.assertRaisesRegex(AssertionError, 'fixture Stop verification'):
+                        lineage.fixture_stop_predecessor(relative, current)
+
+
+class IntegratedReaderLineageTests(unittest.TestCase):
+    def test_both_exact_branch_views_and_original_manifests_are_preserved(self):
+        rows = lineage.integration_record()
+        self.assertEqual(rows['schema'], 'adaptive.installed-reopen.fixture-stop-integration.v1')
+        self.assertEqual(set(rows['files']), lineage.INTEGRATION_INPUTS)
+        self.assertEqual(rows['runtime_changes'], [])
+        records = {'reopen': lineage.reopen_record(), 'fixture_stop': lineage.fixture_stop_record()}
+        for relative, row in rows['files'].items():
+            current = (lineage.ROOT / relative).read_bytes()
+            self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
+            self.assertEqual(fingerprint(ast.parse(current)), row['successor_ast_sha256'])
+            for view, original in records.items():
+                with self.subTest(relative=relative, view=view):
+                    retained = lineage.integration_predecessor(relative, current, view)
+                    self.assertEqual(hashlib.sha256(retained).hexdigest(),
+                                     original['files'][relative]['successor_sha256'])
+                    self.assertEqual(fingerprint(ast.parse(retained)),
+                                     original['files'][relative]['successor_ast_sha256'])
+                    self.assertEqual(lineage.integration_predecessor(relative, retained, view), retained)
+        for relative, expected in rows['preserved_manifests'].items():
+            self.assertEqual(hashlib.sha256((lineage.ROOT / relative).read_bytes()).hexdigest(), expected)
+
+    def test_unknown_reader_bytes_and_legacy_roots_are_not_projected(self):
+        for relative in lineage.INTEGRATION_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            unknown = current + b'\n# unreviewed integrated reader\n'
+            for view in ('reopen', 'fixture_stop'):
+                with self.subTest(relative=relative, view=view):
+                    self.assertEqual(lineage.integration_predecessor(relative, unknown, view), unknown)
+                    with tempfile.TemporaryDirectory() as directory:
+                        self.assertEqual(lineage.integration_predecessor(
+                            relative, current, view, Path(directory)), current)
+            self.assertEqual(lineage.preparation_predecessor(relative, unknown), unknown)
+
+    def test_retained_identity_and_successor_ast_changes_are_refused(self):
+        rows = lineage.integration_record()
+        for relative in lineage.INTEGRATION_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            for view in ('reopen', 'fixture_stop'):
+                for field in ('source', 'sha256', 'ast_sha256', 'successor_ast_sha256'):
+                    changed = deepcopy(rows)
+                    target = changed['files'][relative]
+                    if field != 'successor_ast_sha256':
+                        target = target['views'][view]
+                    target[field] = '0' * 64
+                    with self.subTest(relative=relative, view=view, field=field), mock.patch.object(
+                            lineage, 'integration_record', return_value=changed):
+                        with self.assertRaisesRegex(AssertionError, 'integrated reader'):
+                            lineage.integration_predecessor(relative, current, view)
 
 
 if __name__ == '__main__':

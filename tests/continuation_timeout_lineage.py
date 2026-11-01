@@ -54,12 +54,14 @@ def preparation_record(root=None):
 
 def preparation_inputs(root=None):
     root = ROOT if root is None else root
-    return [root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py'] + reopen_inputs(root)
+    return ([root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py']
+            + reopen_inputs(root) + fixture_stop_inputs(root) + integration_inputs(root))
 
 
 def preparation_predecessor(relative, data, root=None):
     """Reverse only exact declared CLI/reader/version bytes, never unknown changes."""
     data = reopen_predecessor(relative, data, root)
+    data = fixture_stop_predecessor(relative, data, root)
     root = ROOT if root is None else root
     if not (root / PREPARATION / 'source-lineage.json').exists():
         return data  # Legacy disposable roots still face the original checks.
@@ -145,6 +147,7 @@ def reopen_inputs(root=None):
 
 def reopen_predecessor(relative, data, root=None):
     """Project only a declared complete successor to its retained base bytes."""
+    data = integration_predecessor(relative, data, 'reopen', root)
     root = ROOT if root is None else root
     if not (root / REOPEN / 'source-lineage.json').exists():
         return data
@@ -197,3 +200,89 @@ def restore_reopen(tree, relative, root=None):
     if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
         raise AssertionError('Changed complete task-handover source (installed-reopen): ' + relative)
     return ast.parse(reopen_predecessor(source, data, root))
+
+
+FIXTURE_STOP = 'provenance/task-handover/fixture-stop-verification'
+FIXTURE_STOP_INPUTS = {'tests/test_continuation_host.py',
+                       'tests/test_continuation_timeout_diagnostics.py',
+                       'tests/continuation_timeout_lineage.py',
+                       'tests/test_task_preparation_lineage.py'}
+
+
+def fixture_stop_record(root=None):
+    root = ROOT if root is None else root
+    return json.loads((root / FIXTURE_STOP / 'source-lineage.json').read_bytes())
+
+
+def fixture_stop_inputs(root=None):
+    root = ROOT if root is None else root
+    path = root / FIXTURE_STOP / 'source-lineage.json'
+    if not path.exists():
+        return []
+    return [path, *(root / FIXTURE_STOP / 'predecessor' / relative
+                    for relative in sorted(FIXTURE_STOP_INPUTS))]
+
+
+def fixture_stop_predecessor(relative, data, root=None):
+    """Map only complete approved fixture/reader bytes to their retained source."""
+    data = integration_predecessor(relative, data, 'fixture_stop', root)
+    root = ROOT if root is None else root
+    if relative not in FIXTURE_STOP_INPUTS or not (root / FIXTURE_STOP / 'source-lineage.json').exists():
+        return data
+    row = fixture_stop_record(root)['files'][relative]
+    expected = FIXTURE_STOP + '/predecessor/' + relative
+    if row['predecessor_source'] != expected:
+        raise AssertionError('Changed fixture Stop verification predecessor path')
+    before = (root / expected).read_bytes()
+    if (hashlib.sha256(before).hexdigest() != row['predecessor_sha256']
+            or fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']):
+        raise AssertionError('Changed fixture Stop verification predecessor identity')
+    if hashlib.sha256(data).hexdigest() == row['successor_sha256']:
+        if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:
+            raise AssertionError('Changed complete fixture Stop verification successor AST')
+        return before
+    return data
+
+
+# Compose the two reviewed reader deltas without rewriting their source records.
+INTEGRATION = 'provenance/installed-reopen/fixture-stop-integration'
+INTEGRATION_INPUTS = {'tests/continuation_timeout_lineage.py',
+                      'tests/test_task_preparation_lineage.py'}
+
+
+def integration_record(root=None):
+    root = ROOT if root is None else root
+    return json.loads((root / INTEGRATION / 'source-lineage.json').read_bytes())
+
+
+def integration_inputs(root=None):
+    root = ROOT if root is None else root
+    path = root / INTEGRATION / 'source-lineage.json'
+    if not path.exists():
+        return []
+    return [path, *(root / INTEGRATION / view / relative
+                    for view in ('reopen', 'fixture_stop')
+                    for relative in sorted(INTEGRATION_INPUTS))]
+
+
+def integration_predecessor(relative, data, view, root=None):
+    """Expose only a pinned combined reader as one exact retained branch view."""
+    root = ROOT if root is None else root
+    if view not in ('reopen', 'fixture_stop'):
+        raise AssertionError('Changed integrated reader view')
+    if relative not in INTEGRATION_INPUTS or not (root / INTEGRATION / 'source-lineage.json').exists():
+        return data
+    row = integration_record(root)['files'][relative]
+    retained = row['views'][view]
+    expected = INTEGRATION + '/' + view + '/' + relative
+    if retained['source'] != expected:
+        raise AssertionError('Changed integrated reader predecessor path')
+    before = (root / expected).read_bytes()
+    if (hashlib.sha256(before).hexdigest() != retained['sha256']
+            or fingerprint(ast.parse(before)) != retained['ast_sha256']):
+        raise AssertionError('Changed integrated reader predecessor identity')
+    if hashlib.sha256(data).hexdigest() == row['successor_sha256']:
+        if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:
+            raise AssertionError('Changed integrated reader successor AST')
+        return before
+    return data

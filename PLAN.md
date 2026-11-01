@@ -746,17 +746,43 @@ meet the absolute drop target for their own observations. Their descriptive
 difference is not a matched-regression acceptance or a causal performance claim.
 The original failed control and unknown physical-stall attribution remain intact.
 
-**Next bounded step:** correct the operator sequence before another fresh
-comparison. Observe the actual viewport and make Start visibly reachable before
-Resume or capture. Prepare the browser, observer and original task while paused;
-then keep first-inflight observation, capture start and genuine playback Start
-adjacent, within the existing 20-second capture lead. If that window is missed,
-retain the deviation instead of relabelling or restarting the same attempt.
-Require the original output write after ordinary handback, actual capture
-coverage and source-bound cleanup. A fresh comparison is justified by these
-documented timing/setup failures, not by searching for a green frame count.
-Retain the same IQ3_S quality, task budgets, clip and acceptance thresholds.
-Verify display-surface attribution separately; missing attribution stays unknown.
+**Second sequence closed:** the [three-condition follow-up](docs/evidence.md#second-video-sequence)
+kept the same actual 1536×730 playback viewport across its two controls and
+adaptive run. Dropped frames were respectively 33/10,801 (0.305527%),
+30/10,799 (0.277804%) and 33/10,800 (0.305556%). The original IQ3_S task again
+passed all 19 terminal checks, with three provider calls, one correct physical
+write after ordinary handback and normal owned cleanup. No provider request
+overlapped measured video, although native restoration/release did. This does
+not qualify the complete comparison:
+bringing Chrome forward unexpectedly restored its smaller window, and repairing
+that geometry delayed Start to 65.880 seconds after capture creation. The
+unchanged capture ended before the measurement finished. Both timing failure
+and unknown video-surface attribution remain explicit; good browser counters
+do not override either.
+
+**Next bounded step:** verify an ordinary foreground-switch round trip before
+consuming another comparison. Microsoft documents [Alt+Tab task switching](https://support.microsoft.com/en-us/windows/experience/how-to-multitask-in-windows)
+and distinguishes [showing a window at its current geometry from restoring it](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow).
+That suggests a minimal operator correction, not proof of the automation tool's
+internals or a qualified fix. With the task paused and no capture running,
+observe that the actual switch preserves the intended window, full video,
+reachable Start and enough timing margin. If this rehearsal fails, stop before
+another model attempt. Reuse the verified switch in the timed sequence, without
+an additional activation or geometry repair. Preserve the existing 20-second
+capture lead, quality, task budgets, clip, post-handback write requirement and
+all acceptance thresholds. Missing display attribution stays unknown.
+
+Do not keep replaying the inventory task to chase green counters. Preserve this
+closed sequence and its independent review. The separately scoped installed
+application-restart trial in [PR #31](https://github.com/midhatn/adaptive-inference/pull/31)
+has now passed at source `6ac601546daf32d96e38b6689a5818e4cc8dafa8`, after its
+68 affected checks, complete 1,344-test suite, package verification and all
+14 original hosted jobs/12 distribution checks. Its saved-read, original-budget,
+single-write and read-only-result evidence is recorded in [M5](#m5--survive-application-and-computer-lifecycle-changes).
+Publish that accepted scope after validating the source integration with PR #32's
+fixture fixes. Do not re-stage or replay the consumed trial. M3 remains open;
+lifecycle progress does not waive its capture or foreground-quality gates.
+Broader daily-use qualification still depends on those gates and useful-tool work.
 
 Do not change scheduling merely because restoration occurred during passive
 video: useful background work within the foreground quality budget is the goal.
@@ -875,6 +901,25 @@ does not become an arbitrary shell-execution endpoint.
 
 ### M5 — Survive application and computer lifecycle changes
 
+**Installed application path passed, 1 November 2026:** the [recorded IQ3_S
+trial](provenance/installed-reopen/application-restart-2026-11-01.json) closed an
+unfinished task after one confirmed read and reopened that same task through the
+ordinary launcher. The new host started paused; one Resume completed the original
+23-unit objective with one physical output write. The saved read was present in
+the first resumed request, and the original 900-second deadline and consumed
+counters were preserved. Completed-result viewing added no worker/provider call
+and changed none of the eight checked canonical files. All three app parents
+joined normally; bounded observer shutdown errors remain separately recorded.
+This closes the first same-boot application path below, not the complete M5 gate.
+
+**Next lifecycle work:** reuse that accepted path to support discovery of tasks
+created later through the running controller, then design the original durable
+budget policy for changed Windows boots before a separate actual reboot trial.
+Research existing lifecycle/budget implementations first. Do not replay the
+accepted application trial or silently reset a saved monotonic deadline. M3's
+inert window-switch rehearsal and M4 useful-tool/media gates remain open; this
+result does not waive them.
+
 **User result:** reopening the application or restarting the supported computer
 recovers the same objective and completed work.
 
@@ -887,10 +932,10 @@ the launcher selects the existing task, creates fresh host/UI bindings and start
 paused with the original deadline, request counters and native history. Accepted
 results open read-only without another model request. Reuse the current task
 store, safe Stop, mailbox and worker claims; introduce no new recovery framework.
-Develop this source path while correcting the M3 comparison, then qualify it
-with the unchanged installed IQ3_S task. Require a confirmed read before ordinary
-Stop, actual application joins, the same read in the first resumed request,
-correct remaining work and exactly one physical output write. A task already
+The recorded trial above qualifies this source path with unchanged installed
+IQ3_S. Its acceptance required a confirmed read before ordinary Stop, actual
+application joins, the same read in the first resumed request, correct remaining
+work and exactly one physical output write. A task already
 completed before Stop does not satisfy unfinished-task recovery.
 
 Source preflight exposed an ordinary-path prerequisite: safe Stop during an
@@ -904,9 +949,10 @@ unknown-dispatch refusal passed, followed by 68 affected component checks.
 The corrected complete source suite passed 1,344 tests. Its first attempt used
 an unsuitable Windows venv redirector and remains failed; the existing direct
 interpreter prerequisite was restored without weakening process-identity checks.
-Require the corrected package and exact-head checks before installing this
-candidate, then qualify the same original IQ3_S task under actual application
-restart.
+The corrected package and all 14 original head jobs/12 distribution checks
+passed before its isolated installation and actual IQ3_S application restart.
+Integration with PR #32's fixture fixes requires validation of the combined
+source; it does not transfer physical evidence to a changed runtime.
 
 This first increment requires a matching original boot/profile/package context
 recorded when the task was created. Closed-app time consumes its saved budget;

@@ -13,6 +13,47 @@ import test_continuation_host as fixture
 
 
 class DiagnosticBoundaryTests(unittest.TestCase):
+    def test_teardown_waits_for_post_exit_stop_verifier_before_seed_cleanup(self):
+        async def observe():
+            release=asyncio.Event(); verified=[]
+            async def verifier():
+                await release.wait()
+                verified.append(True)
+            work=asyncio.create_task(verifier())
+            binding=SimpleNamespace(worker=SimpleNamespace(poll=lambda:4),_work=work)
+            case=SimpleNamespace(releases=[],tasks=[],c=SimpleNamespace(
+                runtime=SimpleNamespace(fence_admission=lambda:None,_continuation_tasks=set()),
+                facade=SimpleNamespace(_selected={'binding':binding},_wake=None,_stop=None),handles=[]))
+            teardown=asyncio.create_task(fixture.HostTests.asyncTearDown(case))
+            try:
+                # One loop turn reaches the held verifier: all earlier cleanup
+                # branches are synchronous for this already-exited fixture.
+                await asyncio.sleep(0)
+                self.assertFalse(teardown.done(),'Seed cleanup can run before Stop verification finishes')
+                self.assertFalse(work.done())
+            finally:
+                release.set()
+                await teardown
+                await work
+            self.assertEqual(verified,[True])
+        asyncio.run(observe())
+
+    def test_nested_seed_cleanup_error_preserves_primary_body_error(self):
+        class Owner(unittest.TestCase):
+            def runTest(self):
+                self.seed=unittest.TestCase();self.seed.f=unittest.TestCase()
+                def fail_cleanup():raise OSError('nested cleanup failure')
+                self.seed.f.addCleanup(fail_cleanup)
+                self.seed.addCleanup(self.seed.f.doCleanups)
+                self.addCleanup(fixture.HostTests.cleanup_seed,self)
+                raise RuntimeError('primary body failure')
+        result=unittest.TestResult();Owner().run(result)
+        nested='\n'.join(trace for _,trace in result.errors+result.failures)
+        self.assertEqual(len(result.errors),2,nested)
+        self.assertIn('primary body failure',result.errors[0][1])
+        self.assertIn('nested cleanup failure',result.errors[1][1])
+        self.assertFalse(result.failures,nested)
+
     def test_suspended_source_location_does_not_export_locals_or_cancel_task(self):
         async def observe():
             entered = asyncio.Event()
@@ -139,9 +180,10 @@ class TimeoutCleanupTests(unittest.TestCase):
                     'actual_final_line': (result.errors[0][1].rstrip().splitlines()[-1]
                                           if result.errors else None)}
                 (output/(self._testMethodName+'.json')).write_text(json.dumps(receipt, indent=2), encoding='utf-8')
-        self.assertEqual(result.testsRun, 1)
-        self.assertFalse(result.failures)
-        self.assertEqual(len(result.errors), 1)
+        nested='\n'.join(trace for _,trace in result.errors+result.failures)
+        self.assertEqual(result.testsRun, 1,nested)
+        self.assertFalse(result.failures,nested)
+        self.assertEqual(len(result.errors), 1,nested)
         self.assertEqual(case.continuation_timeout_s, 5)
         self.assertIn('await asyncio.wait_for(asyncio.shield(task), self.continuation_timeout_s)', result.errors[0][1])
         self.assertTrue(result.errors[0][1].rstrip().endswith('TimeoutError'))

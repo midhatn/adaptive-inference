@@ -1,0 +1,118 @@
+{
+  "schema": "adaptive.installed-application-restart.validation.v1",
+  "date": "2026-11-01",
+  "scope": "Actual installed Windows application close/reopen on one boot; unfinished IQ3_S task and completed-result viewing.",
+  "result": "passed_same_boot_application_restart",
+  "source": {
+    "commit": "6ac601546daf32d96e38b6689a5818e4cc8dafa8",
+    "package_version": "0.4.0a1",
+    "runtime_modules": 62,
+    "wheel_sha256": "57364b105351e4665d61f2004d2e5702db0729e6b9bf2daf82463321da12c2cb",
+    "sdist_sha256": "f8f90365baef44fa59fdc89957fdb0b6abfde0d92e625bfd518ea47166cd13af",
+    "full_local_tests": 1344,
+    "original_hosted_jobs_passed": 14,
+    "original_distribution_checks_passed": 12,
+    "hermes_sdk_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "installation": "Isolated normal wheel installation in full Windows host and worker prefixes; all installed module hashes and origins verified.",
+    "host_python": "3.11.9"
+  },
+  "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+  "quality": {
+    "max_tokens": 10923,
+    "reasoning_effort": "high",
+    "reasoning_budget_tokens": 8192,
+    "experimental_speed_projection": false,
+    "strata_tune": {
+      "pcie_frac": 0.37
+    }
+  },
+  "context": {
+    "context_length": 65536,
+    "threshold": 0.8,
+    "threshold_tokens": 46421,
+    "reserved_output": 10923,
+    "max_tokens": 10923
+  },
+  "workflow": [
+    "Ordinary New task and file/folder chooser; initial paused readiness; one Resume.",
+    "First model step read inventory.csv. Ordinary foreground browser scrolling withheld the next request; normal Stop joined the unfinished application.",
+    "Ordinary Open saved task selected the same task in a fresh application. Initial paused readiness; one new Resume; original task completed; normal Stop.",
+    "Ordinary Open saved task displayed the completed answer and file reference read-only, then Close."
+  ],
+  "checks": {
+    "stopped_phase": "waiting_admission",
+    "pending_request_preserved": true,
+    "confirmed_reads_before_stop": 1,
+    "physical_writes_before_stop": 0,
+    "requests_before_stop": 1,
+    "requests_after_completion": 3,
+    "resumed_provider_calls": 2,
+    "same_task_and_native_session": true,
+    "same_boot_profile_package_context": true,
+    "fresh_host_gui_worker_bindings": true,
+    "saved_read_in_first_resumed_request": true,
+    "original_deadline_preserved": true,
+    "task_budget_seconds": 900,
+    "shared_outer_budget_seconds": 2700,
+    "remaining_original_task_seconds_at_closed_stop_inspection": 699.7196532000016,
+    "total_units": 23,
+    "physical_writes_total": 1,
+    "artifact_sha256": "f279173777ec0ddcbe467a5370337b8a4d4fa3c09c4c211e1740e8f1232a8e3e",
+    "completed_view_provider_calls": 0,
+    "completed_view_preserved_all_eight_canonical_file_hashes": true,
+    "application_parent_exits": [
+      0,
+      0,
+      0
+    ],
+    "normal_owned_native_cleanup": true,
+    "fresh_selected_ports_and_owned_processes_absent": true
+  },
+  "observation_limits": {
+    "observer_exit_codes": [
+      1,
+      1
+    ],
+    "end_reasons": [
+      "three_connection_errors_after_response",
+      "three_connection_errors_after_response"
+    ],
+    "sources_unchanged": true,
+    "activity_error_samples": [
+      0,
+      0
+    ],
+    "interpretation": "Bounded observers retained status/activity and ended after shutdown connection errors; these exits are not relabeled as successful observer termination. Separate retained joins and native cleanup records establish the scoped cleanup result."
+  },
+  "retained_preparation_failure": {
+    "outcome": "failed_before_app_task_or_model_launch",
+    "reason": "A private wrapper contained a 65-character helper hash. Corrected before a distinct fresh attempt; no task deadline was renewed."
+  },
+  "private_receipt_sha256": {
+    "outer-started.private.json": "1ec2ddc267d655ba1bb3cd53e5323e2ffd6d85d5201942de78a5f001ac52cd88",
+    "first-app.supervisor.private.json": "2aa18cd043b6ac4197c45bfdb100da6f199d1d5e63cc3880ed224e7e646038c7",
+    "reopened-app.supervisor.private.json": "b8c8a0025a5cb15324312e56ccc239d59bbe88af1b1f45fc15e7002b288c1f83",
+    "completed-view.supervisor.private.json": "361935c91853b6c4dd3e08c15b43efecc47944649977bf037294d0c581d0b532",
+    "stopped-checkpoint.private.json": "c8706756aa6e5c4dd353f34d3d5815029ce83f2918f0bca2b82aeb4ac515bf6e",
+    "completed-before-view.private.json": "2849fb7978aa6b3640d315197961484ccc414d5593fc530cf28901c07ad43f9f",
+    "cross-phase-audit.private.json": "e9179f90a59c1f990f1a7da0aa401fe6b12407025d26a3e52a858020c3cfeaf8",
+    "actual-joins.private.json": "f5bd012faf24d3fa608935b0cd08943f4bfae5d263cb639066b6c83fa126812e",
+    "closure-preflight.private.json": "d7d72aabbb390454ee79d34fe3103d8cf23fddd49511afc3db1b3ffb56a2f16f"
+  },
+  "audit_helper_sha256": "2a055f03a1b2c28ec4e02fd8d6b83abdb963f5103eb483ea0605dcdef9e8a108",
+  "limits": [
+    "This is an observed ordinary same-boot application restart, not OS reboot, crash, sleep, hibernation or Fast Startup qualification.",
+    "The original 900-second deadline continues while the app is closed. No automatic Resume or renewed allowance is established.",
+    "No desktop responsiveness, video/audio quality, gaming performance, general tool exactly-once guarantee or full M3/M5 milestone acceptance follows.",
+    "The saved read in the first resumed request is bound through canonical generation history and actual serialized message/tool hashes; no complete raw HTTP request-byte comparison or byte-identical old wire snapshot is claimed.",
+    "Private machine logs, databases and model assets are not public replay inputs. Public launcher, task, source contracts and the documented operating sequence support a new local reproduction."
+  ],
+  "independent_review": {
+    "passed": true,
+    "consistency_checks": 65,
+    "hashed_inputs": 74,
+    "scope": "Independent closed task/native/request/control/artifact inspection and source comparison; no test-suite or model replay. Root supplied actual UI observations.",
+    "json_sha256": "495fe2b373bd81e086e995f56da6e5d8a78bdf9f9af4004e1c42da591ac0f18a",
+    "markdown_sha256": "5782fd4b9394a31057c1daa66bc11a21c8402e57fb630553d41a20d2ec1e603b"
+  }
+}

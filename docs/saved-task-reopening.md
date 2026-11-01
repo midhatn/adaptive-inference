@@ -59,12 +59,50 @@ Read-only accepted results are independent of execution authorization. Their
 original stored identity, checkpoint and artifacts must remain valid, but viewing
 them does not renew a deadline or require the old boot to remain current.
 
-Actual application restart with the installed IQ3_S model is a separate
-acceptance step after source/component checks. OS reboot needs a durable budget
-policy that does not reuse a prior boot's monotonic timestamp. Crash recovery,
-sleep/wake, hibernation and Fast Startup remain separately qualified cases.
+The [installed IQ3_S application-restart trial](../provenance/installed-reopen/application-restart-2026-11-01.json)
+passed at source `6ac601546daf32d96e38b6689a5818e4cc8dafa8`: one saved read
+survived ordinary Stop and reopening, the original task completed with one
+physical output write, and the completed-result view made no additional model
+call or canonical file change. This qualifies that installed same-boot path.
+OS reboot needs a durable budget policy that does not reuse a prior boot's
+monotonic timestamp. Crash recovery, sleep/wake, hibernation and Fast Startup
+remain separately qualified cases.
 See [M5 in the roadmap](../PLAN.md#m5--survive-application-and-computer-lifecycle-changes)
 and the [evidence ledger](evidence.md) for the current validation boundary.
+
+## Reproduce the bounded application-restart check
+
+Use the [documented installation/setup](installed-desktop.md), a matching
+candidate package and full host/worker interpreters, and the unchanged IQ3_S
+model and quality recorded in the evidence. Keep existing validation folders
+intact; create a separate setup with an empty runs folder. This sequence uses
+the ordinary application, with no injected picker, control request or deadline.
+
+1. Start the generated launcher. Choose **New task**, the repository's
+   [inventory task](../examples/tasks/inventory/task.json), and its `inputs`
+   folder. Confirm the task starts paused, then select **Resume** once.
+2. Allow the first model step to read the input. Ordinary foreground activity
+   can hold the next step at resource admission. Select **Stop engine** only at
+   the safe waiting boundary, and wait for normal application/owned cleanup.
+3. Inspect the closed evidence: require a confirmed read, no physical write,
+   no unresolved owner/operation/effect and time left on the original deadline.
+   A task already completed before Stop does not test unfinished-task recovery.
+4. Start the launcher again, choose **Open saved task**, and select the original
+   task. Confirm paused startup, then select **Resume** once. Require the same
+   saved read in the first resumed provider request, the original deadline and
+   counters, the correct 23-unit artifact and one physical write overall.
+5. Stop normally and retain the application/worker/native cleanup records.
+   Hash the closed canonical task/native databases, plan/configuration,
+   request/effect records and input/output files. Open the completed task again,
+   inspect the saved answer, and close it. Verify those hashes remain unchanged
+   and no additional provider call or worker was created.
+
+Use the existing task, native-history, request-hash and effect/oracle checks;
+file appearance alone is not task acceptance. Keep actual process joins and
+source/package identity with the result. This repository retains the code and
+sanitized findings; private machine records/model assets are not a public
+replay bundle. A different installation earns its own result. Preserve a failed
+or expired attempt rather than using Continue to renew its budget for this test.
 
 ## Mechanisms and sources
 

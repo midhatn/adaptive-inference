@@ -69,3 +69,15 @@ python -B -m unittest -v $modules
 The existing source-distribution rules include this record and every predecessor
 file. Release validation must still run the ordinary distribution checker on
 the actual built archive and wheel.
+
+## Installed application restart
+
+The [1 November 2026 installed result](application-restart-2026-11-01.json)
+binds the normal installed wheel and runtime source to the actual IQ3_S
+same-boot application trial. It preserves read history, the original deadline
+and counters, one physical write, normal application/native cleanup and a
+read-only completed-result view. The bounded observer shutdown errors and
+initial wrapper preparation failure remain explicit. OS reboot, crash and
+full desktop/media qualification are separate. Follow the
+[ordinary local reproduction sequence](../../docs/saved-task-reopening.md#reproduce-the-bounded-application-restart-check);
+private machine evidence and model assets are not public replay inputs.

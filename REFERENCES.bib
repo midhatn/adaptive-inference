@@ -873,6 +873,13 @@
   note = {Original 1080p60 normal clip acquired for local comparison on 2026-11-01, SHA256 3aa2d8946ec7cf3b50b7148fb3338ca421e6ec34987b20a4044845d674794e3e. CC BY 3.0, Blender Foundation 2008 and Janus Bager Kristensen 2013; attribution retained. Clip is not bundled; sharing terms at https://peach.blender.org/about/}
 }
 
+@misc{windowsOrdinaryTaskSwitching,
+  author = {{Microsoft}},
+  title = {Task switching in Windows and ShowWindow display states},
+  url = {https://support.microsoft.com/en-us/windows/experience/how-to-multitask-in-windows},
+  note = {Inspected 2026-11-01 with https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow after browser activation restored a smaller window in the second video comparison. Reuses ordinary Alt+Tab as a prospective operator procedure, subject to actual inert geometry/timing preflight. Documentation does not prove the automation tool internals or preservation of maximized state on this host. No implementation copied}
+}
+
 @misc{setuptoolsExplicitSourceAssets,
   author = {{Python Packaging Authority and setuptools contributors}},
   title = {Controlling files in a source distribution},
@@ -899,4 +906,25 @@
   title = {Hermes canonical local-session recovery and unknown-operation settlement},
   url = {https://github.com/NousResearch/hermes-agent/blob/a4994d4ead8f9c915b485cec5689909b349a49df/gateway/session_local_recovery.py},
   note = {MIT, inspected 2026-11-01 with session_unattended_unknown.py and gateway-local-sessions documentation at the same revision; also checked installed revision 14e1e43a23761b369641208e204365cd6cb9399d. These mechanisms already exist in that installed revision. Research informs ownership and uncertainty boundaries; the direct AIAgent/SessionDB adapter reuses its own retained recovery path. No additional upstream code copied}
+}
+
+@misc{pythonShieldedStopVerification,
+  author = {{Python Software Foundation}},
+  title = {Python 3.12 shield and bounded task waits},
+  url = {https://docs.python.org/3.12/library/asyncio-task.html#shielding-from-cancellation},
+  note = {Inspected 2026-11-01. Reuses the retained Stop verification task in the continuation test fixture: a bounded caller wait does not imply that shielded post-exit verification finished. Await it before removing its files. No upstream implementation copied; runtime deadlines are unchanged}
+}
+
+@misc{cpythonNestedCleanupOutcome,
+  author = {{Python Software Foundation}},
+  title = {CPython 3.12.10 unittest cleanup outcome handling},
+  url = {https://github.com/python/cpython/blob/v3.12.10/Lib/unittest/case.py},
+  note = {Inspected 2026-11-01. Nested test seed cases created through setUp without run can discard cleanup exceptions when no result is attached. Fixture-only correction temporarily shares the running case outcome, preserving the primary test error and additional cleanup errors. No upstream implementation copied; this private unittest detail is confined to tests}
+}
+
+@misc{pythonSqliteExplicitConnectionClose,
+  author = {{Python Software Foundation}},
+  title = {Python 3.11 SQLite connection context management},
+  url = {https://docs.python.org/3.11/library/sqlite3.html#how-to-use-the-connection-context-manager},
+  note = {Inspected 2026-11-01 after propagated cleanup errors exposed WinError 32 in the selected-result fixture. The connection context commits or rolls back but does not close; the fixture combines it with contextlib.closing. No upstream implementation copied and no transaction assertion removed}
 }
