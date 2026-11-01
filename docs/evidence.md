@@ -118,6 +118,30 @@ Independent source/evidence review accepted the corrected join and verified
 the recorded source hashes, ten outcomes and closed connection records without
 repeating the tests.
 
+### Video example source-archive correction
+
+The first [PR #29](https://github.com/midhatn/adaptive-inference/pull/29) head,
+`d43910be9ad19026105526e2cb9369df5338f13b`, exposed an archive omission:
+`page.html` was not included by the existing extension-based manifest rule.
+The original Ubuntu 3.11 core suite completed successfully (1,326 discovered
+checks, including 39 skipped), followed by the downstream validation/build
+steps, before the unchanged distribution verifier rejected the
+archive. The original failed checks remain failed; they were not rerun.
+
+The correction explicitly includes only this example's `page.html` and `page.js`
+using the existing [setuptools manifest mechanism](https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html).
+A fresh private snapshot of `d43910b` plus that one-line rule passed a standard
+isolated source build and the unchanged archive/runtime verifier: **1,202 source
+files and 61 runtime modules**. The validated runtime wheel stayed unchanged.
+Build, verifier and retained parent all joined with exit 0. The already-passing
+core suite was not repeated locally. The private completion receipt SHA-256 is
+`a7cceceb78b39a08f799e2e9c85f55d36352e01fa26dacfc0266e3a53cf8fe1a`;
+the tested archive SHA-256 is
+`86854031a435003f4afb66cb698242f386ca80c49888dc1edb5662fbe4e41593`.
+This local archive binds that source snapshot; subsequent documentation and
+the final PR revision receive their own hosted archive checks. No runtime,
+model, browser setting or playback acceptance limit changed.
+
 ## Reference alpha publication
 
 [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1)
