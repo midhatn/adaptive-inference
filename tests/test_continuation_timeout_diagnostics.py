@@ -86,13 +86,23 @@ class TimeoutCleanupTests(unittest.TestCase):
     def run_held_transition(self, *, capture_fails=False):
         class HeldTransition(fixture.HostTests):
             async def asyncSetUp(self):
+                self.hold_entered = asyncio.Event()
                 await super().asyncSetUp()
                 release = asyncio.Event(); self.releases.append(release)
-                self.hold_entered = False
                 async def held_ready(record, intent_valid):
-                    self.hold_entered = True
+                    self.hold_entered.set()
                     await release.wait()
                 self.c.ready_continuation = held_ready
+
+            async def wire(self, method, **values):
+                response = await super().wire(method, **values)
+                if method == 'continue' and response['ok']:
+                    # Separate fixture startup from the injected timeout. The
+                    # inherited five-second wait starts only inside the hold.
+                    # Reuse the CPU fixture's 30-second startup bound and Event:
+                    # https://docs.python.org/3.12/library/asyncio-sync.html#asyncio.Event
+                    await asyncio.wait_for(self.hold_entered.wait(), 30)
+                return response
 
             async def test_injected_timeout(self):
                 await self.test_transport_continue_preserves_live_intent_and_duplicate_does_not_launch()
@@ -116,12 +126,23 @@ class TimeoutCleanupTests(unittest.TestCase):
             finally:
                 for patch in reversed(patches):patch.stop()
             receipt = json.loads((Path(directory)/'test_injected_timeout.json').read_bytes())
+            # Preserve failed setup/assertion diagnostics before deleting the
+            # nested fixture's temporary receipt or asserting its outcome.
+            if parent_destination:
+                output = Path(parent_destination); output.mkdir(exist_ok=True)
+                receipt['injected_error'] = {
+                    'expected': 'TimeoutError', 'actual_errors': len(result.errors),
+                    'actual_failures': len(result.failures),
+                    'hold_entered': case.hold_entered.is_set(),
+                    'actual_final_line': (result.errors[0][1].rstrip().splitlines()[-1]
+                                          if result.errors else None)}
+                (output/(self._testMethodName+'.json')).write_text(json.dumps(receipt, indent=2), encoding='utf-8')
         self.assertEqual(result.testsRun, 1)
         self.assertFalse(result.failures)
         self.assertEqual(len(result.errors), 1)
         self.assertIn('await asyncio.wait_for(asyncio.shield(task),5)', result.errors[0][1])
         self.assertTrue(result.errors[0][1].rstrip().endswith('TimeoutError'))
-        self.assertTrue(case.hold_entered)
+        self.assertTrue(case.hold_entered.is_set())
         self.assertTrue(case.c.runtime._stopping)
         self.assertFalse(case.c.runtime._continuation_tasks)
         self.assertTrue(all(task.done() and not task.cancelled() for task in case.tasks))
@@ -130,11 +151,6 @@ class TimeoutCleanupTests(unittest.TestCase):
         self.assertFalse(case.c.work.exists())
         self.assertTrue(all(row['joined'] and not row['cleanup_killed'] for row in receipt['children']))
         self.assertNotIn('private-capture-message', json.dumps(receipt))
-        if parent_destination:
-            output = Path(parent_destination); output.mkdir(exist_ok=True)
-            receipt['injected_error'] = {'expected': 'TimeoutError', 'actual_errors': len(result.errors),
-                                         'actual_final_line': result.errors[0][1].rstrip().splitlines()[-1]}
-            (output/(self._testMethodName+'.json')).write_text(json.dumps(receipt, indent=2), encoding='utf-8')
         return receipt
 
     def test_actual_timeout_observed_before_stop_then_exact_children_join(self):

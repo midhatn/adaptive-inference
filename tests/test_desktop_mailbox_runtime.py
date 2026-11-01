@@ -503,12 +503,25 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
 
     async def test_rotation_during_real_authority_read_prevents_late_activation(self):
         entered, release, blocked = self.block_observation()
+        authority_entered = asyncio.Event()
         actual_authority = self.runtime.resume_authority
         async def held_authority(request_id,**kwargs):
+            authority_entered.set()
             with mock.patch.object(self.box, 'snapshot', side_effect=blocked):
                 return await actual_authority(request_id,**kwargs)
         with mock.patch.object(self.runtime, 'resume_authority', side_effect=held_authority):
-            first = self.transport.admit(Reader(self.frame('resume', request_id='resume')), Writer())
+            writer = Writer()
+            first = self.transport.admit(Reader(self.frame('resume', request_id='resume')), writer)
+            # SQLite submission precedes the held read. Establish that setup
+            # explicitly before the unchanged two-second thread-entry check.
+            try:
+                await asyncio.wait_for(authority_entered.wait(), 30)
+            except TimeoutError:
+                operation = self.transport._records.get('resume', {}).get('task')
+                error = (type(operation.exception()).__name__ if operation is not None
+                         and operation.done() and not operation.cancelled() else None)
+                reply = json.loads(writer.data) if writer.data else None
+                self.fail(f'Authority setup did not complete: reply={reply!r}, error={error}')
             await self.signal(entered)
             self.transport.bind_session(self.transport_cap, 'new-session', 'c' * 64)
             self.host.live.add('new-session')
@@ -516,6 +529,7 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
             self.assertTrue((await self.request('window_ready', session_id='new-session', token='c' * 64))['ok'])
             release.set()
             await first
+            await asyncio.wait_for(asyncio.shield(self.transport._records['resume']['task']), 3)
         self.assertFalse(self.matches())
 
     async def test_projection_keeps_only_bounded_fields_and_objective(self):

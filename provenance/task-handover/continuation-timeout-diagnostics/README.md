@@ -42,3 +42,31 @@ timeout, normal exact-child cleanup, capture failures, sensitive-field omission,
 bounded file reads, and the affected historical source consumers. This is fixture
 diagnostic validation, not a hosted CI retry, runtime fix, native-resource test,
 installed-agent test, model result, or qualification of the physical scenario.
+
+## Fixture startup ordering correction, 1 November 2026
+
+At `75ad10893ac2a3aa5d286ff7fb971f530739429e`, the original hosted runs
+finished with 12 successful jobs and two Windows 3.12 failures. The
+[PR job](https://github.com/midhatn/adaptive-inference/actions/runs/41264358030/job/124723949288)
+timed out before the diagnostic fixture entered its deliberately held transition.
+Its ordinary continuation test had passed earlier in the same job. The exact
+pre-hold delay remains unknown. The nested receipt was unavailable because its
+export followed the failing assertion.
+
+The diagnostic fixture now signals entry with the existing
+[`asyncio.Event`](https://docs.python.org/3.12/library/asyncio-sync.html#asyncio.Event)
+pattern and awaits that setup precondition before starting the inherited,
+unchanged five-second timeout. It preserves the nested receipt before asserting
+the outcome. A startup failure cannot count as the deliberately injected timeout.
+The product, ordinary continuation test, execution deadlines and exact-child
+cleanup requirements are unchanged.
+
+The separate [push job](https://github.com/midhatn/adaptive-inference/actions/runs/41264353438/job/124723935004)
+failed waiting for an injected authority-read signal. Its targeted test now
+awaits entry to the held authority read before the existing signal check, then
+awaits the retained control operation before checking that session rotation
+prevented late activation. The public handler may already have returned a pending
+reply; that reply is not the operation's completion. This uses the existing
+shielded-task join pattern and changes no shared runtime or freshness limit.
+The cause of the original precondition delay is still unknown. Both original
+failed runs remain failed; local fixture checks and later CI have their own scope.

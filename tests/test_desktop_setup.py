@@ -1,0 +1,150 @@
+"""Ordinary launcher preparation without model, worker or real GUI execution."""
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+from unittest import mock
+
+from adaptive_inference.desktop import installation
+from adaptive_inference.desktop.profile import WindowsProfile
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def load(name):
+    spec = importlib.util.spec_from_file_location('desktop_example_' + name,
+                                                ROOT / 'examples/desktop' / (name + '.py'))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+setup = load('setup')
+launcher = load('launch')
+
+
+class DesktopSetupTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name).resolve(strict=True)
+        self.worker = self.root / 'worker.exe'
+        self.worker.write_bytes(b'explicit worker interpreter')
+        self.sdk = self.root / 'sdk'; self.sdk.mkdir()
+        self.dependencies = self.root / 'dependencies'; self.dependencies.mkdir()
+        self.owner = self.root / 'owner'; self.owner.mkdir()
+        (self.owner / 'MANIFEST.json').write_text('{}', encoding='utf-8')
+        (self.owner / 'PROVENANCE.json').write_text('{}', encoding='utf-8')
+        self.owner_value = {'package': str(self.owner),
+            'manifest_sha256': installation.sha(self.owner / 'MANIFEST.json'),
+            'provenance_sha256': installation.sha(self.owner / 'PROVENANCE.json')}
+        self.options = {'worker_python': self.worker, 'hermes_source': self.sdk,
+                        'hermes_site_packages': self.dependencies, 'native_owner': self.owner}
+        for patch in (mock.patch.object(setup, 'host_installation', return_value=Path(sys.executable).resolve()),
+                      mock.patch.object(setup, 'verify_sdk', return_value=self.sdk),
+                      mock.patch.object(setup, 'owner_identity', return_value=self.owner_value)):
+            patch.start(); self.addCleanup(patch.stop)
+
+    def prepare(self, name='desktop'):
+        return setup.create_setup(self.root / name, **self.options)
+
+    def test_generated_profile_uses_selected_files_and_existing_contract(self):
+        result = self.prepare()
+        profile = WindowsProfile.load(result['profile'])
+        self.assertEqual(profile.worker_python, self.worker)
+        self.assertEqual(profile.worker_python_sha256, installation.sha(self.worker))
+        self.assertEqual(profile.owner, self.owner_value)
+        self.assertEqual(profile.hermes_source, self.sdk)
+        self.assertEqual(profile.hermes_site_packages, self.dependencies)
+        self.assertEqual(profile.gateway.port, 18100)
+        self.assertEqual(profile.gateway.backend_url, 'http://127.0.0.1:18098/v1')
+        folder = Path(result['profile']).parent
+        self.assertEqual((folder / 'launch.py').read_bytes(),
+                         (ROOT / 'examples/desktop/launch.py').read_bytes())
+        self.assertEqual(list(Path(result['runs']).iterdir()), [])
+        self.assertFalse(result['inference_tested'])
+        with self.assertRaisesRegex(ValueError, 'new setup folder'):
+            self.prepare()
+
+    def test_failed_existing_contract_validation_leaves_no_output(self):
+        destination = self.root / 'invalid'
+        with self.assertRaises(ValueError):
+            setup.create_setup(destination, **self.options, gateway_port=18098)
+        self.assertFalse(destination.exists())
+        with mock.patch.object(setup, 'owner_identity', side_effect=RuntimeError('owner changed')):
+            with self.assertRaisesRegex(RuntimeError, 'owner changed'):
+                setup.create_setup(destination, **self.options)
+        self.assertFalse(destination.exists())
+
+    def test_cancel_starts_nothing_and_success_forwards_to_existing_executor(self):
+        result = self.prepare()
+        executor = mock.Mock(return_value={'clean_stop': True})
+        selected = {'task_spec_path': str(self.root / 'task.json'),
+                    'task_inputs': str(self.root / 'inputs')}
+        with mock.patch.object(installation, 'verify_interpreter'), \
+                mock.patch.object(installation, 'package_identity'):
+            self.assertIsNone(launcher.launch(result['profile'], result['runs'],
+                                             picker=lambda: None, executor=executor))
+            executor.assert_not_called()
+            first = launcher.launch(result['profile'], result['runs'],
+                                    picker=lambda: selected, executor=executor)
+            second = launcher.launch(result['profile'], result['runs'],
+                                     picker=lambda: selected, executor=executor)
+        self.assertEqual(first, {'clean_stop': True})
+        self.assertEqual(second, first)
+        calls = executor.call_args_list
+        self.assertEqual(len(calls), 2)
+        self.assertNotEqual(calls[0].args[1], calls[1].args[1])
+        for call in calls:
+            self.assertEqual(call.args[0], Path(result['profile']))
+            self.assertEqual(call.args[1].parent, Path(result['runs']))
+            self.assertFalse(call.args[1].exists())
+            self.assertEqual(call.kwargs, {'task_spec': selected['task_spec_path'],
+                                          'task_inputs': selected['task_inputs']})
+
+    def test_picker_is_destroyed_before_return_and_on_failure(self):
+        import adaptive_inference.desktop.run_gui as gui
+        root = mock.Mock()
+        tkinter = mock.Mock(Tk=mock.Mock(return_value=root))
+        with mock.patch.dict(sys.modules, {'tkinter': tkinter}), \
+                mock.patch.object(gui, 'choose_task', return_value=None) as choose:
+            self.assertIsNone(launcher.select_task())
+            choose.assert_called_once_with(root)
+            root.destroy.assert_called_once_with()
+        root.reset_mock()
+        with mock.patch.dict(sys.modules, {'tkinter': tkinter}), \
+                mock.patch.object(gui, 'choose_task', side_effect=ValueError('invalid task')):
+            with self.assertRaisesRegex(ValueError, 'invalid task'):
+                launcher.select_task()
+            root.destroy.assert_called_once_with()
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows command processor')
+    def test_actual_generated_command_runs_isolated_stub_from_spaced_folder(self):
+        result = self.prepare('desktop with spaces & ! %')
+        folder = Path(result['profile']).parent
+        receipt = folder / 'stub.json'
+        (folder / 'launch.py').write_text(
+            'import json, pathlib, sys\n'
+            "pathlib.Path(__file__).with_name('stub.json').write_text(json.dumps({"
+            "'executable': sys.executable, 'isolated': sys.flags.isolated, "
+            "'no_bytecode': sys.dont_write_bytecode}), encoding='utf-8')\n",
+            encoding='utf-8')
+        command_processor = os.environ.get('COMSPEC', 'cmd.exe')
+        command = '"' + command_processor + '" /d /s /c ""' + result['launcher'] + '""'
+        completed = subprocess.run(command,
+            cwd=self.root, capture_output=True, timeout=20,
+            creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+        self.assertEqual(completed.returncode, 0, (completed.stdout, completed.stderr))
+        observed = json.loads(receipt.read_text(encoding='utf-8'))
+        self.assertEqual(Path(observed['executable']).resolve(), Path(sys.executable).resolve())
+        self.assertEqual(observed['isolated'], 1)
+        self.assertTrue(observed['no_bytecode'])
+
+
+if __name__ == '__main__':
+    unittest.main()

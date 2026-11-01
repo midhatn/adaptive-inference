@@ -19,8 +19,10 @@ a successor in the same window; it does not reset the request allowance. Rejecte
 use the existing feedback mechanism before a file effect. The file-task adapter
 supports its declared read/write capabilities; it is not a general Hermes
 service installer or computer-reboot recovery service. The ordinary task and
-New task steps are in the task guide; automatic setup and a scoped reference
-alpha remain the next practical delivery.
+New task steps are in the task guide. The
+[setup helper](../examples/desktop/README.md) generates the explicit profile and
+Start launcher from already installed components. A fresh-machine installer
+and broader daily-use qualification remain later deliveries.
 
 The product code reuses the previously qualified composition. A source promotion
 or fixture pass does not transfer real-process acceptance to a new installation.
@@ -123,9 +125,14 @@ a model, weaken driver pins or claim native support for other HTTP engines.
 
 ## Explicit profile
 
-Create a local JSON file with these exact fields, replacing the example paths
-and the SHA-256 placeholders with the actual selected artifacts. There is one
-host interpreter field; it is also the GUI interpreter.
+Use the [setup helper](../examples/desktop/README.md) to select the installed
+components and calculate their hashes. It writes the same profile shown below
+and a reusable launcher. The helper and launch script travel in the repository
+and full source distribution; the runtime wheel is unchanged.
+
+For manual configuration, create a local JSON file with these exact fields,
+replacing the example paths and SHA-256 placeholders with the actual selected
+artifacts. There is one host interpreter field; it is also the GUI interpreter.
 
 ```json
 {

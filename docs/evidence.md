@@ -2,6 +2,37 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Supported desktop setup helper
+
+**1 November 2026:** the [setup and launch helpers](../examples/desktop/README.md)
+generate the existing deployment profile and a reusable Windows command from
+already installed components. They reuse the task picker and controller without
+changing the runtime wheel, task budgets, model assets or quality settings.
+
+Five focused checks passed on Windows/Python 3.11.9. They cover generated profile
+contents, existing-contract rejection before output, cancellation and forwarding,
+picker cleanup, and the actual generated command executing an inert Python
+stub. The first attempt's older global import and incorrectly quoted outer test
+command remain recorded; the successful attempt explicitly imported the current
+checkout and corrected that test invocation.
+
+The setup command also ran successfully with the retained case17 installation.
+It verified the existing host wheel, pinned Hermes interfaces and native owner's
+files/dependencies/model metadata. Readback confirmed the selected components,
+hashes, gateway settings and foreground policy matched that installation; only
+the operator's backend revision label changed to the helper's generic label.
+The copied launch script matched exactly and its run folder was empty. This
+check launched no worker, model or GUI. Ordinary launcher/UI qualification is
+still a separate next step; setup success does not extend case17 acceptance.
+
+The checked setup source has SHA-256
+`e99f3ae9c235145b150e6136c485a002efa6229d763ba54ac826dc19508134c5`;
+the launch source has SHA-256
+`3fc3ec5351b9a2bd8b32630a40fd8baa17238f71dc48181d177d74375a5b6d39`.
+Both are preserved in the repository and complete source archive. The
+component tests are [directly reproducible](../tests/test_desktop_setup.py);
+actual installation paths and model assets remain local prerequisites.
+
 ## Case17: complete foreground continuation and two-task handover
 
 **1 November 2026: both original terminal audits passed for the same installed

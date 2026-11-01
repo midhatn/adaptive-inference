@@ -16,7 +16,11 @@ Follow the [installed desktop guide](installed-desktop.md) to prepare the host
 and worker interpreters, install the same regular Adaptive Inference package in
 both, and configure the pinned Hermes source/dependencies and owned native
 backend. Keep the existing IQ3_S model and quality settings. The explicit local
-deployment profile selects these components; automatic setup is still pending.
+deployment profile selects these components. The
+[desktop setup helper](../examples/desktop/README.md) creates that profile from
+the selected installed components and writes a **Start Adaptive Inference**
+launcher. It calculates the required hashes; no manual JSON editing is needed.
+It does not install Python, Hermes, models or the native backend for you.
 
 Use the current development source containing the file-task and handover
 features. The version number alone does not identify those changes: the tested
@@ -31,7 +35,12 @@ task for the next selection; its output receives format-only checking.
 
 ## Start and work
 
-Launch the existing command with your actual full host interpreter, deployment
+After setup, open **Start Adaptive Inference.cmd** and choose your task
+specification and input folder. Cancelling the picker starts no task. Each
+launch selects a fresh state directory and calls the existing desktop host.
+The window still starts paused and requires **Resume**.
+
+For a direct command, use your actual full host interpreter, deployment
 profile, a new state directory and the chosen task files:
 
 ```powershell

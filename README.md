@@ -44,8 +44,10 @@ The inventory result was independently checked; the welcome task had format-only
 validation. The [accepted result and replay](provenance/task-handover/acceptance/README.md)
 and [fresh qualification workflow](examples/validation/task_handover/README.md)
 are preserved in this repository. The fresh workflow still requires actual
-installation records and external model assets; automatic setup and a usable
-installed alpha are the next delivery. The
+installation records and external model assets. The
+[supported setup helper](examples/desktop/README.md) now creates the deployment
+profile and Start launcher from installed components; ordinary launch validation
+is the next step toward a usable installed alpha. The
 [task contracts](docs/task-spec.md), [roadmap](PLAN.md) and
 [handoff](HANDOFF.md) explain the supported scope and remaining work.
 
@@ -109,6 +111,8 @@ takes an objective and explicitly selected files, copies the inputs and creates
 the task configuration automatically. The existing desktop and **New task**
 controls consume it. This authoring command does not start inference; the
 [ordinary reference guide](docs/reference-workflow.md) explains setup and use.
+The [desktop setup helper](examples/desktop/README.md) calculates deployment
+hashes and provides a reusable launcher with a task picker and fresh run folder.
 
 | Capability | Implementation |
 | --- | --- |
