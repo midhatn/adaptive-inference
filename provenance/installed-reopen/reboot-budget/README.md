@@ -47,6 +47,11 @@ python -B -m unittest discover -s provenance -p "test_*.py" -v
 
 These checks establish source preservation and refusal boundaries. Behavior
 fixtures, installed SDK checks and actual computer-reboot qualification remain
-separate evidence. The changed runtime needs fresh installed qualification; no
-physical reboot, model quality, foreground performance or speedup result is
-claimed here.
+separate evidence. The [installed SDK record](installed-sdk-validation-2026-11-01.json)
+now binds the fresh isolated installation and four scripted calls to the actual
+installed wheel, corrected source `260187a`, and its 14 original hosted jobs/12
+distribution checks. The two package containers differ, while all 74 wheel
+member contents and 63 runtime modules match. Initial budget persistence and
+durable correction feedback passed; the physical IQ3_S clean Stop/Windows
+Restart/resume gate remains pending. No physical reboot, model quality,
+foreground performance or speedup result is claimed here.

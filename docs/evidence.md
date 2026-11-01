@@ -37,7 +37,37 @@ changes still fail that expectation. The corrected 52-check harness and all 90
 provenance checks passed locally. A separate private test-recorder import error
 is retained; removing that optional instrumentation allowed the unchanged
 provenance subprocess contracts to run. Runtime and core-test bytes did not
-change. Corrected-head packaging and hosted checks are reported in PR #34.
+change. Corrected source `260187a` passed package verification of 1,280 source
+files/63 runtime modules, all 14 original hosted jobs and all 12 distribution
+checks: [push run](https://github.com/midhatn/adaptive-inference/actions/runs/41348798262)
+and [PR run](https://github.com/midhatn/adaptive-inference/actions/runs/41348802844).
+
+### Installed SDK and initial budget
+
+The [source-bound installed SDK record](../provenance/installed-reopen/reboot-budget/installed-sdk-validation-2026-11-01.json)
+binds a fresh isolated installation and the actual pinned Hermes SDK with
+scripted provider responses. All four requests advertised exactly `read_file`
+and `write_file`. A 19-unit/4,800-cent proposal was rejected before dispatch;
+its feedback was saved before the corrected request, and one write produced
+the correct 17-unit/4,350-cent report. The original prompt, quality settings
+and 900-second deadline were preserved, with request/attempt/admission counters
+of 4/4/4. Both fixture children joined with exit 0, without timeout or forced
+termination.
+
+The initial budget was committed at revision 2, before generation at revision 7,
+and remained identical across 33 budget-bearing history rows. Its initial cap
+was 897,324,039,899 ns: startup had already consumed part of the allowance.
+The fixture used installed wheel `5ae3de8f…`; corrected source `260187a` and
+wheel `de70af59…` are separately bound by equality of all 74 wheel member
+contents and 63 runtime modules. Their container hashes and source archives
+remain distinct.
+
+Independent review accepted this scope after a metadata-only amendment: its
+original 71/72 aggregate incorrectly expected a Boolean instead of the verified
+module count 63. Both records remain preserved; the amendment replayed no
+fixture, auditor or database access. This is installed SDK and initial-budget
+evidence. Episode zero and `clean_stop=false` remained unchanged; model
+inference, clean Stop and physical Windows restart were not exercised.
 
 ## Installed later-task application restart
 

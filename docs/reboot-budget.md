@@ -1,8 +1,9 @@
 # Preserve a task's time allowance across a normal reboot
 
-Status: implementation in progress. The accepted same-boot application restart
-does not establish computer-reboot recovery. This document describes the next
-bounded lifecycle change; no physical reboot result is claimed here.
+Status: source, package, hosted, isolated installation and scripted SDK gates
+passed. The next gate is an actual clean Stop/Windows Restart/resume trial.
+The accepted same-boot application restart does not establish computer-reboot
+recovery; no physical reboot result is claimed here.
 
 The first source component is the pure
 [`execution_budget` helper](../src/adaptive_inference/desktop/execution_budget.py).
@@ -15,9 +16,15 @@ and provider transport were inert. All 123 combined behavior checks and 104
 source-preservation checks passed, including actual worker startup through inert
 SDK edges. The complete suite also passed **1,394 tests in 517.802 seconds**
 with unchanged inputs. The [source-bound record](../provenance/installed-reopen/reboot-budget/validation-2026-11-01.json)
-retains these results and the earlier fixture failures. Package and hosted checks
-are tracked separately in the candidate PR. Installed SDK and physical reboot
-qualification remain pending.
+retains these results and the earlier fixture failures. Corrected source
+`260187a` passed package verification of 1,280 source files/63 runtime modules,
+all 14 original hosted jobs and 12 distribution checks. Fresh isolated
+installation and the [actual pinned SDK fixture](../provenance/installed-reopen/reboot-budget/installed-sdk-validation-2026-11-01.json)
+passed independent review. Scripted responses exercised rejection feedback and
+one correct write; the initial budget included startup time and remained
+unchanged across 33 history rows. Physical IQ3_S reboot qualification remains
+pending. The actual installed wheel has the same 74 member contents as the
+corrected package; their source archives and container hashes differ.
 
 The user should be able to stop a task safely, restart Windows, open that same
 task and continue its unfinished work. Completed reads and writes, the original

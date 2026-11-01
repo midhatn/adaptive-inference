@@ -1,0 +1,184 @@
+{
+  "schema": "adaptive.installed-reopen.reboot-budget.installed-sdk.v1",
+  "recorded_date": "2026-11-01",
+  "result": "passed_at_stated_scope_after_review_amendment",
+  "scope": "Actual installed pinned Hermes SDK, native session history, supported file tools and initial versioned execution budget with a scripted provider. No model inference, Stop, application restart or Windows reboot qualification.",
+  "source": {
+    "installed_wheel_sha256": "5ae3de8fb5b28b4bf47f6f2cec1734c8d4a019a157a910d7de28c463758c331d",
+    "corrected_source_revision": "260187a4969ff789d1810ea9bf4a6af9ce3d9826",
+    "corrected_wheel_sha256": "de70af595247b4d0d76282677cef14a8920582dd61a59d11c35aa7323be8c33f",
+    "wheel_container_bytes_equal": false,
+    "wheel_member_bytes_equal": 74,
+    "runtime_modules_equal": 63,
+    "equivalence_scope": "All 74 wheel member bytes and all 63 runtime modules match; wheel container bytes and complete source archives differ. The fixture used the earlier installed wheel, not a new installation of the corrected wheel.",
+    "installed_sdk_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "module_sha256": {
+      "src/adaptive_inference/desktop/hermes/run_recovery.py": "a0ef789bd3b42e20fcfbff4ae254030f17ddc7fd5b789399aa0608b228300b34",
+      "src/adaptive_inference/desktop/execution_budget.py": "77ad74ddbf0eaa89379fbecb305574d5b70cc32f9e63934a14f439ed2c744728",
+      "src/adaptive_inference/desktop/saved_tasks.py": "b8090b9e551d93f5c29b5a56919260f73e033a807430c9d2dd9e0560fec36c0f"
+    }
+  },
+  "execution": {
+    "fixture_scenario": "report-feedback",
+    "provider": "scripted",
+    "model_inference": false,
+    "ui_or_gateway_started": false,
+    "provider_calls": 4,
+    "requests": 4,
+    "attempts": 4,
+    "admission_attempts": 4,
+    "request_limit": 8,
+    "original_task_budget_seconds": 900,
+    "original_deadline_preserved": true,
+    "original_prompt_sha256": "471610eb98c6a9f1da44d93ba0a75c78746b346dd6ac2ced174d1dc8873451d8",
+    "original_prompt_preserved": true,
+    "quality_unchanged": true,
+    "quality": {
+      "experimental_speed_projection": false,
+      "max_tokens": 10923,
+      "reasoning_budget_tokens": 8192,
+      "reasoning_effort": "high",
+      "strata_tune": {
+        "pcie_frac": 0.37
+      }
+    },
+    "runner_emergency_guard_seconds": 180,
+    "guard_scope": "Fixture containment only; not a product timeout or performance result."
+  },
+  "advertised_capabilities": {
+    "names": [
+      "read_file",
+      "write_file"
+    ],
+    "checked_serialized_requests": 4,
+    "each_request_has_exactly_these_function_names": true,
+    "serialized_definitions_match_durable_requests": true,
+    "construction_gate": "Supported function-name and dispatch-set gate, plus function-entry shape checks.",
+    "full_parameter_schema_equivalence_claimed": false
+  },
+  "correction": {
+    "confirmed_reads": 1,
+    "rejected_proposals": 1,
+    "rejection_dispatched": false,
+    "rejected_values": {
+      "units": 19,
+      "total_cents": 4800
+    },
+    "exact_feedback_durable_in_native_history_before_corrected_request": true,
+    "dispatched_writes": 1,
+    "final_report": {
+      "rows": 4,
+      "units": 17,
+      "total_cents": 4350
+    },
+    "final_report_sha256": "37dd9565f5b19fa8d546f3a899956067ed777832a1baea5baf34222b89ecfe8b"
+  },
+  "initial_budget": {
+    "schema": "adaptive_inference.execution_budget.v1",
+    "max_seconds": 900,
+    "budget_first_revision": 2,
+    "first_generation_revision": 7,
+    "episode_index": 0,
+    "clean_stop": false,
+    "initial_remaining_cap_ns": 897324039899,
+    "budget_bearing_history_rows": 33,
+    "all_budget_records_unchanged": true,
+    "initial_arithmetic_verified": true,
+    "actual_boot_observed": true,
+    "actual_clock_brackets_retained": true,
+    "stop_or_changed_boot_transition_exercised": false
+  },
+  "completion": {
+    "task_state": "accepted",
+    "final_task_revision": 34,
+    "owner_released": true,
+    "pending_operation": false,
+    "reconciliation_required": false,
+    "native_history_rows": 8,
+    "native_history_sha256": "0add0bf324592f36234ccd9bcdf0e10e9c5f31fe5670a86a92dc56040aeba450",
+    "closed_canonical_files_unchanged_during_independent_review": true,
+    "source_unchanged": true
+  },
+  "closure": {
+    "fixture_children": [
+      {
+        "role": "prepare",
+        "exit_code": 0,
+        "joined": true,
+        "timed_out": false,
+        "killed": false,
+        "pipe_handles_closed": true
+      },
+      {
+        "role": "worker",
+        "exit_code": 0,
+        "joined": true,
+        "timed_out": false,
+        "killed": false,
+        "pipe_handles_closed": true
+      }
+    ],
+    "supervisor": {
+      "exit_code": 0,
+      "terminal_join_observed": true,
+      "evidence_origin": "Coordinator-attested terminal tool observation retained by the independent reviewer; no independent live process probe."
+    },
+    "prior_installation_commands_joined_exit_zero": 7
+  },
+  "review": {
+    "original_accepted": false,
+    "original_passed_predicates": 71,
+    "original_total_predicates": 72,
+    "original_failed_predicate": "current_corrected_ci_and_runtime_equivalence",
+    "bookkeeping_error": "The original aggregate expected a Boolean where the equivalence record contains the verified integer module count 63.",
+    "amendment_accepted": true,
+    "amendment_scope": "Metadata-only correction checks the exact integer count and the remaining provenance conditions separately. Original reviewer receipt and script are preserved.",
+    "fixture_or_auditor_replayed": false,
+    "new_database_connections_for_amendment": 0
+  },
+  "corrected_hosted_gate": {
+    "source_revision": "260187a4969ff789d1810ea9bf4a6af9ce3d9826",
+    "original_attempt_jobs_passed": 14,
+    "distribution_checks_passed": 12,
+    "predecessor_failed_candidate_preserved": true
+  },
+  "evidence_sha256": {
+    "fixture_receipt": "d66c7029e77522fcff69d57f56e1c567c217049f1f8047ce4087b323034f6685",
+    "original_independent_review": "72fcdc0e6e11f5d49a11aed618c2f2eb055b5c116095a75a224e19c14a5b834a",
+    "accepted_review_amendment": "a2985b5cfc11fa19e9eb726d612c48c57e7dfa32788941a80c980c4bf6cd7be5",
+    "private_runner": "9139293cf26220bf633fde9facc7f38cbb157eb63270770a403b491fefe46aba",
+    "installation_plan": "7af3a858d80915a1293c56ba6ba153b00c5e5fdaf6fc18d49268e9c6e5272fe3",
+    "installation_receipt": "22c8ef5215643a6007ce1435d1f0089f1f16107905ec6ad6d3b819ed0fcd7ff5",
+    "independent_installation_review": "52dbf7edc7d407d4f732c7c76fc57a438a8617eb1608a4d8fbd276ba8d4aa013",
+    "runtime_equivalence": "d91772f0355781a878e04b5c2411b1c27d1ef0bc3d09a8b1ca3420f709cb3160",
+    "corrected_head_ci": "f4601ddcca07fe3a4381e97c53c7c54e4224663d7072692903019649d1f9e9fc",
+    "corrected_head_ci_verification": "03f3d5ad85ae90b64abfd71b2ff787786259d7bc78ea216503b51f9119e2ca6a",
+    "original_input": "bebd316cb7278f7e3ad7ddea7d4ad1975512b4664847a81cea8269d7617b9940",
+    "output_report": "37dd9565f5b19fa8d546f3a899956067ed777832a1baea5baf34222b89ecfe8b",
+    "task_store": "3b44af8c8a91f71cc4fa51a259b046e5a47af217821ac43c65cbfc7a234da7bc",
+    "native_session_store": "a3ab7a59f2a86343b778e5270c166be983095ac53f6c97eb9f4fa57ca906fe07",
+    "wire_observations": "c3f1d54b884287fc68e5b8378dce54276cce436c372529cc62f51ead010426c6",
+    "effect_receipts": "c88bea74df3ad9b2f3130bac0be519f6ffb230e069dfdb0df8a51549f3977c66",
+    "worker_result": "6579a08daf2189ed4a1ecef1902b0e4608adfde1d57c5750315b6693df6587cc"
+  },
+  "limits": [
+    "Responses were scripted. This proves installed SDK integration, durable validation feedback and initial budget accounting, not model reasoning, accuracy or throughput.",
+    "Capability checks cover exact supported function names, dispatch eligibility and function-entry shape; they do not establish full parameter-schema equivalence.",
+    "The initial budget remained in episode zero with clean_stop false. No Stop, application restart, changed-boot recovery, foreground/resource handoff or complete M3/M5 result is claimed.",
+    "Boot observation and joins come from retained actual-run records; this publication preparation made no live probes.",
+    "The original failed hosted candidate and the reviewer bookkeeping failure remain preserved. The accepted amendment did not replay the fixture, auditor or databases.",
+    "Raw prompts, transcripts, machine paths, absolute clock observations, boot/machine identifiers and local process/tool identifiers remain private."
+  ],
+  "references": [
+    {
+      "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/toolsets.py",
+      "use": "Existing public create_custom_toolset API at the installed SDK revision.",
+      "license": "MIT"
+    },
+    {
+      "url": "https://github.com/midhatn/adaptive-inference/blob/260187a4969ff789d1810ea9bf4a6af9ce3d9826/src/adaptive_inference/desktop/execution_budget.py",
+      "use": "Versioned initial budget arithmetic; this fixture does not exercise the Stop or changed-boot transition.",
+      "license": "Apache-2.0"
+    }
+  ]
+}

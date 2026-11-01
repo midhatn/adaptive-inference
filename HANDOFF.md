@@ -108,8 +108,14 @@ working integration preserves a confirmed read through a controlled changed-boot
 Stop/reopen/resume test and one output write. This is source-level evidence;
 123 combined behavior checks, 104 source-preservation checks and the complete
 1,394-test suite passed. See the [source-bound validation record](provenance/installed-reopen/reboot-budget/validation-2026-11-01.json).
-Package and hosted publication checks are tracked separately in the candidate
-PR; installed-worker and physical reboot gates remain pending.
+Corrected source `260187a` passed package verification of 1,280 source files and
+63 runtime modules, all 14 original hosted jobs and 12 distribution checks.
+Fresh isolated installation and the [actual pinned SDK fixture](provenance/installed-reopen/reboot-budget/installed-sdk-validation-2026-11-01.json)
+also passed independent review. Its scripted responses exercised a rejected
+write, durable feedback and one correct 17-unit/4,350-cent report. The original
+900-second allowance included startup time; the initial budget was committed
+before generation and stayed unchanged through 33 history rows. This is SDK
+and initial-budget evidence; physical IQ3_S/Windows reboot remains pending.
 The first PR #34 hosted candidate exposed an older explicit-Continue harness
 reader that compared the changed producer directly with its historical hash.
 The [reader correction](provenance/installed-reopen/reboot-budget/harness-reader-correction.json)
@@ -117,7 +123,10 @@ reuses the existing exact source projection and preserves that historical hash.
 All 52 harness checks and all 90 provenance checks passed after the correction;
 runtime and core-test bytes are unchanged. Run the provenance discovery gate
 locally before packaging future source changes. The original failed hosted
-candidate remains failed; corrected-head hosted checks are a separate gate.
+candidate remains failed; the corrected head passed its separate hosted gate.
+The actual installed wheel predates that reader correction; all 74 wheel member
+contents and all 63 runtime modules match the corrected package. This equivalence
+does not equate the source archives or relabel the failed hosted attempt.
 Explicit Continue preserves the old budget in its sealed predecessor and does
 not copy that execution-specific allowance into its successor. Existing tasks
 must not receive invented expiry metadata or renewed budgets.
@@ -129,12 +138,12 @@ daily-use qualification remain open.
 | Stable main starting point | Commit `8396676dcc55ffbbf09e0ff640db9238519a07ea`, including merged PR #31/#32 and their earlier prerequisites. Verify current `main`; this is a dated anchor, not a claim that it remains HEAD. |
 | Released reference and active work | [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1) is published at tested source `57f673f8e934e275bc2bd51e85d434dc7025bc9a`; PR #28's merged tree matches it exactly. PR #29's measurement preparation merged after its exact-head checks. The first adaptive diagnostic and following control are closed; their scoped results and unmet comparison gates are recorded in the [evidence ledger](docs/evidence.md#first-adaptive-video-diagnostic). |
 | Installed source used for the latest experiments | Later-task M5 used `b35b631aca9ec37da9955903b87463201a6b3630`; initial-task M5 used `6ac601546daf32d96e38b6689a5818e4cc8dafa8`; the earlier M3 video sequence used `7306a53085ddc31d53d2ba50e91975c80cfc0014`. All preserved IQ3_S and quality. Source, package, actual-SDK and physical evidence remain separate levels. |
-| Current work | PR #33 is merged with its reviewed tree and accepted later-task result. Validate the working durable budget integration for a separate clean computer-restart path, preserving the earlier runtime and failed predecessors. M3's inert window-switch rehearsal and broader useful-tool/daily-use gates remain open. |
+| Current work | PR #33 is merged with its reviewed tree and accepted later-task result. PR #34's durable budget integration passed source, package, hosted, installation and scripted SDK gates. Coordinate a fresh IQ3_S clean Stop/Windows Restart/resume trial within the original 900-second allowance, preserving the earlier runtime and failed predecessors. M3's inert window-switch rehearsal and broader useful-tool/daily-use gates remain open. |
 | Latest accepted single-task result | The installed same-boot application restart preserved one input read, the task/native session and original deadline; three calls total completed the correct 23-unit answer with one physical write. A third launch viewed the result without additional calls or changes to the eight canonical files. All three app parents joined normally; bounded observer shutdown errors remain retained. See the source-bound M5 record above. |
 | Preserved M2 recovery result | Case17 passed both original audits: 99 primary recovery/handover checks plus the foreground/lineage supplement. Its correct inventory result survived safe expiry and one Continue; a separate welcome task completed before one normal Stop. Six calls produced two physical writes. Welcome has format-only acceptance. Full M2 is broader than that run. |
 | Preserved limits and failures | Original quality, 900-second execution budgets, 2,700-second outer bound and task accounting remain unchanged. Cases14/15/16 keep their original failed outcomes. Case17 retains the rejected file-picker input and 30-second operating-target misses; neither repeated a task control nor violated the strict foreground gate. |
 | Foreground evidence | Case17 retained 25 real document actions, 24 wholly preseal, maximum adjacent interval 54.680872 seconds and preseal tail 37.453106 seconds. The original supplement passed onset, continuous hold and saved-read lineage; the postseal action is excluded from coverage. This is not a desktop-performance or GPU-preemption measurement. |
-| Next experiment | The later-task application path is now accepted; do not repeat it. For M5, first implement and validate durable budget accounting before a clean reboot trial. Separately follow the [M3 sequence](PLAN.md#m3--protect-actual-desktop-activity): rehearse ordinary foreground switching without a model/capture before another video comparison. Latest before/adaptive/after drops were 33/10,801, 30/10,799 and 33/10,800 at the same viewport; the adaptive capture missed the end, so physical video attribution remains unknown. Preserve prior controls and failures. |
+| Next experiment | The later-task application path is accepted; do not repeat it. The new budget passed its software/installation gates; the next M5 experiment is a separately coordinated normal Windows Restart with the same saved read and remaining original allowance. Separately follow the [M3 sequence](PLAN.md#m3--protect-actual-desktop-activity): rehearse ordinary foreground switching without a model/capture before another video comparison. Latest before/adaptive/after drops were 33/10,801, 30/10,799 and 33/10,800 at the same viewport; the adaptive capture missed the end, so physical video attribution remains unknown. Preserve prior controls and failures. |
 | Latest release validation | Corrected source `57f673f` passed all 14 original hosted jobs, final archive/runtime verification and merge-tree verification. All five uploaded assets and the tag were verified at publication. The 48-check watchdog and 21-check refusal corrections retain their own local scope; earlier failed runs remain failed. |
 | M3 publication | [PR #29](https://github.com/midhatn/adaptive-inference/pull/29) merged at `f6c0da1` with the tested `3136e35` tree. Its original 14 head jobs and seven post-merge jobs passed, including portable archive checks. Earlier archive/fixture failures remain retained; these preparation checks do not requalify the installed runtime. |
 | Diagnostic publication and test correction | [PR #30](https://github.com/midhatn/adaptive-inference/pull/30) merged at `c348398` with the tested `72ac717` tree after 14 head jobs and seven post-merge jobs passed. Its original `fd4d483` pair retains 13 passes and one Windows SQLite concurrency-fixture failure. The [bounded correction](docs/evidence.md#sqlite-concurrency-fixture-ownership) keeps test threads in a retained child and joins before cleanup; 18 focused checks passed. Runtime, models and physical records are unchanged. |
