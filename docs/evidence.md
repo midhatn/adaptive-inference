@@ -32,6 +32,23 @@ once in 0.554 seconds on Python 3.11.9, with explicit current-source imports,
 both retained threads joined and parent exit 0. Independent source/evidence
 review accepted this narrow correction; the original hosted attempt stays failed.
 
+The `fbc78b9` workflows finished with 13 passes and the one snapshot failure.
+The separate alpha head `1efe6cd4e9957fbb9627a43e5614a18062b7acb0` finished
+with six successful jobs and one [Windows 3.11 cancellation](https://github.com/midhatn/adaptive-inference/actions/runs/41267498706/job/124733245107).
+GitHub's check annotation confirms the cumulative 15-minute job limit. All
+1,306 core tests passed in 813.388 seconds, and subsequent provenance/validation
+steps passed through the demo. Cancellation interrupted the profiles command;
+build and distribution checking never ran in that job. It remains canceled,
+not a complete pass. No workflow was canceled or rerun by the coordinator.
+
+Following the documented [GitHub job timeout control](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes),
+the prospective Windows portable-job allowance becomes 30 minutes. The other
+platforms and offline-source job retain 15 minutes. The same locked dependencies,
+test commands, assertions, individual fixture guards and artifact checks remain
+required. This is an outer CI scheduling allowance, not a product deadline or
+proof of the slowdown's cause. The new head still needs its own complete hosted
+result before merge or release.
+
 ## Supported desktop setup helper
 
 **1 November 2026:** the [setup and launch helpers](../examples/desktop/README.md)

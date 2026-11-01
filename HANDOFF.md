@@ -54,6 +54,16 @@ citations and unsuccessful evidence. The full milestone sequence is in
 | Process state at the end of case17 | The actual parent joined with exit 0 after one user Stop. The observer joined with exit 1 after three post-shutdown connection errors, with the terminal result present. The terminal audits verify owned worker/GUI/native-resource/transport cleanup; connection errors alone do not. This dated result is not a current hardware reservation. |
 | Publication boundary | The [case17 replay](provenance/task-handover/acceptance/README.md) includes a public result and fixed 33-input selection; actual and relocated replay produced identical output. The [fresh-run workflow](examples/validation/task_handover/README.md) preserves the harness, predicates and explicit local templates. New physical trials still need actual installation/deployment records and model assets; a public clone does not include private replay inputs or an automatic installer. No complete M2, reboot, gaming/media or speedup claim is made. |
 
+All original release-follow-up runs are now terminal: `fbc78b9` had 13 passes
+and the retained snapshot failure; alpha `1efe6cd` had six passes and one Windows
+job canceled at its 15-minute cumulative limit after 1,306 core tests and the
+subsequent validation through demo passed. The current follow-up combines the
+snapshot completion correction with a Windows-only 30-minute CI job allowance.
+Other job limits, test assertions and product/model budgets remain unchanged.
+See the [original outcome and rationale](docs/evidence.md#reference-delivery-checks).
+Publish this bounded follow-up, require its own complete hosted checks, refresh
+the alpha draft's exact source/assets, then continue M3. No alpha is released yet.
+
 Local PLAN.md and docs/evidence.md describe the selected checkout. For unmerged
 M2 work, verify the active PR's development revision before reading that revision's
 **Current M2 gate**. Earlier entries saying
