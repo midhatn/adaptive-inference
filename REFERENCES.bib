@@ -922,9 +922,44 @@
   note = {Inspected 2026-11-01. Nested test seed cases created through setUp without run can discard cleanup exceptions when no result is attached. Fixture-only correction temporarily shares the running case outcome, preserving the primary test error and additional cleanup errors. No upstream implementation copied; this private unittest detail is confined to tests}
 }
 
+@misc{hermesBoundedSessionListingRecovery,
+  author = {{Nous Research and Hermes contributors}},
+  title = {Hermes bounded session listing and canonical local recovery},
+  url = {https://github.com/NousResearch/hermes-agent/blob/c627ec84664d43e0b18b95d9d86d8963747d56c7/hermes_cli/session_listing.py},
+  note = {MIT, inspected 2026-11-01 with gateway/session_local_recovery.py and website/docs/user-guide/sessions.md at the same revision. Informs the separation of metadata discovery from canonical ownership and recovery checks for later controller-created tasks. Reuses the existing Adaptive Inference plan reader, task store and host lock; no Hermes implementation copied and no SDK upgrade}
+}
+
 @misc{pythonSqliteExplicitConnectionClose,
   author = {{Python Software Foundation}},
   title = {Python 3.11 SQLite connection context management},
   url = {https://docs.python.org/3.11/library/sqlite3.html#how-to-use-the-connection-context-manager},
   note = {Inspected 2026-11-01 after propagated cleanup errors exposed WinError 32 in the selected-result fixture. The connection context commits or rolls back but does not close; the fixture combines it with contextlib.closing. No upstream implementation copied and no transaction assertion removed}
+}
+
+@misc{pythonJsonDigestSerialization,
+  author = {{Python Software Foundation}},
+  title = {Python 3.11 JSON serialization: separators},
+  url = {https://docs.python.org/3.11/library/json.html#json.dumps},
+  note = {Inspected 2026-11-01 after a private later-task auditor used spaced JSON for compact admission digests. The correction reuses the existing admission digest for its own records and preserves recovery-domain digests. No runtime change or upstream implementation copy is implied}
+}
+
+@misc{pythonPathlibResolvedIdentity,
+  author = {{Python Software Foundation}},
+  title = {Python 3.11 pathlib: native path semantics and strict resolution},
+  url = {https://docs.python.org/3.11/library/pathlib.html#pathlib.Path.resolve},
+  note = {Inspected 2026-11-01 after an offline later-task diagnostic exposed a checker comparison between forward-slash Tk file-picker paths and backslash Windows strings naming the same directory. The private checker resolves expected and observed absolute paths strictly, preserving original payload hashes and file hashes. No runtime change or upstream implementation copied}
+}
+
+@misc{hermesExplicitRecoveryToolset,
+  author = {{Nous Research and Hermes contributors}},
+  title = {Hermes custom toolset registration and explicit tool selection},
+  url = {https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/toolsets.py},
+  note = {MIT, inspected 2026-11-01 with model_tools.py and agent/agent_init.py at the installed revision, and current upstream d1a82ffff37a62de6fbdfabb496d1d2d0bc22822. Reuses public create_custom_toolset and enabled_toolsets to align advertised read/write tools with the recovery adapter, followed by an exact function-name and dispatch-name check. Full parameter-schema equivalence is not claimed. No upstream implementation copied or SDK upgrade. Native unsupported-tool retry is not qualified by this selection change}
+}
+
+@misc{pythonCompleteMutationTarget,
+  author = {{Python Software Foundation}},
+  title = {Python 3.11 string replacement and AST parsing},
+  url = {https://docs.python.org/3.11/library/stdtypes.html#str.replace},
+  note = {Inspected 2026-11-01 with https://docs.python.org/3.11/library/ast.html#ast.parse after the clock mutation fixture replaced a call suffix and produced controller.pass. The prospective test-only correction selects the complete current call, keeping the original assertion that guard removal is rejected. No upstream implementation copied or runtime change}
 }

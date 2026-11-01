@@ -17,7 +17,11 @@ stopped task on the same Windows boot, preserving its completed read, conversati
 and original time limit. An installed IQ3_S trial completed the remaining work
 with one output write, then opened the answer read-only without another model
 call. See the [workflow and reproduction steps](docs/saved-task-reopening.md)
-and [source-bound result](provenance/installed-reopen/application-restart-2026-11-01.json).
+and [initial-task result](provenance/installed-reopen/application-restart-2026-11-01.json).
+A separate installed trial now also qualifies a task created later through
+**New task** in the running controller: the saved read survived shutdown,
+two resumed model calls finished the correct 23-unit output, and reopening the
+completed result repeated no work. See the [later-task result](provenance/installed-reopen/handover-tasks/installed-restart-2026-11-01.json).
 This is a development-source increment beyond the released alpha above;
 computer-reboot and broad daily-use qualification remain on the roadmap.
 

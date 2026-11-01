@@ -22,7 +22,7 @@ class ClockLineageTests(unittest.TestCase):
         for relative,old,new in (
                 ('desktop/composition.py','execution_now()+900','execution_now()+901'),
                 ('desktop/hermes/service_stop.py',"now < marker['sealed_at_monotonic']","False"),
-                ('desktop/hermes/run_recovery.py','controls.wait_activity.finish_turn(outcome)','pass')):
-            source=(ROOT/'src/adaptive_inference'/relative).read_text();self.assertIn(old,source)
+                ('desktop/hermes/run_recovery.py','controller.controls.wait_activity.finish_turn(outcome)','pass')):
+            source=(ROOT/'src/adaptive_inference'/relative).read_text(encoding='utf-8');self.assertIn(old,source)
             with self.subTest(relative=relative),self.assertRaises(AssertionError):
                 restore_clock(ast.parse(source.replace(old,new,1)),relative)

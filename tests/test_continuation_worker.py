@@ -16,6 +16,7 @@ import time
 from types import ModuleType, SimpleNamespace
 import unittest
 from unittest import mock
+from recovery_capability_support import ReadWriteToolsets
 
 from adaptive_inference import task_store
 from adaptive_inference.control_mailbox import Mailbox, EXECUTION_OUTCOME
@@ -153,6 +154,7 @@ class SelectedWorkerTests(unittest.TestCase):
 
     def normal_patches(self):
         outer = self
+        toolsets = ReadWriteToolsets()
         class Boundary:
             def __init__(self, run, fixture): self.run=run; self.rows=[]; self.steps={'parent':0}; self.seen=set()
         base = SimpleNamespace(Boundary=Boundary, REPORT=feedback.REPORT, snapshot=lambda agent: {'fixture': True},
@@ -162,6 +164,7 @@ class SelectedWorkerTests(unittest.TestCase):
                 outer.assert_owned(); outer.agent_kwargs=kw
                 self.session_id=kw['session_id']; self._session_db=kw['session_db']
                 self._active_session_turn_lease_holder=None
+                self.tools,self.valid_tool_names=toolsets.agent_tools(kw['enabled_toolsets'])
             def run_conversation(self, prompt, conversation_history):
                 outer.assert_owned(); outer.resumed_history=deepcopy(conversation_history)
                 return {'completed': True, 'final_response': 'Existing report verified'}
@@ -177,7 +180,8 @@ class SelectedWorkerTests(unittest.TestCase):
                 outer.boundary_projection=(deepcopy(boundary.rows),dict(boundary.steps),set(boundary.seen))
             def close(self): outer.assert_owned(); outer.provider_closed=True
         return (mock.patch.object(worker, 'setup', return_value=(rec,base)),
-                mock.patch.dict(sys.modules, {'run_agent': sdk, 'hermes_cli.plugins': plugins, 'tools.interrupt': interrupt}),
+                mock.patch.dict(sys.modules, {'run_agent': sdk, 'toolsets': toolsets,
+                    'hermes_cli.plugins': plugins, 'tools.interrupt': interrupt}),
                 mock.patch('adaptive_inference.desktop.hermes.admission.Provider', Provider))
 
     def test_selected_stop_keeps_plan_predecessor_and_shared_state(self):

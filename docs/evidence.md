@@ -2,6 +2,44 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Installed later-task application restart
+
+**1 November 2026, installed source `b35b631aca9ec37da9955903b87463201a6b3630`:**
+the [independently accepted trial](../provenance/installed-reopen/handover-tasks/installed-restart-2026-11-01.json)
+extends application reopening to a task created through **New task** in an
+already running controller. The same IQ3_S model and quality were preserved.
+This is a separate result from the initial-task trial below and the two failed
+later-task attempts; none of those records is replaced or relabeled.
+
+The welcome task A completed, then ordinary New task created inventory B.
+After B's first request read its input, actual Chrome foreground activity held
+the next request. Normal Stop saved that read with no output write, no unresolved
+operation or owner, and about 743 seconds remaining from the original 900-second
+allowance. A new application selected the same B, started paused and accepted
+one Resume. Its first resumed request contained the exact saved read.
+
+B completed with three requests/attempts/admission attempts total, including
+two provider calls after reopening. Its original deadline, task and native
+conversation remained intact. Exactly one physical write produced the checked
+answer: pens 8, paper 15, clips 0, total 23 units. A third ordinary launch showed
+the completed answer and file reference with no worker/provider call. The eight
+checked canonical B files, eight A files and admission database remained unchanged.
+
+All three application parents joined normally. The safe-Stop worker exited 4
+as intended; the other four preparation/worker children exited 0. Both observers
+ended with exit 1 after three post-shutdown connection errors; they had zero
+activity-reading errors and unchanged sources. These bounded observer failures
+are retained separately from the normal owned cleanup. Independent closed
+review accepted the result without replaying a helper or workload.
+
+Before installation, this source passed 1,369 local tests, complete package
+verification and all 14 original hosted jobs/12 distribution checks. Both
+installed interpreter roles matched all 62 runtime modules. The actual-SDK
+scripted test below remains separate from this physical model result.
+This qualifies same-boot application reopening for the exercised later task;
+it does not qualify computer reboot, M3 desktop/video performance, every task,
+or the full M5 milestone. Follow the [reproduction sequence](saved-task-reopening.md#reproduce-the-bounded-application-restart-check).
+
 ## Installed application restart
 
 **1 November 2026, installed source `6ac601546daf32d96e38b6689a5818e4cc8dafa8`:**
@@ -57,6 +95,138 @@ Both retained runs joined exit 0 and their checked source hashes were unchanged.
 The required existing `tempfile` import was restored during review before any
 focused execution. Package and hosted checks belong to the exact combined
 publication; these source tests neither rerun nor broaden the installed trial.
+
+The exact combined head `c6f20623579021d78cecdd6af8229bbdf2d6ef46` subsequently
+passed package verification for 1,233 source files/62 runtime modules and all
+14 original hosted jobs/12 distribution checks:
+[push](https://github.com/midhatn/adaptive-inference/actions/runs/41327021319),
+[pull request](https://github.com/midhatn/adaptive-inference/actions/runs/41327026749).
+PR #31 merged at `8396676dcc55ffbbf09e0ff640db9238519a07ea`; its tree exactly
+matches that reviewed head. The installed source/runtime claim above is unchanged.
+
+### Later tasks created through the controller
+
+The next development increment extends reopening to tasks created with **New
+task** while the controller is already open. It forwards the existing original
+recovery context, retains the existing task-specific host lock and adds the
+known later-task plan location to bounded discovery. It reuses the original
+paused reopening, conversation/effect checks and deadline accounting.
+
+The [component record](../provenance/installed-reopen/handover-tasks/component-validation-2026-11-01.json)
+retains a meaningful failure on the exact predecessor: worker preparation did
+not receive the recovery context. The extension passed **49 affected checks in
+9.810 seconds**, including two new tests. Actual task admission, preparation,
+storage and Stop/reopen code ran with inert SDK/provider/process/GUI edges. The
+scenario preserves a saved read and pending undispatched request, opens a fresh
+paused host, completes one output write and views the result read-only. Its
+controlled-clock 900-second deadline and consumed counters remain unchanged.
+The output check is format-only; this is not an installed IQ3_S inventory trial.
+
+The [additive source record](../provenance/installed-reopen/handover-tasks/README.md)
+preserves the exact predecessor of both runtime modules and both changed source
+readers. All older manifests and assertions remain intact; **75 affected source
+checks passed in 138.030 seconds**. Both bounded validation children joined with
+exit 0 and their pinned source inputs remained unchanged. These checks do not
+transfer the earlier physical result to the two changed runtime modules. The [complete combined suite](../provenance/installed-reopen/handover-tasks/integration-validation-2026-11-01.json)
+subsequently passed **1,359 tests in 413.619 seconds**, with unchanged source
+inputs and a normal retained child exit. Distribution checks then passed for
+1,244 source files/62 runtime modules, and the two original hosted runs passed
+all 14 jobs and 12 distribution checks on `50232cf`.
+
+The [first installed attempt](../provenance/installed-reopen/handover-tasks/first-installed-attempt-2026-11-01.json)
+completed welcome A, created inventory B through ordinary New task, and stopped
+normally after B's read. Its closed checker failed before completing the Stop
+gate: it used recovery's spaced JSON digest for admission records, whose product
+contract uses compact JSON. Independent diagnosis matched the actual admission
+values to the product encoding. The attempt remains unqualified; no reopen or
+completed-result phase ran. A separate closed diagnostic then exposed a lexical
+comparison of two valid spellings of the same Windows input directory. The
+correction compares resolved paths while keeping the original payload digest
+and file hashes. Corrected checker copies need contract and reporting
+validation before another physical trial. Five focused checker checks now pass
+in 0.495 seconds, including actual SQLite admission records and refusal cases.
+A corrected read-only diagnostic also passes the clock-independent closed
+read/Stop/cleanup checks with unchanged databases and original failure record.
+It does not exercise the original deadline gate or any restart phase. Existing
+runtime checks remain valid at their original scope; this failure provides no
+new later-task restart, desktop-performance or reboot qualification.
+
+### Advertised file capabilities and primary failure
+
+The [second installed attempt](../provenance/installed-reopen/handover-tasks/second-installed-attempt-2026-11-01.json)
+used the corrected separate checker preparation but failed before Stop or any
+closed inspection. Welcome A completed; inventory B's first request advertised
+`patch`, `read_file`, `search_files` and `write_file`. It selected `search_files`,
+which the recovery adapter does not support. Recovery refused before any tool
+operation/effect; B made one provider call, read no input and produced no output.
+The worker then checked for an output before checking native failure, so its
+reported error was the secondary missing-write receipt. Source inspection
+identifies the rejection path, but the exact original caught exception and SDK
+outcome were not saved and are not reconstructed as observed facts.
+
+The application and observer both exited with code 1. Owned native release
+completed and selected processes/listeners were absent, but cooperative product
+Stop did not pass: B retained an unmatched canonical tool intent, and the host
+admission store retained an unresolved launch requiring reconciliation. There
+was no user Stop acknowledgement, reopen, completed view or deadline renewal.
+The independent closed-record diagnosis checked unchanged databases and exact
+source/installed identities. This is a product capability/reporting failure,
+separate from the first attempt's private checker errors.
+
+The correction reuses Hermes' public `create_custom_toolset` and explicit
+`enabled_toolsets` selection, checked at the installed revision
+[`14e1e43`](https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/toolsets.py)
+and current upstream
+[`d1a82ff`](https://github.com/NousResearch/hermes-agent/blob/d1a82ffff37a62de6fbdfabb496d1d2d0bc22822/toolsets.py).
+The adapter will offer exactly its supported read/write capabilities and check
+native completion before artifact acceptance. This consumes the existing MIT
+SDK API without copying an implementation or upgrading the SDK. Two new
+regressions first failed on the exact untouched predecessor: it selected the
+broad file group and checked a missing output despite a fatal turn. The
+correction passed 35 affected checks in 15.852 seconds, with a normal retained
+test-process exit and unchanged inputs. A further 80 source-preservation checks
+passed in 151.027 seconds, retaining all seven earlier manifests and the six
+exact predecessor files. The [focused record](../provenance/installed-reopen/tool-capabilities/focused-validation-2026-11-01.json)
+keeps the negative and positive evidence separate. These use real local task/native SQLite
+with scripted SDK/provider edges; full-suite, actual-SDK and fresh installed
+qualification remain separate. Narrower advertisement does not qualify arbitrary
+unadvertised-tool retry recovery; existing native-history and effect fences
+remain required.
+
+The first complete suite for this correction stopped after 879 tests in
+221.268 seconds with one error in an older mutation fixture. That fixture
+replaced a call-name suffix with `pass`; the call's new `controller.` prefix
+therefore produced invalid Python (`controller.pass`) before the intended
+guard-removal assertion. The test process joined normally with exit 1 and
+unchanged inputs. This failed attempt is retained. The test-only correction
+targets the complete call and preserves its guard-refusal assertion. Its two
+existing checks passed in 6.578 seconds with unchanged inputs and a normal
+test-process exit. No historical manifest or runtime code changed. The fresh
+[complete combined suite](../provenance/installed-reopen/tool-capabilities/integration-validation-2026-11-01.json)
+then passed **1,369 tests in 430.480 seconds**, with unchanged inputs and a normal
+retained child exit. Package, hosted, actual-SDK and physical qualification are
+separate gates; the first full suite remains failed.
+
+### Installed Hermes SDK: durable correction feedback
+
+The [installed SDK record](../provenance/installed-reopen/tool-capabilities/installed-sdk-validation-2026-11-01.json)
+binds source `b35b631`, pinned Hermes `14e1e43` and a scripted provider. All four
+serialized requests exposed exactly `read_file` and `write_file`, matching the
+durable request definitions. This checks supported function names and dispatch
+eligibility, not complete parameter-schema equivalence.
+
+After a confirmed input read, an incorrect 19-unit/4,800-cent write was rejected
+before dispatch. Its exact feedback reached native history and the next request
+before the corrected generation. One physical write then produced the correct
+17-unit/4,350-cent report. The original prompt, quality, eight-request ceiling
+and one original deadline were preserved; both retained children joined with
+exit 0. Independent closed review found unchanged canonical files.
+
+This is actual-SDK correction-feedback evidence with scripted responses, not a
+model-reasoning result. The custom-toolset API and its pinned sources are cited
+above and in the record. Arbitrary unsupported-tool retries remain unqualified;
+the existing native-history and effect checks were not relaxed. The physical
+later-task result has its own record at the top of this ledger.
 
 ## Ordinary saved-task reopening
 

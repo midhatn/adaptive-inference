@@ -1,0 +1,53 @@
+{
+  "schema": "adaptive.installed-reopen.handover-tasks.v1",
+  "predecessor_revision": "c6f20623579021d78cecdd6af8229bbdf2d6ef46",
+  "runtime_changes": [
+    "desktop/task_handover.py",
+    "desktop/saved_tasks.py"
+  ],
+  "scope": "Exact source-only projection for later handover task reopening. Preserves original historical assertions and manifests; does not requalify installed or physical evidence. Retained source is parsed, never executed.",
+  "mechanism": {
+    "source": "tests/continuation_timeout_lineage.py",
+    "revision": "c6f20623579021d78cecdd6af8229bbdf2d6ef46",
+    "license": "Apache-2.0",
+    "reuse": "Existing complete-file SHA-256 and cross-version AST predecessor mapping, before the saved_tasks runtime addition is removed."
+  },
+  "preserved_manifests": {
+    "provenance/task-preparation/source-lineage.json": "88171eec897810198467e6a193ad0869e2fb2514dc0431cab1155757a097943b",
+    "provenance/installed-reopen/source-lineage.json": "27ec409d26b4fd1c2c3344474ea7d825297dc55cc8ebead12075465e79b1c214",
+    "provenance/installed-reopen/fixture-stop-integration/source-lineage.json": "1355b2d945c00358602ebc3de316237a8c9b863e5d0151ec9fb603d47ee9857a",
+    "provenance/task-handover/fixture-stop-verification/source-lineage.json": "688f1b1a0232b251b42be0aafaadd2f6a97963e627a5112ae42ee3c5415fcef5",
+    "provenance/task-handover/continuation-timeout-diagnostics/source-lineage.json": "6cb899c81dcc4bfb5ed3df8d801b3fcb4bc2bcab718ff3cc2f41bc69ab14a885",
+    "provenance/task-handover/task-file-aliases/source-lineage.json": "c99b9386c8426ff792bd078e643e110630a5cad7ae3c3cec7ba269556e1c07ba"
+  },
+  "files": {
+    "src/adaptive_inference/desktop/task_handover.py": {
+      "predecessor_source": "provenance/installed-reopen/handover-tasks/predecessor/src/adaptive_inference/desktop/task_handover.py",
+      "predecessor_sha256": "93f8f1dc1d4f8dfa54fd0ed64171a15749be5a650e8d3104d2668fbb143d5107",
+      "predecessor_ast_sha256": "8c19ee605f1a476160452a221c4753fac7083748794b094b3bf78164754da369",
+      "successor_sha256": "f1f85a26c1e77ae6e842218792b998531007df19ad82842304148c40b0e150eb",
+      "successor_ast_sha256": "72528a39c4674471cd3035e065bc32bae596b504495cdcf32f4d119bfd4004fc"
+    },
+    "src/adaptive_inference/desktop/saved_tasks.py": {
+      "predecessor_source": "provenance/installed-reopen/handover-tasks/predecessor/src/adaptive_inference/desktop/saved_tasks.py",
+      "predecessor_sha256": "49fc7aaf793a1c087317bbc086ccd6fce4a644d2d80d019fcc52a399b11e76b3",
+      "predecessor_ast_sha256": "3ff26ff3ba5410fc495b7103002465de0e0ccbc339b81dd56074a462f8a561f8",
+      "successor_sha256": "3757b708e1095f57959230c88e20d0c8f17500507f24fa5d1dcea010071fa612",
+      "successor_ast_sha256": "6dcaa7bad8bf3f637f754fdb23858d9fea168e919ca13fc1c7dd5f29afced011"
+    },
+    "tests/continuation_timeout_lineage.py": {
+      "predecessor_source": "provenance/installed-reopen/handover-tasks/predecessor/tests/continuation_timeout_lineage.py",
+      "predecessor_sha256": "e9213868aa98cd1a302b54b6b6b94573f79d348be42b97c51c4cd0110a66cc6b",
+      "predecessor_ast_sha256": "2734b75593552c119db558eddd3c3db3509b48be1508abfe383f30da97334c2d",
+      "successor_sha256": "6b8f2c5078ff12c58a060f08c1472096af08c2b54c86eb7fbf3c52c5f9ca54c3",
+      "successor_ast_sha256": "ff3da75279615d41c474879e8565cbbc2b9733c177c60ef5501d684711fdf8cc"
+    },
+    "tests/test_task_preparation_lineage.py": {
+      "predecessor_source": "provenance/installed-reopen/handover-tasks/predecessor/tests/test_task_preparation_lineage.py",
+      "predecessor_sha256": "61856081c561997d7c630112903acce4e0d26e0b471f4318cf6877f3c5043821",
+      "predecessor_ast_sha256": "134b6f56398da81bbddfaa75abf91efa5a558d43f1c8e6a314f5c216541b0444",
+      "successor_sha256": "48ccba2a9a924d8c9c21fe76438ffad4a14cd6879a8ae287c1101c649e46a55b",
+      "successor_ast_sha256": "69ad343b2af48d0ae71baada253a9d5ed42f18523856665639307defca7dbcc2"
+    }
+  }
+}

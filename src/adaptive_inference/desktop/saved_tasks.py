@@ -97,14 +97,21 @@ def read_plan(task_root):
 
 def discover(runs):
     """Plans are labels, not execution authorization; no DB open or boot query."""
-    rows = []
-    for path in sorted(Path(runs).glob('session-*/hermes-task/plan.json'), reverse=True)[:500]:
+    rows, seen = [], set()
+    root = Path(runs)
+    paths = set(root.glob('session-*/hermes-task/plan.json'))
+    paths.update(root.glob('session-*/tasks/*/plan.json'))
+    for path in sorted(paths, reverse=True)[:500]:
         try:
-            plan = read_plan(path.parent)
+            task_root = path.parent.resolve()
+            if task_root in seen:
+                continue
+            seen.add(task_root)
+            plan = read_plan(task_root)
             context = plan.get(CONTEXT)
             if type(context) is not dict or context.get('schema') != CONTEXT:
                 continue  # Never retrofit historical runs into eligible tasks.
-            rows.append({'saved_task': str(path.parent.resolve()),
+            rows.append({'saved_task': str(task_root),
                          'label': str(plan.get('task_spec', {}).get('prompt', plan['task_id']))[:160]})
         except (OSError, ValueError, TypeError, KeyError):
             continue

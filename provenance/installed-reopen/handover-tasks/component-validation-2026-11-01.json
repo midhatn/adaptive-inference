@@ -1,0 +1,73 @@
+{
+  "schema": "adaptive.installed-reopen.handover-tasks.component-validation.v1",
+  "date": "2026-11-01",
+  "predecessor_revision": "c6f20623579021d78cecdd6af8229bbdf2d6ef46",
+  "scope": "Later tasks created through the existing running-controller handover can retain their original reopening context, appear in plan-only discovery, and use the existing safe same-boot reopening path. Component validation only.",
+  "source_sha256": {
+    "src/adaptive_inference/desktop/task_handover.py": "f1f85a26c1e77ae6e842218792b998531007df19ad82842304148c40b0e150eb",
+    "src/adaptive_inference/desktop/saved_tasks.py": "3757b708e1095f57959230c88e20d0c8f17500507f24fa5d1dcea010071fa612",
+    "tests/test_handover_saved_tasks.py": "53bfffa3b6e3fc06c6fcd1e615635d0f9a93fe53fa11cf485f40dfa9dcbd4920"
+  },
+  "new_component_tests": 2,
+  "main_path": [
+    "Real TaskAdmission reservation and ordinary worker preparation bind the original context to the later task's own plan and checkpoint.",
+    "The existing paused handover startup records its original deadline; the retained desktop host lock refuses another owner.",
+    "Discovery reads the explicit handover plan path without opening SQLite or querying boot state, and leaves task bytes unchanged.",
+    "Real Recovery, TaskStore, admission and cooperative Stop callbacks preserve a confirmed input read and known undispatched request.",
+    "The existing composition reopens the same task paused, invokes no new preparation, and preserves its deadline, counters, pending request and history.",
+    "A fresh Resume includes the exact saved read in its first provider request, produces one physical output write and accepts the task.",
+    "Reading the completed saved result reports zero provider calls and leaves task database bytes unchanged.",
+    "Later tasks prepared without original reopening context retain legacy behavior and remain unlisted; no context or deadline is backfilled."
+  ],
+  "predecessor_regression": {
+    "source": "Exact committed predecessor src/tests archive with only the new regression test added.",
+    "source_archive_sha256": "80bd0e82dc80dc4c61115080e675b9f4992521776e671f1d4fe042759d37dc0b",
+    "tests": 1,
+    "passed": false,
+    "errors": 1,
+    "seconds": 0.475,
+    "outer_seconds": 1.437,
+    "retained_child_exit_code": 1,
+    "retained_child_joined": true,
+    "timeout_or_kill": false,
+    "observed_failure": "The actual handover-prepared plan lacked adaptive_inference.desktop_reopen.v1; the new context-persistence assertion raised KeyError before later reopening steps.",
+    "private_receipt_sha256": "d905c3b2f47b39094e947de266dfebcf9963d8e9c5e934dbdcf5ed8d4cd9b533",
+    "private_log_sha256": "44f147d48fdecfbf10ced58b2aed7fa428d30bbb303cc549200097a3cbad4e59"
+  },
+  "final_affected_batch": {
+    "modules": [
+      "test_handover_saved_tasks",
+      "test_desktop_saved_tasks",
+      "test_task_handover",
+      "test_task_handover_protocol"
+    ],
+    "tests": 49,
+    "passed": true,
+    "seconds": 9.810,
+    "outer_seconds": 10.828,
+    "python": "3.11.9 full Windows interpreter",
+    "exact_worktree_imports": true,
+    "source_unchanged": true,
+    "retained_child_exit_code": 0,
+    "retained_child_joined": true,
+    "retained_supervisor_exit_code": 0,
+    "timeout_or_kill": false,
+    "private_receipt_sha256": "d6216c18951a3679379e8fc343127263444345a4aad629c6ab29967eca31c81a",
+    "private_log_sha256": "e2f1e78098d87cccfe895e4b7f6a5d315967e85af6bcc502818ff0dda295dd10"
+  },
+  "retained_intermediate_checks": {
+    "first_batch_tests": 14,
+    "second_batch_tests": 62,
+    "both_passed": true,
+    "scope_limit": "Both batches also discovered 13 existing CompositionTests through a direct class import. The import was changed to module-qualified fixture reuse before the final batch, which exposes exactly two new tests. Original successful receipts remain retained and are not counted as additional new coverage."
+  },
+  "limits": [
+    "Provider transport, process, GUI and native-resource edges are inert fixtures. The native conversation projection uses real SQLite but does not execute the installed Hermes SDK.",
+    "The new fixture produces a format-checked notes output, not the physically qualified IQ3_S inventory result or a model-quality/performance measurement.",
+    "A task prepared but never started has no saved execution deadline. Discovery does not authorize continuation or create a replacement budget.",
+    "The separate additive lineage record preserves historical sources; this affected batch is not a combined full suite, package verification or hosted CI result.",
+    "No installed later-task restart, OS reboot, foreground quality or broader M5 acceptance is claimed. Earlier physical evidence remains bound to its original runtime source."
+  ],
+  "installed_qualification": false,
+  "full_suite_qualification": false
+}

@@ -204,6 +204,7 @@ class IntegratedReaderLineageTests(unittest.TestCase):
         records = {'reopen': lineage.reopen_record(), 'fixture_stop': lineage.fixture_stop_record()}
         for relative, row in rows['files'].items():
             current = (lineage.ROOT / relative).read_bytes()
+            current = lineage.handover_predecessor(relative, current)
             self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
             self.assertEqual(fingerprint(ast.parse(current)), row['successor_ast_sha256'])
             for view, original in records.items():
@@ -244,6 +245,206 @@ class IntegratedReaderLineageTests(unittest.TestCase):
                             lineage, 'integration_record', return_value=changed):
                         with self.assertRaisesRegex(AssertionError, 'integrated reader'):
                             lineage.integration_predecessor(relative, current, view)
+
+
+class HandoverReopenLineageTests(unittest.TestCase):
+    def test_exact_four_file_delta_preserves_base_and_original_manifests(self):
+        rows = lineage.handover_record()
+        self.assertEqual(rows['schema'], 'adaptive.installed-reopen.handover-tasks.v1')
+        self.assertEqual(rows['predecessor_revision'], 'c6f20623579021d78cecdd6af8229bbdf2d6ef46')
+        self.assertEqual(rows['runtime_changes'], list(lineage.HANDOVER_RUNTIME))
+        self.assertEqual(set(rows['files']), lineage.HANDOVER_INPUTS)
+        for relative, row in rows['files'].items():
+            with self.subTest(relative=relative):
+                current = (lineage.ROOT / relative).read_bytes()
+                current = lineage.tool_capabilities_predecessor(relative, current)
+                before = (lineage.ROOT / row['predecessor_source']).read_bytes()
+                self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
+                self.assertEqual(fingerprint(ast.parse(current)), row['successor_ast_sha256'])
+                self.assertEqual(hashlib.sha256(before).hexdigest(), row['predecessor_sha256'])
+                self.assertEqual(fingerprint(ast.parse(before)), row['predecessor_ast_sha256'])
+                self.assertEqual(lineage.handover_predecessor(relative, current), before)
+                self.assertEqual(lineage.handover_predecessor(relative, before), before)
+        for relative, expected in rows['preserved_manifests'].items():
+            self.assertEqual(hashlib.sha256((lineage.ROOT / relative).read_bytes()).hexdigest(), expected)
+        self.assertTrue(set(lineage.handover_inputs()).issubset(lineage.preparation_inputs()))
+
+    def test_unknown_bytes_and_legacy_roots_reach_existing_checks(self):
+        for relative in lineage.HANDOVER_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            unknown = current + b'\n# unreviewed handover reopening\n'
+            with self.subTest(relative=relative):
+                self.assertEqual(lineage.handover_predecessor(relative, unknown), unknown)
+                self.assertEqual(lineage.preparation_predecessor(relative, unknown), unknown)
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    self.assertEqual(lineage.handover_predecessor(relative, current, root), current)
+                    self.assertEqual(lineage.preparation_predecessor(relative, current, root), current)
+                    self.assertEqual(lineage.handover_inputs(root), [])
+
+    def test_both_runtime_modules_project_before_saved_tasks_is_removed(self):
+        runtime = lineage.ROOT / 'src/adaptive_inference'
+        current = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
+        current = lineage.tool_capabilities_runtime_view(current)
+        before = dict(current)
+        view = lineage.handover_runtime_view(current)
+        self.assertEqual(current, before)
+        self.assertEqual(set(view), set(current))
+        for name in current:
+            expected = (lineage.handover_predecessor('src/adaptive_inference/' + name, current[name])
+                        if name in lineage.HANDOVER_RUNTIME else current[name])
+            self.assertEqual(view[name], expected)
+        self.assertEqual(len(lineage.reopen_runtime_view(current)), 61)
+        self.assertEqual({name: hashlib.sha256(data).hexdigest()
+                          for name, data in lineage.preparation_runtime_view().items()},
+                         lineage.record()['unchanged_runtime'])
+        original_read = Path.read_bytes
+        for name in lineage.HANDOVER_RUNTIME:
+            target = runtime / name
+            def read(path):
+                data = original_read(path)
+                return data + b'\n# unreviewed handover source\n' if path == target else data
+            with self.subTest(name=name), mock.patch.object(Path, 'read_bytes', read):
+                with self.assertRaisesRegex(AssertionError, 'runtime source'):
+                    aliases.runtime_view()
+        original_view = lineage.handover_runtime_view
+        def extra(current, root=None):
+            return {**original_view(current, root), 'unreviewed.py': b'pass\n'}
+        with mock.patch.object(lineage, 'handover_runtime_view', extra):
+            with self.assertRaisesRegex(AssertionError, 'runtime closure'):
+                aliases.runtime_view()
+
+    def test_ast_projection_requires_complete_current_bytes_and_preserves_unknown_syntax(self):
+        original_read = Path.read_bytes
+        for name in lineage.HANDOVER_RUNTIME:
+            relative = 'src/adaptive_inference/' + name
+            target = lineage.ROOT / relative
+            data = target.read_bytes()
+            row = lineage.handover_record()['files'][relative]
+            tree = ast.parse(data)
+            original = fingerprint(tree)
+            with self.subTest(name=name):
+                self.assertEqual(fingerprint(lineage.restore_preparation(tree, name)),
+                                 row['predecessor_ast_sha256'])
+                self.assertEqual(fingerprint(tree), original)
+                unknown = ast.parse(data + b'\nunreviewed = True\n')
+                self.assertEqual(fingerprint(lineage.restore_preparation(unknown, name)), fingerprint(unknown))
+                def read(path):
+                    raw = original_read(path)
+                    return raw + b'\n# same AST, unknown bytes\n' if path == target else raw
+                with mock.patch.object(Path, 'read_bytes', read):
+                    with self.assertRaisesRegex(AssertionError, 'complete handover-reopen source'):
+                        lineage.restore_preparation(tree, name)
+
+    def test_predecessor_and_successor_ast_tampering_is_refused(self):
+        rows = lineage.handover_record()
+        for relative in lineage.HANDOVER_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            for field in ('predecessor_source', 'predecessor_sha256', 'predecessor_ast_sha256',
+                          'successor_ast_sha256'):
+                changed = deepcopy(rows)
+                changed['files'][relative][field] = '0' * 64
+                with self.subTest(relative=relative, field=field), mock.patch.object(
+                        lineage, 'handover_record', return_value=changed):
+                    with self.assertRaisesRegex(AssertionError, 'handover-reopen'):
+                        lineage.handover_predecessor(relative, current)
+
+
+class ToolCapabilitiesLineageTests(unittest.TestCase):
+    def test_exact_source_delta_preserves_base_and_every_prior_manifest(self):
+        rows = lineage.tool_capabilities_record()
+        self.assertEqual(rows['schema'], 'adaptive.installed-reopen.tool-capabilities.v1')
+        self.assertEqual(rows['predecessor_revision'], '50232cfaccd4bbe34cded6a368a0bb2eab22d204')
+        self.assertEqual(rows['runtime_changes'], list(lineage.TOOL_CAPABILITIES_RUNTIME))
+        self.assertEqual(set(rows['files']), lineage.TOOL_CAPABILITIES_INPUTS)
+        for relative, row in rows['files'].items():
+            with self.subTest(relative=relative):
+                current = (lineage.ROOT / relative).read_bytes()
+                before = (lineage.ROOT / row['predecessor_source']).read_bytes()
+                self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
+                self.assertEqual(fingerprint(ast.parse(current)), row['successor_ast_sha256'])
+                self.assertEqual(hashlib.sha256(before).hexdigest(), row['predecessor_sha256'])
+                self.assertEqual(fingerprint(ast.parse(before)), row['predecessor_ast_sha256'])
+                self.assertEqual(lineage.tool_capabilities_predecessor(relative, current), before)
+                self.assertEqual(lineage.tool_capabilities_predecessor(relative, before), before)
+        for relative, expected in rows['preserved_manifests'].items():
+            self.assertEqual(hashlib.sha256((lineage.ROOT / relative).read_bytes()).hexdigest(), expected)
+        self.assertTrue(set(lineage.tool_capabilities_inputs()).issubset(lineage.preparation_inputs()))
+
+    def test_unknown_source_and_legacy_roots_are_not_projected(self):
+        for relative in lineage.TOOL_CAPABILITIES_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            unknown = current + b'\n# unreviewed capability change\n'
+            with self.subTest(relative=relative):
+                self.assertEqual(lineage.tool_capabilities_predecessor(relative, unknown), unknown)
+                self.assertEqual(lineage.preparation_predecessor(relative, unknown), unknown)
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    self.assertEqual(lineage.tool_capabilities_predecessor(relative, current, root), current)
+                    self.assertEqual(lineage.tool_capabilities_inputs(root), [])
+
+    def test_runtime_projection_keeps_complete_closure_and_refuses_unknown_changes(self):
+        runtime = lineage.ROOT / 'src/adaptive_inference'
+        current = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
+        before = dict(current)
+        view = lineage.tool_capabilities_runtime_view(current)
+        self.assertEqual(current, before)
+        self.assertEqual(set(view), set(current))
+        for name in current:
+            expected = (lineage.tool_capabilities_predecessor('src/adaptive_inference/' + name, current[name])
+                        if name in lineage.TOOL_CAPABILITIES_RUNTIME else current[name])
+            self.assertEqual(view[name], expected)
+        self.assertEqual({name: hashlib.sha256(data).hexdigest()
+                          for name, data in lineage.preparation_runtime_view().items()},
+                         lineage.record()['unchanged_runtime'])
+        target = runtime / lineage.TOOL_CAPABILITIES_RUNTIME[0]
+        original_read = Path.read_bytes
+        def read(path):
+            data = original_read(path)
+            return data + b'\n# unreviewed capability source\n' if path == target else data
+        with mock.patch.object(Path, 'read_bytes', read):
+            with self.assertRaisesRegex(AssertionError, 'runtime source'):
+                aliases.runtime_view()
+        original_view = lineage.tool_capabilities_runtime_view
+        def extra(current, root=None):
+            return {**original_view(current, root), 'unreviewed.py': b'pass\n'}
+        with mock.patch.object(lineage, 'tool_capabilities_runtime_view', extra):
+            with self.assertRaisesRegex(AssertionError, 'runtime closure'):
+                aliases.runtime_view()
+
+    def test_ast_projection_requires_exact_current_bytes(self):
+        name = lineage.TOOL_CAPABILITIES_RUNTIME[0]
+        relative = 'src/adaptive_inference/' + name
+        target = lineage.ROOT / relative
+        data = target.read_bytes(); tree = ast.parse(data)
+        original = fingerprint(tree)
+        row = lineage.tool_capabilities_record()['files'][relative]
+        self.assertEqual(fingerprint(lineage.restore_tool_capabilities(tree, name)),
+                         row['predecessor_ast_sha256'])
+        self.assertEqual(fingerprint(tree), original)
+        self.assertEqual(fingerprint(lineage.restore_preparation(tree, name)),
+                         lineage.reopen_record()['files'][relative]['predecessor_ast_sha256'])
+        unknown = ast.parse(data + b'\nunreviewed = True\n')
+        self.assertEqual(fingerprint(lineage.restore_preparation(unknown, name)), fingerprint(unknown))
+        original_read = Path.read_bytes
+        def read(path):
+            raw = original_read(path)
+            return raw + b'\n# same AST, unknown bytes\n' if path == target else raw
+        with mock.patch.object(Path, 'read_bytes', read):
+            with self.assertRaisesRegex(AssertionError, 'complete tool-capability source'):
+                lineage.restore_preparation(tree, name)
+
+    def test_predecessor_path_hash_and_successor_ast_tampering_are_refused(self):
+        rows = lineage.tool_capabilities_record()
+        for relative in lineage.TOOL_CAPABILITIES_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            for field in ('predecessor_source', 'predecessor_sha256', 'predecessor_ast_sha256',
+                          'successor_ast_sha256'):
+                changed = deepcopy(rows); changed['files'][relative][field] = '0' * 64
+                with self.subTest(relative=relative, field=field), mock.patch.object(
+                        lineage, 'tool_capabilities_record', return_value=changed):
+                    with self.assertRaisesRegex(AssertionError, 'tool-capability'):
+                        lineage.tool_capabilities_predecessor(relative, current)
 
 
 if __name__ == '__main__':

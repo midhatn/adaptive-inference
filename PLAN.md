@@ -779,8 +779,8 @@ has now passed at source `6ac601546daf32d96e38b6689a5818e4cc8dafa8`, after its
 68 affected checks, complete 1,344-test suite, package verification and all
 14 original hosted jobs/12 distribution checks. Its saved-read, original-budget,
 single-write and read-only-result evidence is recorded in [M5](#m5--survive-application-and-computer-lifecycle-changes).
-Publish that accepted scope after validating the source integration with PR #32's
-fixture fixes. Do not re-stage or replay the consumed trial. M3 remains open;
+That scope merged in PR #31 after combined-source validation and all 14 original
+head jobs/12 distribution checks passed. Do not re-stage or replay the consumed trial. M3 remains open;
 lifecycle progress does not waive its capture or foreground-quality gates.
 Broader daily-use qualification still depends on those gates and useful-tool work.
 
@@ -912,9 +912,55 @@ and changed none of the eight checked canonical files. All three app parents
 joined normally; bounded observer shutdown errors remain separately recorded.
 This closes the first same-boot application path below, not the complete M5 gate.
 
-**Next lifecycle work:** reuse that accepted path to support discovery of tasks
-created later through the running controller, then design the original durable
-budget policy for changed Windows boots before a separate actual reboot trial.
+**Next lifecycle work:** the current source extends that accepted path to tasks
+created later through the running controller. It forwards the original recovery
+context, retains the existing task-specific host lock and discovers the two
+known plan locations. The meaningful predecessor regression failed at missing
+recovery context; 49 affected component checks and 75 source-preservation checks
+passed on the extension. See the [bounded record](provenance/installed-reopen/handover-tasks/README.md).
+The complete combined suite passed 1,359 tests in 413.619 seconds. Package checks
+passed for 1,244 source files/62 runtime modules; both original hosted runs
+passed all 14 jobs and 12 distribution checks. The first installed attempt
+closed normally after B's read, but its private checker used the wrong JSON
+digest for admission records and failed before the remaining Stop gates.
+Preserve that [unqualified attempt](provenance/installed-reopen/handover-tasks/first-installed-attempt-2026-11-01.json).
+Separate corrected checker copies passed five focused checks and a read-only,
+clock-independent diagnostic. A fresh second attempt exposed a product gap:
+the SDK advertised four file tools while recovery handles only read/write.
+Inventory B chose advertised search, was denied before any tool operation and
+exited without a read or safe Stop. Output acceptance then masked that failure.
+Preserve the [second failed attempt](provenance/installed-reopen/handover-tasks/second-installed-attempt-2026-11-01.json),
+including its unresolved host admission state; neither failed trial may be
+reopened or receive a renewed budget.
+
+**Immediate adjustment:** use Hermes' existing public custom toolset API for
+read/write, verify the final advertised definitions before conversation, and
+apply the existing native success/lease gate before artifact acceptance. Prove
+the capability boundary and original-error reporting in focused tests, then
+check the real pinned SDK with scripted read/incorrect-write/corrected-write
+responses. Keep model, quality, budgets, effect tracking and uncertainty checks
+unchanged. The correction passed 35 behavior checks, 80 source checks and the
+complete 1,369-test suite; a test-only mutation correction and the failed first
+suite are retained in the [integration record](provenance/installed-reopen/tool-capabilities/integration-validation-2026-11-01.json).
+**Later-task path accepted, 1 November:** corrected source `b35b631` passed
+package verification, all 14 original hosted jobs/12 distribution checks, a
+fresh installation and the [actual pinned SDK correction fixture](provenance/installed-reopen/tool-capabilities/installed-sdk-validation-2026-11-01.json).
+The separate [IQ3_S application trial](provenance/installed-reopen/handover-tasks/installed-restart-2026-11-01.json)
+then completed A and created B through ordinary New task. B's confirmed read
+survived safe Stop; a fresh paused app continued the same task with its original
+deadline and counters. Three provider calls total, two after reopening,
+produced one correct 23-unit write. Completed-result viewing made no call or
+write and changed none of the checked A/B/admission bytes. All three app
+parents joined normally. Independent closed review accepted this same-boot
+scope; both bounded observer shutdown errors and prior failures are retained.
+The model, quality, prompt and budgets were unchanged. Do not replay this trial.
+
+**Next lifecycle step:** publish the qualified runtime and evidence, then design
+the original durable budget policy for changed Windows boots before a separate
+actual reboot trial. Reuse existing persisted-expiration and owned transaction
+patterns; keep original elapsed-time limits and consumed work across boots.
+Start with clean Stop and fresh paused Resume. Crash/uncertain-effect recovery
+remains a separate case, and old tasks without expiry metadata stay unchanged.
 Research existing lifecycle/budget implementations first. Do not replay the
 accepted application trial or silently reset a saved monotonic deadline. M3's
 inert window-switch rehearsal and M4 useful-tool/media gates remain open; this
@@ -951,8 +997,12 @@ an unsuitable Windows venv redirector and remains failed; the existing direct
 interpreter prerequisite was restored without weakening process-identity checks.
 The corrected package and all 14 original head jobs/12 distribution checks
 passed before its isolated installation and actual IQ3_S application restart.
-Integration with PR #32's fixture fixes requires validation of the combined
-source; it does not transfer physical evidence to a changed runtime.
+Integration with PR #32's fixture fixes passed 83 affected checks, all 1,352
+local tests, complete package verification and all 14 original head jobs/12
+distribution checks. PR #31 merged at `8396676dcc55ffbbf09e0ff640db9238519a07ea`
+with the exact reviewed tree; all 62 runtime modules match the physically tested
+source. The later-task extension and supported-tool correction have their own
+installed qualification above; neither result broadens the earlier source claim.
 
 This first increment requires a matching original boot/profile/package context
 recorded when the task was created. Closed-app time consumes its saved budget;

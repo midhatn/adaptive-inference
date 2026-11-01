@@ -28,10 +28,19 @@ The selected checkpoint and artifacts are verified before use. The existing
 task store and worker claim remain authoritative; no second recovery database
 or agent framework is introduced.
 
-This first selector lists initial tasks created from the startup window with
-saved-task support. Tasks subsequently created through the running controller's
-handover flow are not yet included. Their discovery remains follow-up work;
-this increment is not a complete task browser.
+The selector lists initial tasks created from the startup window and, in the
+current development source, tasks created later through the running controller's
+**New task** flow. Later tasks record the same original recovery context and
+retain the same host ownership lock. Discovery reads only the two known plan
+locations, deduplicates task roots and inspects at most 500 plans; selecting a
+label does not authorize execution. Older tasks without their original recovery
+context are not retrofitted. This is not a complete task browser.
+
+The later-task extension has [component and source-preservation validation](../provenance/installed-reopen/handover-tasks/README.md)
+and its own [accepted installed IQ3_S trial](../provenance/installed-reopen/handover-tasks/installed-restart-2026-11-01.json)
+at `b35b631`. That trial preserved the saved read, original deadline and consumed
+counters, completed one correct 23-unit write, and viewed the result without
+another worker/model call. The initial-task result retains its original source.
 
 ## Current scope
 
@@ -104,6 +113,16 @@ sanitized findings; private machine records/model assets are not a public
 replay bundle. A different installation earns its own result. Preserve a failed
 or expired attempt rather than using Continue to renew its budget for this test.
 
+To exercise the later-task path, first run the repository's
+[welcome task](../examples/tasks/welcome/task.json) and its inputs to completion.
+In that same controller choose **New task**, then the inventory task and inputs.
+Confirm the new task starts paused, select **Resume** once, then continue steps
+2–5 above for that task.
+Keep the first task's evidence separate; its welcome-output check is format-only.
+Also verify the first task and admission records remain unchanged while the
+completed inventory result is viewed. This is application reopening on the same
+boot; it does not substitute for a computer-restart test.
+
 ## Mechanisms and sources
 
 This path reuses this repository's [task store and attribution](task-survival.md),
@@ -127,3 +146,12 @@ and [unknown-operation handling](https://github.com/NousResearch/hermes-agent/bl
 Those gateway mechanisms already exist at the installed SDK revision; this
 adapter uses direct AIAgent/SessionDB ownership, so gateway recovery is not a
 drop-in replacement. No additional upstream code is copied by this feature.
+
+For later-task discovery, research checked Hermes'
+[bounded session listing](https://github.com/NousResearch/hermes-agent/blob/c627ec84664d43e0b18b95d9d86d8963747d56c7/hermes_cli/session_listing.py)
+and [local recovery](https://github.com/NousResearch/hermes-agent/blob/c627ec84664d43e0b18b95d9d86d8963747d56c7/gateway/session_local_recovery.py)
+at pinned revision `c627ec84664d43e0b18b95d9d86d8963747d56c7`. Their separation of metadata selection from
+canonical ownership/recovery checks supports reusing this adapter's existing
+plan reader, task store and host lock. Hermes is MIT licensed; this extension
+copies no upstream code and does not change the installed SDK revision. The
+sources and applicability are retained in [REFERENCES.bib](../REFERENCES.bib).

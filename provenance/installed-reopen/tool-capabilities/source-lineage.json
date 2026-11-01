@@ -1,0 +1,67 @@
+{
+  "schema": "adaptive.installed-reopen.tool-capabilities.v1",
+  "predecessor_revision": "50232cfaccd4bbe34cded6a368a0bb2eab22d204",
+  "runtime_changes": [
+    "desktop/hermes/run_recovery.py"
+  ],
+  "scope": "Exact source-only outer view for advertised file capabilities and native-failure ordering. Preserves original historical assertions and manifests; does not requalify installed evidence. Retained source is parsed, never executed.",
+  "mechanism": {
+    "source": "tests/continuation_timeout_lineage.py",
+    "revision": "50232cfaccd4bbe34cded6a368a0bb2eab22d204",
+    "license": "Apache-2.0",
+    "reuse": "Existing complete-file SHA-256 and portable AST predecessor mapping before the handover view."
+  },
+  "preserved_manifests": {
+    "provenance/task-preparation/source-lineage.json": "88171eec897810198467e6a193ad0869e2fb2514dc0431cab1155757a097943b",
+    "provenance/installed-reopen/source-lineage.json": "27ec409d26b4fd1c2c3344474ea7d825297dc55cc8ebead12075465e79b1c214",
+    "provenance/installed-reopen/fixture-stop-integration/source-lineage.json": "1355b2d945c00358602ebc3de316237a8c9b863e5d0151ec9fb603d47ee9857a",
+    "provenance/task-handover/fixture-stop-verification/source-lineage.json": "688f1b1a0232b251b42be0aafaadd2f6a97963e627a5112ae42ee3c5415fcef5",
+    "provenance/task-handover/continuation-timeout-diagnostics/source-lineage.json": "6cb899c81dcc4bfb5ed3df8d801b3fcb4bc2bcab718ff3cc2f41bc69ab14a885",
+    "provenance/task-handover/task-file-aliases/source-lineage.json": "c99b9386c8426ff792bd078e643e110630a5cad7ae3c3cec7ba269556e1c07ba",
+    "provenance/installed-reopen/handover-tasks/source-lineage.json": "d634c761c6aad3ee4864402e10cb331b46f25d8eba96dfe9e8cf3319978f0201"
+  },
+  "files": {
+    "src/adaptive_inference/desktop/hermes/run_recovery.py": {
+      "predecessor_source": "provenance/installed-reopen/tool-capabilities/predecessor/src/adaptive_inference/desktop/hermes/run_recovery.py",
+      "predecessor_sha256": "c53043931117f0a50ca30af7d53688927c32cd81ef7f21e13a49eae53841de17",
+      "predecessor_ast_sha256": "07d3299af9c9aafac2afe8a0ea14dc8fbb4a29b5c2b5a27cf8b50db081bce34c",
+      "successor_sha256": "237311ba527f9bbe36f4bf90fe99cca28f1d242caef863b610783e10ffa63018",
+      "successor_ast_sha256": "f7b26890eb8676fa3c40dfdbaa5b0c47e67e6efa74d65eb8092b46e33dcb61be"
+    },
+    "tests/continuation_timeout_lineage.py": {
+      "predecessor_source": "provenance/installed-reopen/tool-capabilities/predecessor/tests/continuation_timeout_lineage.py",
+      "predecessor_sha256": "6b8f2c5078ff12c58a060f08c1472096af08c2b54c86eb7fbf3c52c5f9ca54c3",
+      "predecessor_ast_sha256": "ff3da75279615d41c474879e8565cbbc2b9733c177c60ef5501d684711fdf8cc",
+      "successor_sha256": "46643018f2702372f5fa24112c63b7b5ca99762eb1a3c1831844139ad8a6379a",
+      "successor_ast_sha256": "2d8c8644cfb6912854932efd9902c4c678759b9ec252b4c6f0fed72f2985fdb0"
+    },
+    "tests/safe_wait_fixture.py": {
+      "predecessor_source": "provenance/installed-reopen/tool-capabilities/predecessor/tests/safe_wait_fixture.py",
+      "predecessor_sha256": "00a2e7680fe8272549f6bd84c41e26399700754d339470e86e7f73ff4873c08f",
+      "predecessor_ast_sha256": "da3d3e5f0396562bc6fbc87e625d777c75e663c443fd507157e9f211a434164d",
+      "successor_sha256": "1b4ad2f7f38f9f08cae85d34b6b395b75dacb3ea2c8b5a4d3b5911f94952d792",
+      "successor_ast_sha256": "a497261f8f1ef9d889c3017e156e9c0f425f13e6197ab48215c1b4d5e4487f22"
+    },
+    "tests/test_admission_wait_continuation_worker.py": {
+      "predecessor_source": "provenance/installed-reopen/tool-capabilities/predecessor/tests/test_admission_wait_continuation_worker.py",
+      "predecessor_sha256": "b39aad11d5fce53110342bce9631ed2ec79924f2fa4fa5a3349a3a1b50ee1c94",
+      "predecessor_ast_sha256": "b0c9a67c700b4d193a66fa3562563193b75afc6553b27ecb2a692b863022ae24",
+      "successor_sha256": "57d2202a7c3e899521b8a71d9ca07231ca7c0afc49e7eef744b0cf0116fcdd74",
+      "successor_ast_sha256": "7e0e2124c09c76d5dfb84da0a20fd0270943f66edf42d881cb2f3bb837c633bc"
+    },
+    "tests/test_continuation_worker.py": {
+      "predecessor_source": "provenance/installed-reopen/tool-capabilities/predecessor/tests/test_continuation_worker.py",
+      "predecessor_sha256": "c0c70ecf769f615b1b21a839914e70bac20d30fdf4f70d53dee3d6e71531b3f1",
+      "predecessor_ast_sha256": "d3204b04388406c66cf26c016a06c93b95c9b4478957b4a1ab9e6ec86db96ff4",
+      "successor_sha256": "d3bc078658b5bce213a5bb9d4f57336b4c5ebc42638717dc99890e00d11fbf1c",
+      "successor_ast_sha256": "d78b5419fde8b228ee3721459c503eed1aaf4a593488ef5067a723b7dcb7c3c2"
+    },
+    "tests/test_task_preparation_lineage.py": {
+      "predecessor_source": "provenance/installed-reopen/tool-capabilities/predecessor/tests/test_task_preparation_lineage.py",
+      "predecessor_sha256": "48ccba2a9a924d8c9c21fe76438ffad4a14cd6879a8ae287c1101c649e46a55b",
+      "predecessor_ast_sha256": "69ad343b2af48d0ae71baada253a9d5ed42f18523856665639307defca7dbcc2",
+      "successor_sha256": "2982b3e8a09950dae70114e7a7e83b80998b6742c78bbc9f58e6686e793e9ce8",
+      "successor_ast_sha256": "a3a9150640ba47a024932120a73e505dd5c939190d5406537344f274a0bce6c3"
+    }
+  }
+}

@@ -1,0 +1,148 @@
+{
+  "schema": "adaptive.installed-reopen.tool-capabilities.installed-sdk.v1",
+  "recorded_date": "2026-11-01",
+  "result": "passed_at_stated_scope",
+  "scope": "Actual installed pinned Hermes SDK, native session history and file tools with a scripted provider. No model inference, desktop activity or restart qualification.",
+  "source": {
+    "revision": "b35b631aca9ec37da9955903b87463201a6b3630",
+    "worker_module": "src/adaptive_inference/desktop/hermes/run_recovery.py",
+    "worker_sha256": "237311ba527f9bbe36f4bf90fe99cca28f1d242caef863b610783e10ffa63018",
+    "installed_sdk_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "wheel_sha256": "cddcf53fc6ee8c5b7731b711fb7abb91769896dcb728ce5f712a5e491dac9d05",
+    "runtime_modules_per_installed_role": 62,
+    "host_python": "3.11.9",
+    "worker_python": "3.14.7"
+  },
+  "execution": {
+    "fixture_scenario": "report-feedback",
+    "provider": "scripted",
+    "model_inference": false,
+    "ui_or_gateway_started": false,
+    "provider_calls": 4,
+    "requests": 4,
+    "attempts": 4,
+    "admission_attempts": 4,
+    "request_limit": 8,
+    "original_task_budget_seconds": 900,
+    "one_original_deadline_preserved": true,
+    "unique_history_deadlines": 1,
+    "deadline_clock": "windows-qpc-seconds-v1",
+    "runner_emergency_guard_seconds": 180,
+    "guard_scope": "Containment only; not a product timeout or performance result.",
+    "original_prompt_sha256": "471610eb98c6a9f1da44d93ba0a75c78746b346dd6ac2ced174d1dc8873451d8",
+    "original_prompt_preserved": true,
+    "quality_unchanged": true,
+    "quality": {
+      "experimental_speed_projection": false,
+      "max_tokens": 10923,
+      "reasoning_budget_tokens": 8192,
+      "reasoning_effort": "high",
+      "strata_tune": {
+        "pcie_frac": 0.37
+      }
+    }
+  },
+  "advertised_capabilities": {
+    "names": [
+      "read_file",
+      "write_file"
+    ],
+    "checked_requests": 4,
+    "each_serialized_request_has_exactly_these_names": true,
+    "serialized_definition_hashes_match_durable_requests": true,
+    "construction_gate": "Exactly two function declarations, supported function names and matching dispatch-name set.",
+    "full_parameter_schema_equivalence_claimed": false
+  },
+  "correction": {
+    "scenario": "Read the original input, reject a scripted incorrect write before dispatch, include its durable tool feedback in the next request, then accept the corrected write.",
+    "confirmed_reads": 1,
+    "rejected_proposals": 1,
+    "rejection_dispatched": false,
+    "rejected_values": {
+      "units": 19,
+      "total_cents": 4800
+    },
+    "feedback_present_in_native_history_and_next_request": true,
+    "rejection_completed_revision": 19,
+    "corrected_generation_revision": 23,
+    "physical_write_started_revision": 26,
+    "dispatched_writes": 1,
+    "final_report": {
+      "rows": 4,
+      "units": 17,
+      "total_cents": 4350
+    },
+    "final_report_sha256": "37dd9565f5b19fa8d546f3a899956067ed777832a1baea5baf34222b89ecfe8b"
+  },
+  "completion": {
+    "task_state": "accepted",
+    "owner_released": true,
+    "pending_operation": false,
+    "reconciliation_required": false,
+    "native_history_rows": 8,
+    "native_history_sha256": "b2682d3a579ac9bdb4a2a7308fa6e54e30bb1f91385c927ebebfe128ab49a3a0",
+    "closed_canonical_files_unchanged_during_independent_review": true,
+    "source_unchanged": true
+  },
+  "closure": {
+    "children": [
+      {
+        "role": "prepare",
+        "exit_code": 0,
+        "joined": true,
+        "timed_out": false,
+        "killed": false,
+        "pipe_handles_closed": true
+      },
+      {
+        "role": "worker",
+        "exit_code": 0,
+        "joined": true,
+        "timed_out": false,
+        "killed": false,
+        "pipe_handles_closed": true
+      }
+    ],
+    "supervisor": {
+      "exit_code": 0,
+      "terminal_join_observed": true,
+      "evidence_origin": "Coordinator-supplied terminal tool observation, retained in the independent review; not an independent process re-probe."
+    }
+  },
+  "evidence_sha256": {
+    "fixture_receipt": "cd0c8744341258575b8fef67daf75b501086b4b4ee78aaf611e9b17491a4b2e5",
+    "independent_review": "41dd52ee21e79b0d90fdb4455429d25b31c932b16f53265143b8dfb69acab9fd",
+    "private_runner": "4562c4afa8d0309dc5d8431900109c7d1f98893a0cffb4f2b71d9dc18df1b438",
+    "installation_receipt": "7f07d1d67898038011fb26e79bc439da5b6c9a1f97715d504dbd0fe2a7e6eca4",
+    "original_input": "bebd316cb7278f7e3ad7ddea7d4ad1975512b4664847a81cea8269d7617b9940",
+    "output_report": "37dd9565f5b19fa8d546f3a899956067ed777832a1baea5baf34222b89ecfe8b",
+    "task_store": "4a79a452f3aa194356d63ad7b097ffeda55e602c439b11eceabdbf6cf3fa4cb3",
+    "native_session_store": "527c2b11d9509c32c5a1a2737bc813061cf3cacb4d6ad4e9389d6f34b1fdace2",
+    "wire_observations": "1da3099c7b56a4394617f91de73ad6e49ed9b232970dff1764f37308a182c084",
+    "effect_receipts": "1fb1a18aebf6dce651f09ec222d48539e945ab1584327b933ace9f615f596d56",
+    "worker_result": "417e6dfba0eac53cc073934262fb2947201446b3929b862c4209d52b4d08dcf4"
+  },
+  "limits": [
+    "The provider responses were scripted. This demonstrates SDK integration and durable correction feedback, not model reasoning, accuracy or throughput.",
+    "The capability checks cover exact function names and dispatch eligibility, not full parameter-schema equivalence.",
+    "Arbitrary unsupported-tool retries remain unqualified; the pinned SDK can retry an invalid name before native-history flush, and the recovery fence was not relaxed.",
+    "No physical foreground/resource handoff, later-task application restart, changed-boot recovery or complete M3/M5 result is claimed.",
+    "Neither unsuccessful installed later-task attempt is rerun, relabeled or converted into a pass.",
+    "Raw prompts, transcripts, machine paths, model assets and local process/tool identifiers remain private. Their source-bound receipt hashes are retained here."
+  ],
+  "references": [
+    {
+      "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/toolsets.py",
+      "use": "Existing public create_custom_toolset API; installed SDK revision.",
+      "license": "MIT"
+    },
+    {
+      "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/agent/turn_tool_validation.py#L143",
+      "use": "Scope limit: invalid-name retry is distinct from the exercised durable write-validation feedback."
+    },
+    {
+      "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/agent/turn_tool_round.py#L80",
+      "use": "Scope limit: validation/dispatch/native-flush ordering."
+    }
+  ]
+}

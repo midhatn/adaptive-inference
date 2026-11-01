@@ -1,0 +1,56 @@
+{
+  "schema": "adaptive-inference.validation-summary.v1",
+  "date": "2026-11-01",
+  "base_revision": "50232cfaccd4bbe34cded6a368a0bb2eab22d204",
+  "runtime_file": "src/adaptive_inference/desktop/hermes/run_recovery.py",
+  "runtime_sha256": "237311ba527f9bbe36f4bf90fe99cca28f1d242caef863b610783e10ffa63018",
+  "source_lineage_sha256": "600b3a9311f29fa003d45674213ea4fc3cbb876918a7817ee94a6583a13078d5",
+  "environment": "Windows, full Python 3.11.9, locked project dependencies",
+  "predecessor": {
+    "expected_regression_failures": 2,
+    "runner_errors": 0,
+    "joined_exit_code": 1,
+    "runtime_sha256": "c53043931117f0a50ca30af7d53688927c32cd81ef7f21e13a49eae53841de17",
+    "failures": [
+      "The worker selected the broad file toolset rather than the supported read/write group.",
+      "A fatal native turn reached artifact completion instead of preserving the primary refusal."
+    ],
+    "receipt_sha256": "f91e9bc37209e924e1e7caf1129d77563e3ece5e886ec2182b8dcb1d37b3307a"
+  },
+  "corrected_behavior": {
+    "tests_passed": 35,
+    "test_seconds": 15.852,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "joined_exit_code": 0,
+    "source_inputs_unchanged": true,
+    "remaining_threads": ["MainThread"],
+    "receipt_sha256": "130e7b67ad32dbb84de75c2d8cdc873c4d0002a05bd9f82b3cd994826222ae1f",
+    "coverage": [
+      "Ordinary worker registers exactly the supported custom read/write toolset.",
+      "Extra, missing, duplicate or dispatcher-mismatched tool names fail before conversation.",
+      "Fatal, failed and interrupted native turns do not reach artifact completion.",
+      "A completed turn still requires the durable output receipt.",
+      "Existing continuation and admission-wait worker behavior, with explicit scripted SDK capability declarations."
+    ]
+  },
+  "source_preservation": {
+    "tests_passed": 80,
+    "test_seconds": 151.027,
+    "joined_exit_code": 0,
+    "timeout_or_emergency_kill": false,
+    "source_inputs_unchanged": true,
+    "remaining_threads": ["MainThread"],
+    "retained_predecessor_files": 6,
+    "unchanged_prior_manifests": 7,
+    "receipt_sha256": "4fbd278c521f4a7a0efa07af50629a4e7e3e1e6bb89987817c7d6fa3aa33b7a5"
+  },
+  "independent_review": "No material blocker in runtime, exact predecessor/successor mappings or sanitized failed-attempt claims. Historical assertions and unknown-effect fences remain intact.",
+  "limits": [
+    "Behavior tests use real task/native SQLite with scripted SDK/provider boundaries.",
+    "The capability gate checks function names, entry shape and dispatch names, not full parameter-schema equivalence.",
+    "These are not installed SDK, model reasoning, foreground performance, Stop/reopen or reboot results.",
+    "Earlier unsuccessful installed attempts remain failed and their deadlines are not renewed."
+  ]
+}
