@@ -22,6 +22,33 @@ environment. Both runs explicitly loaded this checkout and recorded actual
 module origins. They are local CPU-fixture/source validation, separate from the
 corrected head's hosted checks and all installed IQ3_S evidence.
 
+A later original [Windows 3.11 job at `fbc78b9`](https://github.com/midhatn/adaptive-inference/actions/runs/41267272612/job/124732589702)
+passed the continuation and injected-timeout checks, then failed a snapshot
+test's final thread-liveness assertion after four-second joins. The log does
+not identify which thread or operation was slow. The [prospective completion-guard change](../provenance/control-mailbox/README.md#snapshot-fixture-completion-guard-1-november-2026)
+retains the original read barrier, 50-millisecond non-commit check, snapshot
+content assertions and product SQLite settings. Its five existing tests passed
+once in 0.554 seconds on Python 3.11.9, with explicit current-source imports,
+both retained threads joined and parent exit 0. Independent source/evidence
+review accepted this narrow correction; the original hosted attempt stays failed.
+
+The `fbc78b9` workflows finished with 13 passes and the one snapshot failure.
+The separate alpha head `1efe6cd4e9957fbb9627a43e5614a18062b7acb0` finished
+with six successful jobs and one [Windows 3.11 cancellation](https://github.com/midhatn/adaptive-inference/actions/runs/41267498706/job/124733245107).
+GitHub's check annotation confirms the cumulative 15-minute job limit. All
+1,306 core tests passed in 813.388 seconds, and subsequent provenance/validation
+steps passed through the demo. Cancellation interrupted the profiles command;
+build and distribution checking never ran in that job. It remains canceled,
+not a complete pass. No workflow was canceled or rerun by the coordinator.
+
+Following the documented [GitHub job timeout control](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes),
+the prospective Windows portable-job allowance becomes 30 minutes. The other
+platforms and offline-source job retain 15 minutes. The same locked dependencies,
+test commands, assertions, individual fixture guards and artifact checks remain
+required. This is an outer CI scheduling allowance, not a product deadline or
+proof of the slowdown's cause. The new head still needs its own complete hosted
+result before merge or release.
+
 ## Windows reference alpha packaging
 
 The `0.4.0a1` candidate changes the package version and delivery documentation.
