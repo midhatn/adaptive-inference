@@ -49,6 +49,22 @@ required. This is an outer CI scheduling allowance, not a product deadline or
 proof of the slowdown's cause. The new head still needs its own complete hosted
 result before merge or release.
 
+The next alpha [Windows 3.11 job at `ebe0f1a`](https://github.com/midhatn/adaptive-inference/actions/runs/41268742104/job/124736929014)
+failed the pending-reply fixture's two-second snapshot-entry wait after 551
+tests in 315.436 seconds. Its log does not establish authority entry or the
+delayed operation, and the intended ordering assertions were not reached.
+The [one-method setup correction](../provenance/desktop-control-core/README.md#pending-reply-fixture-authority-entry-1-november-2026)
+reuses the module's existing authority-entry event pattern before the unchanged
+short read-entry wait. All response/held-read/completion limits, intent and
+single-request assertions, runtime source and historical source bytes remain
+unchanged. The existing 28 mailbox-runtime tests plus one retained-source check
+passed in 4.914 seconds on Python 3.11.9 with every locked dependency version,
+explicit current-checkout imports and parent exit 0. All 28 fixture cleanups
+were observed complete; only the main thread remained. This is CPU fixture and
+source evidence, not a new native-resource or model result. Independent review
+accepted the bounded correction and its retained evidence. Original CI stays
+failed; the correction still needs its own exact-head hosted checks.
+
 ## Supported desktop setup helper
 
 **1 November 2026:** the [setup and launch helpers](../examples/desktop/README.md)

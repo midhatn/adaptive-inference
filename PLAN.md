@@ -118,6 +118,17 @@ Require the complete corrected-head workflow before release. Detailed performanc
 work can follow if slowness still blocks delivery; do not start a separate
 profiling or CI redesign project for this bounded correction.
 
+The following alpha Windows job exposed another test setup-ordering issue:
+its two-second held-snapshot entry wait expired before authority entry had been
+established. Reuse the same module's existing authority-entry event pattern
+before that short wait; preserve the response, held-read and completion limits
+and every pending-response/intent assertion. The 28 mailbox tests and retained
+source check passed with pinned dependencies. Keep the original failure and
+unknown slow operation. Collect the current original CI outcomes, publish the
+reviewed bounded correction, and require the corrected source's hosted checks.
+Hold further draft-asset refreshes until that source has passed, to avoid
+repeatedly packaging intermediate CI follow-ups.
+
 The reference can be delivered as a narrow alpha before the full daily-use
 milestone. Keep the existing IQ3_S quality, budgets, task-effect rules and
 acceptance standards. Validate meaningful changes and reuse completed evidence
