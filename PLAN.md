@@ -1,6 +1,6 @@
 # Adaptive Inference roadmap
 
-**Updated: 1 November 2026. Status: living plan, with evidence-based completion gates.**
+**Updated: 2 November 2026. Status: living plan, with evidence-based completion gates.**
 
 ## Destination
 
@@ -900,6 +900,18 @@ until it has an explicit resource model and convincing benefit. The gateway
 does not become an arbitrary shell-execution endpoint.
 
 ### M5 — Survive application and computer lifecycle changes
+
+**Physical restart feedback — 2 November 2026:** the
+[first normal Windows Restart attempt](provenance/installed-reopen/reboot-budget/physical-restart-expired-2026-11-02.json)
+preserved the completed first task and the second task's confirmed read, but its
+original allowance expired before postboot continuation. The installed reader
+correctly refused the expired execution before app launch. This attempt does not
+satisfy the successful-reboot gate and must not be replayed or given a renewed
+deadline. A fresh attempt must include a concrete postboot return path within
+the unchanged 900 seconds. Preserve the observer's separate three-timeout result;
+add bounded error-stage/numeric diagnostics before another physical observation,
+keeping timeout distinct from confirmed connection refusal. M4 compiler/tool
+integration can continue independently while this physical gate remains open.
 
 **Installed application path passed, 1 November 2026:** the [recorded IQ3_S
 trial](provenance/installed-reopen/application-restart-2026-11-01.json) closed an

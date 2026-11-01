@@ -4,6 +4,28 @@ This ledger separates portable software tests, source reconstruction, actual SDK
 
 ## Durable reboot-budget source integration
 
+### First physical restart attempt: expired before continuation
+
+The [source-bound attempt record](../provenance/installed-reopen/reboot-budget/physical-restart-expired-2026-11-02.json)
+retains an actual IQ3_S clean Stop followed by normal Windows Restart. Welcome A
+completed; inventory B stopped after one confirmed read, with zero output writes.
+The closed Stop audit passed with about 711.912 seconds remaining from the
+original 900 seconds. The first postboot eligibility check occurred about
+274.452 seconds after the fixed expiration and refused before application launch.
+Independent review found all checked A/B canonical entries and the admission
+database unchanged. No new session, resumed provider call or output write was
+created. The same-computer boot changed; this is actual reboot evidence, but
+**successful task continuation across reboot remains unqualified**.
+
+The app parent joined with exit 0 and reported clean Stop. The separate observer
+joined with exit 1: three retained `URLError(TimeoutError)` observations followed
+shutdown. Its final valid response reported closing; all three timeouts saw the
+terminal file and none proved connection refusal. Preserve those failures and
+the original deadlines. The fixed installation's 63 runtime modules remain
+identical to the reviewed candidate; source archive and wheel-container identities
+remain distinct. This result adds no crash, sleep/wake, desktop-performance or
+full M5 claim.
+
 The [versioned budget implementation](reboot-budget.md) preserves the original
 task expiration across a clean Stop and changed Windows boot. It reuses fixed
 expiration from Temporal and the existing owned TaskStore transaction. The

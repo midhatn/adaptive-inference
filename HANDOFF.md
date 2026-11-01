@@ -5,7 +5,7 @@ Read [AGENTS.md](AGENTS.md) first. The repository, its retained evidence and cur
 Git state are authoritative; no previous conversation or particular AI provider
 is required to understand the intended work.
 
-**Snapshot date: 1 November 2026.** Recheck branch heads, PRs, task ownership and
+**Snapshot date: 2 November 2026.** Recheck branch heads, PRs, task ownership and
 the actual machine before acting. This file does not reserve hardware or assert
 that a previously recorded process is still running.
 
@@ -39,6 +39,20 @@ citations and unsuccessful evidence. The full milestone sequence is in
 | How should multiple contributors share the work? | [Collaboration workflow](docs/multi-agent-collaboration.md), [task template](.github/ISSUE_TEMPLATE/agent_task.md) |
 
 ## Current continuation state
+
+**Physical restart attempt closed; successful continuation remains open.**
+The [first Windows Restart attempt](provenance/installed-reopen/reboot-budget/physical-restart-expired-2026-11-02.json)
+completed welcome task A and safely stopped inventory B after one confirmed read,
+with no output write and about 712 seconds remaining. Windows restarted, but the
+first postboot eligibility check arrived after B's original 900-second allowance
+expired. The installed reader refused before launching another app or worker.
+Independent closed review confirmed unchanged A/B canonical files and admission
+state. This verifies preserved work and expiry refusal, not successful resume.
+The observer's three shutdown timeouts remain a failed observation boundary.
+Keep PR #34 in draft. Never replay or renew this consumed attempt. Before a fresh
+physical attempt, arrange prompt postboot return and improve timeout diagnostics
+without weakening the acceptance gate. Continue useful-tool integration in its
+separate checkout; the actual reboot installation remains fixed.
 
 **Installed application-restart result:** the ordinary IQ3_S task has now passed
 same-boot close/reopen at installed source `6ac601546daf32d96e38b6689a5818e4cc8dafa8`.
