@@ -303,7 +303,11 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(duplicate['continuation']['phase'],'running')
         self.assertEqual(len(c.handles),2)
         self.assertEqual([r['command'] for r in record['mailbox'].snapshot().requests],['pause','resume'])
-        self.assertEqual((await self.wire('status'))['status']['execution_id'],record['grant']['payload']['successor_id'])
+        # This fixture has no host observation loop to refresh after child exit.
+        await c.runtime.refresh()
+        reply=await self.wire('status')
+        self.assertTrue(reply['ok'],reply)
+        self.assertEqual(reply['status']['execution_id'],record['grant']['payload']['successor_id'])
         await self.transport.aclose(timeout=3)
         self.assertTrue(self.transport.lifecycle()['stop_confirmed'])
 

@@ -671,6 +671,13 @@
   note = {Inspected 2026-10-30 for the event-held HTTP disconnect fixture. Waiting suspends the waiting coroutine, not unrelated socket timers; event release belongs in cleanup. Informed a test-only correction, with no runtime implementation copied}
 }
 
+@misc{pythonAsyncioFixtureStatusFreshness,
+  title = {Python 3.12 asyncio Event and wait_for contracts},
+  author = {{Python Software Foundation}},
+  url = {https://docs.python.org/3.12/library/asyncio-sync.html#asyncio.Event},
+  note = {Inspected 2026-11-01 with https://docs.python.org/3.12/library/asyncio-task.html\#asyncio.wait\_for when diagnosing the continuation fixture's missing status reply. The existing EOF event is already set and the short allowance applies to transport waits; no timeout increase was introduced. Reuses the project's normal explicit runtime refresh in an isolated fixture without the host observation loop. The original error reply was not captured, so its cause remains unknown. No upstream implementation copied}
+}
+
 @misc{aiohttpSocketReadTimeout,
   title = {aiohttp 3.14.5 ClientTimeout socket-read contract},
   author = {{aiohttp contributors}},

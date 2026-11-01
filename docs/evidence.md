@@ -142,6 +142,38 @@ This local archive binds that source snapshot; subsequent documentation and
 the final PR revision receive their own hosted archive checks. No runtime,
 model, browser setting or playback acceptance limit changed.
 
+### Continuation fixture observation freshness
+
+The archive-corrected revision `a744657b561a0002c11f43537fc8f917002f8466`
+exposed a separate Windows/Python 3.12 failure in
+[the original PR job](https://github.com/midhatn/adaptive-inference/actions/runs/41282720512/job/124777738128).
+The final status request lacked the expected `status` field after the child
+joins and duplicate-Continue assertions had passed. The actual reply was not
+included in that failure, so its precise cause remains unknown. Both children
+joined with their expected exit codes and no cleanup kill. The original failed
+log and child artifact remain preserved; this is not a rerun of that job.
+
+Source review found that this isolated fixture omits the ordinary host's
+observation loop. It now explicitly refreshes the existing runtime after child
+completion, then checks the full reply before reading its status. This restores
+the normal freshness prerequisite and retains diagnostic output for any future
+failure. It does not prove that stale status caused the original failure.
+The existing source-lineage entry records the exact reversible test change;
+predecessor pins and historical archives remain unchanged.
+
+All **44 existing host and required source-lineage checks passed in 33.948
+seconds**, with no skips, on full Python 3.11.9 and the pinned dependencies.
+All 38 children joined and the parent exited normally; the sole forced cleanup
+belongs to the existing deliberately failed setup case. The unchanged stale
+observation rejection test passed. The one-second freshness limit, 0.1-second
+I/O allowance, other timeouts and product code are unchanged. The private
+validation receipt SHA-256 is
+`f5175e61121b1d94edf77ca7d3fc394092396e980b20c558c62cfa9053e8228c`.
+Independent review verified the exact source change, byte-for-byte reversal,
+retained validation and child joins without repeating the tests.
+Local Python 3.11 validation does not replace the corrected revision's hosted
+Python 3.12 checks. This changes no physical experiment or installed runtime.
+
 ## Reference alpha publication
 
 [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1)
