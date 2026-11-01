@@ -7,7 +7,7 @@ Its five-second continuation wait raised `TimeoutError`; the same source tree
 passed the corresponding PR job. The aggregate remains 13 successful jobs and
 one failed job. New diagnostics do not explain or erase that original failure.
 
-The fixture retains its exact wait, success assertions, Stop fencing, process
+At that revision, the fixture retained its exact wait, success assertions, Stop fencing, process
 identity checks, child watchdog and product execution deadlines. With the
 existing `CONTINUATION_TEST_RECEIPTS` opt-in, a timeout records the current phase,
 task state, one suspended source location and retained child PID/creation/poll
@@ -70,3 +70,34 @@ reply; that reply is not the operation's completion. This uses the existing
 shielded-task join pattern and changes no shared runtime or freshness limit.
 The cause of the original precondition delay is still unknown. Both original
 failed runs remain failed; local fixture checks and later CI have their own scope.
+
+## Whole-fixture orchestration guard, 1 November 2026
+
+The later original [Windows 3.12 PR job](https://github.com/midhatn/adaptive-inference/actions/runs/41266470933/job/124730206654)
+at `5ccf7391dd07723ab8c3ce5d6553ab9cd624dec4` failed the ordinary continuation
+test's five-second wait. This time its diagnostic receipt was preserved. At the
+timeout, the transition was `preparing`, the task was pending and not cancelled,
+and only the original, already-exited worker was present. There was no successor
+child before or after cleanup. The subsequent cleanup observation was 0.312
+seconds later, with the original child joined and not forcibly stopped.
+
+That phase includes grant-file staging and the derived Pause submission before
+successor launch. The retained outer stack does not identify which awaited
+operation caused the delay. It is not evidence of a slow successor import,
+model execution, or a proven product defect. The original CI attempt remains
+failed; no result is retrospectively accepted.
+
+The ordinary test now names its whole-fixture orchestration guard and gives it
+30 seconds. Its purpose is to bound filesystem, SQLite, scheduling and child
+work while checking continuation semantics, not to assert a five-second product
+latency. This follows the distinction in [CPython 3.12.10's test support](https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py)
+between test timeouts and hang detection, and reuses its 30-second short timeout
+as a reference. No CPython implementation is copied or imported.
+
+The deliberately held diagnostic subclass explicitly retains five seconds,
+along with its entry barrier and actual timeout/cleanup assertions. Product
+deadlines, the 15-second CPU-child watchdog, readiness limits, exact ownership
+and every continuation success assertion remain unchanged. The existing
+[outer source view](../../task-preparation/source-lineage.json) reverses only
+the declared guard and reader changes before historical checks; historical
+manifests, predecessor bytes and unknown-source refusal remain intact.

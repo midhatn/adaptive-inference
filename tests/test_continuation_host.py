@@ -78,6 +78,11 @@ class Adapter:
 
 @unittest.skipUnless(os.name == 'nt', 'Windows retained-process creation identity fixture')
 class HostTests(unittest.IsolatedAsyncioTestCase):
+    # Whole-fixture orchestration guard, not a product latency requirement.
+    # Reuse CPython's short test timeout for real SQLite/filesystem/child work:
+    # https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py
+    continuation_timeout_s = 30
+
     async def asyncSetUp(self):
         self.seed=seed_fixture.SelectedWorkerTests();self.seed.setUp();self.seed.seed_report()
         self.addCleanup(self.seed.doCleanups)
@@ -286,7 +291,7 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         first=await self.wire('continue');self.assertTrue(first['ok'])
         task=self.transport._records['continue-1']['task'];self.tasks.append(task)
         try:
-            await asyncio.wait_for(asyncio.shield(task),5)
+            await asyncio.wait_for(asyncio.shield(task), self.continuation_timeout_s)
         except TimeoutError:
             if os.environ.get('CONTINUATION_TEST_RECEIPTS'):
                 try:self.timeout_observation=timeout_diagnostics.before_teardown(self,task)

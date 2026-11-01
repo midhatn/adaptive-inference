@@ -3,6 +3,15 @@
   "baseline_revision": "6e17f3185e715013155d355aa05ff289c31bfab4",
   "baseline_runtime_record": "provenance/task-handover/continuation-timeout-diagnostics/source-lineage.json",
   "baseline_runtime_record_sha256": "6cb899c81dcc4bfb5ed3df8d801b3fcb4bc2bcab718ff3cc2f41bc69ab14a885",
+  "continuation_guard": {
+    "failed_job": 124730206654,
+    "injected_diagnostic_seconds": 5,
+    "ordinary_fixture_seconds": 30,
+    "reference": "https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py",
+    "runtime_changes": [],
+    "scope": "Prospective whole-fixture orchestration guard only; original failed CI and all historical source pins remain unchanged.",
+    "source_revision": "5ccf7391dd07723ab8c3ce5d6553ab9cd624dec4"
+  },
   "files": {
     "src/adaptive_inference/cli.py": {
       "predecessor_ast_sha256": "5e17b139e215257cd55a0ed495c07f5ef15c91995507ead6ffba2c75049b8c3e",
@@ -85,6 +94,25 @@
       "successor_ast_sha256": "cd67c8127f211ead62d0385d4aa99311e2e03475dca2bea243faba1d455ee6c1",
       "successor_sha256": "93282b45ff751718fffd152084a5a628fbf326af19d6c20cb24ffbf65f25262b"
     },
+    "tests/test_continuation_host.py": {
+      "predecessor_ast_sha256": "74629968a73044bb3106b077d96a90cffb898850581db3f87c5accc2b4c24d54",
+      "predecessor_revision": "5ccf7391dd07723ab8c3ce5d6553ab9cd624dec4",
+      "predecessor_sha256": "4cee213b2f1c18262e7b54556cd098208c14743abb0215aaed86c03ff953b97d",
+      "replacements": [
+        {
+          "count": 1,
+          "new": "class HostTests(unittest.IsolatedAsyncioTestCase):\n    # Whole-fixture orchestration guard, not a product latency requirement.\n    # Reuse CPython's short test timeout for real SQLite/filesystem/child work:\n    # https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py\n    continuation_timeout_s = 30\n\n",
+          "old": "class HostTests(unittest.IsolatedAsyncioTestCase):\n"
+        },
+        {
+          "count": 1,
+          "new": "await asyncio.wait_for(asyncio.shield(task), self.continuation_timeout_s)",
+          "old": "await asyncio.wait_for(asyncio.shield(task),5)"
+        }
+      ],
+      "successor_ast_sha256": "83c557487073eb96f8905407411a00a5b51e3e1a5dfd333d40c2b2b69fbb2738",
+      "successor_sha256": "37db2307d8cc8932f52f074b1a6cfade37c716274358f5662cd8e5ee456978fe"
+    },
     "tests/test_continuation_timeout_lineage.py": {
       "predecessor_ast_sha256": "3a8288094cda5566896c15b955584a45524107365a9416b910eaa20d7f1a4808",
       "predecessor_sha256": "d4c3b14fee2484ab14b59c7b6b16da1f286cf6d7de3112ef094ddedc69042b98",
@@ -93,10 +121,20 @@
           "count": 1,
           "new": "        actual = {name: hashlib.sha256(data).hexdigest()\n                  for name, data in lineage.preparation_runtime_view().items()}\n",
           "old": "        actual = {p.relative_to(runtime).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()\n                  for p in runtime.rglob('*.py')}\n"
+        },
+        {
+          "count": 1,
+          "new": "            data = lineage.preparation_predecessor(relative, (lineage.ROOT/relative).read_bytes())\n            self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])",
+          "old": "            data = (lineage.ROOT/relative).read_bytes()\n            self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])"
+        },
+        {
+          "count": 1,
+          "new": "current.replace(b'continuation_timeout_s = 30', b'continuation_timeout_s = 31', 1)",
+          "old": "current.replace(b'asyncio.shield(task),5)', b'asyncio.shield(task),6)', 1)"
         }
       ],
-      "successor_ast_sha256": "57e8ffb131f5d283aa15ed0d803a137df316f4d36c8cf5a9baec1ffb5c457545",
-      "successor_sha256": "04fb8b7e2204ece89653509a5479b2be4bbca8390897ae8a87da322bb545f826"
+      "successor_ast_sha256": "e66262de7c2d099e777243309daaa6ba1f33d7d145464dd03615abaff46e074d",
+      "successor_sha256": "d3e368b685e46facd950eb3cbf9486d1dd6fe6620ef08d4d9ee11daa675877e4"
     },
     "tests/test_pause_observation_lineage.py": {
       "predecessor_ast_sha256": "55ef55e67a8cf50a70a8376aa3a80a95c0bc3af7627f61ad5da93144981a0580",
@@ -142,5 +180,5 @@
   ],
   "reuse": "Existing continuation_timeout_lineage outer byte projection and paused_expiry_lineage cross-version AST fingerprint. No external implementation copied; project Apache-2.0.",
   "schema": "adaptive.task-preparation.source-lineage.v1",
-  "scope": "Exact ordinary authoring addition and CLI delta; input mapping only for preserved historical runtime assertions. Not installed qualification."
+  "scope": "Exact ordinary authoring addition and CLI delta, plus declared continuation fixture guard; input mapping only for preserved historical assertions. Not installed qualification."
 }

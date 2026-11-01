@@ -87,6 +87,16 @@ Finish delivery of this narrow reference alpha, then move on to resource
 coexistence, useful tool handoff and restart
 recovery. Extra investigations belong on this path only when they block it.
 
+The release follow-up exposed an ordinary Windows CPU-fixture continuation wait
+that expired after five seconds before a successor worker launched. Its retained
+diagnostics narrow the phase but do not establish the slow operation. Keep that
+original CI failure and use a prospective 30-second whole-fixture guard, following
+CPython's test-timeout convention; the deliberately held diagnostic still uses
+five seconds. This [test-only correction](provenance/task-handover/continuation-timeout-diagnostics/README.md#whole-fixture-orchestration-guard-1-november-2026)
+does not change product deadlines, child watchdogs, IQ3_S or task allowances.
+Complete its exact-revision checks before merging the source and packaging the
+reference alpha. Do not repeat the accepted physical scenario for this change.
+
 The reference can be delivered as a narrow alpha before the full daily-use
 milestone. Keep the existing IQ3_S quality, budgets, task-effect rules and
 acceptance standards. Validate meaningful changes and reuse completed evidence

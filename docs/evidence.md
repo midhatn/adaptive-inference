@@ -2,6 +2,26 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Reference delivery checks
+
+**1 November 2026:** setup predecessor `a9eff31bf4e2257723e34d8b30188dbf8b8efb81`
+passed all 14 original jobs across its push and PR workflows. The next launcher
+head `5ccf7391dd07723ab8c3ce5d6553ab9cd624dec4` encountered a separate ordinary
+Windows 3.12 continuation-fixture timeout before any successor worker launched.
+Its [original job and diagnostic interpretation](../provenance/task-handover/continuation-timeout-diagnostics/README.md#whole-fixture-orchestration-guard-1-november-2026)
+remain recorded. The precise delay cause is unknown. A prospective 30-second
+test orchestration guard does not qualify the original five-second attempt or
+change any product task budget. The deliberately injected timeout keeps its
+five-second guard. Corrected-source checks and release packaging must be assessed
+at their own revision; the installed results below remain separately scoped.
+
+The correction passed 50 affected source/readiness checks on Python 3.11.9 and
+34 continuation-host/diagnostic checks on Python 3.12.9. The latter used local
+`aiohttp` 3.11.13 and `psutil` 7.0.0; it is not the hosted locked-dependency
+environment. Both runs explicitly loaded this checkout and recorded actual
+module origins. They are local CPU-fixture/source validation, separate from the
+corrected head's hosted checks and all installed IQ3_S evidence.
+
 ## Supported desktop setup helper
 
 **1 November 2026:** the [setup and launch helpers](../examples/desktop/README.md)

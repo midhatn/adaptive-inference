@@ -28,7 +28,8 @@ class TaskPreparationLineageTests(unittest.TestCase):
         self.assertEqual(set(rows['files']), {'src/adaptive_inference/cli.py',
             'tests/continuation_timeout_lineage.py', 'tests/task_file_alias_lineage.py',
             'tests/test_admission_activity_lineage.py', 'tests/test_continuation_timeout_lineage.py',
-            'tests/test_safe_wait_lineage.py', 'tests/test_pause_observation_lineage.py'})
+            'tests/test_safe_wait_lineage.py', 'tests/test_pause_observation_lineage.py',
+            'tests/test_continuation_host.py'})
         for relative, row in rows['files'].items():
             with self.subTest(relative=relative):
                 current = (lineage.ROOT / relative).read_bytes()
