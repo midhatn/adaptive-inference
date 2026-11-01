@@ -7,15 +7,20 @@ still requires fresh foreground/capacity observations and the existing recovery
 dwell. Pause waits for a safe task boundary. Stop joins the retained worker,
 window, pipes and native resources before reporting a clean shutdown.
 
-This first profile runs the **orders-report task** with the existing **IQ3_S**
-model. It preserves context 65,536, output allowance 10,923, high reasoning with
+The retained default profile runs the **orders-report task** with the existing
+**IQ3_S** model. The current development source also accepts bounded
+[user file tasks and same-host New task](task-spec.md), with a separate
+[case17 installed result](evidence.md#case17-complete-foreground-continuation-and-two-task-handover).
+It preserves context 65,536, output allowance 10,923, high reasoning with
 an 8,192-token budget, the original report oracle and at most eight cumulative
 model requests. Each execution has a 900-second budget. After verified safe
 expiry, [Continue saved task](explicit-continuation.md) can explicitly authorize
 a successor in the same window; it does not reset the request allowance. Rejected report proposals
-use the existing feedback mechanism before a file effect. It is not yet an
-arbitrary-task launcher, general Hermes service installer or computer-reboot
-recovery service.
+use the existing feedback mechanism before a file effect. The file-task adapter
+supports its declared read/write capabilities; it is not a general Hermes
+service installer or computer-reboot recovery service. The ordinary task and
+New task steps are in the task guide; automatic setup and a scoped reference
+alpha remain the next practical delivery.
 
 The product code reuses the previously qualified composition. A source promotion
 or fixture pass does not transfer real-process acceptance to a new installation.

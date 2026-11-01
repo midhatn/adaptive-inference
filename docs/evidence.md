@@ -2,6 +2,78 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Case17: complete foreground continuation and two-task handover
+
+**1 November 2026: both original terminal audits passed for the same installed
+IQ3_S run.** The primary recovery/handover audit passed all 99 checks. The
+separate first-admitted-cycle foreground and saved-read lineage audit also
+passed. Each audit ran once after both retained supervision processes joined;
+earlier failed cases were neither replayed nor combined into this result.
+Bounded independent terminal review accepted the combined scenario with no
+blocking finding, checking the closed evidence and its source identities.
+
+The service yielded during genuine document work, preserved the saved input
+read and original task through its 900-second resource-wait expiry, and
+continued after one explicit **Continue saved task**. The inventory output
+matched the independent 23-unit oracle. **New task** selected a distinct welcome
+task and session in the same retained controller; it completed with format-only
+acceptance. One **Stop engine** produced normal shutdown and verified release
+of the owned workers, windows, native services and connections. Six cumulative
+provider calls produced two physical output writes. The original prompt,
+history and inventory output remained preserved across the task handover.
+
+Actual controls were one Resume for each task, one Continue, one New task and
+one Stop, with no Pause or Retry. A file-picker value-setting attempt was
+rejected by the UI automation helper and recovered through the visible filename
+field. That unsuccessful input is retained; it did not repeat a task control.
+
+The foreground record contains 25 genuine document actions, 24 wholly before
+the expiry seal. The later action is preserved but excluded from preseal
+coverage. The maximum adjacent start-to-next-end interval was 54.680872 seconds;
+the final preseal tail was 37.453106 seconds. Fourteen intervals missed the
+30-second operating target, but none violated the unchanged strict 60-second
+coverage gate. The audit verified onset during the same first admitted cycle,
+continuous foreground hold and causal saved-read lineage. This is not proof of
+GPU preemption or a measurement of desktop responsiveness.
+
+The actual parent joined with exit 0. The GET-only observer joined with exit 1
+after three connection errors following shutdown, with the terminal result
+already present: 1,618 valid responses in 1,621 samples. Cleanup is established
+by the independent retained-process/resource checks, not by those connection
+errors. No emergency termination or extra execution budget was used.
+
+The installed runtime source remained
+`7306a53085ddc31d53d2ba50e91975c80cfc0014`, with the same IQ3_S assets, 65,536
+context, 10,923 output allowance, high reasoning and 8,192 reasoning-token budget.
+The three executions retained 900 seconds each, the 2,700-second outer bound,
+eight cumulative requests per logical task and the existing admission limits.
+The reviewed checker correction used the producer's exact authorization-time
+plus 900 calculation; it changed no runtime or acceptance budget. Its
+[source and citations](../provenance/explicit-continuation/deadline-arithmetic/README.md)
+remain separate from historical acceptance records.
+
+| Retained record | SHA-256 |
+| --- | --- |
+| Terminal result | `122af7d5ebdf939d5c7ec5c178c09b2d56b5690106a5324ec2b2458d6c5be6dc` |
+| Original primary audit | `6a0e6f14360a4aed403ab1efdbb946daf6c0f151162aad24bf4e3141aa81b4d0` |
+| Original foreground/lineage audit | `8fa5059cb817e5ebd8228ead738bc36e8e388b2abba53d0f3dc75ba7b7431cc5` |
+| Actual UI observations | `8be65e46288848c8f078a8ebe5e82f893958192b494a24239a34d72cbfc220e9` |
+| Actual supervision joins | `9f57602d8c5342409de4233fb3b0724d23fdb8cef0b74ff7003d152397c06b26` |
+| Corrected harness manifest | `75809e201f9b8b6595ea429f605f19b92ded944fb8b16527be4a9ba9ca5fc4f3` |
+| Independent terminal review | `4c4d44b689a4fb01bc55c1450b457f54cfd05d1f1f27b8fdec462490c5847cd6` |
+
+These hashes identify retained private evidence, not a completed public replay
+package. The next delivery is its scoped standalone reproduction and a usable
+installed reference using the existing host and task controls. Full M2,
+computer restart, games/video coexistence, autonomous media quality and speedup
+remain separate requirements. Cases14/15/16 below keep their recorded failures.
+
+The checker/reporting head `f049342060b3ae8d04f237bf5632d2b9f459869d` passed all
+14 hosted jobs on their original attempts: [PR run](https://github.com/midhatn/adaptive-inference/actions/runs/41257834524)
+and [push run](https://github.com/midhatn/adaptive-inference/actions/runs/41257830828).
+Those are source/CI results for that exact commit, separate from the installed
+runtime identity and from later documentation commits.
+
 ## Safe resource-wait expiry and continuation development
 
 The [resource-wait recovery extension](admission-wait-recovery.md) handles a

@@ -34,13 +34,17 @@ and progress contracts for that integration. Importing the library starts no
 GUI, agent or engine. The explicit `desktop` command composes those lifecycles
 using the [installed profile](docs/installed-desktop.md).
 
-**Current development gate:** [user task contracts](docs/task-spec.md) and
-retained-host task handover are implemented. Each task records its original
-prompt, pinned inputs, allowed outputs, checks and execution budget. Complete
-installed IQ3_S qualification of the new two-task workflow remains pending;
-the earlier accepted workflow does not qualify this newer source. The
-[roadmap](PLAN.md) and [evidence ledger](docs/evidence.md) separate current
-acceptance requirements from completed component work and unsuccessful trials.
+**Latest development result:** the installed IQ3_S service completed a task
+after real foreground activity, safe resource-wait expiry and explicit
+continuation, then accepted and completed a separate task without restarting
+the controller. One normal Stop released its owned resources. The original
+99-check handover audit and separate foreground audit both passed in
+[case17](docs/evidence.md#case17-complete-foreground-continuation-and-two-task-handover).
+The inventory result was independently checked; the welcome task had format-only
+validation. This is a bounded development result; its standalone reproduction
+package and a usable installed alpha are the next delivery. The
+[task contracts](docs/task-spec.md), [roadmap](PLAN.md) and
+[handoff](HANDOFF.md) explain the supported scope and remaining work.
 
 This repository is the **canonical source of truth** for the implementation, contracts, documentation, tests and evidence. The portable package works independently of Strata or Hermes. Optional native integrations preserve pinned source baselines, patches and licenses locally; reproducing their source does not depend on an old PR or upstream repository remaining available. See the [source preservation contract](docs/source-of-truth.md).
 

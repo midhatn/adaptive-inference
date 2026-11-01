@@ -74,6 +74,22 @@ terminal inputs; public synthetic checks do not repeat the model/GUI trial.
 Do not substitute the historical expiry replay for this result. The exact tested
 qualification source/wheel are distinguished from later release documentation.
 
+## Current two-task development result
+
+[Case17](evidence.md#case17-complete-foreground-continuation-and-two-task-handover)
+passed the installed foreground, resource-wait continuation and two-task
+handover audits with IQ3_S. The retained evidence and its hashes identify that
+particular run. Its standalone fresh-run workflow and public acceptance replay
+are the next publication step; a public clone does not yet reproduce that
+complete trial from these instructions alone.
+
+The practical delivery reuses the [installed desktop composition](installed-desktop.md)
+and [task contracts](task-spec.md): start once, choose a task and inputs, see
+waiting/progress, continue saved work, select the next task and stop normally.
+Ordinary use must not require editing qualification records. The existing
+explicit-continuation workflow above remains independently reproducible at its
+own documented scope.
+
 ## Real engine
 
 1. Install and start the desired backend according to its official documentation in [integrations.md](integrations.md).

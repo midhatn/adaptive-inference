@@ -11,9 +11,12 @@ Windows reference adapter continues to select the existing IQ3_S model and
 quality settings through its deployment profile. A task cannot replace those
 settings, choose a new Python module, or install a validator.
 
-This is development work. CPU tests of the contract and adapter do not establish
-installed IQ3_S execution, multiple tasks in one running host, or reboot recovery.
-The existing installed orders qualification remains a separate, preserved result.
+This is development work with one bounded installed result:
+[case17](evidence.md#case17-complete-foreground-continuation-and-two-task-handover)
+passed foreground/resource-wait continuation and inventory-to-welcome handover
+in the same controller using IQ3_S. CPU tests remain separate evidence. A usable
+reference alpha and standalone reproduction are the next delivery; computer
+restart recovery remains a later milestone.
 
 ## Try a different file task
 
@@ -36,7 +39,29 @@ Use a fresh run directory under an existing parent. The host starts paused;
 Resume supplies explicit user intent. The original prompt appears in the
 control window. Omitting both task arguments keeps the retained orders example.
 Supplying only one argument is an error. This command starts a host; it is not
-yet a command for adding a task to an already running host.
+an API command for adding a task to an already running host; use the existing
+window's **New task** control for that.
+
+The ordinary interaction uses these existing controls:
+
+1. Start the installed desktop host with the task specification and input folder.
+2. Read the objective in the window, then select **Resume**.
+3. Use the computer while the controller observes foreground demand. It waits
+   and restores its owned model as capacity permits. A request already running
+   drains to a safe boundary; instantaneous preemption is not claimed.
+4. If the finite execution budget ends with safely saved work, select
+   **Continue saved task** to authorize another bounded execution.
+5. After completion, select **New task**, choose the next specification and
+   its input folder, then **Resume** in the new task window. The controller
+   stays running and each task keeps separate records and outputs.
+6. Select **Stop engine** when finished. Closing the window with X minimizes it;
+   it does not stop the service or establish restart recovery.
+
+These product controls do not require qualification receipts or audit-file
+editing. The explicit local installation/profile remains a prerequisite; an
+automatic setup experience is not yet delivered. Case17 exercised these
+controls with the inventory and welcome examples. New tasks still need their
+own appropriate result checks.
 
 Each task receives its own work directory, Hermes session, native conversation,
 task history and effect receipts. The specification and input bytes are checked
@@ -74,7 +99,7 @@ verified repeated write can reuse the original durable effect receipt. Completio
 checks group accepted writes by the declared output and verify the artifact.
 The changed validator identity requires a newly prepared task; it does not
 silently migrate older task records. Source/component checks cover these rules;
-the complete installed two-task IQ3_S trial remains outstanding. A task may
+case17 adds the bounded installed two-task IQ3_S result described above. A task may
 declare no outputs and return a textual answer; that answer is still not
 independently checked for correctness.
 
@@ -110,9 +135,9 @@ are retained in the [alias repair record](../provenance/task-handover/task-file-
 
 The contract reuses this repository's TaskStore, capability boundary, durable
 tool receipts, pre-effect feedback and explicit continuation. It does not add a
-second task database implementation or an executor. The next host-admission
-step uses the same store for a durable selection record while retaining separate
-task workspaces. Installed handover requires its own validation.
+second task database implementation or an executor. Host admission uses the
+same store for a durable selection record while retaining separate task
+workspaces. Installed handover has its own bounded case17 validation.
 
 The admission component keeps one selected task and up to 16 explicit admission
 commands. A reservation is durable before preparation or launch can happen;
@@ -143,7 +168,7 @@ no-launch verifier. An unknown launch or cleanup outcome remains unresolved.
 No further task can be admitted through a stopped host authority; reopening work
 after a process or computer restart still needs the separate recovery milestone.
 
-## Retained-host handover candidate
+## Retained-host handover
 
 The source implementation connects the new-task UI and host composition around
 these contracts. The interaction is **New task**, choose a specification and its input
@@ -168,9 +193,10 @@ Component tests, including actual SQLite stores and bounded CPU child processes,
 exercise admission and continuation release. The assembled A-to-B-to-C handover
 test exercises the real preparation, mailbox, runtime selection and cleanup
 orchestration with explicit substitutes for windows, children and native
-resources. These tests do not establish a successful installed GUI handover or
-a two-task IQ3_S result. Those remain acceptance gates before this path is
-described as a usable installed feature.
+resources. Those component tests do not establish installed GUI/model behavior.
+Case17 separately passed both real installed two-task and foreground audits;
+its exact source, quality and limits are in the linked evidence. Complete M2
+and a generally reproducible installed alpha remain work in progress.
 
 The integration assessment checked Hermes'
 [session guidance](https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/sessions.md)

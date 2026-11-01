@@ -46,74 +46,52 @@ interrupted runs will remain identified as such.
 
 ## Milestones and dependency order
 
-**Current M2 gate — 1 November 2026:** the installed IQ3_S composition has now
-completed safe resource-wait expiry, explicit continuation, the original inventory
-task, a separate welcome task and one normal user Stop in the same service. The
-unchanged primary recovery/handover audit passed all 99 checks in cases 14 and 15. The
-additional foreground-hold audit failed, so the combined scenario and the full
-M2 milestone remain unqualified. Source head `7306a53` passed all 14 hosted jobs, and its isolated
-installation passed all eight steps. These source, package and component checks
-remain separate from the [physical evidence](docs/evidence.md#current-installed-head-and-physical-recovery-checks).
+**Current M2 gate — 1 November 2026:** case17 passed the complete bounded
+foreground, resource-wait continuation and two-task handover scenario. The
+original primary audit passed all 99 checks, and the separate foreground and
+saved-read lineage audit passed on the same run. The correct 23-unit inventory
+result survived expiry and one explicit Continue. A separate welcome task
+completed in the retained controller, then one normal Stop released its owned
+resources. Welcome acceptance is format-only. The [evidence ledger](docs/evidence.md#case17-complete-foreground-continuation-and-two-task-handover)
+records the actual controls, six calls, two writes, source identities, joins,
+foreground observations and limitations.
 
-Case15 preserved the independently checked 23-unit result, original prompt, read,
-history and output through continuation and the second task. Both tasks published
-their acceptance records; the welcome task has format-only validation. Six
-cumulative model calls produced two physical writes, and all retained workers,
-native owners, windows and connections closed. The parent joined normally without
-a timeout or emergency termination. These are bounded private qualification
-results, not a new released or publicly reproducible acceptance package.
+**Next delivery: a usable installed reference.** Preserve the accepted run and
+publish its scoped standalone reproduction using the existing qualification
+sources. Reuse the installed desktop host, task contracts and controls to provide
+one documented Windows/IQ3_S/Hermes workflow: start once, submit a useful task,
+see truthful waiting and completion states, continue saved work, accept another
+task and stop normally. Ordinary use must not require private receipt-file
+editing or manual backend juggling. Remove only practical setup or control
+obstacles found in this path. Do not introduce another runner, proof framework,
+speculative failure campaign or repeat of the completed physical scenario.
 
-Case15 used the prospective complete activation/observation/navigation bracket
-and retained 32 genuine document actions. One adjacent start-to-next-end interval
-was **63.377849 seconds**, exceeding the unchanged strict less-than-60-second
-coverage requirement. The foreground supplement stopped at `real_activity_hold_gap`;
-later onset, continuous-hold and lineage predicates were not reached. A primary
-pass therefore does not qualify this combined scenario. The delay's cause is
-unknown; the records do not justify a runtime change. Case14's distinct early
-recovery-margin/dwell failure remains preserved in the [evidence ledger](docs/evidence.md#case14-primary-recoveryhandover-passed-foreground-supplement-failed).
+The reference can be delivered as a narrow alpha before the full daily-use
+milestone. Keep the existing IQ3_S quality, budgets, task-effect rules and
+acceptance standards. Validate meaningful changes and reuse completed evidence
+when its source and deployment remain unchanged. Broader desktop coexistence,
+agent tools/media, application/reboot recovery and daily-use qualification remain
+subsequent milestones; the two-task pass does not complete all of M2.
 
-The subsequent operator-only check ended naturally after 554.940 seconds without
-a strict coverage failure. Its shorter duration and lack of concurrent model
-load left sustained feasibility inconclusive. Case16 then used a genuine review
-of the existing evidence ledger, short timely notes and the full first-action
-bracket. It reached safe expiry and one Continue, and the inventory task produced
-the correct 23-unit result. A different gate failed before the second task:
-the qualification checker required subtraction of two floating-point timestamps
-to equal exactly 900, although the saved deadline exactly matched the runtime's
-original authorization-time-plus-900 calculation. The original primary audit
-failed, the additive audit was not run, and there was no second task or user
-Stop. [Case16 remains a failed qualification](docs/evidence.md#case16-original-task-completed-exact-duration-checker-failed).
+Cases14/15 retain their primary passes and failed foreground supplements.
+Case16 retains its correct inventory component and failed deadline checker.
+The [prospective arithmetic correction](provenance/explicit-continuation/deadline-arithmetic/README.md)
+uses the producer's exact authorization-time-plus-900 calculation with finite,
+increasing timestamps, without tolerance or runtime change. Case17 used that
+reviewed correction in a fresh run; no failed case was repaired retrospectively.
+Its 25 genuine document actions included 24 before the seal and no violation
+of the strict foreground coverage gate. The 30-second operating target misses
+remain recorded in the evidence.
 
-The bounded checker correction is implemented using that existing
-producer-form identity, finite numeric inputs and a deadline after authorization.
-Preserve the 900-second contract without a tolerance or runtime clock change.
-The same assumption exists in the reusable explicit-continuation example; its
-historical acceptance copy must remain unchanged, with the correction and
-citations recorded in [source preservation](provenance/explicit-continuation/deadline-arithmetic/README.md).
-The small regression, existing relevant checks and bounded independent review
-have passed. The public wrapper passed 52 tests and the private checker 24 tests
-on each supported interpreter. Return directly to the functional integrated
-workflow: yield resources, preserve work, continue
-the original task and accept the next task. Do not expand this into an exhaustive
-edge-case or timing investigation. Assemble the corrected harness and use
-current host/readiness observations for a fresh attempt. Do
-not replay case16 or combine components from different failed runs into an
-acceptance pass.
-
-Case16's closed operator records have 27 actions, maximum adjacent interval
-48.813776 seconds and an 8.759196-second preseal tail. Descriptive status review
-found closed admission and foreground activity in all 749 post-draining hold
-rows; this is useful evidence for the next attempt, not the missing additive
-audit. Retain the 30-second target, strict 60-second gate, full first-action
-bracket, exact installed source, IQ3_S quality and all original budgets. No
-artificial activity or deadline extension is introduced. Publish the
-reproducible validation entry only after complete acceptance. Broader desktop
-coexistence, media work and physical reboot recovery remain later gates.
+Installed source remains `7306a53085ddc31d53d2ba50e91975c80cfc0014`. The later
+checker/reporting head `f049342060b3ae8d04f237bf5632d2b9f459869d` passed all 14
+hosted jobs on their original attempts. Source/CI, installed physical acceptance
+and public reproduction retain their separate evidence boundaries.
 
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: ordinary-task expiry/continuation and two-task handover passed the primary installed audit; full foreground gate and public acceptance package remain |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded foreground/continuation/two-task run passed both audits; usable installed reference and public reproduction are next |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |

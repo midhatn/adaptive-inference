@@ -1,9 +1,12 @@
 # Continue a task after its resource-wait budget expires
 
-**Status: source and component development; installed IQ3_S qualification of
-this extension remains pending.** Earlier paused-task and model results keep
-their original build identities. The prior failed ordinary-task trial (case06)
-remains failed.
+**Status: the bounded installed IQ3_S foreground/continuation and two-task
+scenario passed both original terminal audits in case17.** The original task
+kept its saved work through resource-wait expiry and explicit Continue; a
+separate second task finished in the same controller before normal Stop.
+See the [source-bound result](evidence.md#case17-complete-foreground-continuation-and-two-task-handover).
+The standalone reproduction package and broader M2 qualification remain work
+in progress. Earlier results and failed trials retain their original identities.
 
 Suppose an agent has read the input file, then waits because the computer's
 resources are unavailable. Its execution budget ends before it can ask the model
@@ -118,8 +121,10 @@ real model completion, native release, GUI behavior or survival across a reboot.
 The separate [Hermes saved-history SDK check](../examples/validation/hermes_saved_history/README.md)
 uses the actual pinned conversation prologue, request builder and public
 middleware with a scripted terminal response. It also checks source and import
-origins. The complete installed agent and real IQ3_S workflow need their own
-fresh package, identities and acceptance run. See the [evidence ledger](evidence.md),
+origins. Case17's installed agent and real IQ3_S workflow have their own package,
+identities and terminal audits; those are separate from these scripted checks.
+A changed deployment needs its relevant installation and live validation.
+See the [evidence ledger](evidence.md),
 [explicit continuation contract](explicit-continuation.md) and [roadmap](../PLAN.md).
 
 ## Research and reuse
