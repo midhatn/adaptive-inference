@@ -2,6 +2,52 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Ordinary saved-task reopening
+
+**1 November 2026, development source:** the [saved-task path](saved-task-reopening.md)
+adds New/Open saved selection to the ordinary desktop launcher. It reuses the
+same task store, native conversation, safe Stop, mailbox and worker claim. A
+fresh host starts paused and passes the saved deadline unchanged. Accepted
+results open read-only before boot observation, worker SDK verification or any
+child launch. No TaskStore schema, model, quality or product budget is changed.
+The [source-bound component summary](../provenance/installed-reopen/validation-2026-11-01.json)
+retains counts, exact runtime hashes, original failure and qualification limits.
+
+The focused component run passed **51 tests** on Windows Python 3.11.9 in
+3.797 seconds, covering saved stores, paused composition, launcher/setup,
+prepared-worker context and generic task recovery. A real fresh process read
+the original task budget and progress; all three fixture children were terminal
+with exit 0. Source hashes matched before and after, and imports came from the
+candidate checkout. This includes unchanged request/attempt/read-history checks,
+the original deadline, fresh startup Pause and diagnostics, competing ownership
+and unresolved-effect refusal, and accepted-result viewing without another call.
+It does not execute an installed Hermes/model or a physical application restart.
+The private focused receipt SHA-256 is
+`06e93244748fd4a600ce6a1cd38a1070be0fe7aeac8d7d806bb2d32d781e6650`.
+
+A separate actual Windows probe completed the single bounded boot observation
+in 0.781 seconds and joined its owned child. That verifies the observer on this
+host only, not persistence across a restart or a unique boot identity. The
+helper source SHA-256 was
+`7f5d7da8b1343dd24ea2ae574b165d960e0fac48936c0517eb4fd7c0bc3c13a6`.
+Historical source identities remain separate from this new runtime increment.
+Actual unchanged-IQ3_S application restart and OS reboot remain open M5 gates.
+
+The complete local core/source suite then passed **1,342 tests in 336.175
+seconds** (337.453 seconds including process orchestration), with exit 0,
+the actual parent/child joined, and every selected source hash unchanged.
+An independent source reviewer matched all four runtime/launcher hashes and
+found no actionable main-path blocker. These remain Windows Python 3.11.9
+source/component results, not installed IQ3_S acceptance.
+
+The [additive source-history record](../provenance/installed-reopen/README.md)
+retains the exact preceding runtime and leaves every older manifest unchanged.
+Its first 77-check batch had one direct historical AST-reader failure; the
+one-read correction retained the original assertions and passed all 77 checks
+in 128.856 seconds. The original failed batch remains preserved. The corrected
+private source-history receipt SHA-256 is
+`07ff4ca203304efcbbe0efc8a67c186cfdc3b44002ded670d0a5613f69bf7be6`.
+
 ## SQLite concurrency fixture ownership
 
 Publishing the closed video evidence exposed a test-only cleanup failure in
@@ -33,8 +79,15 @@ the private focused receipt is
 `63523490fbe2513f57ff3f8c8161b8c3df2991a766d3797af1671c7986972efd`.
 The original failed-log hash is
 `92de645e70daf36a68f2029be0cd170d73fa572933c750969e3606119c3dc6e9`.
-Use the PR's final exact-head hosted checks for merge readiness. This fixture
-validation makes no new physical inference or video claim.
+Corrected head `72ac717dbbcb11684e2687a2992a462a0f078f39` passed all **14 original
+hosted jobs**, including all 12 distribution/archive checks, in its
+[push run](https://github.com/midhatn/adaptive-inference/actions/runs/41308758485)
+and [PR run](https://github.com/midhatn/adaptive-inference/actions/runs/41308761836).
+PR #30 merged as `c348398089e544bf54add2beaaf73550f8951efc`; the merged tree
+`16ef2a78a4ec0f132e7ab294f7ec3fcad3c10dd1` exactly matches that tested head.
+Its original [post-merge run](https://github.com/midhatn/adaptive-inference/actions/runs/41310054137)
+also passed all seven jobs and six distribution checks on attempt 1.
+This fixture validation makes no new physical inference or video claim.
 
 ## First adaptive video diagnostic
 

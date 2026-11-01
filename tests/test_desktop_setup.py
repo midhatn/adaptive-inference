@@ -105,7 +105,7 @@ class DesktopSetupTests(unittest.TestCase):
             self.assertEqual(call.args[1].parent, Path(result['runs']))
             self.assertFalse(call.args[1].exists())
             self.assertEqual(call.kwargs, {'task_spec': selected['task_spec_path'],
-                                          'task_inputs': selected['task_inputs']})
+                                          'task_inputs': selected['task_inputs'], 'enable_reopen': True})
 
     def test_picker_is_destroyed_before_return_and_on_failure(self):
         import adaptive_inference.desktop.run_gui as gui
@@ -122,7 +122,7 @@ class DesktopSetupTests(unittest.TestCase):
                 mock.patch.object(gui, 'choose_task', return_value=selected) as choose:
             def click():
                 choose.assert_not_called()
-                buttons['Choose task']()
+                buttons['New task']()
             root.mainloop.side_effect = click
             self.assertEqual(launcher.select_task(), selected)
             choose.assert_called_once_with(root)
@@ -133,7 +133,7 @@ class DesktopSetupTests(unittest.TestCase):
         with mock.patch.dict(sys.modules, {'tkinter': tkinter}), \
                 mock.patch.object(gui, 'choose_task', return_value=None) as choose:
             def cancel():
-                buttons['Choose task']()
+                buttons['New task']()
                 root.quit.assert_not_called()
                 buttons['Cancel']()
             root.mainloop.side_effect = cancel
@@ -144,11 +144,27 @@ class DesktopSetupTests(unittest.TestCase):
         root.reset_mock()
         with mock.patch.dict(sys.modules, {'tkinter': tkinter}), \
                 mock.patch.object(gui, 'choose_task', side_effect=ValueError('invalid task')):
-            root.mainloop.side_effect = lambda: buttons['Choose task']()
+            root.mainloop.side_effect = lambda: buttons['New task']()
             with self.assertRaisesRegex(ValueError, 'invalid task'):
                 launcher.select_task()
             root.quit.assert_called_once_with()
             root.destroy.assert_called_once_with()
+
+    def test_saved_selection_forwards_without_new_task_and_shows_completed_result(self):
+        import adaptive_inference.desktop.installation as installation
+        result = self.prepare('saved-task-launch')
+        saved_result = {'objective': 'Original prompt', 'output': 'Saved answer', 'artifacts': []}
+        executor = mock.Mock(return_value={'clean_stop': True, 'saved_result': saved_result})
+        viewer = mock.Mock()
+        selected = {'saved_task': str(self.root / 'canonical-task')}
+        with mock.patch.object(installation, 'verify_interpreter'), \
+                mock.patch.object(installation, 'package_identity'):
+            outcome = launcher.launch(result['profile'], result['runs'], picker=lambda: selected,
+                                      executor=executor, result_viewer=viewer)
+        self.assertTrue(outcome['clean_stop'])
+        self.assertEqual(executor.call_args.kwargs, {**selected, 'enable_reopen': True})
+        viewer.assert_called_once_with(saved_result)
+        self.assertFalse(executor.call_args.args[1].exists())
 
     @unittest.skipUnless(os.name == 'nt', 'Windows command processor')
     def test_actual_generated_command_runs_isolated_stub_from_spaced_folder(self):

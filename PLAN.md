@@ -882,6 +882,23 @@ First integrate ordinary installed-agent startup and task discovery, then test
 controller/agent crash, sleep/wake, hibernation and an actual OS reboot as separate
 cases. A same-boot worker test is not a reboot test.
 
+The first source increment is [ordinary saved-task reopening](docs/saved-task-reopening.md):
+the launcher selects the existing task, creates fresh host/UI bindings and starts
+paused with the original deadline, request counters and native history. Accepted
+results open read-only without another model request. Reuse the current task
+store, safe Stop, mailbox and worker claims; introduce no new recovery framework.
+Develop this source path while correcting the M3 comparison, then qualify it
+with the unchanged installed IQ3_S task. Require a confirmed read before ordinary
+Stop, actual application joins, the same read in the first resumed request,
+correct remaining work and exactly one physical output write. A task already
+completed before Stop does not satisfy unfinished-task recovery.
+
+This first increment requires a matching original boot/profile/package context
+recorded when the task was created. Closed-app time consumes its saved budget;
+an expired task cannot receive a fresh 900 seconds through reopening. Preserve
+the original archives without backfilling this metadata. Keep reboot and the
+other lifecycle cases below separate from this bounded application path.
+
 Persist boot/session identity, trusted task lineage, profile/schema version and
 budget policy. A saved monotonic timestamp cannot be reused across a reboot;
 reconstruct permitted deadlines from durable policy without silently resetting

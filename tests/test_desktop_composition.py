@@ -197,7 +197,41 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         self.case.root.mkdir()
         await self._prepare_order(spec)
 
-    async def _prepare_order(self,spec=None):
+    async def test_saved_task_reuses_progress_deadline_and_fresh_paused_owner(self):
+        from adaptive_inference.desktop import saved_tasks
+        spec = custom_spec(); work = self.root/'saved-task'
+        (work/'work').mkdir(parents=True)
+        identity=q.DemandIdentity('registration','saved-task','worker','2026-10-25T10:00:00Z')
+        boot={'source':saved_tasks.BOOT_SOURCE,'boot_utc':'2026-11-01T08:12:13.1234567Z','computer_name':'fixture'}
+        context=saved_tasks.bind_context(saved_tasks.new_context(q.sha(self.case.profile_path),
+            {'version':'fixture','files':{}},boot),work)
+        store=q.TaskStore(work/'task.sqlite3')
+        cp=prepare_task(store,identity,spec.prompt,'saved-native-session',metadata={
+            'model':q.MODEL,'quality':q.QUALITY,'deadline_clock':q.CLOCK_ID,**spec.metadata(),
+            'pre_effect_validator':spec.validator_identity(),saved_tasks.CONTEXT:context})
+        deadline=q.execution_now()+600
+        with store.claim(cp.task_id,expected_revision=cp.revision) as owned:
+            state=deepcopy(owned.checkpoint.state)
+            state.update(deadline_monotonic=deadline,requests=2,attempts=1,admission_attempts=3,
+                         native_history=[{'role':'user','content':spec.prompt}],output='Saved progress.')
+            owned.save_checkpoint(state,expected_revision=owned.checkpoint.revision)
+        q.rec.save(work/'plan.json',{'task_id':cp.task_id,'demand_identity':q.asdict(identity),
+            'deadline_clock':q.CLOCK_ID,'base_python':str(self.case.profile.worker_python),
+            'gateway':'http://127.0.0.1:18100/v1','pins':{},'task_spec':spec.data,
+            saved_tasks.CONTEXT:context})
+        old=(work/'controller-ready-1.json');old.write_text('{"old":true}')
+        self.case=q.DesktopComposition(self.case.profile_path,self.root/'reopened',saved_task=work)
+        self.case.root.mkdir()
+        with mock.patch.object(saved_tasks,'observe_boot',return_value=boot):
+            await self._prepare_order(spec,reopened=True)
+        self.assertEqual(self.case.deadline,deadline)
+        self.assertEqual(self.case.original.state['requests'],2)
+        self.assertEqual(self.case.original.state['output'],'Saved progress.')
+        self.assertNotEqual(self.case.first_ready,old)
+        self.assertEqual(old.read_text(),'{"old":true}')
+        self.assertEqual(self.case.stop_binding.diagnostics,self.case.saved_diagnostics)
+
+    async def _prepare_order(self,spec=None,reopened=False):
         from adaptive_inference.desktop import owned_job, activity, cold_start, desktop_controls, gui_launch
         c=self.case;events=[];children=set();owned_context=[]
         job=SimpleNamespace(_HANDLE=object(),contain_current_process=lambda:events.append('own-job'),
@@ -209,6 +243,7 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         c.join_child=joined
         def launch(command,label):
             if label=='prepare':
+                self.assertFalse(reopened,'Saved task must not invoke fresh prepare')
                 self.assertEqual(events,['own-job'])
                 c.work.mkdir();(c.work/'work').mkdir()
                 task_id='orders-report' if spec is None else command[command.index('--task-id')+1]
@@ -228,6 +263,9 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
                 events.append('prepare');child=prepare_child
             else:
                 self.assertEqual(events[-1],'parked-host')
+                if reopened:
+                    self.assertEqual(command[command.index('--deadline-monotonic')+1],str(c.original.state['deadline_monotonic']))
+                    self.assertEqual(command[command.index('--diagnostics')+1],str(c.saved_diagnostics))
                 self.assertIn('-m',command);self.assertNotIn('--canonical',command)
                 cp=c.store.load(c.identity.task_id)
                 context=c.store.claim(cp.task_id,expected_revision=cp.revision)
@@ -296,12 +334,13 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
                     mock.patch.object(q,'ControlTransport',Transport), \
                     mock.patch.object(q,'SerialListener',Listener):
                 await c.prepare()
-            self.assertEqual(events,['own-job','prepare','join-prepare','parked-host',
+            self.assertEqual(events,['own-job',*([] if reopened else ['prepare','join-prepare']),'parked-host',
                 'paused-worker','attach-runtime','listener','bind-session','gui'])
             self.assertIs(c.job,job)
             self.assertTrue(c.paused_ack()['ack']['owner_acknowledged'])
         finally:
             for context in owned_context:context.__exit__(None,None,None)
+            for lock in c.reopen_locks:lock.close()
 
 
 class LifetimeTests(unittest.TestCase):

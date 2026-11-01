@@ -54,11 +54,12 @@ def preparation_record(root=None):
 
 def preparation_inputs(root=None):
     root = ROOT if root is None else root
-    return [root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py']
+    return [root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py'] + reopen_inputs(root)
 
 
 def preparation_predecessor(relative, data, root=None):
     """Reverse only exact declared CLI/reader/version bytes, never unknown changes."""
+    data = reopen_predecessor(relative, data, root)
     root = ROOT if root is None else root
     if not (root / PREPARATION / 'source-lineage.json').exists():
         return data  # Legacy disposable roots still face the original checks.
@@ -94,6 +95,7 @@ def preparation_runtime_view(root=None):
     runtime = root / 'src/adaptive_inference'
     current = {path.relative_to(runtime).as_posix(): path.read_bytes()
                for path in runtime.rglob('*.py')}
+    current = reopen_runtime_view(current, root)
     rows = preparation_record(root)
     for name, pin in {'task_prepare.py': rows['addition_sha256'],
                       '__init__.py': rows['files']['src/adaptive_inference/__init__.py']['successor_sha256'],
@@ -110,6 +112,7 @@ def preparation_runtime_view(root=None):
 
 def restore_preparation(tree, relative, root=None):
     """Existing AST readers see only the exact declared CLI/version deltas."""
+    tree = restore_reopen(tree, relative, root)
     if relative not in ('cli.py', '__init__.py'):
         return tree
     root = ROOT if root is None else root
@@ -121,3 +124,76 @@ def restore_preparation(tree, relative, root=None):
     if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
         raise AssertionError('Changed complete task-handover source (task-preparation): ' + relative)
     return ast.parse(preparation_predecessor(source, data, root))
+
+
+# Saved-task reopening is prospective; the preparation record stays immutable.
+REOPEN = 'provenance/installed-reopen'
+REOPEN_RUNTIME = ('desktop/composition.py', 'desktop/hermes/run_recovery.py')
+REOPEN_ADDITION = 'desktop/saved_tasks.py'
+
+
+def reopen_record(root=None):
+    root = ROOT if root is None else root
+    return json.loads((root / REOPEN / 'source-lineage.json').read_bytes())
+
+
+def reopen_inputs(root=None):
+    root = ROOT if root is None else root
+    return [root / REOPEN / 'source-lineage.json',
+            *(root / row['predecessor_source'] for row in reopen_record(root)['files'].values())]
+
+
+def reopen_predecessor(relative, data, root=None):
+    """Project only a declared complete successor to its retained base bytes."""
+    root = ROOT if root is None else root
+    if not (root / REOPEN / 'source-lineage.json').exists():
+        return data
+    row = reopen_record(root)['files'].get(relative)
+    if row is None:
+        return data
+    expected = REOPEN + '/predecessor/' + relative
+    if (not relative.startswith(('src/adaptive_inference/', 'tests/'))
+            or '\\' in relative or any(part in ('', '.', '..') for part in relative.split('/'))
+            or row['predecessor_source'] != expected):
+        raise AssertionError('Changed installed-reopen predecessor path')
+    before = (root / expected).read_bytes()
+    if (hashlib.sha256(before).hexdigest() != row['predecessor_sha256']
+            or fingerprint(ast.parse(before)) != row['predecessor_ast_sha256']):
+        raise AssertionError('Changed installed-reopen predecessor identity')
+    if hashlib.sha256(data).hexdigest() == row['successor_sha256']:
+        if fingerprint(ast.parse(data)) != row['successor_ast_sha256']:
+            raise AssertionError('Changed installed-reopen successor AST')
+        return before
+    return data
+
+
+def reopen_runtime_view(current, root=None):
+    """Remove only the pinned addition and reverse the two declared modules."""
+    rows = reopen_record(root)
+    expected = {REOPEN_ADDITION: rows['addition']['sha256']}
+    expected.update({name: rows['files']['src/adaptive_inference/' + name]['successor_sha256']
+                     for name in REOPEN_RUNTIME})
+    for name, pin in expected.items():
+        if name not in current:
+            raise AssertionError('Changed installed-reopen runtime closure: ' + name)
+        if hashlib.sha256(current[name]).hexdigest() != pin:
+            raise AssertionError('Changed installed-reopen runtime source: ' + name)
+    current = dict(current)
+    del current[REOPEN_ADDITION]
+    for name in REOPEN_RUNTIME:
+        current[name] = reopen_predecessor('src/adaptive_inference/' + name, current[name], root)
+    return current
+
+
+def restore_reopen(tree, relative, root=None):
+    if relative not in REOPEN_RUNTIME:
+        return tree
+    root = ROOT if root is None else root
+    source = 'src/adaptive_inference/' + relative
+    row = reopen_record(root)['files'][source]
+    if fingerprint(tree) != row['successor_ast_sha256']:
+        return tree
+    data = (root / source).read_bytes()
+    if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
+        raise AssertionError('Changed complete task-handover source (installed-reopen): ' + relative)
+    return ast.parse(reopen_predecessor(source, data, root))

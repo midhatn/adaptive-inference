@@ -879,3 +879,24 @@
   url = {https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html},
   note = {Inspected 2026-11-01 after the original video-example archive omitted page.html. Reuses explicit MANIFEST.in include entries for only page.html and page.js, validated by isolated build with setuptools 82.0.1 and the existing source/runtime verifier. No implementation copied and no broad private asset inclusion}
 }
+
+@misc{windowsSavedTaskBootObservation,
+  author = {{Microsoft}},
+  title = {Win32 OperatingSystem LastBootUpTime and local CIM queries},
+  url = {https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-operatingsystem},
+  note = {Inspected 2026-11-01 with Get-CimInstance documentation. Informs a single bounded local last-restart observation for ordinary saved-task reopening, not a unique boot GUID or qualification of sleep, hibernation, Fast Startup or actual reboot. Documentation consulted; no upstream implementation copied}
+}
+
+@misc{pythonSavedTaskBootChild,
+  author = {{Python Software Foundation}},
+  title = {Python 3.11 subprocess run and timeout cleanup},
+  url = {https://docs.python.org/3.11/library/subprocess.html#subprocess.run},
+  note = {Inspected 2026-11-01. Existing subprocess run kills and waits for its child after a timeout; used for the bounded hidden Windows boot observation. Saved data is not interpolated into the command. Documentation consulted; no upstream implementation copied}
+}
+
+@misc{hermesSavedTaskRecoveryResearch,
+  author = {{Nous Research and Hermes contributors}},
+  title = {Hermes canonical local-session recovery and unknown-operation settlement},
+  url = {https://github.com/NousResearch/hermes-agent/blob/a4994d4ead8f9c915b485cec5689909b349a49df/gateway/session_local_recovery.py},
+  note = {MIT, inspected 2026-11-01 with session_unattended_unknown.py and gateway-local-sessions documentation at the same revision; also checked installed revision 14e1e43a23761b369641208e204365cd6cb9399d. These mechanisms already exist in that installed revision. Research informs ownership and uncertainty boundaries; the direct AIAgent/SessionDB adapter reuses its own retained recovery path. No additional upstream code copied}
+}
