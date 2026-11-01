@@ -1,0 +1,185 @@
+{
+  "schema": "adaptive.video-following-control-summary.v1",
+  "date": "2026-11-01",
+  "condition": "baseline-after",
+  "scope": "Sanitized summary of the single planned following no-AI control at the actual adaptive viewport. Raw machine/UI records are private; not a complete replay bundle.",
+  "observation_source_revision": "3136e357f2c9cfd16608926dfa0b28b2fbbee7a3",
+  "clip": {
+    "name": "bbb_sunflower_1080p_60fps_normal.mp4",
+    "sha256": "3aa2d8946ec7cf3b50b7148fb3338ca421e6ec34987b20a4044845d674794e3e",
+    "bytes": 355856562,
+    "attribution": "Blender Foundation 2008 and Janus Bager Kristensen 2013; CC BY 3.0. Clip not bundled."
+  },
+  "source_sha256": {
+    "serve.py": "68284e11cb18506d5bde049e3f0174b1009bdbd8fb29176d2b7558bdec150cb4",
+    "page.html": "91cffc543caca17280a6c5dc8f2fff62380b8d04fce0e345dad031387bd94c8a",
+    "page.js": "1cf586d636bb9d4feac4245742ea53fe18694bf02d3954c8adfc9bb5e4944a34"
+  },
+  "environment": {
+    "browser": "Chrome 156.0.8078.79",
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "aiohttp": "3.14.5",
+    "background_condition": "Owned inference/agent/native processes and listeners absent after confirmed joins. Ordinary existing desktop apps retained; light coordinator reads and Git work occurred in background, with no model/test workload or UI input during playback. Not a controlled all-process idle state."
+  },
+  "playback": {
+    "summary": {
+      "outcome": "completed",
+      "reason": "window_elapsed",
+      "frames": {
+        "total_frames": 10799,
+        "dropped_frames": 21,
+        "displayed_frames": 10778,
+        "dropped_fraction": 0.0019446245022687286
+      },
+      "elapsed_s": 180.00080000000005,
+      "media_progress_s": 179.990273,
+      "finish_timer_lateness_ms": 0.8000000000465661
+    },
+    "trusted_start": true,
+    "clicked_utc": "2026-11-01T12:24:36.174Z",
+    "actual_warmup_s": 10.002899999999906,
+    "nominal_measurement_start_utc": "2026-11-01T12:24:46.402400+00:00",
+    "nominal_measurement_end_utc": "2026-11-01T12:27:46.403200+00:00",
+    "start_end_settings_equal": true,
+    "sample_count": 190,
+    "maximum_adjacent_sample_interval_s": 1.0113000000000465,
+    "monotonic_observations": {
+      "at_ms": true,
+      "media_time_s": true,
+      "totalVideoFrames": true,
+      "droppedVideoFrames": true
+    },
+    "observations_truncated": false,
+    "callback_limitation": "Best-effort browser delivery; not a physical display-stall verdict"
+  },
+  "settings": {
+    "viewport": [
+      1044,
+      642
+    ],
+    "screen": [
+      1536,
+      864
+    ],
+    "device_pixel_ratio": 1.25,
+    "video_element": [
+      988.7999877929688,
+      462.5249938964844
+    ],
+    "video_pixels": [
+      1920,
+      1080
+    ],
+    "duration_s": 634.566666,
+    "playback_rate": 1,
+    "muted": false,
+    "volume": 1,
+    "visibility": "visible",
+    "fullscreen": false
+  },
+  "comparison": {
+    "clip_exact_match": true,
+    "helper_implementation_exact_match": true,
+    "fixed_page_settings_exact_match": true,
+    "browser_settings_excluding_time_origin_exact_match": true,
+    "settings_mismatches": {},
+    "adaptive_dropped_frames": 26,
+    "adaptive_total_frames": 10799,
+    "adaptive_dropped_percent": 0.24076303361422355,
+    "after_dropped_percent": 0.19446245022687286,
+    "adaptive_minus_after_percentage_points": 0.0463005833873507,
+    "interpretation": "Descriptive only: adaptive capture did not overlap playback, original before-control geometry/boot unmatched; no causal improvement or comparative acceptance."
+  },
+  "external_capture": {
+    "tool": "PresentMon2.6.0",
+    "executable_sha256": "b2a706bc6ad475749e3b7e3409263aa1e6906d45bdcf993f6dbc0f660188f1af",
+    "rows": 11353,
+    "qpc_frequency": 10000000,
+    "clock_limit": "QPC-to-UTC anchors are actual brackets, but browser epoch/performance origin is a separate nominal clock. Python datetime parsing retains microseconds; no submicrosecond alignment claim. Browser-to-QPC uncertainty is not independently calibrated.",
+    "video_start_after_child_creation_s": 9.913171,
+    "child_lifetime_covers_nominal_measurement": true,
+    "capture_rows_bracket_nominal_measurement": false,
+    "cpu_start_boundary_limit": "The last CPU-start timestamp precedes measurement end, but its display residence extends nominally 1.7758 ms beyond it. This is not early capture shutdown.",
+    "candidate_long_residence_nominal_start_utc": "2026-11-01T12:25:21.259943Z",
+    "all_na_display_rows": 3,
+    "na_display_rows_cpu_start_inside_measurement": 0,
+    "pooled_stream_union_coverage_s": 180.00080000000005,
+    "pooled_stream_union_uncovered_s": 0.0,
+    "union_segment_count": 1,
+    "attribution": "Continuous video surface identity unestablished. Stream union is diagnostic coverage, not proof that the video itself was displayed. No inspected record maps browser video frames to the captured surface.",
+    "process_scope": "Rows name chrome.exe and one PID. No new live process inspection or independent helper-role verification was performed.",
+    "stderr": "Retained standard insufficient-privilege warning about other-user/short-running processes; no warning is suppressed.",
+    "stream_count": 1,
+    "streams": [
+      {
+        "runtime": "DXGI",
+        "measurement_display_start_rows": 10764,
+        "displayed_time_ms": {
+          "p50_nearest_rank": 13.9428,
+          "p95_nearest_rank": 20.9166,
+          "p99_nearest_rank": 21.0223,
+          "max": 292.367
+        },
+        "residences_at_least_250ms": 1,
+        "present_modes": {
+          "Hardware Composed: Independent Flip": 10764
+        }
+      }
+    ],
+    "display_metadata_ids_all_zero": true,
+    "interpretation": "The 292.367-ms residence is a retained candidate, not a confirmed visible video stall. Stream residence coverage does not establish video-surface attribution; physical-stall verdict remains unknown."
+  },
+  "acceptance": {
+    "observation_completed": true,
+    "drop_fraction_limit": 0.005,
+    "after_drop_target_passed": true,
+    "original_before_drop_target_passed": false,
+    "original_before_dropped_frames": 59,
+    "original_before_total_frames": 10800,
+    "original_before_dropped_percent": 0.5462962962962963,
+    "original_before_viewport": [
+      1536,
+      730
+    ],
+    "adaptive_and_after_viewport": [
+      1044,
+      642
+    ],
+    "regression_limit_percentage_points": 0.25,
+    "regression_acceptance": "not established",
+    "physical_stall_limit_ms": 250,
+    "physical_stall_verdict": "unknown",
+    "m3_qualified": false,
+    "audio_quality_or_sync_qualified": false
+  },
+  "cleanup": {
+    "capture_parent_exit_code": 0,
+    "capture_child_joined": true,
+    "capture_child_exit_code": 0,
+    "forced_stop": false,
+    "page_server_exit_code": 1,
+    "page_server_stop": "Intentional Ctrl+C after terminal save and capture join",
+    "selected_owned_processes_and_listeners_absent": true,
+    "scope": "Actual root-held joins, then independently reviewed closed receipts. Browser retained paused."
+  },
+  "private_evidence_sha256": {
+    "page_result": "3eaca4d31f533e6f345efc6c9276fe4bfe47e2008266f5a1b25cb14c0d65ad0f",
+    "capture_csv": "90edc7cf49f51ad4483d5456f6404a946c9859fdfed86bc39ed55a12b4f209be",
+    "capture_start": "dd7c7a64fd4889ec0a1d9813bf3bde416c95a0a3082a7fe967a11a85c43ec908",
+    "capture_exit": "893120072ea86e1ca9b189712928e2bff911d3f939c5583adeeece9a6692053b",
+    "capture_script": "cdff45ac59710f80a6a260c025352936950c4dd299ce349b8952a925e9a75227",
+    "capture_stderr": "7bd31a7082b233def4721f421372e6e4916d7f224979ef56a577daecf669f100",
+    "capture_stdout": "a9130f7ca0a9bf20318a0122cdf0d1189d2a1ffbb038a45a6bfaf514bf9c5931",
+    "adaptive_page_result": "628b29617021cfb764c72e50a50daa4a9707ade0954d96ff06ff8b47240b804d",
+    "prospective": "7724f45b9661bc84770813efb733825a3e91c62e622a96f7b4e7a80f8b765cd5",
+    "independent_review": "79fb83865187ddd8d09e29f920d4208dbcf14a85839ecc6bb8e6dd8b2c84a33b",
+    "independent_review_timing_detail": "c5a162e709d4be114bf732a4f9af031231d8800fec9e277ee68c3370539c01b5",
+    "cleanup": "fbbe07adef88141e894493c7881237b699e5129b72334f8375e6eadba2033947"
+  },
+  "sources": [
+    "https://github.com/GameTechDev/PresentMon/blob/v2.6.0/README-ConsoleApplication.md",
+    "https://github.com/GameTechDev/PresentMon/blob/v2.6.0/README.md",
+    "https://w3c.github.io/media-playback-quality/",
+    "https://wicg.github.io/video-rvfc/"
+  ]
+}

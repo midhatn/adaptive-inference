@@ -1,0 +1,201 @@
+{
+  "schema": "adaptive.video-functional-diagnostic-summary.v1",
+  "date": "2026-11-01",
+  "scope": "Sanitized summary of one closed installed IQ3_S task and browser observation. Private raw records are hash-identified, not bundled. Not a complete replay or full M3 qualification.",
+  "observation_source_revision": "3136e357f2c9cfd16608926dfa0b28b2fbbee7a3",
+  "merged_identical_tree_revision": "f6c0da1c1a20c81f51a4f505c0407ed77ec04a0f",
+  "installed_runtime": {
+    "version": "0.3.0",
+    "source_revision": "7306a53085ddc31d53d2ba50e91975c80cfc0014",
+    "hermes_revision": "14e1e43a23761b369641208e204365cd6cb9399d"
+  },
+  "clip": {
+    "name": "bbb_sunflower_1080p_60fps_normal.mp4",
+    "sha256": "3aa2d8946ec7cf3b50b7148fb3338ca421e6ec34987b20a4044845d674794e3e",
+    "bytes": 355856562,
+    "attribution": "Blender Foundation 2008 and Janus Bager Kristensen 2013; CC BY 3.0. Clip not bundled."
+  },
+  "task": {
+    "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+    "quality": {
+      "max_tokens": 10923,
+      "reasoning_effort": "high",
+      "reasoning_budget_tokens": 8192,
+      "experimental_speed_projection": false,
+      "strata_tune": {
+        "pcie_frac": 0.37
+      }
+    },
+    "task_status": "accepted",
+    "attempts": 3,
+    "requests": 3,
+    "admission_attempts": 3,
+    "execution_budget_s": 900,
+    "outer_deadline_s": 2700,
+    "execution_expired": false,
+    "parent_elapsed_s": 727.2650000000001,
+    "parent_exit_code": 0,
+    "parent_timed_out": false,
+    "emergency_termination_attempted": false,
+    "oracle_answer": {
+      "reorder": [
+        {
+          "item": "pens",
+          "packs": 2,
+          "units": 8
+        },
+        {
+          "item": "paper",
+          "packs": 3,
+          "units": 15
+        },
+        {
+          "item": "clips",
+          "packs": 0,
+          "units": 0
+        }
+      ],
+      "total_units": 23
+    },
+    "one_nonreused_effect": true,
+    "clean_stop": true,
+    "all_task_ownership_released": true
+  },
+  "task_audit": {
+    "passed": true,
+    "checks": 19,
+    "independently_verified_audit_pins": 33,
+    "physical_writes": 1,
+    "provider_calls": 3,
+    "one_resume_one_stop": true,
+    "scope": "Original task contract, exact output, one physical write, observation-bound controls and owned terminal cleanup."
+  },
+  "foreground": {
+    "conservative_last_gui_to_observed_closure_upper_s": 1.0185290000000577,
+    "onset_scope": "Supports the proposed 2-second sampled closure target for the initial browser switch before playback; not a measurement at genuine video Start.",
+    "whole_playback_samples": 948,
+    "maximum_playback_sample_gap_s": 0.2039999999999509,
+    "first_input_idle_s": 0.125,
+    "last_input_idle_s": 190.219,
+    "input_idle_decreases": 0,
+    "passive_interval_supported_gt60s": true,
+    "measurement_status_samples": 178,
+    "measurement_admission_true_samples": 0,
+    "measurement_active_true_samples": 0,
+    "measurement_states": {
+      "parked": 139,
+      "restoring": 39
+    }
+  },
+  "ordering": {
+    "successful_write_receipt_utc": "2026-11-01T12:15:24.001554Z",
+    "trusted_video_start_utc": "2026-11-01T12:16:36.711Z",
+    "first_restoring_observation_during_playback_utc": "2026-11-01T12:19:07.658436Z",
+    "final_provider_start_utc": "2026-11-01T12:19:57.060559Z",
+    "first_observed_gui_handback_utc": "2026-11-01T12:20:06.869077Z",
+    "final_assistant_message_utc": "2026-11-01T12:21:03.663361Z",
+    "write_before_video_s": 72.70944595336914,
+    "write_before_handback_s": 282.8675229549408,
+    "output_write_after_handback": false,
+    "interpretation": "Write completed before playback. Final provider request began after playback but before GUI handback; final reply completed after handback. No active request overlapped measured video. Restoration did overlap its last portion."
+  },
+  "playback": {
+    "browser": "Chrome 156.0.8078.79",
+    "summary": {
+      "outcome": "completed",
+      "reason": "window_elapsed",
+      "frames": {
+        "total_frames": 10799,
+        "dropped_frames": 26,
+        "displayed_frames": 10773,
+        "dropped_fraction": 0.0024076303361422356
+      },
+      "elapsed_s": 180.01280000000006,
+      "media_progress_s": 180.00296699999998,
+      "finish_timer_lateness_ms": 12.800000000046566
+    },
+    "warmup_elapsed_ms": 10000.5,
+    "viewport_css_pixels": [
+      1044,
+      642
+    ],
+    "video_element_css_pixels": [
+      988.7999877929688,
+      462.5249938964844
+    ],
+    "device_pixel_ratio": 1.25,
+    "rate": 1,
+    "volume": 1,
+    "muted": false,
+    "settings_unchanged_to_end": true,
+    "observations_truncated": false,
+    "measurement_event_names": [
+      "measurement_started"
+    ],
+    "callback_gap_limit": "Browser callback gaps do not establish physical display stalls."
+  },
+  "native_cleanup": {
+    "owner_generations": 4,
+    "confirmed_retained_exits_per_owner": [
+      6,
+      7,
+      6,
+      7
+    ],
+    "all_stopped_and_cleanup_confirmed": true,
+    "final_sampled_free_vram_mib": 7948,
+    "scope": "Closed retained lifecycle records and sampled capacity, not continuous residency or efficiency proof."
+  },
+  "external_capture": {
+    "tool": "PresentMon 2.6.0",
+    "child_exit_code": 0,
+    "forced_stop": false,
+    "csv_present": false,
+    "video_window_coverage": false,
+    "joined_utc": "2026-11-01T12:16:35.1998922Z",
+    "physical_stall_verdict": "unknown"
+  },
+  "deviations": [
+    "Operator/context recovery missed the first-20-second Start allowance. Capture ended before actual video Start; no CSV exists.",
+    "First accessibility Start attempt failed with coordinate input geometry unavailable. Its before/after files remain failed-attempt observations; successful playback onset uses the later trusted browser event.",
+    "Actual viewport1044x642 differed from original baseline1536x730; a computer restart separated those runs.",
+    "The output write occurred before playback and handback, so the prospective post-handback-write gate is not satisfied."
+  ],
+  "acceptance": {
+    "single_task_and_owned_cleanup": true,
+    "browser_drop_fraction_limit": 0.005,
+    "browser_absolute_drop_target_passed": true,
+    "adaptive_regression_limit_percentage_points": 0.25,
+    "matched_regression_qualified": false,
+    "physical_stall_limit_ms": 250,
+    "physical_stall_verdict": "unknown",
+    "post_handback_write_gate_passed": false,
+    "audio_quality_or_sync_qualified": false,
+    "m3_qualified": false
+  },
+  "joins": {
+    "parent_exit_code": 0,
+    "observer_exit_code": 1,
+    "observer_end_reason": "three_connection_errors_after_response",
+    "observer_terminal_path_present": true,
+    "capture_parent_exit_code": 0,
+    "page_server_exit_code": 1,
+    "page_server_stop": "Intentional Ctrl+C after terminal save",
+    "selected_owned_processes_and_listeners_absent": true,
+    "scope": "Root retained actual handles; independent reviewer checked closed receipts. Connection errors alone are not cleanup proof."
+  },
+  "private_evidence_sha256": {
+    "terminal_audit": "14bcf9c53969bbee3697b66ba12a8a5cd4c2e81e1364a422c85e87fdab99d1dd",
+    "independent_review": "22c61d1f11a2980e27b6462773b4b4010efd9272b04f088b3b13814b9056d355",
+    "page_result": "628b29617021cfb764c72e50a50daa4a9707ade0954d96ff06ff8b47240b804d",
+    "observer_trace": "52c3b6b2c8684578e8aa111b9de20774dfed9df2117eb65f8808f5b145bf7052",
+    "observer_summary": "d675ef20ccadd06cc1cf878c6ee9b88a2a9b20a1fd4fa4dd3f92f04f4a33cc26",
+    "parent_receipt": "7a81cb42844297a52a69fd3c74d0a9529ba83de140b3f2f8b898a89cd2916bdb",
+    "operator_observation": "ec1e910183a3d13569292ff4cb0a3775c2c36126c410db3401a2e91be759f197",
+    "capture_start": "ea77d94397ed18d8055a77df8fa501a1f87de19fb751e9a19ec41ad74d0c6712",
+    "capture_exit": "62c34c2404103201b9b0d4467b0d882c08489d8c3d1917f844da5bf7fac6d1ea",
+    "cleanup": "ae53b182125a2350569939f436bcf89c9b339cfb2385a72dfd4d033e9c864b4e",
+    "operator_deviations": "89002adf95b86088a5c51b263f8e3e2519b83490a2d81312228cc177d87d8c03"
+  },
+  "next_step": "Preserve this diagnostic and the planned following no-AI control. Correct operator timing and verify viewport/capture before the next fresh comparison, using unchanged task/model/budgets/targets. Do not infer a new scheduling defect or add unconditional media parking from this incomplete comparison."
+}

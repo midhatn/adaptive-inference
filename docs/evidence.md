@@ -2,6 +2,102 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## SQLite concurrency fixture ownership
+
+Publishing the closed video evidence exposed a test-only cleanup failure in
+[PR #30's original Windows 3.11 job](https://github.com/midhatn/adaptive-inference/actions/runs/41307228260/job/124849998301)
+at source `fd4d483df65ba8bfe8b581ef27134f2e23141975`. The concurrent task-store
+fixture reached its per-thread ten-second wait with a thread still alive, then
+temporary-directory cleanup raised WinError 32 on its open database. The log
+does not identify which worker or operation was delayed. The original pair of
+hosted runs finished with 13 passes and this one failure; it is not relabelled
+as a runtime defect or a successful run.
+
+The correction reuses that test file's existing owned-child helpers. The same
+writer and three readers now run inside one retained child, with a 60-second
+whole-workload emergency allowance. A timeout still fails, after killing and
+joining the child, and retains its output and diagnostics. This follows Python's
+[documented communicate/timeout cleanup](https://docs.python.org/3.11/library/subprocess.html#subprocess.Popen.communicate).
+Named threads and a best-effort pre-timeout traceback make future failures
+inspectable. Product lock/SQLite timeouts and runtime sources are unchanged.
+The original parent prompt/revision, 20 writes, 75 reader observations, monotonic
+revisions, exact history, final revision 21 and history length 22 remain checked.
+
+All **18 focused checks passed in 3.047 seconds** on Python 3.11.9 with explicit
+worktree imports. A deterministic regression held a real database open, retained
+the expected timeout failure and its stdout/stderr, joined the exact child, then
+deleted the database. All 11 owned children were terminal and temporary roots
+were removed. The tested file SHA-256 is
+`d7518ece8db9e668abdeaf3c311d626582ca2ec2d0bc926effdc35da3815a9de`;
+the private focused receipt is
+`63523490fbe2513f57ff3f8c8161b8c3df2991a766d3797af1671c7986972efd`.
+The original failed-log hash is
+`92de645e70daf36a68f2029be0cd170d73fa572933c750969e3606119c3dc6e9`.
+Use the PR's final exact-head hosted checks for merge readiness. This fixture
+validation makes no new physical inference or video claim.
+
+## First adaptive video diagnostic
+
+**1 November 2026, observation source `3136e357f2c9cfd16608926dfa0b28b2fbbee7a3`:**
+the first installed IQ3_S video diagnostic and its planned no-AI follow-up are
+closed. The [sanitized task/foreground record](../provenance/video-coexistence/adaptive-diagnostic-2026-11-01.json)
+separates task correctness, observed policy behavior and measurement failures.
+Its source tree equals merged preparation `f6c0da1c1a20c81f51a4f505c0407ed77ec04a0f`.
+The physical installation remained version 0.3.0/source `7306a53085ddc31d53d2ba50e91975c80cfc0014`,
+with the previously pinned Hermes SDK and unchanged IQ3_S quality. Publication
+of the newer reference alpha did not silently upgrade this composition.
+
+The original inventory task passed all **19 terminal checks**: three provider
+calls, exactly one nonreused physical write, the correct 23-unit answer, one
+Resume and one normal Stop, original 900-second execution budget and retained
+owned cleanup. The actual parent joined normally after 727.265 seconds, without
+emergency termination. Independent closed-record review verified all 33 audit
+input hashes and the underlying task/effect/control records. All four native
+owner generations retained confirmed cleanup and their actual process exits.
+The observer returned 1 after three connection errors following shutdown;
+that remains distinct from task success and is not itself cleanup proof.
+
+The initial sampled switch to Chrome preceded observed closed admission by at
+most 1.018529 seconds, within the proposed two-second observation target. This
+occurred before video playback and is not a video-onset measurement. Across
+playback, 948 independent observations retained the same foreground identity,
+with at most 0.204 seconds between samples and monotonically increasing input
+idle time. All 178 measured-window status observations showed closed admission
+and no active provider request: 139 parked and 39 restoring. These are sampled
+observations, not continuous controller-input or residency proof.
+
+The successful write receipt preceded genuine video Start by **72.709 seconds**
+and observed GUI handback by **282.868 seconds**. The final provider request
+began after playback but before handback; its reply completed afterward. Thus
+the intended **output-write-after-handback gate is unmet**. Restoration did
+overlap the last portion of playback, but active inference did not.
+
+The browser completed 180.0128 seconds with **26/10,799 dropped frames
+(0.240763%)**. The [following no-AI control](../provenance/video-coexistence/baseline-after-2026-11-01.json)
+completed 180.0008 seconds with **21/10,799 (0.194462%)**. Both used the same
+actual 1044×642 viewport and unchanged playback settings. Both meet their
+absolute 0.5% drop limit, but the original pre-reboot control used 1536×730.
+These are descriptive observations, not a matched improvement or regression
+acceptance. The original 0.546296% negative control remains failed.
+
+An operator/context-recovery delay missed the adaptive capture's start window:
+PresentMon exited before genuine playback Start and produced no CSV. Its normal
+process exit is preserved, but it supplied no playback measurement. A failed
+accessibility Start attempt is retained separately from the later trusted click.
+The following control used a timely capture; that cannot repair the missing
+adaptive trace. Its 11,353 captured rows include a **292.367-ms display-residence
+candidate** in the measured window. Display metadata identities were zero and
+no retained mapping establishes the actual video surface. That candidate remains
+visible in the record; physical display-stall acceptance is **unknown**, not a
+pass or a confirmed visible stall. No audio-sync or full M3 qualification is claimed.
+
+The [revised next step](../PLAN.md#m3--protect-actual-desktop-activity) fixes
+operator timing and verifies actual geometry before a fresh comparison, keeping
+the original task, quality, budgets and thresholds. No runtime policy change is
+justified by this incomplete comparison alone. Private raw records remain local;
+the public summaries retain their hashes and limits rather than private machine
+identities, paths or prompts.
+
 ## First no-AI video control
 
 **1 November 2026, source `04e2c288fb14ff2d76a02f77bddac763979c7643`:**
