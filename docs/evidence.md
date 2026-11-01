@@ -2,6 +2,49 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## First no-AI video control
+
+**1 November 2026, source `04e2c288fb14ff2d76a02f77bddac763979c7643`:**
+the original Sunflower 1080p60 clip completed a genuine Start, 10.0015-second
+warm-up and 180.001-second observation in Chrome 156.0.8078.79 on the laptop's
+1920×1080, 144-Hz AMD display path. No inference/controller task was running.
+The [sanitized measurement record](../provenance/video-coexistence/baseline-before-2026-11-01.json)
+retains the exact source/input identities, results and qualification limits.
+
+The browser reported **59 dropped frames out of 10,800 (0.546296%)**. This
+**fails the prospectively fixed 0.5% target**; 54 drops would meet that limit.
+Media progressed 179.969066 seconds, counters remained monotonic, the visible
+playback settings were unchanged, no observation buffer was truncated, and no
+pause, seek, waiting, stalled or error event occurred during measurement.
+Thirty-nine drops occurred in a roughly seven-second cluster. The cause is
+unestablished. A completed observation is not a quality pass.
+
+PresentMon 2.6.0 recorded 11,366 rows from the browser GPU process and exited
+normally under its retained parent. Before capture, the operator substituted
+the documented raw QPC time option for date-time output, following source review
+of potentially repeated local-time conversion. The durations and acceptance
+limits did not change. This uses [PresentMon's existing timing output](https://github.com/GameTechDev/PresentMon/blob/v2.6.0/README-ConsoleApplication.md)
+and [Windows' shared performance counter](https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps),
+with retained UTC brackets; no new timing framework was introduced.
+
+The trace changed between two stream identities and later lost its nonzero
+swap-chain identity. A 382.8327-ms displayed-frame residence was recorded, but
+continuous attribution to the actual video surface is unresolved. The
+independent physical-stall verdict is therefore **unknown**, not pass or a
+confirmed visible stall. A 90.4731-ms union-coverage gap at the stream change is
+also a measurement limit. The separate 376-ms browser callback gap cannot
+replace that missing attribution. The page server was intentionally interrupted
+after its terminal save; its shell returned 1, while the capture child and
+parent returned 0. These outcomes remain separate.
+
+Independent reviews confirmed measurement validity, the failed drop target and
+the display-attribution limit. The [revised M3 sequence](../PLAN.md#m3--protect-actual-desktop-activity)
+retains this measured negative control for one matched adaptive functional
+diagnostic and the following no-AI control. It does not repeat the baseline to
+obtain a green result, weaken thresholds, or claim complete video/M3 acceptance.
+Raw machine/UI logs remain private; the public record is a sanitized summary,
+not an independently replayable copy of all private observations.
+
 ## Video coexistence preparation
 
 **1 November 2026:** the [video example](../examples/validation/video_coexistence/README.md)
@@ -49,6 +92,32 @@ ambiguous evidence stays incomplete. Caller-owned handle attestations are
 reported separately from saved child-wait evidence. This checker always leaves
 video and whole-M3 qualification false: those require the physical comparison.
 
+### Ordinary-window observation correction
+
+Operational review before the first adaptive launch found that the original
+auditor required the operator to observe host/session identifiers that the
+ordinary installed window does not display. No physical task was started with
+that assumption. The corrected auditor joins the three observable OS window
+identifiers to a preserved, hashed copy of the ordinary ready record captured
+before Resume. It matches those identities and the ready task to the terminal
+checkpoint and host binding. Host/session identifiers are explicitly reported
+as host-retained data, never invented live observations.
+
+The existing query-only activity reader supplies window/process identity;
+the [example instructions](../examples/validation/video_coexistence/README.md#auditing-one-closed-inventory-task)
+cite the supported Windows APIs. Runtime code, quality, budgets, genuine
+Resume/Stop ordering, sole durable acknowledgement, output oracle, write-count
+and cleanup predicates remain unchanged. Ten focused checks passed in 1.398
+seconds on pinned Python 3.11.9, including mismatched identity/task/readiness,
+changed bytes/hash and post-Resume capture refusals. All 77 read-only SQLite
+connections closed and the actual test parent joined with exit 0; only the main
+thread remained. The private receipt SHA-256 is
+`5223549d0d6e042d7d36e3c465dbd927e1e35e2806a54fc17ecdaa4acbda8c39`.
+This is synthetic component validation, not a completed physical adaptive task.
+Independent source/evidence review accepted the corrected join and verified
+the recorded source hashes, ten outcomes and closed connection records without
+repeating the tests.
+
 ## Reference alpha publication
 
 [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1)
@@ -58,7 +127,9 @@ seven jobs ([push](https://github.com/midhatn/adaptive-inference/actions/runs/41
 [PR](https://github.com/midhatn/adaptive-inference/actions/runs/41273498549)),
 with no reruns or cancellations. PR #28 merged at
 `e9d17b7dfadba27b3b572f2ce04a7d1b41d2e506`; its tree exactly matches the tested
-candidate. A fresh standard isolated source build and the existing verifier
+candidate. That merge also passed its seven original
+[main-branch checks](https://github.com/midhatn/adaptive-inference/actions/runs/41275107785).
+A fresh standard isolated source build and the existing verifier
 matched all 1,191 source files and 61 runtime modules, including metadata and
 license notices. The previously validated runtime wheel is unchanged.
 

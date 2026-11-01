@@ -50,16 +50,29 @@ def wall(value):
     return result.timestamp()
 
 
-def observed_controls(ui, run, result, task):
+def observed_controls(ui, run, result, task, ready):
     """Bind operator observations to durable ACKs, never invent GUI memory."""
     try:
         require(ui['run'] == str(run) and ui['deadline_clock'] == qpc.CLOCK_ID,
                 'Observed run/clock differs')
         window = ui['window']
-        require(window == result['retained_gui_binding']
-                and window['task_id'] == task['checkpoint']['task_id'], 'Observed window differs')
-        require(all(type(window[k]) is int and window[k] > 0
-                    for k in ('hwnd', 'pid', 'creation_time_100ns')), 'Exact observed window identity required')
+        identity_fields = ('hwnd', 'pid', 'creation_time_100ns')
+        binding = result['retained_gui_binding']
+        require(set(window) == set(identity_fields)
+                and all(type(window[k]) is int and window[k] > 0 for k in identity_fields),
+                'Exact observed OS window identity required')
+        require(window == {k: binding[k] for k in identity_fields}, 'Observed window differs')
+        readiness = ui['readiness']
+        require(ready['ready'] is True and ready['paused_owner_acknowledged'] is True
+                and ready['model_started'] is False and ready['gui_pid'] == window['pid']
+                and ready['task_id'] == readiness['task_id'] == binding['task_id']
+                == task['checkpoint']['task_id'], 'Ready record/window/task differs')
+        require(all(type(binding[k]) is str and binding[k] for k in ('host_epoch', 'session_id')),
+                'Host-retained session identity missing')
+        require(qpc.qpc_bracket({**readiness, 'deadline_clock': ui['deadline_clock']},
+                               'qpc_before', 'qpc_after'), 'Missing/invalid readiness QPC bracket')
+        ready_before, ready_after = wall(readiness['utc_before']), wall(readiness['utc_after'])
+        require(ready_before <= ready_after, 'Invalid readiness UTC bracket')
         actions = ui['actions']
         require([x['method'] for x in actions] == ['resume', 'stop'],
                 'Exactly one observed Resume then one Stop required')
@@ -74,6 +87,8 @@ def observed_controls(ui, run, result, task):
             times.append((before, after))
         require(actions[0]['qpc_after'] < actions[1]['qpc_before'] and times[0][1] < times[1][0],
                 'Observed actions overlap or reverse')
+        require(readiness['qpc_after'] < actions[0]['qpc_before'] and ready_after < times[0][0],
+                'Readiness must be captured before Resume')
         controls = task['controls']
         require([x['command'] for x in controls] == ['pause', 'resume']
                 and all(x['owner_acknowledged'] is True and x['outcome'] == 'applied' for x in controls),
@@ -83,7 +98,9 @@ def observed_controls(ui, run, result, task):
                 and task['wire'][-1]['finished_at'] <= times[1][0],
                 'Observed action does not bracket durable acknowledgement/task work')
         return {'status': 'verified', 'resume_request_ids': [controls[1]['request_id']],
-                'basis': 'Operator-observed window/actions bound to sole durable Resume ACK; not transport._records or internal GUI evidence. Stop is an observed action plus retained stop-confirmed cleanup, not a fabricated mailbox request.'}
+                'observed_window': window, 'readiness_capture': readiness,
+                'host_retained_binding': binding,
+                'basis': 'Operator-observed OS window/actions joined through the pre-Resume ready bytes to the host-retained binding and sole durable Resume ACK. Host epoch/session are host records, not UI observations. Not transport._records or internal GUI evidence. Stop is an observed action plus retained stop-confirmed cleanup, not a fabricated mailbox request.'}
     except (KeyError, IndexError, TypeError, ValueError) as error:
         return {'status': 'incomplete', 'reason': str(error)}
 
@@ -220,8 +237,15 @@ def audit(run, ui_observation, output, *, parent_joined=False, observer_joined=F
             and all(x[1] is None and x[2] is None and not x[3] for x in actual))
         try:
             ui = data(ui_observation)
-            receipt['user_controls'] = observed_controls(ui, run, result, task)
-        except (OSError, ValueError) as error:
+            capture = Path(ui['readiness']['path'])
+            require(capture.is_absolute() and capture.resolve() != (run/'ready.private.json').resolve(),
+                    'Separate raw pre-Resume readiness capture required')
+            ready = data(capture)
+            terminal_ready = track(run/'ready.private.json')
+            require(ui['readiness']['sha256'] == sha(capture) == sha(terminal_ready),
+                    'Pre-Resume readiness bytes differ')
+            receipt['user_controls'] = observed_controls(ui, run, result, task, ready)
+        except (OSError, KeyError, TypeError, ValueError) as error:
             receipt['user_controls'] = {'status': 'incomplete', 'reason': str(error)}
         if receipt['user_controls']['status'] == 'verified':
             task['gui_resume_ids'] = receipt['user_controls']['resume_request_ids']

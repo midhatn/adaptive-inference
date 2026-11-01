@@ -724,7 +724,16 @@ separately. Passing the video page alone does not pass this comparison or M3.
 
 The page and bounded parent/observer have passed component checks and independent
 review, as recorded in the [evidence ledger](docs/evidence.md#video-coexistence-preparation).
-Physical capture, real browser playback and adaptive coexistence remain untested.
+The first physical no-AI baseline completed on 1 November: 59 of 10,800 frames
+dropped over 180.001 seconds (0.546296%), exceeding the fixed 0.5% target.
+Its valid, unchanged playback record is a measured negative control, not a
+qualified quality baseline. Preserve that failure and perform the planned
+single adaptive run as a functional diagnostic of passive foreground handling,
+resource handback and original-task progress, followed by the no-AI control.
+Do not repeat the baseline merely to obtain a pass. The absolute quality and
+regression limits remain unchanged; the failed control and any unknown display
+attribution prevent a complete video qualification. Adaptive coexistence remains
+untested until that separate run finishes.
 Use existing task acceptance and lifecycle evidence for the terminal projection.
 Add a passive-media signal only if this comparison demonstrates a missing input;
 do not replace useful resource adaptation with unconditional parking during all

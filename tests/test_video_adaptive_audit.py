@@ -165,8 +165,16 @@ class AdaptiveAuditTests(unittest.TestCase):
         save(Path(str(self.run) + '.observer.private.json'), {'run': str(self.run), 'sources_unchanged': True,
             'source_sha256': {'observer': audit.sha(audit.HERE/'observe_adaptive.py')},
             'active_case_file_contents_read': False, 'end_reason': 'observation_deadline'})
+        self.ready = {'ready': True, 'gui_pid': 33, 'worker_pid': 22, 'task_id': 'task',
+                      'paused_owner_acknowledged': True, 'model_started': False}
+        self.ready_path = self.run/'ready.private.json'; save(self.ready_path, self.ready)
+        self.ready_capture = self.root/'ready-before-resume.json'
+        self.ready_capture.write_bytes(self.ready_path.read_bytes())
         self.ui = {'run': str(self.run), 'deadline_clock': audit.qpc.CLOCK_ID,
-            'window': self.result['retained_gui_binding'], 'actions': [
+            'window': {'hwnd': 11, 'pid': 33, 'creation_time_100ns': 345},
+            'readiness': {'path': str(self.ready_capture), 'sha256': audit.sha(self.ready_capture),
+                         'task_id': 'task', 'qpc_before': 9., 'qpc_after': 9.1,
+                         'utc_before': utc(101), 'utc_after': utc(102)}, 'actions': [
                 {'method': 'resume', 'qpc_before': 10., 'qpc_after': 10.1, 'utc_before': utc(102.5),
                  'utc_after': utc(103.5), 'hwnd': 11, 'pid': 33},
                 {'method': 'stop', 'qpc_before': 20., 'qpc_after': 20.1, 'utc_before': utc(110),
@@ -193,6 +201,10 @@ class AdaptiveAuditTests(unittest.TestCase):
         self.assertTrue(result['passed'], result)
         self.assertEqual((result['physical_writes'], result['provider_calls']), (1, 1))
         self.assertEqual(result['user_controls']['resume_request_ids'], ['resume-1'])
+        self.assertEqual(result['user_controls']['observed_window'], self.ui['window'])
+        self.assertNotIn('host_epoch', result['user_controls']['observed_window'])
+        self.assertEqual(result['user_controls']['host_retained_binding'], self.result['retained_gui_binding'])
+        self.assertEqual(result['input_sha256'][str(self.ready_capture)], audit.sha(self.ready_path))
         self.assertEqual(result['observer_end_reason'], 'observation_deadline')
         self.assertFalse(result['video_qualified'])
         self.assertFalse(result['m3_qualified'])
@@ -210,6 +222,48 @@ class AdaptiveAuditTests(unittest.TestCase):
         self.assertEqual(self.run_audit()['user_controls']['status'], 'incomplete')
         self.ui['actions'].pop(); self.ui['actions'][0]['pid'] = 999; save(self.ui_path, self.ui)
         self.assertEqual(self.run_audit('wrong-window.json')['user_controls']['status'], 'incomplete')
+
+    def test_each_observed_os_identity_field_must_match_retained_binding(self):
+        for field in ('hwnd', 'pid', 'creation_time_100ns'):
+            with self.subTest(field=field):
+                original = self.ui['window'][field]
+                self.ui['window'][field] += 1; save(self.ui_path, self.ui)
+                result = self.run_audit('wrong-' + field + '.json')
+                self.assertEqual(result['user_controls']['status'], 'incomplete')
+                self.assertFalse(result['passed'])
+                self.ui['window'][field] = original
+
+    def test_readiness_copy_and_recorded_hash_must_match_terminal_bytes(self):
+        self.ui['readiness']['sha256'] = '0' * 64; save(self.ui_path, self.ui)
+        self.assertEqual(self.run_audit()['user_controls']['status'], 'incomplete')
+        self.ready_capture.write_bytes(self.ready_capture.read_bytes() + b'\n')
+        self.ui['readiness']['sha256'] = audit.sha(self.ready_capture); save(self.ui_path, self.ui)
+        result = self.run_audit('changed-ready-copy.json')
+        self.assertFalse(result['passed'])
+        self.assertIn('bytes differ', result['user_controls']['reason'])
+
+    def test_readiness_capture_requires_pre_resume_qpc_and_utc_brackets(self):
+        for field, value in (('qpc_after', 10.05), ('utc_after', utc(103))):
+            with self.subTest(field=field):
+                original = self.ui['readiness'][field]
+                self.ui['readiness'][field] = value; save(self.ui_path, self.ui)
+                result = self.run_audit('late-ready-' + field + '.json')
+                self.assertEqual(result['user_controls']['status'], 'incomplete')
+                self.assertIn('before Resume', result['user_controls']['reason'])
+                self.ui['readiness'][field] = original
+
+    def test_readiness_task_and_gui_pid_are_bound_to_actual_window_and_task(self):
+        self.ui['readiness']['task_id'] = 'other'; save(self.ui_path, self.ui)
+        self.assertFalse(self.run_audit()['passed'])
+        self.ui['readiness']['task_id'] = 'task'
+        for field, value in (('task_id', 'other'), ('gui_pid', 999)):
+            with self.subTest(field=field):
+                save(self.ready_path, {**self.ready, field: value})
+                self.ready_capture.write_bytes(self.ready_path.read_bytes())
+                self.ui['readiness']['sha256'] = audit.sha(self.ready_capture); save(self.ui_path, self.ui)
+                result = self.run_audit('wrong-ready-' + field + '.json')
+                self.assertFalse(result['passed'])
+                self.assertIn('record/window/task differs', result['user_controls']['reason'])
 
     def test_duplicate_physical_write_and_changed_quality_are_rejected(self):
         effects = self.work/'effect-receipts.jsonl'; original = effects.read_bytes()

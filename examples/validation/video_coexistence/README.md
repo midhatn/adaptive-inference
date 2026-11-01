@@ -189,12 +189,29 @@ The operator observation is a JSON object with these actual recorded values:
 | --- | --- |
 | `run` | Exact absolute path of this run. |
 | `deadline_clock` | `windows-qpc-seconds-v1`. |
-| `window` | Full observed controller binding: `host_epoch`, `session_id`, `task_id`, `hwnd`, `pid`, and integer `creation_time_100ns`. Preserve the integer exactly. |
+| `window` | Exactly the observed OS identity: `hwnd`, `pid`, and integer `creation_time_100ns`. Preserve the 64-bit integer exactly; do not round it through a floating-point value. |
+| `readiness` | `path` to an untouched raw copy of this run's `ready.private.json`, its `sha256`, the ready record's `task_id`, and `qpc_before`/`qpc_after` plus timezone-aware `utc_before`/`utc_after` bracketing that capture. Both brackets must finish before Resume begins. |
 | `actions` | Exactly two entries, in order: `resume`, then `stop`. Retain any extra action in the original observation; it makes this single-control comparison incomplete. |
 | Each action | `method`, observed `hwnd` and `pid`, finite `qpc_before`/`qpc_after`, and timezone-aware `utc_before`/`utc_after`, bracketing the genuine action. |
 
-The audit matches the observed window to the retained binding, and matches the
-sole durable Resume acknowledgement to the action and first provider request.
+Before Resume, preserve the ready file's original bytes in a separate fresh
+file, record its hash and capture times, and observe the controller window's OS
+identity. The existing query-only `WindowsActivityReader.sample()` supplies the
+foreground HWND/PID and exact process creation ticks when that controller is
+foreground; an unknown identity must remain unknown. It uses
+[GetWindowThreadProcessId](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowthreadprocessid)
+and [GetProcessTimes](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getprocesstimes),
+and closes the query handle. These primary API references were reviewed on
+1 November 2026; no external code or new dependency is copied.
+
+The terminal audit pins the captured bytes and requires them to equal the
+ordinary ready record. Its GUI PID and task ID join the observed OS window to
+the retained binding and task checkpoint. `host_epoch` and GUI `session_id` are
+reported separately in `host_retained_binding`: the host supplies these fields;
+the ordinary UI does not display them. Do not copy terminal values into a
+supposed live observation. The capture times remain operator observations,
+not independently attested timestamps. The audit also matches the sole durable
+Resume acknowledgement to the action and first provider request.
 This is explicitly an **observation-bound projection**. It is not a saved copy
 of the GUI's internal requests or the transport's in-memory records. Stop is
 bound to the observed action and retained confirmed shutdown; this completed-task
