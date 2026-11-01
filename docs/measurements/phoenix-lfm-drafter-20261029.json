@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "observation_date": "2026-10-29",
+  "scope": "Retained standalone physical NPU drafter diagnostic; not an Adaptive Inference backend or DeepSeek accepted-token benchmark.",
+  "self_contained_reproduction_package": false,
+  "hardware": {
+    "processor": "AMD Ryzen 9 7940HS",
+    "npu": "Phoenix XDNA",
+    "host_ram_gib": 64,
+    "os": "Native Windows"
+  },
+  "model": {
+    "id": "LiquidAI/LFM2.5-230M",
+    "revision": "40cb2ad3b3044d5a41eee083a6103c8b523afa45",
+    "weight_dtype": "BF16",
+    "layers": 14,
+    "license": "LFM Open License v1.0"
+  },
+  "implementation": {
+    "repository": "https://github.com/AbhiramJayasankar/ryzenai-npu-lab",
+    "revision": "a9531b87b770fd3142164b61254fb6f74fed2d22",
+    "license": "MIT",
+    "model_engine": "experiments/lfm25_x8_model.py",
+    "npu_work": "Eight-core programs execute all model layers, vocabulary head and token selection.",
+    "host_work": "Token and rotary-constant preparation, DMA setup/submission, state coordination and result recording.",
+    "local_adapter": "Four precompiled prefill/decode variants; donor numerical methods unchanged.",
+    "prefill_tokens_per_call": 4,
+    "configured_capacities": [
+      1024,
+      4096
+    ],
+    "maximum_observed_consumed_positions": 1279,
+    "state_handoffs": 2,
+    "state_payload_bytes_per_handoff": 56937472,
+    "all_handoff_payloads_bitwise_equal": true
+  },
+  "workload": {
+    "teacher_forced": true,
+    "previous_token_source": "Known prior continuation token, not the drafter's prior selected token.",
+    "prefix_tokens_per_segment": 1024,
+    "recorded_predictions_per_segment": 256,
+    "first_prediction_produced_by_prefill": true,
+    "timed_continuation_predictions_per_segment": 255,
+    "timing_includes": [
+      "NPU submissions and completion",
+      "Host recording and byte mapping"
+    ],
+    "timing_excludes": [
+      "Cold setup",
+      "Preceding prefill"
+    ],
+    "prefill_includes_handoff_diagnostic_file_io": true,
+    "deepseek_running_concurrently": false
+  },
+  "segments": [
+    {
+      "id": "A",
+      "fixture_kind": "Reasoning",
+      "prefill_seconds": 10.498346399999718,
+      "continuation_seconds": 9.64387540000007,
+      "continuation_steps": 255,
+      "continuation_steps_per_second": 26.441652284308667,
+      "complete_segment_seconds": 20.1561714999998,
+      "cpu_selected_id_matches": 251,
+      "fixed_reference_id_matches": 110,
+      "initial_matching_proposal_prefix": 0,
+      "longest_fixed_reference_matching_run": 8
+    },
+    {
+      "id": "B",
+      "fixture_kind": "Repetitive structured answer",
+      "prefill_seconds": 10.461272100000315,
+      "continuation_seconds": 9.434816699999828,
+      "continuation_steps": 255,
+      "continuation_steps_per_second": 27.02755210920045,
+      "complete_segment_seconds": 19.910135000000082,
+      "cpu_selected_id_matches": 254,
+      "fixed_reference_id_matches": 218,
+      "initial_matching_proposal_prefix": 0,
+      "longest_fixed_reference_matching_run": 22
+    }
+  ],
+  "completion": {
+    "recorded_predictions": 512,
+    "completed_npu_submissions": 1028,
+    "collector_seconds": 42.54078659999959,
+    "collector_includes_setup_and_teardown": true
+  },
+  "telemetry": {
+    "source": "HWiNFO NPU Usage sensor; retained request-aligned analysis and independent reconstruction.",
+    "window": "Complete owner process window",
+    "window_seconds": 47.722862,
+    "backward_sample_hold_average_npu_percent": 61.56562377533352,
+    "forward_sample_hold_average_npu_percent": 60.097629,
+    "linear_average_npu_percent": 60.934452,
+    "peak_sample_inside_window_npu_percent": 93.4,
+    "samples_inside_window": 24,
+    "achieved_flops_measured": false
+  },
+  "original_diagnostic_flags": {
+    "observation_complete": true,
+    "arithmetic_qualified": false,
+    "prediction_qualified": false,
+    "performance_qualified": false,
+    "exact_speculative_acceptance_qualified": false,
+    "intelligence_preservation_qualified": false
+  },
+  "limitations": [
+    "Selected-token agreement is not full-logit numerical parity; CPU full logits were not retained.",
+    "The seven CPU/NPU token-selection differences are not established as ties.",
+    "Fixed-reference matches do not measure actual target acceptance or free-running model quality.",
+    "A repetitive structured-answer fixture is not representative reasoning quality.",
+    "No end-to-end DeepSeek acceleration, intelligence preservation or full configured-context qualification is established.",
+    "No matched CPU-versus-NPU speedup is claimed.",
+    "Private prompts, raw workstation logs, model weights and runtime binaries are not distributed."
+  ],
+  "retained_artifact_sha256": {
+    "collector_result": "8560138ef85ec496a6875eca897eb485b4c38fd55cd6a36c0aea9a72dd413f05",
+    "owner_result": "d76aa52c7241ac9fa0868f6af10d42f794ac6bdfd2e12479480680cb3dc2889d",
+    "event_journal": "3e898fc055c8c977f55dc188bb22f1c5eee115b35cdea7fa644e716ad8bbb4d2",
+    "predictions": "32f193b93ad5528e36f208ee1d58427e897dfd35ee1ca9006cda76c2417c200d",
+    "independent_usefulness_review": "b112e81a595d7a65f529041a0a89d619962fd36d388c6203a03bf6f1658eb4ee",
+    "telemetry_analysis": "3f45018ca6effe2f59603b46290419e3a950c58f8938f21b454a27a3832bd361",
+    "telemetry_snapshot_receipt": "2c250946f098c2be3bdc942a0c1414577193fa18d24702ebc74b8d3ca2f40582",
+    "telemetry_snapshot_csv": "cfeb9a4c97db8ef7879d50feb1dccd92fb4b26898319eaf46839d00c88bcd586",
+    "telemetry_independent_recheck": "992ba161093e91298795f01f22f7c50303c7c24440f4f05d64fc9bbe79a412e8"
+  }
+}
