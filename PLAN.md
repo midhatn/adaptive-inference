@@ -129,6 +129,19 @@ reviewed bounded correction, and require the corrected source's hosted checks.
 Hold further draft-asset refreshes until that source has passed, to avoid
 repeatedly packaging intermediate CI follow-ups.
 
+The corrected source then passed all 14 original jobs and PR #25 merged. The
+alpha's original push also passed all seven jobs, but its PR integration run
+exposed a selected CPU-child emergency watchdog firing during the held-timeout
+diagnostic. Preserve that failure and the unknown final delayed operation.
+The [selected-fixture correction](provenance/task-handover/continuation-timeout-diagnostics/README.md#selected-cpu-child-emergency-guard-1-november-2026)
+gives only that child's hang detector 60 seconds, covering already permitted
+30-second entry, five-second hold and 20-second cleanup phases. Original-child
+timing, intentional timeout, cleanup deadline, exact exits and no-kill assertions
+remain unchanged. Forty-eight affected checks passed locally with all retained
+children joined. Finish collecting the original hosted outcomes, validate the
+corrected integration and refresh source assets only after its own checks pass.
+No product/model deadline or physical acceptance gate changes.
+
 The separate `0.4.0a1` release candidate now names the supported scope, reconciles
 the changelog and preserves the old physical source records through the existing
 exact source view. Its fresh isolated regular-wheel check verified all 61 modules

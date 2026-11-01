@@ -188,7 +188,7 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
                 binding.request_stop(c.facade._selected['capability'])
                 await binding.join(timeout=3)
         for child in c.handles:
-            # Each CPU fixture has its own 15-second emergency failure bound;
+            # CPU emergency bounds are 15 s original / 60 s selected;
             # cleanup always joins the exact retained Popen, never PID lookup.
             await asyncio.to_thread(child.wait,18)
         if c.facade._wake is not None:await c.facade._wake

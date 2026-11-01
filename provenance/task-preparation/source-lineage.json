@@ -171,10 +171,15 @@
           "count": 1,
           "new": "await asyncio.wait_for(asyncio.shield(task), self.continuation_timeout_s)",
           "old": "await asyncio.wait_for(asyncio.shield(task),5)"
+        },
+        {
+          "count": 1,
+          "new": "            # CPU emergency bounds are 15 s original / 60 s selected;\n",
+          "old": "            # Each CPU fixture has its own 15-second emergency failure bound;\n"
         }
       ],
       "successor_ast_sha256": "83c557487073eb96f8905407411a00a5b51e3e1a5dfd333d40c2b2b69fbb2738",
-      "successor_sha256": "37db2307d8cc8932f52f074b1a6cfade37c716274358f5662cd8e5ee456978fe"
+      "successor_sha256": "7d11bb85d7c59f735fe3bec99cc08b78d252ac75f0de5f9ad8c41c7a81e3874e"
     },
     "tests/test_continuation_timeout_lineage.py": {
       "predecessor_ast_sha256": "3a8288094cda5566896c15b955584a45524107365a9416b910eaa20d7f1a4808",

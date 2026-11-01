@@ -79,6 +79,16 @@ M2 work, verify the active PR's development revision before reading that revisio
 "next" are historical when a newer source-bound result supersedes them; verify
 the current work item before choosing or repeating an action.
 
+**Latest delivery update:** corrected source `6be2629` passed its original 14
+jobs and PR #25 merged at `e0b46e5`. Alpha `d5837f9` passed its original seven
+push jobs; [release PR #28](https://github.com/midhatn/adaptive-inference/pull/28)
+then exposed a selected CPU-child watchdog failure. The prospective correction
+changes only that test child's emergency allowance and its source-view comment;
+48 affected checks passed with retained child joins. Original outcomes, exact
+exit/cleanup assertions and product settings stay intact. Verify the new head's
+complete hosted result before refreshing or publishing release assets. The
+draft is still unpublished; its old assets must not be labeled as the new source.
+
 Cases12 and13 also remain failed, for their recorded checker/observation issues.
 The corrected UTF-8 receipt checker passed its 47 focused tests and was used by
 case14; this does not requalify earlier cases. Existing successful source and

@@ -65,6 +65,32 @@ source evidence, not a new native-resource or model result. Independent review
 accepted the bounded correction and its retained evidence. Original CI stays
 failed; the correction still needs its own exact-head hosted checks.
 
+Corrected source `6be262996a3e42851cdf3f31a46342cd235ceca9` passed all 14
+original jobs ([push](https://github.com/midhatn/adaptive-inference/actions/runs/41269784559),
+[PR](https://github.com/midhatn/adaptive-inference/actions/runs/41269789838)) before
+[PR #25](https://github.com/midhatn/adaptive-inference/pull/25) merged. Alpha
+`d5837f9f44dbcf7af3c28149dad0945bc6002f50` passed all seven original
+[push jobs](https://github.com/midhatn/adaptive-inference/actions/runs/41269982741).
+
+Its subsequent [Windows 3.11 PR job](https://github.com/midhatn/adaptive-inference/actions/runs/41270791467/job/124742964115)
+failed an injected-timeout diagnostic: selected-child exit 124 replaced the
+required normal Stop exit 4. The intended five-second timeout was observed;
+the selected child lived approximately 15.187 seconds before its emergency
+watchdog ended it. Both children joined without parent cleanup kills. Saved
+cooperative-cleanup fields precede final owner release and normal exit, so they
+do not qualify this failed attempt. The precise final delay remains unknown.
+
+The [prospective selected-child guard correction](../provenance/task-handover/continuation-timeout-diagnostics/README.md#selected-cpu-child-emergency-guard-1-november-2026)
+passed 48 existing host, timeout-diagnostic and source-lineage checks once in
+48.627 seconds on full Python 3.11.9 with every locked dependency version and
+explicit checkout imports. All 42 retained children joined; the sole forced
+cleanup belonged to the existing deliberately injected setup-failure test.
+Both held diagnostics retained their five-second timeout, required exits
+`[5, 4]` and no cleanup kill. The parent exited 0 and only the main thread
+remained. The host fixture's explanatory comment has an identical AST and uses
+the existing exact byte projection; historical archives and runtime/model
+settings are unchanged. Corrected-head hosted integration remains required.
+
 ## Windows reference alpha packaging
 
 The `0.4.0a1` candidate changes the package version and delivery documentation.
