@@ -52,9 +52,12 @@ original hosted jobs, final source/wheel verification and actual merge-tree
 verification passed. All five uploaded assets and the public tag were checked.
 The following delivery-follow-up paragraphs preserve the earlier sequence;
 their completed gates are not instructions to rebuild or repeat qualification.
-The next functional work is the prepared [M3 video comparison](#m3--protect-actual-desktop-activity):
-no-AI baseline, matched adaptive inventory run and following baseline. This
-delivery does not complete physical desktop, tool/media or reboot acceptance.
+The first [M3 video sequence](#m3--protect-actual-desktop-activity) has now closed.
+The original IQ3_S task and owned cleanup passed, but operator timing and changed
+window geometry left the intended handoff/video comparison incomplete. Correct
+those measurement conditions before a fresh comparison; do not replay the
+completed cases or weaken their limits. Physical desktop, tool/media and reboot
+acceptance remain separate gates.
 
 **Current M2 gate — 1 November 2026:** case17 passed the complete bounded
 foreground, resource-wait continuation and two-task handover scenario. The
@@ -726,14 +729,45 @@ The page and bounded parent/observer have passed component checks and independen
 review, as recorded in the [evidence ledger](docs/evidence.md#video-coexistence-preparation).
 The first physical no-AI baseline completed on 1 November: 59 of 10,800 frames
 dropped over 180.001 seconds (0.546296%), exceeding the fixed 0.5% target.
-Its valid, unchanged playback record is a measured negative control, not a
-qualified quality baseline. Preserve that failure and perform the planned
-single adaptive run as a functional diagnostic of passive foreground handling,
-resource handback and original-task progress, followed by the no-AI control.
-Do not repeat the baseline merely to obtain a pass. The absolute quality and
-regression limits remain unchanged; the failed control and any unknown display
-attribution prevent a complete video qualification. Adaptive coexistence remains
-untested until that separate run finishes.
+Its valid, unchanged playback record remains a measured negative control, not a
+qualified quality baseline. The subsequent [adaptive diagnostic and following
+control](docs/evidence.md#first-adaptive-video-diagnostic) are now closed. The
+unchanged inventory task passed all 19 terminal checks with three provider calls,
+one correct physical write and owned cleanup. However, that write occurred before
+video Start, not after handback. A delayed Start missed the capture window, and
+the actual browser viewport differed from the original control after reboot.
+During measured playback, sampled admission stayed closed; restoration overlapped
+the final portion, but no provider request did. This is useful bounded evidence,
+not the intended complete handoff comparison.
+
+The adaptive browser dropped 26/10,799 frames (0.240763%); the planned following
+no-AI control at the same smaller viewport dropped 21/10,799 (0.194462%). Both
+meet the absolute drop target for their own observations. Their descriptive
+difference is not a matched-regression acceptance or a causal performance claim.
+The original failed control and unknown physical-stall attribution remain intact.
+
+**Next bounded step:** correct the operator sequence before another fresh
+comparison. Observe the actual viewport and make Start visibly reachable before
+Resume or capture. Prepare the browser, observer and original task while paused;
+then keep first-inflight observation, capture start and genuine playback Start
+adjacent, within the existing 20-second capture lead. If that window is missed,
+retain the deviation instead of relabelling or restarting the same attempt.
+Require the original output write after ordinary handback, actual capture
+coverage and source-bound cleanup. A fresh comparison is justified by these
+documented timing/setup failures, not by searching for a green frame count.
+Retain the same IQ3_S quality, task budgets, clip and acceptance thresholds.
+Verify display-surface attribution separately; missing attribution stays unknown.
+
+Do not change scheduling merely because restoration occurred during passive
+video: useful background work within the foreground quality budget is the goal.
+The existing research identifies optional status-only [Windows media-session
+observation](https://learn.microsoft.com/en-us/uwp/api/windows.media.control.globalsystemmediatransportcontrolssessionmanager)
+and supported [GPU-engine counters](https://devblogs.microsoft.com/directx/gpus-in-the-task-manager/)
+if a controlled comparison shows missing inputs. A media-control session does
+not prove foreground-tab identity or available compute. Start such observation
+without changing decisions; do not park
+unconditionally for every playing media session. After M3's bounded comparison,
+continue useful tool handoff and installed-agent restart recovery as planned.
 Use existing task acceptance and lifecycle evidence for the terminal projection.
 Add a passive-media signal only if this comparison demonstrates a missing input;
 do not replace useful resource adaptation with unconditional parking during all
