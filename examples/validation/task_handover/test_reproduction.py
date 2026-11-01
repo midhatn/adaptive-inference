@@ -101,7 +101,7 @@ class PublicHandoverTests(unittest.TestCase):
 
     def test_relocated_source_closure_and_changed_file_refusal(self):
         with tempfile.TemporaryDirectory() as directory:
-            root=Path(directory);copy=root/'copied-example';shutil.copytree(HERE,copy,ignore=shutil.ignore_patterns('__pycache__'))
+            root=Path(directory).resolve(strict=True);copy=root/'copied-example';shutil.copytree(HERE,copy,ignore=shutil.ignore_patterns('__pycache__'))
             bindings,disabled,enabled,declaration=self.synthetic_binding(root)
             declaration['harness_manifest']={'path':str(copy/'source-manifest.json'),'sha256':sha(copy/'source-manifest.json')}
             enabled.write_text(json.dumps({**declaration,'enabled':True}))

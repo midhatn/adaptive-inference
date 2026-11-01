@@ -74,6 +74,12 @@ editing or manual backend juggling. Remove only practical setup or control
 obstacles found in this path. Do not introduce another runner, proof framework,
 speculative failure campaign or repeat of the completed physical scenario.
 
+Prioritize the main workflow over uncommon failures or optional optimization.
+The `prepare-task` command now supplies objective-plus-file task preparation
+through the existing contract. Simpler supported setup is next. Validate each changed
+behavior, then move on to resource coexistence, useful tool handoff and restart
+recovery. Extra investigations belong on this path only when they block it.
+
 The reference can be delivered as a narrow alpha before the full daily-use
 milestone. Keep the existing IQ3_S quality, budgets, task-effect rules and
 acceptance standards. Validate meaningful changes and reuse completed evidence

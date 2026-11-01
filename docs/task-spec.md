@@ -20,6 +20,40 @@ and [accepted replay](../provenance/task-handover/acceptance/README.md) preserve
 that bounded result. Usable setup/task entry for the reference alpha is next;
 computer restart recovery remains a later milestone.
 
+## Prepare your own task
+
+The development `prepare-task` command removes manual JSON and hash editing:
+
+```powershell
+adaptive-inference prepare-task --destination .\summary-task `
+  --prompt "Read notes.txt and summarize the decisions in answer.txt." `
+  --input .\notes.txt
+```
+
+It preserves your objective, copies only the selected files into `inputs`, and
+writes a validated `task.json` with hashes of those copied bytes. The original
+files are unchanged. The destination must be new and its parent must exist.
+Use the returned paths in the existing desktop command or **New task** chooser.
+This prepares a task; it does not run an agent or load a model.
+
+- Use `--prompt-file .\objective.txt` for a UTF-8 objective written in a text
+  editor, instead of `--prompt`.
+- Repeat `--input` for more selected files, or omit it for a task without inputs.
+  Names must satisfy the existing flat-file contract below.
+- The required output defaults to `answer.txt`, text format and 4,096 characters.
+  Choose `--output summary.json --format json --max-chars 2000` when appropriate.
+  Name the intended output in your objective.
+
+The helper uses the existing request/time budgets and file limits. It declares
+format-only checking: semantic validation remains `not_checked`, so review the
+answer. For multiple outputs or an independent JSON oracle, the existing
+TaskSpec format and examples remain available. If a file write fails, keep that
+incomplete destination separate and prepare into a new one.
+
+This command requires source containing the helper; an older package with the
+same version number may not include it. It is an authoring convenience and does
+not change the installed controller's resource policy or recovery behavior.
+
 ## Try a different file task
 
 The [welcome example](../examples/tasks/welcome/task.json) asks for a short text
@@ -125,6 +159,15 @@ still applies. Accepted writes keep their receipts, and recovery verifies the
 actual files against those receipts before deciding whether more work is safe.
 
 ## Existing mechanisms reused
+
+Task preparation follows the objective-plus-explicit-files interaction used by
+[Aider](https://aider.chat/docs/usage.html), including its
+[message-file option](https://aider.chat/docs/config/options.html).
+The implementation uses the existing Python
+[argparse](https://docs.python.org/3.11/library/argparse.html) command structure
+and this repository's unchanged TaskSpec validation, bounded reads and hashing.
+These sources were inspected on 1 November 2026. No Aider implementation or
+dependency was copied; the helper adds no execution or task database mechanism.
 
 File alias handling follows the pinned Hermes
 [file tools](https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/file_tools.py)

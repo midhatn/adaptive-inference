@@ -53,6 +53,15 @@ def main(argv=None):
     desktop.add_argument("--run", type=Path, required=True, help="Fresh local state directory")
     desktop.add_argument("--task-spec", type=Path, help="TaskSpec JSON; omit to use the retained orders example")
     desktop.add_argument("--task-inputs", type=Path, help="Directory containing only the task's declared input sources")
+    prepare = sub.add_parser("prepare-task", help="Prepare an objective and selected files for the desktop host")
+    prepare.add_argument("--destination", type=Path, required=True, help="New task folder under an existing parent")
+    objective = prepare.add_mutually_exclusive_group(required=True)
+    objective.add_argument("--prompt", help="Original task objective")
+    objective.add_argument("--prompt-file", type=Path, help="UTF-8 file containing the original objective")
+    prepare.add_argument("--input", type=Path, action="append", default=[], help="Selected input file; repeat for each file")
+    prepare.add_argument("--output", default="answer.txt", help="Create-only output filename (default: answer.txt)")
+    prepare.add_argument("--format", choices=("text", "json"), default="text", help="Output format (default: text)")
+    prepare.add_argument("--max-chars", type=int, default=4096, help="Output character limit, at most 4096")
     budget = sub.add_parser("budget", help="Plan output room from a complete rendered prompt token count")
     for name in ("context-tokens", "prompt-tokens", "required-output-tokens"):
         budget.add_argument("--" + name, type=int, required=True)
@@ -60,7 +69,13 @@ def main(argv=None):
         budget.add_argument("--" + name, type=int, default=0)
     args = parser.parse_args(argv)
     try:
-        if args.command == "desktop":
+        if args.command == "prepare-task":
+            from .task_prepare import prepare_task
+            result = prepare_task(args.destination, prompt=args.prompt, prompt_file=args.prompt_file,
+                                  inputs=args.input, output=args.output, output_format=args.format,
+                                  max_chars=args.max_chars)
+            print(json.dumps(result, indent=2))
+        elif args.command == "desktop":
             from .desktop.composition import execute
             options = {} if args.task_spec is None and args.task_inputs is None else {
                 "task_spec":args.task_spec, "task_inputs":args.task_inputs}

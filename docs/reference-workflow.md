@@ -70,10 +70,23 @@ assuming the task completed or starting another controller.
 
 ## Use your own task
 
-Start from an example and follow the [task contract guide](task-spec.md). The
-current adapter supports bounded reads and create-only writes of declared files.
-It is not yet the general compiler/media tool workflow. Keep task inputs and
-their declared hashes consistent, and choose an appropriate result check.
+With a build containing `prepare-task`, give the objective and selected files:
+
+```powershell
+adaptive-inference prepare-task --destination .\summary-task `
+  --prompt "Summarize notes.txt into answer.txt." --input .\notes.txt
+```
+
+The command copies the selected inputs and calculates their hashes for you.
+Select `summary-task\task.json` and `summary-task\inputs` in **New task**, or
+pass those paths to the desktop launch command for the first task. Preparing a
+task does not submit it or start the model. For a longer objective, use
+`--prompt-file .\objective.txt` instead of `--prompt`.
+
+The [task contract guide](task-spec.md#prepare-your-own-task) describes optional
+output names and formats. The current adapter supports bounded reads and
+create-only writes of declared files. General compiler/media tools remain a
+later step.
 
 A task reporting completion and an answer being correct are different facts.
 The inventory example has an exact independent oracle. Free-form text tasks

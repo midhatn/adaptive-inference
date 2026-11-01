@@ -104,6 +104,12 @@ The second command requires Git and a new output directory. It restores and veri
 
 ## What works
 
+For a new bounded file task, [prepare-task](docs/task-spec.md#prepare-your-own-task)
+takes an objective and explicitly selected files, copies the inputs and creates
+the task configuration automatically. The existing desktop and **New task**
+controls consume it. This authoring command does not start inference; the
+[ordinary reference guide](docs/reference-workflow.md) explains setup and use.
+
 | Capability | Implementation |
 | --- | --- |
 | User/background scheduling | Bounded pending queue; stable arrival-offset ordering; one active upstream HTTP request |

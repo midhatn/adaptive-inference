@@ -69,6 +69,18 @@ Use `requirements.lock` for the host's dependency versions. Hermes dependencies
 remain its explicit existing installation; only canonical Adaptive Inference
 code must come from the regular wheel. The worker verifies package contents
 before loading that dependency directory and verifies origins again afterward.
+
+When replacing a development wheel that still has the same version number,
+pip may keep the older installed package. After installing the locked
+dependencies, explicitly reinstall the selected wheel into each chosen target
+interpreter with `python -m pip install --force-reinstall --no-deps <wheel>`.
+Use that interpreter's full path and verify the imported package origin and
+contents. This uses pip's documented
+[reinstallation option](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-force-reinstall);
+the task-preparation package check reproduced the same-version skip before
+confirming installation of the selected wheel. A version string alone is not
+proof that the new source was installed.
+
 The exact Hermes revision is
 `14e1e43a23761b369641208e204365cd6cb9399d`; the existing
 [offline source supplement](../integrations/hermes/current-source/README.md)
