@@ -40,7 +40,11 @@ def main():
     parser.add_argument('--behavior',choices=['complete','hold'],default='complete')
     parser.add_argument('--pause-delay',type=float,default=0)
     args=parser.parse_args()
-    timer=threading.Timer(15,lambda:os._exit(124));timer.daemon=True;timer.start()
+    # Selected fixture phases allow 30 s entry + 5 s injected hold + 20 s
+    # cleanup. Keep its emergency guard outside those bounds, not a latency goal.
+    # https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py
+    work_guard_s=15 if args.original else 60
+    timer=threading.Timer(work_guard_s,lambda:os._exit(124));timer.daemon=True;timer.start()
     if args.original:
         # A fixture-only readiness handshake separates import startup from the
         # existing 15-second work guard. Atomic replacement avoids partial JSON.
