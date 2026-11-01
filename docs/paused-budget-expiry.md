@@ -83,6 +83,15 @@ This is a typed result, not a fabricated owner acknowledgement or an uncertain
 transport exception. Looking up an already recorded identifier still returns its
 real prior result. Tasks with no seal retain their earlier mailbox semantics.
 
+A passive observation is a separate read from control consumption. If a valid
+command arrives between those reads, the observation returns no expiry candidate
+after validating the owner, revision, task state and applied Pause prefix. The
+worker clears any old candidate and follows its existing activity callback,
+deadline check and bounded wait before consuming that command. This avoids
+failing a worker merely because Resume arrived at that boundary. Invalid state
+still raises an error, and the strict atomic seal still refuses pending controls.
+Neither observation nor waiting resets the task's deadline.
+
 The UI distinguishes this refusal from an unsent local click and from an unknown
 dispatch. Once it observes `budget_expired`, Pause, Resume, Cancel and their retries
 are unavailable; Stop remains available. A stale asynchronous Resume-authority
@@ -99,6 +108,9 @@ Neither system is a runtime dependency, and this implementation does not adopt
 their retry or replay behavior. The atomic append/seal boundary uses SQLite's
 existing [transaction](https://www.sqlite.org/lang_transaction.html) and
 [isolation](https://www.sqlite.org/isolation.html) guarantees.
+The passive observation follows the same recheck-in-a-loop principle described
+by Python's [condition-variable guidance](https://docs.python.org/3.12/library/threading.html#condition-objects),
+using the existing control loop without adding another synchronization framework.
 
 The nested cleanup order follows Python's
 [with-statement semantics](https://docs.python.org/3.11/reference/compound_stmts.html#the-with-statement)

@@ -21,6 +21,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ConfigInputTests(unittest.TestCase):
+    def test_desktop_forwards_explicit_task_without_changing_legacy_default(self):
+        for extra,expected in (([],{}),(['--task-spec','task.json','--task-inputs','inputs'],
+                {'task_spec':Path('task.json'),'task_inputs':Path('inputs')})):
+            with self.subTest(extra=extra),patch('adaptive_inference.desktop.composition.execute',
+                    return_value={'clean_stop':True}) as run,contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(cli.main(['desktop','--profile','profile.json','--run','state',*extra]),0)
+                run.assert_called_once_with(Path('profile.json'),Path('state'),**expected)
+
     def test_invalid_url_types_and_ports_are_configuration_errors(self):
         for value in (None, False, 12, [], {}, "http://localhost:0/v1",
                       "http://localhost:70000/v1", "http://localhost:invalid/v1",

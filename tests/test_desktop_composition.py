@@ -15,6 +15,14 @@ from unittest import mock
 from adaptive_inference.desktop import composition as q
 from adaptive_inference.desktop.hermes.control_bridge import prepare_task
 from test_desktop_installation import profile_value
+from adaptive_inference.task_spec import TaskSpec, BUDGET
+
+
+def custom_spec():
+    return TaskSpec({'schema':'adaptive.task-spec.v1',
+        'prompt':'Write a short welcome message to greeting.txt using write_file.',
+        'inputs':[], 'outputs':[{'name':'greeting.txt','required':True,'format':'text','max_chars':500}],
+        'budget':dict(BUDGET),'validation':{'validator':None}})
 
 
 def make_case(root):
@@ -122,9 +130,27 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result['primary_error']['type'],'RuntimeError')
 
     async def test_completed_host_outlives_task_deadline_until_real_stop(self):
+        await self._completed_host()
+
+    async def test_completed_custom_task_exposes_format_only_validation(self):
+        await self._completed_host(custom=True)
+        self.assertEqual(self.case.result['semantic_validation'],'not_checked')
+        self.assertEqual(self.case.result['validated_artifacts'],[])
+        self.assertEqual(self.case.result['artifacts'],{'greeting.txt':q.rec.digest(b'Welcome!')})
+
+    async def _completed_host(self,custom=False):
         c=self.case;c.deadline=q.execution_now()-1;c.worker=Child(code=0)
         c.handles=[c.worker];c.worker_exit_verified=False
         c.stop_binding=SimpleNamespace(_verify_exit=lambda code:'task_completed')
+        if custom:
+            spec=custom_spec();c.task_spec_path=self.root/'task.json'
+            work=self.root/'work';work.mkdir();(work/'greeting.txt').write_bytes(b'Welcome!')
+            checkpoint=SimpleNamespace(prompt=spec.prompt,max_attempts=8,
+                metadata={**spec.metadata(),'pre_effect_validator':spec.validator_identity()},
+                state={'output':'Created greeting.txt.','tools':[{'name':'write_file',
+                    'args':{'path':'greeting.txt'},'artifact_sha256':q.rec.digest(b'Welcome!')}]})
+            c.stop_binding.mailbox=SimpleNamespace(snapshot=lambda:SimpleNamespace(target=checkpoint))
+            c.stop_binding.run=self.root
         async def refresh():pass
         async def stopped():return dict(worker_joined=True,host_closed=True,uncertain=False,fault=None)
         c.runtime=SimpleNamespace(refresh=refresh,_transitioning=False)
@@ -154,9 +180,24 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         c.runtime=SimpleNamespace(refresh=mock.AsyncMock(),_transitioning=False,_cache=SimpleNamespace(snapshot=
             SimpleNamespace(target=cp,demand={'state':'active'},requests=(),receipts=())))
         c.transport=SimpleNamespace(lifecycle=lambda:{'stop_requested':False})
-        with self.assertRaises(TimeoutError):await c.interact()
+        # A ready active checkpoint is not a supported admission wait. Detailed
+        # wait identity/prefix checks use real bindings in the safe-wait tests.
+        with mock.patch.object(c,'_admission_wait_expiry_candidate',
+                               new=mock.AsyncMock(return_value=False)) as wait_candidate:
+            with self.assertRaises(TimeoutError):await c.interact()
+        wait_candidate.assert_awaited_once()
 
     async def test_prepare_order_uses_one_job_and_real_initial_pause(self):
+        await self._prepare_order()
+
+    async def test_custom_prompt_reaches_task_and_gui_with_same_cold_start_order(self):
+        spec=custom_spec();path=self.root/'task.json';path.write_bytes(json.dumps(spec.data).encode())
+        inputs=self.root/'inputs';inputs.mkdir()
+        self.case=q.DesktopComposition(self.case.profile_path,self.root/'custom-run',task_spec=path,task_inputs=inputs)
+        self.case.root.mkdir()
+        await self._prepare_order(spec)
+
+    async def _prepare_order(self,spec=None):
         from adaptive_inference.desktop import owned_job, activity, cold_start, desktop_controls, gui_launch
         c=self.case;events=[];children=set();owned_context=[]
         job=SimpleNamespace(_HANDLE=object(),contain_current_process=lambda:events.append('own-job'),
@@ -170,10 +211,17 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
             if label=='prepare':
                 self.assertEqual(events,['own-job'])
                 c.work.mkdir();(c.work/'work').mkdir()
-                identity=q.DemandIdentity('registration','orders-report','worker','2026-10-25T10:00:00Z')
+                task_id='orders-report' if spec is None else command[command.index('--task-id')+1]
+                if spec is None:self.assertIn('--validate-report-before-write',command)
+                else:
+                    self.assertNotIn('--validate-report-before-write',command)
+                    self.assertEqual(command[command.index('--task-spec-sha256')+1],q.sha(c.task_spec_path))
+                    self.assertEqual(command[command.index('--task-inputs')+1],str(c.task_inputs))
+                identity=q.DemandIdentity('registration',task_id,'worker','2026-10-25T10:00:00Z')
                 store=q.TaskStore(c.work/'task.sqlite3')
-                prepare_task(store,identity,q.PROMPT,'session',metadata={'model':q.MODEL,'quality':q.QUALITY,
-                             'deadline_clock':q.CLOCK_ID})
+                prepare_task(store,identity,q.PROMPT if spec is None else spec.prompt,'session',
+                    metadata={'model':q.MODEL,'quality':q.QUALITY,'deadline_clock':q.CLOCK_ID,
+                              **({} if spec is None else spec.metadata())})
                 q.rec.save(c.work/'plan.json',{'demand_identity':q.asdict(identity),
                     'deadline_clock':q.CLOCK_ID,
                     'base_python':str(c.profile.worker_python),'gateway':'http://127.0.0.1:18100/v1'})
@@ -222,6 +270,8 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
             async def start(self,spec,bootstrap,**kw):
                 self_outer.assertIs(kw['containing_job'],job._HANDLE)
                 self_outer.assertEqual(spec.interpreter,c.profile.host_python)
+                self_outer.assertEqual(bootstrap.objective,c.original.prompt)
+                self_outer.assertEqual(bootstrap.task_id,c.original.task_id)
                 self_outer.assertTrue(kw['launch_ready']())
                 from adaptive_inference.desktop.ui_intent import UIBinding
                 self.binding=UIBinding(bootstrap.host_epoch,bootstrap.session_id,bootstrap.task_id,1,103,2)
@@ -255,6 +305,17 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
 
 
 class LifetimeTests(unittest.TestCase):
+    def test_custom_input_options_require_a_pair_and_reject_bad_spec_before_launch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory).resolve();case=make_case(root)
+            path=root/'task.json';path.write_text('{"schema":1,"schema":2}',encoding='utf-8')
+            with mock.patch.object(q.subprocess,'Popen') as launch:
+                for options in ({'task_spec':path},{'task_inputs':root},
+                                {'task_spec':path,'task_inputs':root}):
+                    with self.subTest(options=options),self.assertRaises(ValueError):
+                        q.DesktopComposition(case.profile_path,root/'run',**options)
+                launch.assert_not_called()
+
     def test_ordinary_execute_has_no_lifetime_watchdog(self):
         async def run():return {'clean_stop':True}
         case=SimpleNamespace(run=run)

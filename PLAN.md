@@ -1,6 +1,6 @@
 # Adaptive Inference roadmap
 
-**Updated: 26 October 2026. Status: living plan, with evidence-based completion gates.**
+**Updated: 1 November 2026. Status: living plan, with evidence-based completion gates.**
 
 ## Destination
 
@@ -46,10 +46,116 @@ interrupted runs will remain identified as such.
 
 ## Milestones and dependency order
 
+**Current M2 gate — 1 November 2026:** case17 passed the complete bounded
+foreground, resource-wait continuation and two-task handover scenario. The
+original primary audit passed all 99 checks, and the separate foreground and
+saved-read lineage audit passed on the same run. The correct 23-unit inventory
+result survived expiry and one explicit Continue. A separate welcome task
+completed in the retained controller, then one normal Stop released its owned
+resources. Welcome acceptance is format-only. The [evidence ledger](docs/evidence.md#case17-complete-foreground-continuation-and-two-task-handover)
+records the actual controls, six calls, two writes, source identities, joins,
+foreground observations and limitations.
+
+The [accepted result and file-only replay](provenance/task-handover/acceptance/README.md)
+and [fresh-run qualification source](examples/validation/task_handover/README.md)
+now preserve that workflow in this repository. The source adaptation changes
+only declared helper locations; the runtime and qualification predicates stay
+unchanged. A fresh physical run still requires an actual supported installation
+and its retained deployment records. The public sources do not fabricate those
+records or automatically install a fresh machine.
+
+**Next delivery: a usable installed reference.** Follow the
+[ordinary user workflow](docs/reference-workflow.md) and remove its practical
+setup/task-preparation obstacles. Reuse the installed desktop host, task contracts and controls to provide
+one documented Windows/IQ3_S/Hermes workflow: start once, submit a useful task,
+see truthful waiting and completion states, continue saved work, accept another
+task and stop normally. Ordinary use must not require private receipt-file
+editing or manual backend juggling. Remove only practical setup or control
+obstacles found in this path. Do not introduce another runner, proof framework,
+speculative failure campaign or repeat of the completed physical scenario.
+
+Prioritize the main workflow over uncommon failures or optional optimization.
+The `prepare-task` command now supplies objective-plus-file task preparation
+through the existing contract. The [setup helper](examples/desktop/README.md)
+now generates the deployment profile and reusable Start launcher from installed
+components, reusing the task picker and existing controller. It leaves the
+runtime package, model quality and control policy unchanged. A genuine
+launcher/task-picker/paused-start/Stop check now passes on the supported
+installation. The first hidden-start attempt remains failed; a visible Tk
+startup window fixed the observed entry path without changing the controller.
+Finish delivery of this narrow reference alpha, then move on to resource
+coexistence, useful tool handoff and restart
+recovery. Extra investigations belong on this path only when they block it.
+
+The release follow-up exposed an ordinary Windows CPU-fixture continuation wait
+that expired after five seconds before a successor worker launched. Its retained
+diagnostics narrow the phase but do not establish the slow operation. Keep that
+original CI failure and use a prospective 30-second whole-fixture guard, following
+CPython's test-timeout convention; the deliberately held diagnostic still uses
+five seconds. This [test-only correction](provenance/task-handover/continuation-timeout-diagnostics/README.md#whole-fixture-orchestration-guard-1-november-2026)
+does not change product deadlines, child watchdogs, IQ3_S or task allowances.
+Complete its exact-revision checks before merging the source and packaging the
+reference alpha. Do not repeat the accepted physical scenario for this change.
+
+The next original Windows job passed those continuation checks, then exposed a
+different snapshot-fixture completion guard: a four-second thread join was
+shorter than an individual allowed SQLite wait. Preserve that failure and its
+unknown delayed thread/operation. Give the retained joins the same standard
+30-second test completion allowance, keep the transaction/50-millisecond
+non-commit assertions and product settings intact, and validate the existing
+snapshot module. Collect the current CI outcomes before publishing another
+correction, so independent failures can be addressed in one bounded follow-up.
+
+The original alpha workflow then finished with six successes and one Windows
+job canceled at its cumulative 15-minute limit. All 1,306 core tests passed in
+813.388 seconds; subsequent checks passed through the demo, but packaging never
+ran. The [retained job and timing evidence](docs/evidence.md#reference-delivery-checks)
+justify a prospective 30-minute Windows CI job allowance using GitHub's existing
+job timeout control. Other platforms and the offline job keep 15 minutes. This
+supersedes the earlier instruction to retain that cumulative Windows limit;
+all test assertions, individual guards and product/model budgets stay intact.
+Require the complete corrected-head workflow before release. Detailed performance
+work can follow if slowness still blocks delivery; do not start a separate
+profiling or CI redesign project for this bounded correction.
+
+The following alpha Windows job exposed another test setup-ordering issue:
+its two-second held-snapshot entry wait expired before authority entry had been
+established. Reuse the same module's existing authority-entry event pattern
+before that short wait; preserve the response, held-read and completion limits
+and every pending-response/intent assertion. The 28 mailbox tests and retained
+source check passed with pinned dependencies. Keep the original failure and
+unknown slow operation. Collect the current original CI outcomes, publish the
+reviewed bounded correction, and require the corrected source's hosted checks.
+Hold further draft-asset refreshes until that source has passed, to avoid
+repeatedly packaging intermediate CI follow-ups.
+
+The reference can be delivered as a narrow alpha before the full daily-use
+milestone. Keep the existing IQ3_S quality, budgets, task-effect rules and
+acceptance standards. Validate meaningful changes and reuse completed evidence
+when its source and deployment remain unchanged. Prefer a straightforward
+setup and task-entry path over additional qualification machinery. Broader desktop coexistence,
+agent tools/media, application/reboot recovery and daily-use qualification remain
+subsequent milestones; the two-task pass does not complete all of M2.
+
+Cases14/15 retain their primary passes and failed foreground supplements.
+Case16 retains its correct inventory component and failed deadline checker.
+The [prospective arithmetic correction](provenance/explicit-continuation/deadline-arithmetic/README.md)
+uses the producer's exact authorization-time-plus-900 calculation with finite,
+increasing timestamps, without tolerance or runtime change. Case17 used that
+reviewed correction in a fresh run; no failed case was repaired retrospectively.
+Its 25 genuine document actions included 24 before the seal and no violation
+of the strict foreground coverage gate. The 30-second operating target misses
+remain recorded in the evidence.
+
+Installed source remains `7306a53085ddc31d53d2ba50e91975c80cfc0014`. The later
+checker/reporting head `f049342060b3ae8d04f237bf5632d2b9f459869d` passed all 14
+hosted jobs on their original attempts. Source/CI, installed physical acceptance
+and public reproduction retain their separate evidence boundaries.
+
 | ID | Deliverable | Depends on | Initial status |
 | --- | --- | --- | --- |
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
-| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded installed composition, retained commands, safe paused expiry and explicit same-window continuation qualified; ordinary task use remains |
+| M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded foreground/continuation/two-task run passed both audits; public reproduction, task preparation and setup/launcher startup checks available; narrow reference alpha delivery is next |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
 | M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |
@@ -584,6 +690,45 @@ emitted output or tool effects. Lowering model quality is not the remedy.
 **User result:** an agent can compile code or run a supported GPU step, then
 continue its original task automatically.
 
+The named end-to-end media gate is the
+[Adaptive-Hermes-Media-Autonomous Test](docs/adaptive-hermes-media-autonomous-test.md).
+It preserves the autonomous Hermes supervisor/worker, IQ3_S, Turbo Q8_0 reference,
+H3 Ref2VA Q8 video, verified cleanup and independent output-review requirements
+from the retained media experiment. Its two-image/two-video/four-worker and
+four-hour bounds are separate from the smaller M2 examples. This canonical
+integration is planned, not passed. Preserve bounded self-correction, but do not
+manually steer the agent through a running attempt to produce a success.
+
+At that milestone's preflight, apply the newest stable supported version
+requirement to the **entire participating software stack**: Adaptive Inference,
+every engine and agent, orchestration/delegation plugins, custom nodes, tool
+servers, runtimes and resolved dependencies, benchmark/quality tools, and the
+supported host/driver environment. Strata 0.2.6 is only a minimum; any alternative
+engine or agent actually used follows the same test-time rule. Record official
+sources, check dates, chosen and available versions, exact identities and any
+compatibility exceptions. An older component cannot silently count as an
+all-latest result. Freeze the resolved versions for comparable tuning and the
+attempt while keeping the same IQ3_S, Turbo Q8_0 and H3 model assets. Recheck before
+the final attempt and requalify affected checks if a newer release is adopted;
+historical pinned replays remain explicitly labeled reproductions.
+Compare ancestry first: retain and explicitly identify a verified newer upstream
+revision when needed for required adapter capabilities, rather than silently
+downgrading it to an older release tag.
+Qualify each engine first, then co-optimize the **complete autonomous workflow
+without Adaptive Inference** before freezing and qualifying its unattended
+baseline. Introduce and tune the adaptive variant only afterward, with separate
+development runs. Compare frozen variants under matched conditions and unchanged
+quality, including a restored baseline control and independently reviewed results.
+Neither Codex nor the user may coach, repair or manually hand resources between
+engines during a measured attempt; intervention disqualifies an autonomous pass.
+An absent or failed autonomous reference cannot support a comparative improvement
+claim. Include separate checks of visual/audio realism and sound/video
+synchronization. The named test documents the baseline, comparison, measurement
+and rollback requirements. Assess Hermes's official
+advanced-delegation provider for reusable profile routing instead of adding a
+new router; every test route must retain the same local IQ3_S contract and the
+existing resource, lifecycle and sequential-worker requirements.
+
 Connect actual agent tool dispatch to the existing ownership and handoff
 contract. The current supervisor-chosen video test is a starting point; the
 agent-host integration must declare and request the tool's needs.
@@ -652,6 +797,9 @@ named tests; a normal reboot does not establish them.
 working day, with understandable limits and a reliable recovery path.
 
 Combine the accepted M2–M5 capabilities into one product acceptance suite.
+Include the named autonomous media test, then separately declared foreground
+activity and restart variants of that workflow. A quiet successful render alone
+does not demonstrate the combined always-on requirement.
 Exercise backend/controller/agent death, stale sensors, lost admission proof,
 port or process-identity changes, allocation failure, interrupted tool execution,
 disk-full writes, changed artifacts and failed startup.
@@ -744,6 +892,31 @@ cover queueing, Peak EWMA, adaptive concurrency, heterogeneous scheduling and
 task-level work. Refresh primary sources before choosing a new mechanism.
 Published speedups on another workload are not our results.
 
+The [Papers with Code audit](docs/paperswithcode-assessment.md) adds a bounded
+implementation path for workload-change detection. Reuse River's maintained
+Page-Hinkley API in an optional offline experiment, outside the installed
+controller. Compare unchanged eligible execution-time traces with the existing
+Peak-EWMA/p90/expiry model. Separate runtime/request cohorts, preserve failures
+and sparse-data outcomes, predeclare units and parameters, and evaluate stable,
+shifted, recovered and held-out traces for false alarms and detection delay.
+Only after that comparison may a separately reviewed shadow observer be added;
+alarms must not control admission or invalidate durable task/effect authority.
+
+The [optional offline example](examples/validation/latency_drift/README.md) now
+has 22 passing synthetic CPU tests and two independent behavioral checks against
+the pinned River 0.26.1 release and unchanged cost estimator. The release differs
+from current upstream main; its source identity and BSD license are retained.
+This completes the bounded implementation check only. Collect and evaluate
+held-out traces with enough observations per cohort before selecting parameters
+or proposing a shadow observer; the short IQ3_S lifecycle trial is insufficient.
+
+The same audit retains FlowPrefill's separation of native interruption boundaries
+and scheduling triggers as a later M3/M8 comparison. Establish backend support,
+actual interruption latency, full state preservation and unchanged model quality
+before comparing it with complete drain/unload. The inspected modified vLLM/NIXL
+implementation does not establish native Windows/IQ3_S compatibility. These
+research steps do not replace or delay the current M2 release and recovery gates.
+
 Jev and Laya are optional research, not prerequisites or enabled dependencies.
 The previous Laya experiment established no advantage over the guarded
 deterministic baseline. New evaluations using another decision model or hosted
@@ -766,6 +939,11 @@ efficiency path from the user-supplied Gandalf and cross-model KV papers:
   do not validate the hybrid IQ3_S baseline. Reuse existing implementations only
   after a compatible, separately authorized model-pair evaluation; do not change
   the current model merely to demonstrate a speedup.
+- Evaluate [AKV's agent-directed cache operations](docs/cache-state-research.md#akv-agent-directed-cache-operations)
+  only through an explicitly capable backend. Preserve cache-operation history
+  as well as conversation history, measure actual released memory and task
+  quality, and retain the full-workflow baseline. Its current model support does
+  not qualify our hybrid IQ3_S stack; no cache operation is enabled by this plan.
 
 These are adopted requirements and acceptance steps, not enabled runtime
 capabilities. They do not block M2 or weaken its recovery and cleanup gates.
@@ -942,7 +1120,14 @@ that estimate when evidence changes. Do not publish a completion date or
 percentage for the whole research-and-engineering program without a defensible
 basis.
 
-## Next execution packet
+<a id="next-execution-packet"></a>
+
+## Execution history and continuation notes
+
+These dated entries preserve the decisions, failures and next steps recorded as
+development progressed. Earlier instructions described as "next" are historical
+when a later entry supersedes them. Use the dated current M2 gate above and the
+latest applicable feedback below to choose the next work.
 
 Preserve the published M1 source and evidence while developing its successor.
 Require fresh distribution checks and CI for each changed submitted revision.
@@ -973,10 +1158,493 @@ cleanup before setup can fail; keep the existing work guard and product budgets.
 
 **Next functional M2 gate:** accept a different user task in the same retained
 host, with explicit task identity, isolated task/effect records and clear completed,
-waiting and stopped states. First inspect existing TaskStore and pinned Hermes
-session/task facilities and current upstream guidance; reuse the installed
-controller and adapters. Qualify two distinct useful tasks without restarting the
-host or confusing old controls with the new objective. Reboot recovery remains M5.
+waiting and stopped states. The session research is now recorded in the
+[task contract](docs/task-spec.md). Reuse TaskStore and the pinned Hermes adapter.
+The first implementation slice removes the fixed orders objective: an explicit
+TaskSpec supplies the prompt, pinned inputs, create-only outputs, checks and
+supported budget. The ordinary desktop entry accepts this specification while
+retaining the original example for compatibility. Contract and CPU fixture
+checks do not qualify a new installed task or complete this milestone.
+
+Next, wire durable new-task admission into the retained host, keeping each
+task's records and completed effects separate. Reuse the existing private GUI
+bootstrap for a fresh task view; do not weaken session identity to claim the
+same window. Qualify two distinct useful tasks without restarting the host or
+confusing old controls with the new objective. The examples must remain
+qualification cases for the generic contract, not a hardcoded task menu.
+Reboot recovery remains M5.
+
+**Retained-host implementation feedback:** preserve a separate control binding
+for each task and overlap the old and new windows until the new one is ready.
+Retiring a task view must not invoke whole-service Stop or let a late old-window
+callback revoke the new task's intent. Reuse the existing private bootstrap and
+one shared cleanup owner for all retained task lifetimes. Keep preparation and
+readiness waits outside the control-command serial section so Status and Stop
+remain available. A Stop closes the host lifetime while leaving a known pending
+task saved; it must not manufacture task cancellation.
+
+The first admission review found a race when the continuation authority did not
+yet exist: locking only an existing row allowed a first Continue authorization
+to appear during handover. Lock the authority's deterministic identity before
+checking for the row, followed by the selected execution lock. The original
+failure and unchanged regression are retained; the corrected component passes
+the review. A separate Windows Python 3.12 failure showed that a response timeout
+can coincide with a completed operation failure. Recheck the retained operation
+before returning a pending grant, without cancelling it or enlarging the timeout.
+Neither repair changes the installed-evidence boundary. Next qualify ordinary
+A-to-B tasks, continued-A-to-B, a late old-window close and Stop during preparation
+with the same host/gateway identity, followed by the real IQ3_S two-task gate.
+
+Independent review also found that exceptional cleanup could keep retrying an
+old window's uncertain handle closure before requesting Stop for a later task.
+Retain the failure case. Start each retained task's independent cleanup before
+waiting for any one uncertain sibling, using the existing owned asynchronous
+operations. Each task must progress through its own worker, window and endpoint
+cleanup; an unresolved old handle must remain unresolved without preventing
+other tasks from stopping. Require the unchanged reproducer to pass before the
+candidate advances, and rerun the complete source checks after that repair.
+
+Installation review found two additional imports used by the new task chooser.
+Extend the existing child-source pins and import-origin checks to those modules
+before the installed trial. A complete host package inventory does not replace
+the GUI child's own launch checks. Preserve the accepted installation and test
+the candidate in separate full interpreter copies with the same native profile.
+
+**Installed preparation and first trial, 26 October:** both isolated installations
+match the reviewed 60-module wheel. The installed SDK's three dispatch checks and
+three shared-clock comparisons pass with the unchanged IQ3_S profile. The first
+real GUI trial remained paused behind a Windows Security permission dialog.
+No Resume or model request occurred. Its original 900-second worker allowance
+expired with the task saved; the dialog also intercepted the attempted Stop input.
+The runner and observer were then forcibly stopped, and the retained processes
+were joined. This is an interrupted, unaccepted trial, not normal GUI shutdown
+or two-task handover evidence. An independent interruption audit found no task
+effects and verified that the accepted and isolated installation files remained
+unchanged.
+
+Before another trial, resolve the first-run OS dialog for the same isolated test
+installation and confirm that its controls are usable. Reuse that installation
+only after its existing identity checks, then start a fresh case with the original
+budgets. Do not renew an expired execution, rewrite the interrupted result, or
+infer public-network permission from successful local status requests. Microsoft's
+[firewall rule guidance](https://learn.microsoft.com/en-us/windows/security/operating-system-security/network-security/windows-firewall/rules)
+describes the first-use prompt and the different consequences of allowing or
+cancelling it. Handling the dialog is an installation prerequisite; it does not
+change the model, task contract or acceptance gate.
+
+**Verifier feedback from the fresh trial:** after the operator handled the OS
+dialog, the same installed runtime completed the inventory worker's three model
+requests and produced the expected 23-unit result. The qualification nevertheless
+stopped before the second task because its prompt fingerprint comparison used
+raw UTF-8 bytes, while the existing worker records the hash of a JSON-encoded
+string. The worker's recorded value matches its existing serialization contract.
+Python's [JSON documentation](https://docs.python.org/3/library/json.html) explains
+the string encoding; the installed worker and retained source are authoritative
+for the exact representation used here.
+
+Correct the verifier to use that existing representation, retaining strict
+prompt, metadata, session and quality comparisons. Add a regression against the
+actual worker's formatter and reject the former raw-text fingerprint and changed
+prompts. Preserve the original verifier and failed trial. A corrected replay can
+explain this failure, but cannot turn it into a two-task success: the next case
+must still perform both real tasks and normal GUI Stop. The runtime, model,
+installation and time allowances do not need to change for this verifier repair.
+
+The following fresh trial passed the inventory check and opened the second task,
+but stopped before its Resume on another verifier assumption. The native Windows
+folder picker returned the intended input directory with forward slashes; the
+verifier expected backslashes. Independent inspection confirmed the same resolved
+directory and filesystem identity, unchanged task file/hash and input contents,
+and preserved task A. Task B made no model requests before failure cleanup.
+
+Use the existing [pathlib path and filesystem identity semantics](https://docs.python.org/3.11/library/pathlib.html)
+for this folder comparison. Preserve the exact selected source payload used by
+the command, and retain exact task-file/hash checks. Exercise the actual picker
+representation and reject a different directory, altered specification or changed
+source fields. Share the source check between live qualification and terminal
+replay. Preserve this failed attempt and require another complete real two-task
+run; neither the correction nor successful preparation of B proves its completion.
+
+The next actual IQ3_S attempt exposed the documented file-alias limitation. Its
+first model response requested the correct inventory input using its absolute
+Windows path. The adapter required the exact relative basename, refused the
+read, and recorded no tool receipt or output. The task therefore failed its
+completion check, and the unresolved native tool continuation prevented a clean
+product Stop claim. Preserve this failed attempt; repeating it until the model
+chooses a different spelling would not resolve the adapter mismatch.
+
+Before the next installed trial, reuse the pinned
+[Hermes file-tool path contract](https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/tools/file_tools.py)
+and Python's existing path resolution to recognize an allowed file consistently
+across dispatch, validation, completion and recovery. Keep the exact original
+tool arguments in native history and intent verification. A basename, relative
+alias or absolute path may denote the same declared workspace file; a matching
+basename outside that workspace must not authorize access. Test original-intent
+preservation, write deduplication, completion and refusal boundaries through the
+existing adapter before rebuilding and qualifying the changed installation.
+The Stop and task-acceptance checks remain unchanged.
+
+The documentation-only PR refresh also exposed an independent Windows CI
+cleanup defect: three jobs printed a continuation-test error, then stalled in
+asynchronous teardown before their original error tracebacks could be reported.
+Eleven checks passed; the cancelled jobs remain incomplete evidence. A bounded
+CPU-child reproduction shows that a test-side restore callback can wait forever
+after an error before Resume when teardown does not fence admission. Fix the
+fixture cleanup so the callback exits and retained resources are joined while
+the original test error is still reported. Keep the existing CI time limit and
+product Stop requirements. The original hosted error remains unknown until a
+fresh run can report it; successful cleanup alone does not resolve that error.
+
+The file-alias repair is now integrated at the source level. Independent checks
+on Python 3.11 and 3.12 passed all 65 task-contract/recovery cases, including
+real SQLite receipts, exact original intent, equivalent paths, deduplicated
+writes and refusal of paths outside the declared workspace. The seven independent
+regressions are included in the ordinary public test suite. The fixture cleanup
+repair separately passed 30 relevant tests on each interpreter and independent
+error-preservation checks: retained CPU children exit, logs close, and the
+original injected error remains visible. These component results do not establish
+installed task completion or resolve the unknown primary error in cancelled CI.
+The integrated Windows Python 3.11.9 run passed all 1,110 source tests and 81
+provenance tests with unchanged source hashes and no skips. Rebuild and check
+the distribution, and obtain fresh exact-head CI. Then install and verify the changed package,
+prepare fresh task identities, and repeat the complete two-task IQ3_S workflow
+using the reviewed logical-write/physical-effect verifier. Preserve the original
+failed trials and their source identities; normal Stop remains a required gate.
+
+Fresh CI at `232519048fe81371c383840b7933482cae681931` completed with ten
+successes and four Windows failures. All Windows jobs exposed an assumption in
+the added native-path comparison: the runner's temporary directory used a short
+Windows name while the adapter resolved the full name. Inspection confirmed that
+the actual worker resolves its run directory before supplying the agent's working
+directory; the test now uses that exact resolved working directory. An actual
+Windows short-name reproduction produced the original six failures and four
+errors on Python 3.11.9 and 3.12.9, then all seven corrected tests passed on each.
+The product source and access rules remain unchanged. One Python 3.12 job also
+reported failure to observe a continuation Resume
+acknowledgement. That exception can mean a worker exit or an elapsed deadline;
+the log alone cannot distinguish them. The cleanup correction let the original
+traceback appear and the job finish, but does not resolve that underlying cause.
+Retain the existing CPU fixture's child receipts in CI so the next occurrence
+reports actual exit, join and forced-cleanup information. Reuse GitHub's pinned
+[artifact upload action](https://github.com/actions/upload-artifact/blob/ea165f8d65b6e75b540449e92b4886f43607fa02/action.yml)
+and documented [post-failure step condition](https://docs.github.com/en/actions/reference/workflows-and-actions/expressions#always),
+without extending any product deadline, child watchdog or job time limit.
+Three bounded local replays of the exact continuation test passed on Python
+3.12.9, with six retained CPU children joined normally and no forced cleanup.
+That does not explain the hosted error. Keep it open for diagnostic evidence
+instead of changing the runtime or increasing waits without a reproduced cause.
+
+The corrected-path head `c1044ed42158182382576597892dae6da3d9d8f9` then passed
+13 hosted checks; the remaining Windows Python 3.12 job reproduced the same
+continuation error. The new artifact records the original child exiting with
+code 5 and the selected child with code 1, both joined without forced cleanup.
+The selected child ran for roughly half a second, ruling out its 15-second
+emergency watchdog in that occurrence. The merged child output was still removed
+with the temporary fixture directory. The existing optional receipt hook now
+retains up to 64 KiB of that output after the child is joined and its stream is
+closed. Six diagnostic regressions and the unchanged affected child test passed
+on Python 3.11 and 3.12; 13 source-preservation checks also passed on both.
+Independent review confirmed the bounded capture and unchanged runtime. All
+assertions and time limits remain in place. Keep the installed model trial on
+hold until the remaining failure is understood.
+
+A deterministic SQLite probe also found a separate actionable control race:
+Resume can be recorded between the worker consuming Pause and reading its expiry
+observation. The observation then raises `ControlBlocked`, leaving a legitimate
+Resume pending. The diagnostic head `144a980d223d49bc5389a47d8ecec497d4ddeebd`
+finished with 13 successes and one Windows Python 3.11 failure. Its complete
+1,886-byte child traceback now shows that same `Controls.poll` →
+`paused_execution_observation` → `_paused_execution` failure. Both children
+joined normally, with exits 5 and 1; no watchdog or forced cleanup caused it.
+The earlier c104 run still lacks its original exception text.
+The repair now uses the existing control loop to recheck a validated pending
+command, while keeping malformed state, ownership checks and atomic expiry
+sealing strict. The design follows SQLite's
+[snapshot isolation](https://www.sqlite.org/isolation.html) and the existing
+wait-loop pattern described in Python's
+[condition-variable guidance](https://docs.python.org/3.12/library/threading.html#condition-objects).
+The 83 targeted tests pass on both Python 3.11 and 3.12. Independent review
+repeated those tests and added two real-SQLite checks of the actual activity
+callback: no false activity stamp and no progress with interrupted authority.
+Both interpreters passed all 85 checks, with no skips. The two runtime modules
+and three changed methods are isolated; strict sealing is unchanged. All 60
+source-preservation checks also passed, with independent review. All 1,143
+combined source tests and all 81 provenance tests then passed on Windows Python
+3.11.9, with unchanged source bytes during both runs. Build and install a new
+wheel before the fresh IQ3_S trial. The prior installed wheel does not contain
+this repair.
+
+The first public reproduction prerequisite is now implemented in the existing
+distribution checker: `--output` writes a wheel-derived installed identity after
+complete module/RECORD/name/version and existing source/license checks. Eight
+archive/CLI regressions passed on Python 3.11 and 3.12, including the metadata
+version mismatch found in independent review. The existing release wheel also
+produced exactly the previously reviewed 60-module installation identity. This
+closes identity generation for the public installed SDK command; it does not
+complete the other deployment receipts or retroactively establish build-time
+source stability. See [reproduction instructions](docs/reproducing.md#expected-identity-for-installed-checks).
+
+**26 October ordinary-task trial feedback:** the repaired wheel passed isolated
+installation checks, but the next real IQ3_S trial exhausted the original
+900-second inventory budget before a second task could be selected. One model
+request and one input read completed; no output was written. Foreground activity
+kept the engine parked for most sampled observations. The worker then reported
+an active control-wait deadline, which had no verified safe-expiry receipt in that
+installed lifecycle. The host correctly refused to call that a cooperative product
+stop, although the native owner independently confirmed release of all nine
+retained processes. Preserve this failed run and its missing acknowledgement;
+neither a clean OS process list nor intact saved state replaces the required
+worker receipt. See the [bounded failure evidence](docs/evidence.md#ordinary-task-handover-development).
+
+The [safe-wait repair](docs/admission-wait-recovery.md) is now implemented and
+independently checked at the source/component boundary. It reuses the checkpoint,
+resource-close and execution-seal mechanisms for a distinct expiry outcome. Two
+deadline crossings before dispatch carry an explicit expiry type; failures after
+an operation begins retain their reconciliation requirement. Explicit Continue
+preserves the old pending request and records its supersession before the pinned
+SDK rebuilds from saved conversation. Request and effect limits remain cumulative.
+
+The assembled Windows source, provenance and package gates passed. Hosted
+Linux/macOS checks then exposed a test-clock mismatch: the simulated expiry used
+900 seconds while receipt verification read the host's unrelated performance
+counter. The fixture now carries its simulated clock through verification;
+the runtime still rejects future seals and nonfinite observations. The affected
+34 tests pass on Python 3.11/3.12, including explicit invalid-clock cases.
+The next hosted Windows run exposed an unreadable CPU-fixture readiness marker
+in setup. The [bounded observation correction](provenance/task-handover/fixture-readiness/README.md)
+handles transient missing/denied reads without changing the same-child identity,
+startup deadline or work guard. Fifty focused Python 3.12 source/actual-child
+checks passed. A subsequent hosted run caught an omitted historical test-reader
+dependency; the explicit three-file support projection now preserves those
+assertions too, and all 69 lineage/readiness checks pass. Exact-head hosted CI
+remains a separate gate. Neither fixture
+correction changes runtime modules, installed deadlines or previous results.
+
+At `9308707`, 13 hosted jobs passed and one Windows Python 3.12 source check
+failed while awaiting the selected worker's initial acknowledgement. Unlike the
+earlier fixture corrections, this path uses the product's actual observation
+lifetime. A successful read can arrive too late to be usable. A deterministic
+CPU-worker/SQLite reproduction aged one valid read and reproduced the permanent
+fault; the hosted log itself does not establish which timestamp check failed.
+The [narrow acknowledgement-read correction](docs/admission-wait-recovery.md#delayed-acknowledgement-observations)
+discards only expired valid reads within the same worker lifetime and execution
+deadline. It preserves prior cache/intent without renewing either, and keeps
+malformed records, changed identity, database failures, ordinary refresh and
+post-write checks strict. This runtime change requires fresh source/package and
+installation validation before the IQ3_S trial; the prior installed wheel cannot
+serve as evidence for the correction.
+
+The fresh isolated package installation has now passed both import audits,
+the installed SDK dispatcher, shared-clock checks and resource-input audit;
+all seven installation steps joined successfully and passed independent review.
+The recovery harness also passed independent component review: 38 supplied and
+three additional actual-SQLite cases. Keep these preparation results separate
+from real IQ3_S task acceptance. Confirm the corrected hosted checks before the
+fresh task trial, retaining the same model and quality.
+**Next installed trial, 26 October:** all 14 hosted checks passed on
+`5fd3d7a66590effa3b85d6bcf0d02c6b8f9b0c8c`; retain the earlier whole-job timeout
+and its successful retry separately. The fresh IQ3_S trial completed its first
+model request, then failed native release after real foreground activity closed
+admission. Windows denied a termination call on a retained process handle. The
+owner recorded six retained processes but only five confirmed exits, so the
+adapter correctly refused release even though its final active-process list was
+empty. The worker saved its pending request and acknowledged service Stop; it did
+not produce the distinct safe-expiry outcome or complete the task. The host
+remained in its terminal retention-failure loop. An explicit external emergency
+termination ended that exact runner, and its original supervisor observed runner
+exit 125.
+This is emergency containment of a failed run, not normal Stop or installed
+acceptance. Preserve
+the failed case, its unchanged package/native sources and the separate external
+termination receipt.
+
+The next repair belongs in the existing native retained-handle termination path.
+[Microsoft documents](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess)
+asynchronous termination and access denied for an already terminated process;
+[CPython checks that same retained handle](https://github.com/python/cpython/blob/v3.11.9/Lib/multiprocessing/popen_spawn_win32.py)
+before treating a denial as completed exit. Reuse the owner's existing bounded
+exit wait, capped by its remaining cleanup deadline, only for this documented
+denial. Require a positive exit signal and the normal collection pass to account
+for every retained process. Preserve the original error on a live process,
+timeout or failed wait; do not reopen a PID, broaden access rights, or weaken the
+adapter's release/parking predicates. The failed receipt supports this race as
+a diagnosis to test; it does not establish the exact kernel timing. Require a
+deterministic predecessor-fails/successor-passes regression, negative cases and
+independent review before a separately identified deployment and fresh trial.
+
+The narrow source repair has now passed that component gate: 30 checks on each
+of Python 3.11 and 3.12, two additional independent deadline/release-proof checks,
+and an owned Windows CPU-child probe using actual retained handles and waits.
+Only termination denial and release coordination were injected in that probe;
+it does not reproduce a spontaneous kernel race. The original source fails the
+same deterministic regression. The corrected source preserves six-of-six exit
+accounting, while a live denial remains failed. The next step is a fresh sealed
+native-owner package and relevant input/clock verification, retaining the
+unchanged installed wheel and quality, followed by the complete IQ3_S scenario.
+The failed case07 and the earlier qualified packages remain immutable.
+
+The sealed v6 owner package has been built and its file identities independently
+verified. The unchanged installed host/worker payloads and SDK remain separately
+identified; a package check is not a model run. Hosted CI also exposed older
+historical checks that still read the newer native helper. Their source-selection
+correction preserves the original readers/assertions, validates both source
+identities, and passes 104 relevant local tests on each Python version. Retain
+that failure and require fresh hosted CI. After the restart, recheck actual
+driver, input and clock evidence for the new owner profile before a fresh trial;
+do not repeat the consumed failed case or relabel old SDK receipts as new runs.
+
+**30 October feedback:** case08 completed the inventory correctly (three IQ3_S
+requests, native read and one physical write, independently checked 23-unit
+result) and released the v6 native owner normally. It did not enter safe expiry
+or Continue, and no second task was admitted. Its parent/auditor failure and
+whole-trial `clean_stop=false` remain failures; successful component cleanup is
+reported separately in the [evidence ledger](docs/evidence.md).
+
+The operator procedure depended on an unobservable live boundary: the current
+GET/UI status cannot establish that the native file read has completed while
+the next request remains undispatched. Do not infer this from a gateway count,
+read actively replaced evidence to manufacture a timely signal, or repeat the
+same timing race. Review a separately declared next scenario that starts genuine
+foreground work during the first observed in-flight request. Reuse the existing
+admission closure, active-request drain and durable request handling; then prove
+the native read, completed progress and saved undispatched request from immutable
+expiry evidence. Bind actual foreground input to same-instance GET observations
+before and after it. An active request alone proves neither tool success nor GPU
+progress. Keep the original 900/2,700-second and eight-request/32-admission limits,
+actual safe expiry, explicit Continue, the inventory oracle, welcome's existing
+format validation and complete release
+requirements. Adding a new runtime status projection remains an alternative only
+if these existing observation mechanisms cannot qualify the scenario.
+
+**Later 30 October feedback:** case09 completed the same inventory task after
+native release and restoration, with three IQ3_S requests and one physical
+output write. Independent review confirmed the 23-unit result and both native
+release records. The complete recovery scenario remains failed: the foreground
+action missed the first-request interval, its latest pre-action observation
+already had admission closed, and a JavaScript transfer rounded a 64-bit identity
+field in the operator record. The earlier immutable capture retains the exact
+identity. No expiry, Continue or second task occurred; do not revise those
+outcomes or relabel component cleanup as a whole-trial pass.
+
+Correct the operator procedure before another fresh case. Reuse the existing
+append-only GET observer for a bounded, prompt cue, explicitly limit every UI
+text field, and keep the fresh observe/inspect/action/refresh sequence. Transfer
+full A/B window bindings through the existing
+[Python JSON reader/writer](https://docs.python.org/3.11/library/json.html) without
+passing 64-bit values through JavaScript numbers; retain the
+[RFC8259 integer-range boundary](https://www.rfc-editor.org/rfc/rfc8259#section-6).
+Keep the actual input, open
+precondition, first-request overlap, saved native-read progress, immutable
+predecessor and original two-task audit requirements unchanged. Do not add a
+runtime poller, read actively replaced product state, manufacture input or alter
+any execution budget. The [evidence ledger](docs/evidence.md) records the failed
+scenario alongside its narrower completed-task and release results.
+
+**Subsequent 30 October feedback:** case10 verified the first-request onset:
+admission was open before actual document input, then closed for foreground
+activity while the same first request remained active, followed by completion
+and parking. Python preserved the complete A-window identity without integer
+rounding. The inventory again completed with three actual IQ3_S requests, one
+physical write and the 23-unit oracle. However, an actual action-coverage gap of
+66.1093105 seconds exceeded the unchanged strict 60-second condition. The trace
+also changed to the foreground recovery margin/dwell during that gap, although
+admission stayed closed. No expiry, Continue or second task occurred; the whole
+case and original audit remain failed.
+
+Use the existing verified [QPC clock](https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps)
+for compact operator feedback. Target the next completed useful document action
+within 30 seconds of the previous start, leaving margin under the unchanged
+60-second acceptance condition. Preserve fresh observe/inspect/action/refresh
+and timely notes; defer nonessential file serialization, trace interpretation
+and coordinator work until outside the hold. This adds no automatic input,
+poller, controller or execution allowance. Session input age remains a distinct
+[Windows observation](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getlastinputinfo);
+the retained trace and terminal audit, not the displayed target, prove the hold.
+
+Case10 also exposed a future proof-checker limitation: its real native read used
+the exact absolute path of the bound input, while the supplemental lineage check
+requires literal relative `inventory.csv`. The complete correct input was read,
+but that later predicate was not established. Review the existing task/native
+path-resolution rules before defining a fresh case. Any proposed equivalence
+must identify the exact bound work file and preserve its input hash, complete
+result and native intent; a matching basename or copied content is insufficient.
+Do not modify case10 or retroactively claim the unchanged check passed.
+
+**Latest installed feedback — case11:** the revised operator cadence retained
+27 actual document actions with a maximum adjacent start-to-next-end interval of
+38.4695074 seconds. The first-request foreground transition and native parking
+were observed. However, Hermes's turn watchdog interrupted the resource wait
+after 611.1 seconds; no expiry seal, continuation, output or second task resulted.
+The original read and prepared next request remain saved. Native release and
+failure containment are narrower results than the unconfirmed cooperative Stop.
+The failed case is consumed and must not be patched or restarted.
+
+The case11 activity guard reported an acknowledged user Pause but made no
+activity stamp for an otherwise healthy admission wait. The source correction
+reuses its serialized owner, live SDK lease, interruption checks and 15-second
+cadence together with the existing coherent `Mailbox.admission_wait_observation`.
+Only a verified,
+operation-free wait before the original 900-second deadline may report activity.
+An ordinary poll, blocked read, lost lease, pending unsafe control or committed
+interruption must not keep the agent alive. This is truthful waiting activity,
+not model progress, a resource grant or a deadline extension.
+
+The pattern follows the inspected, merged [Hermes activity bridge fix](https://github.com/NousResearch/hermes-agent/pull/131916)
+and the documented distinction between [turn activity and lease renewal](https://hermes-agent.nousresearch.com/docs/user-guide/configuration#turn-liveness-watchdog).
+The adapter already uses Hermes's pinned private `_touch_activity` API; this
+does not introduce a public SDK guarantee. Nineteen focused tests cover healthy
+waiting beyond 600 seconds through the original 900-second expiry, cancellation,
+Pause and authority-loss failures. Three optional checks also exercise the
+actual pinned SDK activity writer, watchdog and interruption components with
+controlled clocks: healthy waiting, effective silent-turn abortion and refusal
+of a stale abort claim. These do not construct a full agent or prove durable SDK
+heartbeat persistence. The complete source suite now passes 1,282 tests without
+failures or skips, and the preservation suite passes 81 tests. The initial full
+run's Windows virtual-environment launcher mismatch remains a retained failure;
+the corrected run uses the full interpreter, identical dependencies and unchanged
+assertions. Archive checks and an actual Git checkout verify the preserved source
+bytes. Next validate a fresh isolated installation before another physical IQ3_S
+qualification. Preserve all failed evidence, task budgets and acceptance gates.
+
+**Validation follow-up:** consecutive documentation heads recorded Windows
+CI jobs exceeding their cumulative 15-minute limit while equivalent source
+passed on the other event. At `d3bc403`, 12 jobs passed and two were cancelled;
+one cancelled job also logged an unresolved test `ERROR` without its traceback.
+The same test passed in the other hosted run and in one focused local Python
+3.12 control, neither of which explains that error. Retain every outcome.
+Use standard [unittest fail-fast](https://docs.python.org/3.12/library/unittest.html#command-line-options)
+for the core suite so a first failure/error can reach the final traceback after
+the current test and cleanup return. A failing run remains failed and its
+remaining tests are not executed; passing discovery and assertions are unchanged.
+Keep sibling matrix jobs running, the 15-minute limit and always-run diagnostics.
+This improves reporting; it neither guarantees a traceback before termination
+nor fixes the cumulative duration. At `39d2d90`, 13 jobs passed and one failed;
+fail-fast retained the actual disconnect-test assertion and traceback. The
+matching hosted job passed; all four Windows jobs passed. A narrow fixture
+correction now separates its event-held EOF from the shared 50-millisecond
+timeout, asserts ownership before closing and guarantees event cleanup. The
+dedicated timeout method is unchanged. Both affected tests passed once on each
+local interpreter, with pinned aiohttp on Python 3.11 but an older installed
+aiohttp on Python 3.12. These controls do not prove the hosted failure's cause
+or that the server observed a TCP disconnect; retain those limits and require
+fresh exact-head hosted CI. At `aec8d90`, all seven PR jobs passed, while both
+push Windows jobs exceeded the cumulative limit: 12 successes and two cancellations
+overall. Both affected tests passed in all 12 portable jobs. The duration issue
+remains open, separate from the successful fixture correction. Exact runs and scope are in the
+[evidence record](docs/evidence.md). After the live qualification,
+use existing [Python profiling tools](https://docs.python.org/3.11/library/profile.html)
+to measure selected expensive groups, then consider explicit
+[job partitioning](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes)
+if justified. Preserve all tests and source checks; a rerun alone does not resolve
+the recurring duration problem, and no infrastructure-only cause is established.
+
+Exercise ordinary-task waiting, truthful expiry, explicit continuation and Stop,
+with separate original-task acceptance before a second task can be admitted.
+Do not extend a budget silently, accept uncertain effects or reuse old installed
+receipts for the new package. Preserve the failed run, earlier paused-expiry
+acceptance and all source identities. Separately, M3 must qualify useful progress
+during light foreground work; merely parking correctly does not establish
+everyday coexistence.
 
 **Next bounded efficiency experiment:** after publishing this accepted baseline,
 evaluate the existing FP16 expert-prompt path using the
@@ -986,6 +1654,13 @@ verify actual dispatch and compare correct completed tasks and resource use.
 The reported GPU unlock is a changed environment, not a measured application
 speedup. Keep one owner of heavy model experiments and retain an ineffective or
 slower result. No precision setting has been enabled by the continuation trial.
+The first instrumented startup failed before native launch; an OS permission
+prompt also obstructed the later unprofiled control. The original worker expired
+while paused and the unchanged outer diagnostic limit eventually terminated the
+host. Both unsuccessful runs remain failures. No FP16 dispatch, quality or speed
+claim follows from them. Resolve the capture environment and use a narrower
+trace only after validating its existing stdin/cleanup contract; this optional
+experiment does not displace functional M2 work.
 
 The continuation implementation reuses the existing TaskStore, installed adapter
 and retained lifecycle; it does not reopen the sealed execution or reset the

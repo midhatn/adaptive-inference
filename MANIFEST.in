@@ -2,7 +2,8 @@ include README.md PLAN.md CONTRIBUTING.md SECURITY.md CITATION.cff REFERENCES.bi
 include .gitattributes .gitignore
 recursive-include .github *.yml *.yaml *.md
 recursive-include docs *.md
-recursive-include examples *.json *.json5 *.yaml *.yml *.py *.md
+recursive-include examples *.json *.json5 *.yaml *.yml *.py *.md *.txt *.csv
+include examples/validation/latency_drift/LICENSE.river
 recursive-include integrations *.py *.md *.json *.yaml *.yml *.patch *.txt *.bundle *.gz *.ts *.mjs *.lock .gitignore LICENSE NOTICE
 recursive-include provenance *.json *.py *.md *.txt *.csv *.lock *.mjs *.ts *.yml *.yaml *.gz .gitignore .gitattributes LICENSE NOTICE
 recursive-include plugins *.py *.md *.json *.yaml *.yml LICENSE NOTICE

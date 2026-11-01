@@ -14,6 +14,47 @@ python provenance/check_distribution.py
 
 The demo starts its own loopback simulated backend and gateway on temporary ports, exercises real HTTP, and closes both. It needs no model/GPU/account. The JSON result labels simulation explicitly. Tests cover observable contracts and failure cases; they do not claim native engine performance.
 
+## Expected identity for installed checks
+
+After building from the current checkout, the existing distribution check can
+also write the expected package identity used by the installed SDK checks:
+
+```powershell
+python -m build
+python provenance/check_distribution.py --output ../package-check-01
+```
+
+Choose a new output directory. The checker verifies source-archive contents,
+the complete wheel module set, package name/version, every wheel RECORD hash
+and size, and the existing license files. On success it writes `result.json`
+and `installed-identity.json`. The identity comes from the verified wheel, so
+it is independent of the installation being tested. A failed check writes a
+failed result and does not emit an identity; rerunning into an existing output
+directory is refused.
+
+Install that exact wheel using the normal installation instructions. With the
+full worker interpreter and [installed desktop profile](installed-desktop.md)
+already configured, the existing SDK check consumes the generated identity:
+
+```powershell
+& $WorkerPython -I -B ./examples/validation/hermes_pause_dispatch/check_sdk.py --mode installed --profile $Profile --installed-identity ../package-check-01/installed-identity.json --output ../sdk-check-01
+```
+
+`$WorkerPython` and `$Profile` refer to the operator's actual interpreter and
+profile. This checks the installed SDK dispatch boundary; it does not run the
+model or prove a full task handover. The package check also does not prove that
+tests ran before the build or that the checkout stayed unchanged during it.
+The remaining host/worker, shared-clock and native-resource qualification inputs
+are still separate requirements.
+
+This extends the existing archive checker with the release verifier's module
+and RECORD comparisons. It follows PyPA's
+[wheel format](https://packaging.python.org/en/latest/specifications/binary-distribution-format/),
+[core metadata](https://packaging.python.org/en/latest/specifications/core-metadata/)
+and [project-name normalization](https://packaging.python.org/en/latest/specifications/name-normalization/).
+It supports this repository's known pure-Python wheel layout and does not add
+an installer or attempt to validate every possible third-party wheel layout.
+
 ## Explicit continuation qualification
 
 The [standalone workflow sources](../examples/validation/explicit_continuation/README.md)
@@ -32,6 +73,38 @@ bind one actual installed case. Custodian replay needs the retained private
 terminal inputs; public synthetic checks do not repeat the model/GUI trial.
 Do not substitute the historical expiry replay for this result. The exact tested
 qualification source/wheel are distinguished from later release documentation.
+
+## Current two-task development result
+
+[Case17](evidence.md#case17-complete-foreground-continuation-and-two-task-handover)
+passed the installed foreground, resource-wait continuation and two-task
+handover audits with IQ3_S. The retained evidence and its hashes identify that
+particular run. The [fresh-run source workflow](../examples/validation/task_handover/README.md)
+now supplies the parent, observer, local declarations, actual UI/foreground
+observation steps and both audits. The [accepted result and replay](../provenance/task-handover/acceptance/README.md)
+bind the original case; a custodian with its 33 exact private inputs can replay
+the public result without a model, database or service.
+
+The portable source/projection checks need only the complete repository:
+
+```text
+python -m unittest discover -s provenance -p "test_task_handover_reproduction.py" -v
+python -m unittest discover -s provenance -p "test_task_handover_acceptance.py" -v
+```
+
+These are source/fixture and evidence-replay tools, not a claim that the public
+path adaptation has had another model trial. A fresh physical qualification
+still needs an actual supported installation, IQ3_S model assets and the
+15 source/deployment/input records described in the workflow. The current
+installation instructions do not automatically generate all those records;
+do not replace missing evidence with invented successful values.
+
+The [ordinary user workflow](reference-workflow.md) reuses the [installed desktop composition](installed-desktop.md)
+and [task contracts](task-spec.md): start once, choose a task and inputs, see
+waiting/progress, continue saved work, select the next task and stop normally.
+Ordinary use must not require editing qualification records. The existing
+explicit-continuation workflow above remains independently reproducible at its
+own documented scope.
 
 ## Real engine
 

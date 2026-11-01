@@ -1,0 +1,14 @@
+{
+  "base_commit": "d39eb00269ea652fc6a7f8556dd70d2f11f1472f",
+  "current_scope": "Public path adaptation plus prospective producer-form deadline check; CPU/source validation only, no new live trial",
+  "expression_change": {
+    "after": "          and p['budget_s']==900 and type(g['authorized_at']) in (int,float)\r\n          and type(g['deadline_monotonic']) in (int,float)\r\n          and math.isfinite(g['authorized_at']) and math.isfinite(g['deadline_monotonic'])\r\n          and g['deadline_monotonic']>g['authorized_at']\r\n          and g['deadline_monotonic']==g['authorized_at']+900",
+    "before": "          and p['budget_s']==900 and g['deadline_monotonic']-g['authorized_at']==900",
+    "count": 1
+  },
+  "historical_acceptance_modified": false,
+  "predecessor_manifest_sha256": "5eeb4da91cef73852f241c726d87433b0941714d1c3ec47a7afcc96666603bd9",
+  "producer_path": "src/adaptive_inference/desktop/hermes/continuation.py",
+  "producer_sha256": "b7bd7b67f7e05e10d7dbf7c310b72f4c8c03955e3cf64f426197751a96ea6012",
+  "schema": "adaptive.continuation.deadline-arithmetic-lineage.v1"
+}

@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "scope": "Unchanged historical test readers before explicit native source projection",
+  "sha256": {
+    "test_arithmetic_feedback.py": "c1d45a452f33efca0c4030ea2027ff0fc3907e697b2f3a13933cccfcdb261804",
+    "test_shutdown_receipts.py": "870bfc70658ddda3a8cb53c3b33a6409723c3b0f48f1339b2e652e36df5dea14"
+  }
+}

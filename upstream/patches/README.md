@@ -25,3 +25,28 @@ published at OpenClaw PR #182080, commit `f64d74b04b90dd123c5a1bf7cf36de7543a743
 Both retain public commit authorship; their original hosts are MIT-licensed.
 The executable plugin, configuration composer, licenses and their exact host
 interface fixtures live in the canonical paths linked by the delivery ledger.
+
+OpenClaw #182080 was closed **unmerged** on 30 October 2026 after the same
+documentation request landed through [#182565](https://github.com/openclaw/openclaw/pull/182565),
+authored by SC-10749, at merge commit
+`45fc29dcf159095be6251dba21c249af08a5d05a` on 27 October. The maintainer's
+[landing confirmation](https://github.com/openclaw/openclaw/pull/182565#issuecomment-6450243999)
+and [source audit](https://github.com/openclaw/openclaw/pull/182565#issuecomment-6449975512)
+are recorded in the ledger. The merged
+[provider example](https://github.com/openclaw/openclaw/blob/45fc29dcf159095be6251dba21c249af08a5d05a/docs/gateway/config-tools/provider-examples.md)
+has Git blob `a5f42dff0ea4b04a7ffb820750ee9173a27265fe` and retains its upstream
+MIT license. It also clarifies picker aliases and endpoint precedence when the
+transport is unchanged. The original patch here remains byte-for-byte historical
+source; it is not relabeled as the merged implementation or its validation.
+This records documentation acceptance, not runtime scheduling, resource handoff,
+agent-task completion or performance qualification.
+
+Strata #3399 was closed **unmerged** on 30 October 2026 after upstream
+[commit e2e99ae5](https://github.com/Niko1221/Strata/commit/e2e99ae54aae9a5a28938223679ab9a5ec4ef33c)
+ported the token-default correction and this PR's exact child-identity regression.
+The commit credits kossum's complementary QoS regression from #3428 and midhatn's
+identity/ownership-record test; the [maintainer confirmed the v0.2.7 port](https://github.com/Niko1221/Strata/pull/3428#issuecomment-6445917772).
+Both changes are present at inspected main `870aedd9e1ebe1c91f94da93b59af17729f6c5c0`;
+the original test is Git blob `b2f9ae7048bc5e4442e4dbb1c604f7d2efa4d087`.
+The canonical historical overlay and its original validation remain unchanged.
+This source and attribution check does not add a runtime or model test result.

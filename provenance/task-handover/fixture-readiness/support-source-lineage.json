@@ -1,0 +1,70 @@
+{
+  "schema": "adaptive.readiness-test-support.v1",
+  "baseline_revision": "24713ab3bf3e0a632f08b0aa9fdcd1a6aa05f3a6",
+  "scope": "Explicit test-reader projections only; no original assertion or historical manifest changes",
+  "files": {
+    "tests/test_continuation_diagnostics_lineage.py": {
+      "predecessor_source": "provenance/task-handover/fixture-readiness/support-predecessor/tests/test_continuation_diagnostics_lineage.py",
+      "predecessor_sha256": "41adad7df013d7faeb72ed55b3d9f773874be3e842582d3e09af88f57e4a3935",
+      "predecessor_ast_sha256": "e5cfafcc39ce860803e316f50df21ec1e0e5c543bef982763bfbde1ed259a53c",
+      "successor_sha256": "2bd03e2d6956d2a40718e6861afb9f91c503f0f0620d68c411c6ebd586abdf8a",
+      "successor_ast_sha256": "53ba598a5e58eea9e0b4edb12fc8e16e5ea70e631bbec70ad81cf192c2a488ef",
+      "replacements": [
+        {
+          "old": "        current = ast.parse((diagnostics.ROOT / diagnostics.FIXTURE).read_bytes())\n",
+          "new": "        current = ast.parse(diagnostics.readiness_predecessor(\n            (diagnostics.ROOT / diagnostics.FIXTURE).read_bytes()))\n",
+          "count": 1
+        }
+      ]
+    },
+    "tests/test_pause_observation_lineage.py": {
+      "predecessor_source": "provenance/task-handover/fixture-readiness/support-predecessor/tests/test_pause_observation_lineage.py",
+      "predecessor_sha256": "0d0b7e5ae919ac8a5d6413c445704c6268c9947a0918bc55839ae39ce1cc9043",
+      "predecessor_ast_sha256": "ff8b595a64389d03204914246c838ae0420eac1977e363459bf722bf2463bce3",
+      "successor_sha256": "576cea7c3538d1b0c7ec9d57c61ed0013f14a1e080ac1967cd3fa5d0bfbacfc1",
+      "successor_ast_sha256": "55ef55e67a8cf50a70a8376aa3a80a95c0bc3af7627f61ad5da93144981a0580",
+      "replacements": [
+        {
+          "old": "import task_file_alias_lineage as lineage\n",
+          "new": "import task_file_alias_lineage as lineage\nfrom continuation_diagnostics_lineage import readiness_support_predecessor\n",
+          "count": 1
+        },
+        {
+          "old": "    return lineage.safe_wait_predecessor(relative, (lineage.ROOT / relative).read_bytes())\n",
+          "new": "    data = readiness_support_predecessor(relative, (lineage.ROOT / relative).read_bytes())\n    return lineage.safe_wait_predecessor(relative, data)\n",
+          "count": 1
+        }
+      ]
+    },
+    "tests/test_safe_wait_lineage.py": {
+      "predecessor_source": "provenance/task-handover/fixture-readiness/support-predecessor/tests/test_safe_wait_lineage.py",
+      "predecessor_sha256": "9f21e584611d20dcfaf80ae44199be33829ae50ab5c7c8c6bd022e45827821f9",
+      "predecessor_ast_sha256": "fd7aa78f43b8dd7bc8c0ad9231cecf8fc4af7efdee040779997ba7320859f3bf",
+      "successor_sha256": "6abaed6a38533bfe7fdf03a22d17197ae179542db42f5f47ceb1955f40b1a80d",
+      "successor_ast_sha256": "cf18b265847e42fd0ea5e4517729d310d2afc5a49304fad8cbb07e9846dd198b",
+      "replacements": [
+        {
+          "old": "import task_file_alias_lineage as lineage\n",
+          "new": "import task_file_alias_lineage as lineage\nfrom continuation_diagnostics_lineage import readiness_support_predecessor\n",
+          "count": 1
+        },
+        {
+          "old": "class SafeWaitLineageTests(unittest.TestCase):\n",
+          "new": "def current_source(relative):\n    return readiness_support_predecessor(relative, (lineage.ROOT / relative).read_bytes())\n\n\nclass SafeWaitLineageTests(unittest.TestCase):\n",
+          "count": 1
+        },
+        {
+          "old": "            current = (lineage.ROOT / relative).read_bytes()\n",
+          "new": "            current = current_source(relative)\n",
+          "count": 1
+        },
+        {
+          "old": "            data = (lineage.ROOT / relative).read_bytes()\n",
+          "new": "            data = current_source(relative)\n",
+          "count": 3
+        }
+      ]
+    }
+  },
+  "runtime_changes": []
+}

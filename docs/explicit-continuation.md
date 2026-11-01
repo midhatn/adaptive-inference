@@ -14,6 +14,12 @@ and [public result](../provenance/explicit-continuation/acceptance/result.json)
 identify this bounded trial. A recorded grant or ready worker alone is not task
 acceptance; the original objective still has to pass its checks.
 
+The source also supports [safe expiry while waiting for resources](admission-wait-recovery.md)
+and an explicit continuation that rebuilds the next request from saved history.
+That extension has separate component and SDK checks; its installed IQ3_S
+qualification is pending. The accepted trial above covers the earlier paused
+checkpoint and retains its original source and package identities.
+
 ## An example
 
 Suppose the agent has written a report and you click **Pause**. It reaches a safe
@@ -36,7 +42,7 @@ Use **Stop engine** to finish the session and join its owned resources.
 
 ## When Continue is available
 
-This implementation supports the bounded Windows orders-report composition in
+The installed qualification supports the bounded Windows orders-report composition in
 the **same live host and computer boot**. The predecessor must have a verified
 expiry seal at the supported safe, ready checkpoint. Its worker must have exited,
 and its native resource owner must be parked with confirmed release. Pending

@@ -2,6 +2,7 @@
 """Explicit Windows GUI entrypoint. Importing this file performs no UI/API work."""
 from contextlib import contextmanager
 import io
+import hashlib
 from pathlib import Path
 import sys
 
@@ -63,19 +64,49 @@ def owned_startup_streams():
             raise primary
 
 
-def _verify_installed_imports():
+def _verify_installed_imports(*, chooser=False):
     """Reject another package copy before acquiring pipes or GUI resources."""
     root = Path(__file__).resolve(strict=True).parent.parent
     expected = {'adaptive_inference': '__init__.py',
-                'adaptive_inference.desktop': 'desktop/__init__.py',
-                **{'adaptive_inference.desktop.' + name: 'desktop/' + name + '.py'
-                   for name in ('control_client', 'startup_pipe', 'window_marker', 'gui_session')}}
+                'adaptive_inference.desktop': 'desktop/__init__.py'}
+    if chooser:
+        expected.update({'adaptive_inference.task_spec': 'task_spec.py',
+                         'adaptive_inference.feedback': 'feedback.py'})
+    else:
+        expected.update({'adaptive_inference.desktop.' + name: 'desktop/' + name + '.py'
+                         for name in ('control_client', 'startup_pipe', 'window_marker', 'gui_session')})
     if root.name != 'adaptive_inference':
         raise RuntimeError('The GUI requires its ordinary installed package')
     for name, relative in expected.items():
         origin = getattr(sys.modules.get(name), '__file__', None)
         if not origin or Path(origin).resolve(strict=True) != root / relative:
             raise RuntimeError('GUI package import identity changed')
+
+
+def choose_task(root, *, dialogs=None):
+    """Use standard native dialogs; cancellation never submits a command.
+
+    Only the bounded local TaskSpec is read here. The host rechecks its exact raw
+    hash and stages declared inputs; no prompt, credential or file body crosses
+    the control protocol. Python 3.11 tkinter.filedialog is the reused mechanism:
+    https://docs.python.org/3.11/library/dialog.html#module-tkinter.filedialog
+    """
+    from adaptive_inference.task_spec import TaskSpec, MAX_SPEC_BYTES, _file
+    _verify_installed_imports(chooser=True)
+    if dialogs is None:
+        from tkinter import filedialog as dialogs
+    selected = dialogs.askopenfilename(parent=root, title='Choose a task specification',
+        filetypes=(('Task specification', '*.json'), ('All files', '*')))
+    if not selected:return None
+    path = Path(selected)
+    raw = _file(path, MAX_SPEC_BYTES)
+    spec = TaskSpec.from_bytes(raw)
+    inputs = str(path.parent)
+    if spec.data['inputs']:
+        inputs = dialogs.askdirectory(parent=root, title='Choose the task input folder', mustexist=True)
+        if not inputs:return None
+    return {'task_spec_path': str(path), 'task_spec_sha256': hashlib.sha256(raw).hexdigest(),
+            'task_inputs': str(inputs)}
 
 
 def main():
@@ -92,7 +123,7 @@ def main():
         bootstrap = Bootstrap.from_private_reader(lambda limit: read_frame(startup_input, BOOTSTRAP_LIMIT))
         root = tkinter.Tk()
         root.title('Adaptive inference')
-        view = TkView(root, minimize_on_close=True)
+        view = TkView(root, minimize_on_close=True, task_chooser=lambda: choose_task(root))
         marker = RootMarker(root, bootstrap.marker_name, bootstrap.marker_value, api=WindowAPI())
         exchange = WireExchange(bootstrap, lambda: socket.socket(socket.AF_INET, socket.SOCK_STREAM))
         session = GUISession(root, view, bootstrap, marker, startup_input, startup_output, exchange)

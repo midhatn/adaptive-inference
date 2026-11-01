@@ -46,7 +46,11 @@ def check_continuation(e):
           and p['logical_task_id']==old['task_id'] and p['predecessor_id']==old['task_id']
           and p['predecessor_revision']==old['revision'] and p['predecessor_seal_sha256']==digest(marker)
           and p['successor_id']!=old['task_id'] and g['payload_sha256']==digest(p)
-          and p['budget_s']==900 and g['deadline_monotonic']-g['authorized_at']==900
+          and p['budget_s']==900 and type(g['authorized_at']) in (int,float)
+          and type(g['deadline_monotonic']) in (int,float)
+          and math.isfinite(g['authorized_at']) and math.isfinite(g['deadline_monotonic'])
+          and g['deadline_monotonic']>g['authorized_at']
+          and g['deadline_monotonic']==g['authorized_at']+900
           and marker['sealed_at_monotonic']<=g['authorized_at'] and g['deadline_clock']==CLOCK
           and g['predecessor_state_sha256']==digest(old['state'])
           and g['predecessor_history_sha256']==digest(e['history_before'])

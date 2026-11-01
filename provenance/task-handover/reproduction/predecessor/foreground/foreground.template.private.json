@@ -1,0 +1,12 @@
+{
+  "schema": "private.case09.real-foreground.v1",
+  "deadline_clock": "windows-qpc-seconds-v1",
+  "document": {"pid": null, "hwnd": null, "title": null, "path": null},
+  "prepared_observation": {
+    "deadline_clock": "windows-qpc-seconds-v1",
+    "qpc_before": null, "qpc_after": null,
+    "utc_before": null, "utc_after": null,
+    "note": null
+  },
+  "actions": []
+}

@@ -1,0 +1,10 @@
+{
+  "files": {
+    "result.json": "4651bbc0e72aca11883cc587107e3b8174c3ea87961d32dfc8c5c38adf5cc18b"
+  },
+  "reused_exporter_sha256": "1bf1eefdc90919c3bc746bf0ade44c8e52df1ed278641fd08553d193efda820f",
+  "reused_helper_sha256": "12004621166522cb80682e2bf1e4bc6d19e2ca72aeb585d21ce6408c2a965b33",
+  "sanitizer_sha256": "fd417a3acb3b97be9ca8246b795fe10bb54fbc07477f7fa22c78bf76cefe35cd",
+  "schema": "adaptive.public-evidence-files.v1",
+  "source_selection": "Fixed case17 roles and explicit public fields only"
+}
