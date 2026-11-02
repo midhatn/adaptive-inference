@@ -904,10 +904,22 @@ reboot-specific budget metadata for the ordinary CLI; a separate diagnosis
 verified its same-boot fixed deadline. The strict foreground overlap check also
 failed because the compound UI action's after-observation came after request 1
 ended. The independent status observer failed during shutdown. Preserve these
-outcomes. The next fresh task uses one foreground input with immediate
-observations and a prospective ordinary-budget audit, retaining the same onset
-predicate, runtime, model quality and budgets. Do not narrow the old action
-interval, replay its completed work, or claim a speed/desktop-quality result.
+outcomes. The [fresh second trial](provenance/compiler/physical-foreground-compiler-2026-11-02.json)
+used one foreground input with immediate observations and a prospective
+ordinary-budget audit, retaining the same onset predicate, runtime, model
+quality and budgets. It passed 44 primary checks and 34 independent checks:
+actual first-request overlap, foreground hold through parking, native release,
+one successful compiler operation, durable feedback in request 2, restoration
+and normal Stop. Its independent observer again failed during shutdown. Keep
+both consumed tasks closed and preserve that failure. This qualifies the bounded
+compiler/foreground workflow, not desktop performance or all M4 outcomes.
+
+**Next useful-tool increment:** research and reuse the existing checked GPU
+video encode/probe/decode path, connect it to authorized agent dispatch and the
+same resource/ownership/feedback contract, then progress through component,
+actual-tool and installed-SDK gates before an unchanged-IQ3_S trial. Keep
+failure/interruption recovery as explicit acceptance work. This small recipe
+does not replace the named model-bearing media test or its tuning/baseline gates.
 
 The named end-to-end media gate is the
 [Adaptive-Hermes-Media-Autonomous Test](docs/adaptive-hermes-media-autonomous-test.md).

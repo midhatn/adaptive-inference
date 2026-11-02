@@ -4,6 +4,34 @@ This ledger separates portable software tests, source reconstruction, actual SDK
 
 ## Bounded compiler tool and installed Hermes feedback
 
+The [second physical compiler task](../provenance/compiler/physical-foreground-compiler-2026-11-02.json)
+at `c72e265` passed **44 primary checks and 34 independent review checks**.
+The runtime is identical to the first task's `414b767` runtime. One actual
+Explorer F5 and refresh was fully bracketed between observations of the same
+first active request; the later observation showed foreground draining with
+admission closed. Eighty-two matching independent activity samples covered the
+hold through parking. No second inference request or compiler grant occurred
+during that hold. The first native owner confirmed 8/8 exits before the grant.
+One compile/test operation produced exactly `23 units`, its three children
+joined, and its owned job was empty. A distinct native owner served request 2,
+which consumed the compiler feedback, and confirmed 9/9 final exits. The task
+completed within its original 900-second allowance; one normal Stop closed the
+application, worker, GUI and transport.
+
+The fresh trial used a single input with immediate observations and corrected
+only the prospective auditor's ordinary-budget assumption. Its strict onset
+predicate, model quality, runtime and acceptance requirements stayed unchanged.
+The complete 1.4968-second action bracket was retained. Original files and copied
+databases were unchanged by the audit; independent review retained 255 input
+hashes. The earlier task and its failed audit/onset remain closed and unchanged.
+
+The second independent observer also exited 1 after three connection errors;
+its separate closure flag remains false. The 44-check result qualifies the
+bounded compiler/foreground workflow, including native cleanup, and does not
+turn that observer result into a pass. No sustained desktop-performance,
+compiler-interruption, model-error-correction, reboot, media or full M4 result
+follows from this one foreground episode.
+
 The [first physical compiler task](../provenance/compiler/physical-compiler-evidence-2026-11-02.json)
 at `414b767` used the installed Hermes SDK and unchanged IQ3_S settings. Two
 actual model requests produced one C++17 compile/test operation and completed

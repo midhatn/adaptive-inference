@@ -1,8 +1,8 @@
 # Let Hermes hand resources to a compiler
 
-Status: source, local package/installation, actual SDK/compiler feedback and one
-real IQ3_S compiler task are verified at the scopes below. Strict foreground
-overlap qualification remains open.
+Status: source, local package/installation, actual SDK/compiler feedback and the
+bounded IQ3_S compiler/foreground workflow are verified at the scopes below.
+Observer shutdown and broader interruption/daily-use qualification remain open.
 This is the first small useful-tool increment in
 [M4](../PLAN.md#m4--let-the-agent-hand-resources-to-useful-tools); the separate
 reboot installation remains fixed. The first physical restart preserved saved
@@ -119,8 +119,14 @@ a separate copied-state review verified the unchanged fixed deadline. The
 compound foreground action missed the strict first-request overlap gate, and
 the independent observer failed during shutdown. A separate 26-check functional
 review supports the narrower compiler result without changing those outcomes.
-The next fresh trial uses one foreground input with immediate observations,
-the unchanged onset predicate, the same task budget and the same model settings.
+The [fresh second trial](../provenance/compiler/physical-foreground-compiler-2026-11-02.json)
+then passed the strict foreground gate and compiler workflow: one F5/refresh
+action, 82 matching independent activity samples through parking, confirmed
+native release, one successful compiler operation, feedback in the second real
+model request, restoration and normal Stop. All 44 primary and 34 independent
+checks passed. The checker used the ordinary CLI budget contract; its onset
+predicate and the runtime remained unchanged. The separate observer still
+failed during shutdown. Keep both attempts and their distinct results.
 
 ## Authorization and Stop
 
@@ -172,17 +178,21 @@ joins compiler operations before the worker and native host; failure cleanup
 retains the same obligations. The installed SDK/compiler feedback path is now
 verified by the separate closed audit above; its original full-harness failure
 remains recorded. Stop during compilation and explicit continuation still have
-source-level evidence. The physical task verifies the ordinary compiler path;
-its strict foreground qualification remains open.
+source-level evidence. The second physical task verifies the ordinary compiler
+path with strict foreground onset and hold; it does not establish interruption
+of a running compiler, repeated reliability or application/reboot recovery.
 
 1. Check fixed commands, input identity, the original deadline, real retained
    subtree ownership and failure/interruption cleanup with focused tests.
 2. Connect actual pinned SDK dispatch to a real bounded compile and test,
    durable feedback and the following provider request. Scripted responses are
    sufficient for this integration gate, not model reasoning.
-3. Qualify an IQ3_S task with unchanged quality and a real compiler artifact,
-   including foreground interruption and normal restoration. Preserve failed
-   attempts; only the later physical run qualifies installed model handoff.
+3. The second IQ3_S task qualifies unchanged quality, a real compiler artifact,
+   foreground onset/hold and normal restoration at its recorded scope. Preserve
+   the observer failure and the first trial's failed checks.
+4. Extend useful-tool coverage with the existing checked video recipe, while
+   qualifying compiler failure/interruption paths separately. Do not replay a
+   completed build merely to reconstruct evidence.
 
 The autonomous media workflow retains its separate latest-version, individual
 engine tuning, unattended baseline, co-optimization and quality requirements.
