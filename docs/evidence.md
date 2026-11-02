@@ -2509,3 +2509,26 @@ The c6b correction collected 225 CPU tests: 224 passed and one POSIX-only test w
 ## What is not established
 
 No comparative latency/throughput win, broad task-quality improvement, arbitrary-tool recovery, visual browser interaction, GPU kernel preemption or general autonomous operation is claimed. The bounded native handoff above qualifies only its declared GPU tool and agent task. Exact reconstruction does not make a fresh native binary bit-identical across toolchains. The upstream branches and this standalone gateway are separate deliverables; review the tested revision and composition for each claim.
+
+## Hosted positive idle-release wait (2 November 2026)
+
+The original `bf26c3c` push workflow passed; its PR workflow failed one
+Windows/Python 3.12 positive idle-release test. Thirteen of fourteen jobs,
+eleven core suites and eleven distribution checks passed. The failed job
+skipped distribution verification. The [source-bound record](../provenance/video-tool/hosted-idle-release-fixture-2026-11-02.json)
+preserves the original failure and distinguishes it from the local diagnosis.
+
+The test stopped waiting for a parked controller after three seconds while
+the hosted log recorded slow synchronous drive turns. A controlled local
+status-save delay reproduced that timeout. Giving only this positive test
+wait thirty seconds let the same delayed case refresh its absent-demand
+observation, respect the original idle grace, release exactly once and close
+normally. That controlled delay is not a reconstruction of the original
+hosted state or scheduling.
+
+All 20 affected-module tests passed. Independent review checked 103 file-only
+conditions and four manual scope points, with no findings. The general wait
+helper, behavior assertions, 77 runtime modules, real SQLite/thread/persistence
+operations and production freshness, idle and close limits are unchanged.
+This fixture correction adds no release-latency or physical qualification;
+the successor still requires its own original hosted results.
