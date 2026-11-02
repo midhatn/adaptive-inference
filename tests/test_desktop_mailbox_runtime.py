@@ -130,7 +130,7 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
         # A handler may truthfully return pending before the retained mutation
         # and its authority read finish. Final-intent assertions need that task.
         reply = await self.request(method, request_id=request_id)
-        self.assertTrue(reply['ok'])
+        self.assertTrue(reply['ok'], reply)
         await asyncio.wait_for(asyncio.shield(self.transport._records[request_id]['task']), 3)
         return reply
 
@@ -247,6 +247,9 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
 
     async def test_latest_pending_resume_can_keep_intent_while_owner_is_paused(self):
         self.demand('paused')
+        # The explicit SQLite setup mutation may outlive the cached observation.
+        # Establish fresh admission before testing retained Resume intent.
+        await self.runtime.refresh()
         await self.completed_control('resume', request_id='resume')
         self.assertTrue(self.matches())
         await self.runtime.refresh()
@@ -491,12 +494,25 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
 
     async def test_pause_during_real_authority_read_prevents_late_activation(self):
         entered, release, blocked = self.block_observation()
+        authority_entered = asyncio.Event()
         actual_authority = self.runtime.resume_authority
         async def held_authority(request_id,**kwargs):
+            authority_entered.set()
             with mock.patch.object(self.box, 'snapshot', side_effect=blocked):
                 return await actual_authority(request_id,**kwargs)
         with mock.patch.object(self.runtime, 'resume_authority', side_effect=held_authority):
-            first = self.transport.admit(Reader(self.frame('resume', request_id='resume')), Writer())
+            writer = Writer()
+            first = self.transport.admit(Reader(self.frame('resume', request_id='resume')), writer)
+            # As in the rotation test, first establish SQLite submission, then
+            # retain the unchanged two-second bound on the held thread entry.
+            try:
+                await asyncio.wait_for(authority_entered.wait(), 30)
+            except TimeoutError:
+                operation = self.transport._records.get('resume', {}).get('task')
+                error = (type(operation.exception()).__name__ if operation is not None
+                         and operation.done() and not operation.cancelled() else None)
+                reply = json.loads(writer.data) if writer.data else None
+                self.fail(f'Authority setup did not complete: reply={reply!r}, error={error}')
             await self.signal(entered)
             pause = await self.request('pause', request_id='pause')
             self.assertTrue(pause['ok'])

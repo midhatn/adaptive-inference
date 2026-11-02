@@ -1,0 +1,157 @@
+{
+  "schema": "adaptive.video-tool.hosted-ci-fixture.v1",
+  "recorded_date": "2026-11-02",
+  "source_commit": "b9235b6769fc930b0e2e5988a64cddd04872e664",
+  "pr": 36,
+  "status": "original_failure_preserved_fixture_validated_successor_pending",
+  "scope": "Hosted CI failures and test-fixture correction only; no product runtime or physical qualification change.",
+  "original_failed_jobs": [
+    {
+      "job_id": 125286446574,
+      "name": "portable (windows-latest, 3.11)",
+      "run_id": 41448181665,
+      "attempt": 1,
+      "conclusion": "failure",
+      "failing_test": "test_desktop_mailbox_runtime.RuntimeTests.test_pause_during_real_authority_read_prevents_late_activation",
+      "failed_assertion": "assertTrue(await asyncio.to_thread(event.wait, 2))",
+      "core_tests_completed_before_failfast": 660,
+      "core_elapsed_seconds": 444.078,
+      "distribution_verification_reached": false,
+      "raw_log_sha256": "6922799183be727515790d3c15d3f750f2ead27933d412b75c5eb6bfb312d426",
+      "annotations_sha256": "05374173c3e1edac1e116dbc6065912f0f9ed490b90c977fbdc113cd5fcf052e",
+      "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41448181665/job/125286446574"
+    },
+    {
+      "job_id": 125286465702,
+      "name": "portable (windows-latest, 3.11)",
+      "run_id": 41448187500,
+      "attempt": 1,
+      "conclusion": "failure",
+      "failing_test": "test_desktop_mailbox_runtime.RuntimeTests.test_latest_pending_resume_can_keep_intent_while_owner_is_paused",
+      "failed_assertion": "assertTrue(reply['ok'])",
+      "core_tests_completed_before_failfast": 655,
+      "core_elapsed_seconds": 435.25,
+      "distribution_verification_reached": false,
+      "raw_log_sha256": "aac95a8e240cdcb2a9b254ce9f136edca3dd0a755eaf25590c0fe6f8dca26a60",
+      "annotations_sha256": "ebe75b992ac0f4da362fd347fc16afe4881e22bbef4ca45073ca74bd4805db9b",
+      "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41448187500/job/125286465702"
+    }
+  ],
+  "original_overall_observation": {
+    "observed_utc": "2026-11-02T13:17:03.350994+00:00",
+    "terminal": true,
+    "jobs_total": 14,
+    "jobs_successful": 12,
+    "jobs_failed": 2,
+    "jobs_live": 0,
+    "core_steps_successful": 10,
+    "core_steps_failed": 2,
+    "distribution_steps_successful": 10,
+    "distribution_steps_skipped": 2,
+    "overall_ci_passed": false,
+    "final_observation_sha256": "b36e4d6e9424a9aaedc8c715b2e298a3cdb254b411bf8f7a662c71397b5d91cb",
+    "terminal_verification_sha256": "20610c29589906b323b492d7bd9e378b13c9679e117ada673954eec4dfc29d07",
+    "core_step_verification_sha256": "9ec0ba2ce7a44a37adafaa1889d5d232cc2256c799e70492dce16016012f8799",
+    "note": "Both original workflows are closed and nonpassing. The two Windows3.11 assertions remain failures; their distribution checks were skipped."
+  },
+  "diagnosis": {
+    "recorded_facts": [
+      "The original pause test failed before its held authority read was established.",
+      "The original pending-resume test failed its ok assertion; its hosted reply body was not recorded.",
+      "The pending-resume test coroutine spent 4.719 seconds in synchronous paused-state setup after a cached observation with a three-second freshness bound."
+    ],
+    "source_supported_inference": "A slow setup mutation can age the cached observation before admission, while the pause test counts preceding SQLite submission against its two-second held-thread-entry bound.",
+    "hosted_reply_reconstructed": false
+  },
+  "correction": {
+    "file": "tests/test_desktop_mailbox_runtime.py",
+    "before_sha256": "b343cd713b45c63a14aed7a32bcece4de6fd6ecbfc7144ad6773ed871d754312",
+    "after_sha256": "5e5ea8031da7016679982533f412edb43109e626c0f2f6b57733aa08b783df82",
+    "changes": [
+      "Refresh through the ordinary API after the explicit paused-state setup mutation.",
+      "Reuse the adjacent rotation test's bounded authority-setup event before the unchanged held-thread-entry assertion.",
+      "Include the actual reply in a failed ok assertion for future diagnosis."
+    ],
+    "final_behavior_assertions_retained": true,
+    "runtime_modules_unchanged": 77,
+    "unchanged_fixture_bounds_seconds": {
+      "observation_freshness": 3,
+      "transport_io": 0.25,
+      "held_thread_entry": 2,
+      "held_read_release": 3,
+      "response_completion": 3
+    },
+    "authority_setup_bound_seconds_reused_from_adjacent_test": 30,
+    "production_task_budget_seconds_unchanged": 900,
+    "production_recipe_budget_seconds_unchanged": 90
+  },
+  "controlled_diagnostics": {
+    "scope": "Local deliberate setup delays, not a replay of the hosted jobs.",
+    "injected_delay_seconds": {
+      "paused_fixture_transition": 3.2,
+      "resume_before_submission": 2.2
+    },
+    "original_fixture": {
+      "tests": 2,
+      "expected_assertion_failures_observed": 2,
+      "errors": 0,
+      "tests_passed": false,
+      "diagnostic_expected_outcome_matched": true,
+      "receipt_sha256": "fd64de722e5f34d4f639f8c9e2e7e98b2eab67ae80c89c520782595f88cf72be"
+    },
+    "corrected_fixture": {
+      "tests": 2,
+      "passed": true,
+      "same_delays": true,
+      "receipt_sha256": "3f0df244d7fc30d5beb2396293919e0ea365a96babf7f75ceccfe8daa5eb2d25"
+    },
+    "runtime_unchanged": true
+  },
+  "affected_module_validation": {
+    "module": "test_desktop_mailbox_runtime",
+    "tests": 28,
+    "elapsed_seconds_reported_by_unittest": 4.663,
+    "exit_code": 0,
+    "child_joined": true,
+    "source_inputs_unchanged": 78,
+    "receipt_sha256": "26d2bbb9a7f0f1f0ea89460a9d58550aa167d2d73bde3d8d7285a5371e9cd047"
+  },
+  "independent_fixture_review": {
+    "passed": true,
+    "source_and_evidence_checks": 104,
+    "manual_scope_checks": 6,
+    "receipt_sha256": "2f3efd4a57f831bc6ffc0c86c3695e0e79c2807801cfc1a374baf59c5f8dd5a6",
+    "scope": "Fixture change and retained diagnostic/module evidence; no repeated suite or installed workload."
+  },
+  "references": [
+    "https://docs.python.org/3.11/library/asyncio-sync.html#asyncio.Event",
+    "https://docs.python.org/3.11/library/asyncio-task.html#asyncio.to_thread",
+    "https://docs.python.org/3.11/library/asyncio-task.html#asyncio.shield"
+  ],
+  "limits": [
+    "Original failures remain failures; neither original workflow was rerun or cancelled by the project.",
+    "Local timing diagnostics do not reconstruct missing hosted replies or scheduler details.",
+    "The successor commit requires its own original hosted suite; no successor pass is claimed.",
+    "No full local core-suite, SDK task, model inference, GUI or hardware experiment was repeated for this fixture correction."
+  ],
+  "original_runs": [
+    {
+      "id": 41448181665,
+      "event": "push",
+      "attempt": 1,
+      "head": "b9235b6769fc930b0e2e5988a64cddd04872e664",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41448181665"
+    },
+    {
+      "id": 41448187500,
+      "event": "pull_request",
+      "attempt": 1,
+      "head": "b9235b6769fc930b0e2e5988a64cddd04872e664",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41448187500"
+    }
+  ]
+}

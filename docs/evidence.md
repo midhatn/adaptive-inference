@@ -85,6 +85,25 @@ job remains at 15 minutes. Commands, assertions, runtime code and the 900/90-sec
 task/recipe limits are unchanged. A successor commit requires its own original
 hosted CI outcome; this record does not turn the older cancellations into passes.
 
+The [successor at `b9235b6`](../provenance/video-tool/hosted-ci-fixture-2026-11-02.json)
+also closed with 12/14 jobs passing. Both Ubuntu/Python 3.12 jobs completed under
+the revised allowance. Two Windows/Python 3.11 jobs failed different mailbox
+fixture assertions; ten core suites and ten distribution checks passed, while
+the two failed core jobs skipped distribution verification. These are retained
+assertion failures, not job timeouts.
+
+Controlled local setup delays reproduced both fixture failures. One fixture
+allowed its cached observation to age during synchronous setup; it now refreshes
+through the ordinary API before testing Resume. The other now waits for the
+authority-read setup event before starting its existing held-thread-entry check,
+using the adjacent test's established coordination pattern. The same injected
+delays then passed, as did all 28 tests in the affected module. Independent
+review confirmed the final behavioral assertions and all 77 runtime modules are
+unchanged. The application limits and ordinary freshness, I/O and held-read
+bounds were preserved. The hosted response body was unavailable, so the causal
+explanation combines recorded timings, source inspection and local reproduction;
+it is not a recovered hosted response. The new commit requires its own hosted CI.
+
 ## Fixed GPU video-tool component
 
 The [2 November component record](../provenance/video-tool/native-component-2026-11-02.json)
