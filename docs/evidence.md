@@ -4,6 +4,41 @@ This ledger separates portable software tests, source reconstruction, actual SDK
 
 ## Bounded compiler tool and installed Hermes feedback
 
+The [first physical compiler task](../provenance/compiler/physical-compiler-evidence-2026-11-02.json)
+at `414b767` used the installed Hermes SDK and unchanged IQ3_S settings. Two
+actual model requests produced one C++17 compile/test operation and completed
+the original task. The first native owner confirmed seven retained exits before
+the tool grant. The three compiler stages joined, CTest passed, and stdout was
+exactly `23 units` without a newline. The next native owner became ready before
+request 2 and confirmed five retained exits at final release. The app, prepare
+process and worker joined normally; one observed Resume and one final Stop were
+used. No model/provider answer was scripted or task replayed.
+
+The frozen full audit recorded 31 passing checks, then failed at an incorrect
+requirement for reopen-specific budget metadata. A separate copied-state
+diagnosis verified the same deadline in all 20 deadline-bearing checkpoints
+and the original 900-second allowance. A separate 26-check review verified the
+native owners, compiler artifacts, UI controls and unchanged 73-module source,
+host and worker maps. Neither supplement converts the original full audit to a
+pass. The first diagnosis also rejected a JSON projection that changed UTC
+strings; the preserved successor added only the existing clock tags.
+
+The unchanged onset predicate independently returned `Missed first request
+overlap`: there were 32 active-first-request observations before the compound
+foreground action and none after its completion. Real draining, release and
+parking occurred, but the stricter foreground gate remains unmet. The separate
+status observer exited 1 after three connection errors following responses;
+normal application cleanup does not relabel that observation as a pass.
+This qualifies the narrower real-model compiler workflow, not full foreground
+coexistence, compiler Stop/Continue, model-driven error correction, physical
+restart, media quality, performance improvement or complete M4.
+
+The original [push](https://github.com/midhatn/adaptive-inference/actions/runs/41367165412)
+and [PR](https://github.com/midhatn/adaptive-inference/actions/runs/41367175870)
+checks on `414b767`, both attempt 1, passed all 14 jobs, including 12 portable
+core-test steps and 12 distribution checks. These hosted results and the
+physical Windows evidence have different scopes.
+
 The [compiler increment](compiler-tool-recipe.md) lets an explicitly opted-in task
 submit bounded C++ source to a fixed CMake/CTest recipe through the existing
 controller. Its [local record](../provenance/compiler/local-validation-2026-11-02.json)
@@ -27,8 +62,8 @@ SQLite creating the exact observed WAL bookkeeping files without changing the
 database/history. The original before/after maps were not retained, so that
 diagnosis does not reconstruct every original file change. Earlier harness
 failures and the interrupted attempt remain preserved. The accepted evidence is
-the independently verified SDK/compiler workflow; no model reasoning, real
-foreground/resource handoff, restart or performance result is claimed.
+the independently verified SDK/compiler workflow; that earlier trial claims no model reasoning, real
+foreground/resource handoff, restart or performance result.
 
 ## Inert foreground-switch rehearsal
 

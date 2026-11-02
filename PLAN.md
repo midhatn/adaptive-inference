@@ -847,14 +847,13 @@ emitted output or tool effects. Lowering model quality is not the remedy.
 **User result:** an agent can compile code or run a supported GPU step, then
 continue its original task automatically.
 
-**Current bounded implementation:** develop the [compiler recipe](docs/compiler-tool-recipe.md)
-to connect authorized Hermes dispatch to the existing host tool grant,
-owned compiler/test subtree and durable feedback. Reuse CMake/CTest and current
-ownership APIs. First qualify the real compile/test and SDK integration, then
-the unchanged IQ3_S model path. A joined compiler error is useful feedback;
+**Current bounded implementation:** the [compiler recipe](docs/compiler-tool-recipe.md)
+connects authorized Hermes dispatch to the existing host tool grant,
+owned compiler/test subtree and durable feedback. It reuses CMake/CTest and current
+ownership APIs. The real compile/test, SDK integration and one unchanged IQ3_S
+model task now have scoped evidence below. A joined compiler error is useful feedback;
 uncertain process cleanup remains fenced. Work proceeds in an isolated source
-checkout while the separately installed reboot candidate stays fixed. No
-physical model/compiler handoff result is claimed yet, and general terminal access is not
+checkout while the separately installed reboot candidate stays fixed. General terminal access is not
 enabled through the accepted file-only worker contract.
 
 The [actual compiler component](provenance/compiler/component-validation-2026-11-02.json)
@@ -889,10 +888,26 @@ audits must retain before/after inventories and respect SQLite's WAL state;
 immutable reads are for verified closed copies, never live agent databases.
 The [repository-contained compiler task](examples/tasks/compiler-stdout/README.md)
 and optional ordinary setup input now have nine focused checks and an actual
-setup-generation check against the unchanged installed runtime. Publish this
-candidate and complete hosted checks, then let unchanged IQ3_S qualify
-physical model/tool handoff. These checks do not renew an old task budget or
-turn any earlier failed run into a pass.
+setup-generation check against the unchanged installed runtime. Candidate
+`414b767` in PR #35 passed its original 14 hosted jobs, 12 portable core-test
+steps and 12 distribution checks.
+
+The first [physical compiler task](provenance/compiler/physical-compiler-evidence-2026-11-02.json)
+completed with two real IQ3_S requests and one successful compiler operation.
+Native inference exited before the tool grant; configure/build/CTest produced
+exact `23 units`, then a fresh native owner served the final model request.
+Independent closed review verifies normal owned cleanup and the unchanged
+900-second deadline. This is the first real-model compiler result, not complete M4.
+
+**Plan adjustment from that attempt:** the full checker wrongly required
+reboot-specific budget metadata for the ordinary CLI; a separate diagnosis
+verified its same-boot fixed deadline. The strict foreground overlap check also
+failed because the compound UI action's after-observation came after request 1
+ended. The independent status observer failed during shutdown. Preserve these
+outcomes. The next fresh task uses one foreground input with immediate
+observations and a prospective ordinary-budget audit, retaining the same onset
+predicate, runtime, model quality and budgets. Do not narrow the old action
+interval, replay its completed work, or claim a speed/desktop-quality result.
 
 The named end-to-end media gate is the
 [Adaptive-Hermes-Media-Autonomous Test](docs/adaptive-hermes-media-autonomous-test.md).

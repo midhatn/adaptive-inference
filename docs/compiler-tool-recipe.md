@@ -1,9 +1,10 @@
 # Let Hermes hand resources to a compiler
 
-Status: source, local package/installation and actual SDK/compiler feedback are
-verified at the scopes below. Model-driven physical handoff remains open.
+Status: source, local package/installation, actual SDK/compiler feedback and one
+real IQ3_S compiler task are verified at the scopes below. Strict foreground
+overlap qualification remains open.
 This is the first small useful-tool increment in
-[M4](../PLAN.md#m4--let-the-agent-hand-resources-to-useful-tools); the separately
+[M4](../PLAN.md#m4--let-the-agent-hand-resources-to-useful-tools); the separate
 reboot installation remains fixed. The first physical restart preserved saved
 work but expired before continuation; it does not qualify successful recovery.
 
@@ -107,7 +108,19 @@ was not retained, so its complete historical delta cannot be reconstructed.
 This separates the accepted workflow evidence from that failed checker. Use
 verified closed copies for immutable audit reads; never mark a live database
 immutable or discard a nonempty WAL. See [SQLite's readonly WAL documentation](https://sqlite.org/wal.html#read_only_databases).
-The next physical gate uses unchanged IQ3_S and real foreground activity.
+The later [physical task](../provenance/compiler/physical-compiler-evidence-2026-11-02.json)
+used two actual IQ3_S requests and one successful compiler operation. It verified
+native release before the grant, exact `23 units`, successful CTest, model
+restoration, final task completion and normal owned cleanup. It did not require
+a source correction; real-model error correction remains unqualified.
+
+The original full audit failed on an ordinary-versus-reopen budget assumption;
+a separate copied-state review verified the unchanged fixed deadline. The
+compound foreground action missed the strict first-request overlap gate, and
+the independent observer failed during shutdown. A separate 26-check functional
+review supports the narrower compiler result without changing those outcomes.
+The next fresh trial uses one foreground input with immediate observations,
+the unchanged onset predicate, the same task budget and the same model settings.
 
 ## Authorization and Stop
 
@@ -159,7 +172,8 @@ joins compiler operations before the worker and native host; failure cleanup
 retains the same obligations. The installed SDK/compiler feedback path is now
 verified by the separate closed audit above; its original full-harness failure
 remains recorded. Stop during compilation and explicit continuation still have
-source-level evidence, while IQ3_S physical handoff remains open.
+source-level evidence. The physical task verifies the ordinary compiler path;
+its strict foreground qualification remains open.
 
 1. Check fixed commands, input identity, the original deadline, real retained
    subtree ownership and failure/interruption cleanup with focused tests.
