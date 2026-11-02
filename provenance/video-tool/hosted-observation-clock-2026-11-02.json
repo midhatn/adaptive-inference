@@ -1,0 +1,136 @@
+{
+  "schema": "adaptive.video-tool.hosted-observation-clock.v1",
+  "recorded_date": "2026-11-02",
+  "source_commit": "211bbd41c53b00ff031d944da0959181d8ea5650",
+  "pr": 36,
+  "scope": "Test-fixture observation clock, retained hosted failure and local source validation; no production runtime change.",
+  "status": "original_failure_preserved_logical_clock_validated_successor_pending",
+  "original_runs": [
+    {
+      "id": 41452748559,
+      "event": "push",
+      "head_sha": "211bbd41c53b00ff031d944da0959181d8ea5650",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/midhatn/adaptive-inference/actions/runs/41452748559"
+    },
+    {
+      "id": 41452756607,
+      "event": "pull_request",
+      "head_sha": "211bbd41c53b00ff031d944da0959181d8ea5650",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/midhatn/adaptive-inference/actions/runs/41452756607"
+    }
+  ],
+  "original_terminal_outcomes": {
+    "jobs_terminal": 14,
+    "jobs_successful": 13,
+    "jobs_failed": 1,
+    "core_steps_successful": 11,
+    "core_steps_failed": 1,
+    "distribution_steps_successful": 11,
+    "distribution_steps_skipped": 1,
+    "overall_ci_passed": false,
+    "final_observation_sha256": "bc9af4bf54de43d787fbe2cc2ccf59dafabf50e99b34d439272e799509b5a26b",
+    "terminal_verification_sha256": "84060973f5449e8ad4ba1ecedaff76eec210b95dfa3d3471e55021cd790467f8",
+    "core_step_verification_sha256": "e9c5c86b91ca3e70464135081f2818ad4616f826343d80e60bb462534517f1a0"
+  },
+  "original_failure": {
+    "run_id": 41452748559,
+    "job_id": 125301719965,
+    "attempt": 1,
+    "job": "portable (windows-latest, 3.11)",
+    "tests_reported_before_failfast": 653,
+    "elapsed_seconds_reported_by_unittest": 424.935,
+    "test": "test_desktop_mailbox_runtime.RuntimeTests.test_historical_applied_resume_followed_by_pause_never_activates",
+    "assertion": "assertTrue(reply['ok'], reply)",
+    "recorded_reply": {
+      "ok": false,
+      "error": "runtime_error"
+    },
+    "recorded_setup_coroutine_seconds": 6.609,
+    "raw_log_sha256": "d16c558274daca1eb5a0c68101434f1113113a76176253737a2cf00b26ecc34b",
+    "annotations_sha256": "77fcf9f97d15624f541d7a60d33b230b9210fc24130d6f07c61f23a1e24a3d78",
+    "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41452748559/job/125301719965"
+  },
+  "diagnosis": "Synchronous fixture history setup could age a real-time cached observation before the intended ordering assertion. The product correctly refuses stale observation; the test was unintentionally sensitive to setup speed.",
+  "correction": {
+    "file": "tests/test_desktop_mailbox_runtime.py",
+    "before_sha256": "5e5ea8031da7016679982533f412edb43109e626c0f2f6b57733aa08b783df82",
+    "after_sha256": "02cb14272823904f022307a5757f3a13daa9fe68bf734d6e6238554d57268697",
+    "reuse": "Existing logical observation-clock injection in tests/test_continuation_observation.py.",
+    "observation_clock_initial_value": 20.0,
+    "dedicated_freshness_tests": [
+      {
+        "test": "test_status_cache_expires_and_does_not_do_database_io",
+        "advance_seconds": 0.02,
+        "unchanged_max_age_seconds": 0.01
+      },
+      {
+        "test": "test_slow_snapshot_uses_start_time_not_completion_for_freshness",
+        "advance_seconds": 0.03,
+        "unchanged_max_age_seconds": 0.02
+      }
+    ],
+    "runtime_modules_unchanged": 77,
+    "all_behavior_assertions_unchanged": true,
+    "real_sqlite_and_threads_retained": true,
+    "ui_clock_stays_real": true,
+    "io_thread_release_join_and_authority_setup_bounds_unchanged": true,
+    "earlier_refresh_and_authority_entry_fixes_retained": true,
+    "clock_scope_precision": "The injected runtime clock also serves a legacy deadline fallback. These 28 mailbox fixtures contain no deadline-bearing state; production execution clocks and the 17 separate continuation-observation tests are unchanged."
+  },
+  "controlled_diagnostic": {
+    "injected_delay_seconds": {
+      "each_of_two_fixture_consumptions": 1.6,
+      "total_setup_delay": 3.2
+    },
+    "before": {
+      "tests": 1,
+      "expected_assertion_failures_observed": 1,
+      "tests_passed": false,
+      "diagnostic_expected_outcome_matched": true,
+      "receipt_sha256": "2944ec3c856e08ff6d6eb7ac9efd45cc0e48ac334a47d540ffe058dd0f78aa37"
+    },
+    "after": {
+      "tests": 1,
+      "passed": true,
+      "same_delays": true,
+      "receipt_sha256": "f68bfa0cfc8af35c4d1e44aa65ce3e6fb0d4518b8ca9a178a812fdd734d970de"
+    },
+    "runtime_unchanged": true
+  },
+  "focused_validation": {
+    "modules": [
+      "test_desktop_mailbox_runtime",
+      "test_continuation_observation"
+    ],
+    "tests": 45,
+    "elapsed_seconds_reported_by_unittest": 10.014,
+    "exit_code": 0,
+    "child_joined": true,
+    "source_inputs_unchanged": 78,
+    "receipt_sha256": "1fc0f90a52a27d17ecda343236acf5179b0a76d3eefad4356fe850b73a6e5dc0"
+  },
+  "independent_review": {
+    "checks": 42,
+    "verdict": "clear_for_test_only_integration",
+    "receipt_sha256": "7d7fc42f63feb71452c664fe3ef516c49416c55aab4dbe9fbc89e8b6bbc77588",
+    "scope": "Static source/AST and retained evidence review; no suite or workload replay."
+  },
+  "references": [
+    "https://docs.python.org/3.11/library/asyncio-sync.html#asyncio.Event",
+    "https://docs.python.org/3.11/library/asyncio-task.html#asyncio.to_thread",
+    "https://docs.python.org/3.11/library/asyncio-task.html#asyncio.shield"
+  ],
+  "limits": [
+    "The original hosted failure remains failed; neither original workflow was rerun or cancelled by the project.",
+    "The original PR workflow passed while the original push workflow failed; overall original CI is nonpassing.",
+    "The correction changes fixture timing inputs, not application freshness policy or task deadlines.",
+    "No performance, installed SDK, real-model, GUI, GPU or reboot claim follows from this test-only correction.",
+    "A successor commit requires its own original hosted results."
+  ]
+}

@@ -102,7 +102,39 @@ review confirmed the final behavioral assertions and all 77 runtime modules are
 unchanged. The application limits and ordinary freshness, I/O and held-read
 bounds were preserved. The hosted response body was unavailable, so the causal
 explanation combines recorded timings, source inspection and local reproduction;
-it is not a recovered hosted response. The new commit requires its own hosted CI.
+it is not a recovered hosted response. That correction's own hosted result is
+recorded separately below.
+
+### Explicit observation time in mailbox fixtures
+
+The [original `211bbd41` runs](../provenance/video-tool/hosted-observation-clock-2026-11-02.json)
+closed with **13 of 14 jobs passing**. The PR workflow passed; the push workflow
+failed one Windows/Python 3.11 mailbox test. Eleven core suites and eleven
+distribution checks passed; the failed core job skipped distribution verification.
+The historical-control fixture spent 6.609 seconds in synchronous setup before
+its Resume assertion. This time the log retained the refused response:
+`{"ok": false, "error": "runtime_error"}`. All original outcomes remain intact.
+
+The fixture used real elapsed time to age its cached observation while performing setup
+that was not intended as a disk-speed measurement. The correction reuses the
+logical observation clock already used by the continuation-observation tests.
+Exactly two dedicated freshness tests advance that input explicitly: one proves
+expired status performs no database I/O, and the other advances time between a
+real snapshot thread's entry and release to verify freshness from the original
+read start. SQLite operations, threads, UI time, behavior assertions and existing
+I/O, entry, release and join bounds remain unchanged. The earlier refresh and
+authority-entry coordination fixes are retained.
+
+A controlled 3.2-second setup delay reproduced the original refusal and
+assertion failure; the same case and delay then passed. The complete mailbox
+module and dependent continuation-observation tests passed **45 tests**, and an
+independent **42-check source/evidence review** confirmed the scope. All 77
+production modules are unchanged. The injected runtime clock also serves a
+legacy deadline fallback, but these 28 mailbox fixtures contain no deadline
+state; production deadlines and the 17 separate continuation tests are unchanged.
+This corrects test inputs and does not change application freshness policy or
+establish performance, installed-agent or physical qualification. The successor
+commit still requires its own original hosted results.
 
 ## Fixed GPU video-tool component
 

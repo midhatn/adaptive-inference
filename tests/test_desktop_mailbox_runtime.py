@@ -94,8 +94,12 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
             verify_current=lambda binding: VerifiedUIObservation(binding, time.monotonic(), True, True))
         self.host = FakeLifecycle()
         self.prepared = PreparedTask('host', 'task', OBJECTIVE)
+        # Observation age is a logical fixture input; real SQLite setup speed
+        # does not establish expiry. The freshness tests advance it explicitly.
+        self.observation_time = 20.
         self.runtime = MailboxRuntime(self.prepared, self.box, requester_capability=self.cap,
-            gate=self.gate, intent_capability=self.intent, lifecycle=self.host, max_age_s=3)
+            gate=self.gate, intent_capability=self.intent, lifecycle=self.host, max_age_s=3,
+            clock=lambda: self.observation_time)
         self.transport_cap = object()
         self.transport = ControlTransport(self.prepared, self.runtime, capability=self.transport_cap,
             runner_credential='b' * 64, io_timeout=.25)
@@ -403,7 +407,7 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
 
     async def test_status_cache_expires_and_does_not_do_database_io(self):
         self.runtime.max_age_s = .01
-        await asyncio.sleep(.02)
+        self.observation_time += .02
         with mock.patch.object(self.box, 'snapshot', side_effect=AssertionError('Blocking status read')):
             with self.assertRaises(RuntimeUnavailable):
                 self.runtime.status()
@@ -416,7 +420,7 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
         with mock.patch.object(self.box, 'snapshot', side_effect=blocked):
             waiter = asyncio.create_task(self.runtime.refresh())
             await self.signal(entered)
-            await asyncio.sleep(.03)
+            self.observation_time += .03
             release.set()
             with self.assertRaises(RuntimeUnavailable):
                 await waiter
