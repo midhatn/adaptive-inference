@@ -942,13 +942,30 @@ preserved; the video was not repeated. An independent 58-check review passed.
 Provider replies and resource observations were scripted. This qualifies a
 same-host safe checkpoint, not abrupt worker loss or an actual-model restart.
 
-**Next:** reconcile completed useful-tool receipts after unexpected worker loss
-before feedback/native flush. Reuse the existing operation journal, native turn
-lease and retained owner: recover the exact recorded result, append feedback
-only if missing, and preserve the original operation and deadline. Unknown
-effects or unconfirmed cleanup must remain unresolved. First validate this
-boundary in component tests, then in an installed SDK interruption/replacement
-trial, and finally with unchanged IQ3_S inference. The safe-restart task is
+**Completed-feedback component accepted:** the existing explicit reconciliation
+command now repairs an already completed compiler/video operation whose native
+feedback is missing. Ten new tests and 49 related tests passed, followed by all
+1,557 local core tests with no failures or skips. An independent source review
+confirmed reuse of the original operation proof, artifact checks and native turn
+lease. A repeated repair recognizes the exact existing result instead of
+dispatching another tool operation. These tests use inert tools and simulated
+native-lease methods; they do not establish installed worker-loss recovery.
+
+**Installed SDK trial completed:** a fresh worker exited immediately after durable
+tool completion and before native feedback. Ordinary reconciliation restored the
+exact result and a replacement finished under the original task/deadline, with
+one actual video and two scripted provider requests in total. Independent closed
+review passed 99 checks with 74 original case files unchanged; the
+[record](provenance/recipe-reconciliation/installed-worker-loss-2026-11-02.json)
+preserves its scope and the first failed attempt. The first attempt failed in its
+private checker: a raw SQL projection omitted a message identity that the pinned
+Hermes reader derives. The successor reuses the existing read-only SDK reader;
+it preserves the original failure, all task limits and all runtime sources.
+
+**Next:** handle pending effects with exact retained
+terminal receipts and qualify active-tool interruption and unchanged IQ3_S
+recovery. Unknown effects or unconfirmed cleanup must remain unresolved. Keep
+automatic host recovery separate until its integration is tested. The safe-restart task is
 closed and must not be replayed. Keep one useful-tool family per
 deployment in this first increment; cross-family switching remains a later
 integration gate. Observer shutdown diagnosis and successful physical reboot

@@ -70,6 +70,65 @@ completed useful work. It does not establish abrupt-crash recovery, interruption
 of an active video operation, actual-model restart, application restart, Windows
 reboot continuation, H3/audio quality or a performance improvement.
 
+## Completed-recipe feedback recovery component
+
+The explicit reconciliation command now restores missing native feedback for an
+already completed compiler/video operation. It reuses the original completed
+operation and artifact proof, acquires the native turn lease, appends only the
+exact missing result and then saves a ready checkpoint. Pending effects remain
+refused. A repeated repair does not repeat the tool or reset the task allowance.
+
+Ten focused tests cover both recipe families, recovery after native append but
+before checkpoint, conflicting results, changed artifacts, live ownership and
+preserved file reconciliation. Forty-nine related tests and 18 source-preservation
+tests passed. Independent source review accepted the two runtime changes and
+confirmed that the existing origin verifier remained unchanged. The complete
+local suite then passed **1,557 tests with no failures or skips** in 610.954 seconds.
+Its actual child exited zero, only the main thread remained, and all 227 recorded
+runtime/test source files stayed unchanged. Full-suite receipt SHA-256:
+`407607d50894074ffed57807f6380cc15f85ffa1a8a65efc1016d535fb423377`.
+
+The native-history fixtures are SQLite-backed, but their lease/append methods
+are simulated and their compiler/video outputs are inert. This is component
+evidence, not an installed SDK, abrupt-process-loss or real-model result. The
+[source-preservation record](../provenance/recipe-reconciliation/source-lineage.json)
+keeps historical qualification tied to its original sources. The
+[local validation record](../provenance/recipe-reconciliation/local-validation-2026-11-02.json)
+also retains the 16 remaining workflow commands, complete package verification,
+fresh 77-module host/worker installation and ordinary video-profile setup.
+
+### Installed worker loss after completed video
+
+The [fresh installed SDK trial](../provenance/recipe-reconciliation/installed-worker-loss-2026-11-02.json)
+passed the explicit repair and continuation gate. A private fault exited the
+first actual worker immediately after its video operation was durably completed,
+before Hermes saved the tool result to its conversation. The supervisor joined
+that worker, retired its old binding and called ordinary reconciliation. The
+installed Hermes lease mechanism reclaimed the dead worker's ownership; the
+repair appended exactly one verified result without another tool or provider call.
+A fresh worker then consumed that result and completed the original task.
+
+The same task, session and original 900-second allowance were preserved; there
+was no budget reset or fabricated Pause/Resume. The run made two scripted provider
+requests in total and one actual NVENC operation. Encode, probe and decode
+children exited normally. Independent closed review passed **99 checks**, with
+**74 original case files unchanged**, and verified all 77 runtime modules across
+the package, checkout and both installed interpreters. The task moved from
+`awaiting_native_flush` to `ready` to `accepted`.
+
+The first attempt remains failed: it stopped after successful reconciliation,
+before starting its replacement worker, because a private raw-SQL transcript
+projection omitted the tool-call identity that the pinned SDK derives. A separate
+read-only diagnostic on copied snapshots confirmed the exact mismatch. The
+successor checker reuses the existing SDK reader and retains the raw database
+integrity/scope checks and all acceptance comparisons. It changed no runtime
+source or task limit. The first attempt was not replayed or relabeled as passing.
+
+Provider replies and resource observations were scripted. Video execution,
+installed SDK dispatch, process loss, lease recovery, explicit repair and worker
+replacement were real. This gate does not qualify automatic controller recovery,
+active-tool interruption, actual-IQ3_S restart, application restart or reboot.
+
 ## Original video CI timeout and correction
 
 The [original hosted CI record](../provenance/video-tool/hosted-ci-timeout-2026-11-02.json)
