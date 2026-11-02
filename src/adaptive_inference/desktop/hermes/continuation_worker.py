@@ -30,8 +30,10 @@ def scope_for(run, plan, raw):
 def effect_receipts(owned, run):
     """The shared append-only physical writes must match durable non-reused writes."""
     cp = owned.checkpoint
-    compiler = rec.verified_compiler_receipts(cp, run, store_path=owned._store.path)
-    names = {'write_file'} if compiler is None else {'write_file', 'build_and_test'}
+    from adaptive_inference.desktop.recipe_dispatch import recipe_kind, definition
+    receipts = rec.verified_recipe_receipts(cp, run, store_path=owned._store.path)
+    kind = recipe_kind(rec.task_contract(cp))
+    names = {'write_file'} if receipts is None else {'write_file', definition(kind).tool_name}
     expected = [row for row in owned.checkpoint.state['tools']
                 if row['name'] in names and row.get('reused') is False]
     path = Path(run)/'effect-receipts.jsonl'

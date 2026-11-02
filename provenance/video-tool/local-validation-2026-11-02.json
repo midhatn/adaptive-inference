@@ -1,0 +1,460 @@
+{
+  "core": {
+    "actual_tool_parent_completion": "Coordinator observed terminal parent success separately; child join/result and independent closed source/origin readback are retained.",
+    "all_recorded_import_origins_unchanged": true,
+    "child_elapsed_s": 958.4220000000005,
+    "child_receipt_sha256": "1a7cfcbdce08846f94847e774417d0b065e1bdfc468238c40f2b09bf50e1c02a",
+    "closed_review_sha256": "d93f4c8068b4ec10b54d2b02a58356dc4318e56b8f09d789f57da4a2efa9c0e2",
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "forced_cleanup": false,
+    "joined": true,
+    "log_sha256": "a9efdb680232e7112daec3916ababf7841cf5a9d3f10f888fc0fd4ada5375a98",
+    "passed": true,
+    "receipt_sha256": "492c7cda85a72a4171a6765e9498b2b073c8ae3bc823afe346ef5bcbcf03633c",
+    "recorded_import_origins_verified": 218,
+    "skipped": 0,
+    "source_inputs_verified": 224,
+    "source_unchanged": true,
+    "status": "passed",
+    "supervisor_elapsed_s": 958.7349999999997,
+    "task_budget_seconds_unchanged": 900,
+    "test_supervisor_timeout_s": 1200,
+    "tests": 1541,
+    "threads_remaining": [
+      "MainThread"
+    ],
+    "unittest_elapsed_s": 957.032,
+    "video_recipe_budget_seconds_unchanged": 90
+  },
+  "installation": {
+    "all_direct_children_joined": true,
+    "base_profile_sha256": "79e26807151dfff8639d82183b1fcf57f41e6b6a9d55e1b88dabb6dab69815db",
+    "closed_review_sha256": "f2e3ac078ae2a311919b25d741226b9267a1fea279933e444d1eadb85752ff97",
+    "direct_children": 7,
+    "expected_identity_sha256": "314d6a1b02ea4f4b724a38602d1d31421fdb8c088f6db7766714eddfe33e82e5",
+    "inference_tested": false,
+    "old_prefix_inventory_checks_passed": true,
+    "ordinary_setup_runs_empty": true,
+    "passed": true,
+    "python_versions": {
+      "host": "3.11.9",
+      "worker": "3.14.7"
+    },
+    "receipt_sha256": "9ae6e8db66b0ae1b3cbb0fbd786a85841436f1204ded21383369e525c2d4a4d2",
+    "retained_prefix_copy_files": {
+      "host": 7648,
+      "worker": 2335
+    },
+    "runtime_modules_per_role": 77,
+    "same_package_identity_both_roles": true,
+    "source_preservation_scope": "Retained before/copy/after inventories compared; installer source review confirms its post-install source recheck. No new full-prefix inventory or process execution.",
+    "warnings": [
+      "pip reports the isolated Scripts directories are not on PATH; launchers use absolute interpreters."
+    ]
+  },
+  "limitations": [
+    "Historical TaskSpec-bound physical audits require the original frozen installed environment.",
+    "No installed SDK, model, GPU task or desktop workload was run by the local source/package/install/workflow checks summarized here. The separate native component record retains its narrower scope.",
+    "The explicit profile environment is a new selected input; original component environment values were not retained.",
+    "Local Windows results do not qualify other operating systems, Python 3.12 hosted jobs, real foreground/video handoff, H3/audio quality, performance or reboot survival."
+  ],
+  "lineage": {
+    "current_runtime_modules": 77,
+    "historical_compiler_manifest_unchanged": true,
+    "historical_runtime_modules": 73,
+    "passed": true,
+    "preserved_predecessor_files": 21,
+    "preserved_records": 43,
+    "scope": "Exact source projection and its historical-reader tests passed within the complete core suite. These overlapping lineage checks are not an additional total. Old physical or compiler qualification is not transferred to video.",
+    "validation_status": "passed_within_complete_core_suite"
+  },
+  "overall_passed": true,
+  "package": {
+    "actual_tool_parent_completion": "Coordinator observed terminal parent success separately; joined child outcomes and logs are retained in the receipt.",
+    "all_direct_children_joined": true,
+    "direct_children": 2,
+    "installed_identity_sha256": "5f60b0f04deadbc3a0e511df2254f5706001c1951e8f91352f042ad4b9846e97",
+    "passed": true,
+    "receipt_sha256": "90c00b4e53db69db2b455dbc4e1f8f768d820d31813d28aed2d284788aea49d5",
+    "sdist_sha256": "75042802057feba138354e92d1d86684966d287f6ed9985d91aa7e04f29ce935",
+    "source_files_verified": 1370,
+    "source_unchanged": true,
+    "version": "0.4.0a1",
+    "wheel_modules_verified": 77,
+    "wheel_sha256": "b8196de4c13c2f58a4c455aedb82d5f92f05eefd8953b0fbbf0cd38869cd5811"
+  },
+  "preserved_failed_checks": [
+    {
+      "exit_code": 1,
+      "joined": true,
+      "label": "initial-video-lineage-diagnostic",
+      "log_sha256": "7ee9c2190a317c8a5de5f373193acf47ab291c1cc4a74032ae447627daa70075",
+      "reason": "The outer source view correctly rejected changed complete bytes but used a diagnostic prefix different from the established historical assertion.",
+      "receipt_sha256": "f42da9f63e46e0c7069e5227d2cf6862ea7e1914fc68a640e225e356904f3a1c",
+      "source_pin_record_sha256": "8d4c24d5181c0d2e606572de192ca050666003794474092dfa471c47a3863914",
+      "source_unchanged": true,
+      "status": "failed",
+      "targeted_correction": {
+        "after_sha256": "e114c50f9fbd19420f97ae026c8b007f113a7a2eee2094d1974bb9458a697533",
+        "before_sha256": "72e5e7f5d9b7a38b04a8d1a29a3ae1a6074e06308bd53fb964a8debbb66e185a",
+        "exit_code": 0,
+        "joined": true,
+        "log_sha256": "ddeaea825ffd3eaebbdef6425ede9bfc9a5bd9901d1c3984e3f1fe1cfc4bdf86",
+        "passed": true,
+        "receipt_sha256": "247cc548b5de71955ae4459506b8a27aa55c73fd46b36beeadee98d80e0e9d76",
+        "source": "tests/video_lineage.py",
+        "source_unchanged": true,
+        "tests": 3
+      },
+      "tests": 95,
+      "treatment": "Only the test-side lineage helper diagnostic changed; all assertions and production bytes were unchanged. Original failure remains retained."
+    },
+    {
+      "closed_review_sha256": "ee0454a23f4e363558fc3aff5fcdb9d90912c21c187663a80bb27a827ea42040",
+      "elapsed_s": 900.0159999999996,
+      "exit_code": 1,
+      "forced_cleanup": true,
+      "joined": true,
+      "label": "initial-complete-video-core",
+      "log_sha256": "2b06c495a4726a4cd46342f203b011ec9e6abea3c56a2a59bb911e7d7e264663",
+      "passed": false,
+      "reason": "The test supervisor reached its own 900-second limit during the final video runtime-source projection test. Partial progress does not establish a complete suite pass.",
+      "receipt_sha256": "5d6901d6552c624757cfb2902e3a00c885c9f8219ebe2202272e81335a92313a",
+      "source_pin_record_sha256": "1c4ca7b569a2cf1764ad38e17918b91ffbe7f24281e56c577fa9d3310b24818e",
+      "status": "supervisor_timeout_incomplete",
+      "supervisor_timeout_s": 900,
+      "terminal_suite_summary_present": false,
+      "treatment": "Retain the original failure and start a fresh unchanged-source suite with only the test-supervisor limit raised to 1200 seconds. Task and recipe allowances are unchanged.",
+      "visible_assertion_failure": false
+    }
+  ],
+  "publication_note": "SDK and physical results are recorded separately after this local gate. Original hosted CI for the publication head and wider interruption/recovery, reboot and autonomous media gates remain separate.",
+  "recorded_date": "2026-11-02",
+  "remaining_gates_at_local_validation": [
+    "Separate installed Hermes SDK evidence review and acceptance for agent/video dispatch claims.",
+    "Unchanged IQ3_S task with real foreground/resource/video handoff.",
+    "Original hosted CI for the eventual publication head; physical restart and larger autonomous media acceptance remain separate."
+  ],
+  "remaining_local_ci": {
+    "all_direct_children_joined": true,
+    "commands": [
+      {
+        "elapsed_s": 36.48499999999967,
+        "exit_code": 0,
+        "joined": true,
+        "label": "provenance-complete",
+        "log_sha256": "e02b2bfc6f3e4df65b3b411a3ca94a6d4167badfe65e3872b3753d30331ed71b",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 36.054,
+            "tests": 90
+          }
+        ]
+      },
+      {
+        "elapsed_s": 1.4369999999998981,
+        "exit_code": 0,
+        "joined": true,
+        "label": "hermes-boundary",
+        "log_sha256": "3a3178db3c4cfcc65befd7bcfc9158935f96f69c98573fa0a36860f3c75d18a8",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 0.679,
+            "tests": 12
+          }
+        ]
+      },
+      {
+        "elapsed_s": 0.2970000000004802,
+        "exit_code": 0,
+        "joined": true,
+        "label": "foreground-fixtures",
+        "log_sha256": "95200eda2ae3cebbcb057994811e14c0527e432b11dbddb9040a929d11648f1c",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 0.107,
+            "tests": 11
+          }
+        ]
+      },
+      {
+        "elapsed_s": 9.780999999999949,
+        "exit_code": 0,
+        "joined": true,
+        "label": "native-fixtures",
+        "log_sha256": "8a16207c3a191d21044144d61b0eff58f2873e0221e7c2a0f60e42a8a8779239",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 8.976,
+            "tests": 74
+          }
+        ]
+      },
+      {
+        "elapsed_s": 2.219000000000051,
+        "exit_code": 0,
+        "joined": true,
+        "label": "arithmetic-feedback",
+        "log_sha256": "c07a9fb07b8183d287b30aa7a6f4b7efea7b64f6a26360fcee5420baab50f02a",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 1.378,
+            "tests": 11
+          }
+        ]
+      },
+      {
+        "elapsed_s": 1.405999999999949,
+        "exit_code": 0,
+        "joined": true,
+        "label": "shutdown-receipts",
+        "log_sha256": "52d3e91e7b7132561171c9c0d5b3e764d05c8c657249c1873a72c8ec4dc7cd09",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 0.632,
+            "tests": 9
+          }
+        ]
+      },
+      {
+        "elapsed_s": 0.3599999999996726,
+        "exit_code": 0,
+        "joined": true,
+        "label": "historical-native-sources",
+        "log_sha256": "52f05fd0f6aa99125f26a205df4b4e4517934463ef42abc8d96d0da06c23da11",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 0.069,
+            "tests": 3
+          }
+        ]
+      },
+      {
+        "elapsed_s": 3.780999999999949,
+        "exit_code": 0,
+        "joined": true,
+        "label": "sanitizer",
+        "log_sha256": "de1a230cb93d078a221d33b600d78b3bd853d280b6e7c11a8cfcc8705861d9c1",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 3.438,
+            "tests": 158
+          }
+        ]
+      },
+      {
+        "elapsed_s": 0.14000000000032742,
+        "exit_code": 0,
+        "joined": true,
+        "label": "reference-sources",
+        "log_sha256": "3d2b3dda7fb7bf23b77745b7abd19134ca17116e865e9edd00341818719ca6ea",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 0.125,
+        "exit_code": 0,
+        "joined": true,
+        "label": "client-transports",
+        "log_sha256": "1ffe3530989328c54a02839804673ecca5388166a95c834d33d0370800537ffe",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 0.34400000000005093,
+        "exit_code": 0,
+        "joined": true,
+        "label": "strata-verify-only",
+        "log_sha256": "2780603be4c952661d193e01b7219feea318e356a511d9700724bac3aba6ea96",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 0.5,
+        "exit_code": 0,
+        "joined": true,
+        "label": "hermes-verify-only",
+        "log_sha256": "5585ff7be8c4f90b98d93519105b080879083349f5bfddc620597519dd7ac7fb",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 1.0469999999995707,
+        "exit_code": 0,
+        "joined": true,
+        "label": "demo",
+        "log_sha256": "e5e97c1e33ae077f2193a76b273d2a3a63bb58fe743f47f58949ddff159a353b",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 0.7340000000003783,
+        "exit_code": 0,
+        "joined": true,
+        "label": "profiles",
+        "log_sha256": "cf0b68d1d56d3a05f846b0a7862df30b913b962713693a83e44be674034dfb96",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 36.42199999999957,
+        "exit_code": 0,
+        "joined": true,
+        "label": "offline-source",
+        "log_sha256": "af8e28bdd5c620aff959a4487978d156f21da99338934374656c9fffa62f4fc1",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 15.82799999999952,
+        "exit_code": 0,
+        "joined": true,
+        "label": "hermes-current-source",
+        "log_sha256": "527eb377ca81a272d57a2e6280125ea058fb686d5ae3a6b9592cc969eda56d79",
+        "reported_unittest_summaries": []
+      }
+    ],
+    "count_note": "Each reported suite count appears only in its command. Public wrappers are included in provenance; nested and overlapping counts are not summed.",
+    "dependency_reuse": {
+      "download_or_install_performed": false,
+      "httpx_version": "0.28.1",
+      "pin_record_sha256": "3d5c3ab4a7bad3b8c27216513ef4e329580c88288f912370c2b911631c9a7ad4",
+      "retained_dependency_files": 196
+    },
+    "parent_receipt_sha256": "590a40269190c1b9326d0b291335aed0b55de9788f0d9792f198efed4cdecee3",
+    "passed": true,
+    "provenance": {
+      "all_discovered_tests_included": true,
+      "errors": 0,
+      "excluded_tests": 0,
+      "failures": 0,
+      "public_harness_wrappers_included": true,
+      "receipt_sha256": "50c2999331e1ddd1c2ac2a93ac925e6aa06f058dde3aa36d617412aa178b31de",
+      "skipped": 0
+    },
+    "receipt_sha256": "429b9ff4c7e018c43ebc2a6307da1cf3aa425d00fdccc3a8d58bafedb6b2eafc",
+    "scope": "Sixteen existing workflow commands completed locally on Windows/Python 3.11.9. Full core, package/install and SDK/physical work are separate lanes.",
+    "source_and_retained_dependencies_unchanged": true,
+    "workflow_sha256": "f3ec76d23d54d7a72cb96aa4bf00201232ed95f3e653ef362bf13433f3ab672c"
+  },
+  "schema": "adaptive.video-tool.local-validation.v1",
+  "scope": "Completed local Windows CPython 3.11.9 core/source checks, package verification, full 3.11.9 host/3.14.7 worker installation, public video-profile preparation and remaining workflow checks for the exact 77-module candidate. This local qualification does not establish installed SDK behavior, actual model/video handoff, foreground performance, restart recovery or hosted cross-platform CI.",
+  "separate_evidence": {
+    "installed_sdk": {
+      "record": "provenance/video-tool/installed-sdk-evidence-2026-11-02.json",
+      "scope": "Installed Hermes SDK execution, saved feedback and its independent acceptance are documented separately; no SDK outcome or counts are included in this local source/package record.",
+      "status": "outside_this_record"
+    },
+    "native_component": {
+      "record": "provenance/video-tool/native-component-2026-11-02.json",
+      "scope": "Separate actual FFmpeg/NVENC component evidence with scripted resource/native-adapter observations; its counts are not combined here.",
+      "sha256": "2e52df681d22598e882ee97706921e1ebe5b2b489effca5bcbce1c0461087780"
+    },
+    "physical_video": {
+      "record": "provenance/video-tool/physical-foreground-video-2026-11-02.json",
+      "status": "not_qualified_by_this_record"
+    }
+  },
+  "source_identity": {
+    "baseline_commit": "1f7f28e1388d4aa39fa6ff7f8ddc2445f88e127d",
+    "baseline_note": "Video changes are identified by exact bytes below; the predecessor commit alone does not contain this candidate.",
+    "compiler_predecessor_source_lineage_sha256": "21606221cf65fba78fab867228d7aee4a82a1d52593c3aa13402266a5ef81f8d",
+    "complete_packaged_source_pin_record_sha256": "eb00ce57ae1f4e45bcc1e84b1400f5271e0cf4184561344d275d99bf6846529c",
+    "core_source_pin_record_sha256": "1c4ca7b569a2cf1764ad38e17918b91ffbe7f24281e56c577fa9d3310b24818e",
+    "runtime_modules": 77,
+    "runtime_sha256": {
+      "__init__.py": "1d906cca6d5581290d73292cce949dcaf74001de67bda63b903dfb2e70edacba",
+      "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "adapters.py": "378ee41c1bdbb16873e31752d704e656a70009862d41b36898d30f57a36dfc58",
+      "cli.py": "a13d6c2c52445884f2ee9897eb7fadb75188339be4472db98bd760c18bce5ecf",
+      "client_routing.py": "d57178cfbd5666e75aef311f1362cf8486f48085c6f4995861b4fbd0cb7e41d1",
+      "config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+      "context_budget.py": "cd16b57bc105a179e94dbc9e429c02b901bcd8602cfaf04c9cf8776e9d799ccf",
+      "control_mailbox.py": "12e6ceaef36b41099422040fb23db0a9bccf96a6afb799f0e301a64bccb95888",
+      "costs.py": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1",
+      "demand.py": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+      "demo.py": "5a3b1ff743bee6c45f85df8417bedbc18657f2c59f3e894f1f3298a480b22b93",
+      "desktop/__init__.py": "6169073159f3c0e506752f54aa51b40b058f71ed058d5272e160aa4a61ee7daa",
+      "desktop/activity.py": "3282dc37b493ba3fd347e279b074fa3dfd5d2c1ea5eaba8131dc568d97ec0750",
+      "desktop/cold_start.py": "1264f34910a0d619c6502c7565e66abbfe7ec642391a461390271b8e0799bf68",
+      "desktop/compiler_bridge.py": "701802a5addf4e440df797762896d76e8b7c3add07dad3f2a06d3da645d7a5be",
+      "desktop/compiler_host.py": "2814e4b182580eb2694a716811d360dad6b032e5573cc0632b914ed1c7d33df2",
+      "desktop/compiler_profile.py": "872b8babf3fe26828ce50422485489fdde35bd59f010ff063be66ef253e323fc",
+      "desktop/compiler_recipe.py": "12b31514327a7c168c915b3a321ee1c17bf8446b49181eed6bed2bced55b01d2",
+      "desktop/compiler_template.py": "bf7a3123eb147caded7700c7f67e0c072cfe915239fa3a5cb004e7e1772f7f85",
+      "desktop/composition.py": "066aa1454c88cc08ed9c58452023fb47f1a223981d08428a32b20581ecc5e321",
+      "desktop/continuation_host.py": "9bd258aa8b1a2516e80cd94641f2a9fce3584c5b8aa484badf9854dfc121d7c7",
+      "desktop/control_client.py": "ba950c73328e084329fdb29ab78fdfe86cfed1715a792cdbf9872a74e8c75919",
+      "desktop/control_transport.py": "280d8a55793c241b3ec30e253b758de42386f3329bb6477ba47537f9ca264c6b",
+      "desktop/desktop_controls.py": "081cfc11a5335299ad119007dfc7a428ed011f55386af50d4d1289ec0f62e786",
+      "desktop/execution_budget.py": "77ad74ddbf0eaa89379fbecb305574d5b70cc32f9e63934a14f439ed2c744728",
+      "desktop/foreground_policy.py": "35781fb869c03220c6f48c3e138083b15bbcf7e40187edbfe546ad4da09b7faa",
+      "desktop/gui_launch.py": "c93e837ae15092de1a7814f766731ef38dc118f3e8a50280ee7658b91966355b",
+      "desktop/gui_session.py": "f232609a01f11977d7f011a8b1c7f2b7c2a0c3ca697766b63ec0873ec9f4cc64",
+      "desktop/hermes/__init__.py": "43830f7aa3deb6001eb8aa8646fc515f5d8d74a26f50590984c8278e4db67532",
+      "desktop/hermes/admission.py": "6f12fd6ad21fa194cb337590cf0bbd71b1d394e6a2be0cd79dfdd634af5e0f07",
+      "desktop/hermes/compiler_client.py": "fb0372c6b16738cdb1b0c8d527765e8b7f60a038513950988c84d40b741bf8a1",
+      "desktop/hermes/compiler_evidence.py": "ac869d4964e2ad2136ea19faba27fc1a843438e19b1aad25fc4b9d83d6fc137f",
+      "desktop/hermes/compiler_recovery.py": "cf4a3b8b0b4bbffa37f6bbc5e72a555fa5c21260a88de15d64bc292ff0f7fb5d",
+      "desktop/hermes/compiler_worker.py": "8d18ef60025318804e81f848546e1c3e0e84f61cf4a09fe7bfd1c759b243d91e",
+      "desktop/hermes/continuation.py": "d3b396bba2ed794b7304e3bebb888e2d8d51568de846fbe6549363b42d6de5c6",
+      "desktop/hermes/continuation_worker.py": "6871ecbfaec346ccd658d957b5f593f0dc242db17c1b13b93ab603f693967b67",
+      "desktop/hermes/control_bridge.py": "7a8e0aa672efeb1c6f676446e0f3b6886fd778f5d0f6c185a87d005a0256a3db",
+      "desktop/hermes/native_reader.py": "1f51ea1180ef0d7ad52359430831084de7cde45e21e758068fee5b9a93079464",
+      "desktop/hermes/pause_activity.py": "3cffa8eae39b956de3d873e82593a052c2682aad5f06b36a8ff845080baf0e5d",
+      "desktop/hermes/recovery.py": "c6f07435ae29f4e2542af585ace107f7952583ed3c0735cf6df2f3a0df438f37",
+      "desktop/hermes/report_contract.py": "d86aa6ee0f18912400aa80d96c343128af08ae80e7d8c367ee9c8733ea5d69de",
+      "desktop/hermes/report_validator.py": "378dd445a088a075d300fc85b86160f3b96790ee046adecf926f9e59e8e7d9af",
+      "desktop/hermes/run_recovery.py": "d32a12bb7f33b2ef9204a1baf0b09a62668154df63f88f1beda027bd314c1561",
+      "desktop/hermes/sdk_pins.py": "538a5ea8651e1106c7c535ccd73b33b2f56de6c736d926ce6b92c5fb6eb075ce",
+      "desktop/hermes/service_stop.py": "235b61ad248083f8f0536767ad79473955d96ad1b40189b73c9cfe71439a51c9",
+      "desktop/installation.py": "13e13d532bedb68f150d1096767c98796de83f74dce54021d286c6c18c521e85",
+      "desktop/load_feasibility.py": "23e94f3ee770b065fb323f30bb104d8d5732bf710bd3cc9b2a27daa746014dda",
+      "desktop/mailbox_runtime.py": "aad1c3b383f6954be89ebe6c9f2e680cd286c672d7bb26bd7027402e0a7d6b72",
+      "desktop/native_owner_adapter.py": "5a79c48911c798310104be07ebb978f9ad9fe4f7ab000c328afd992f75415977",
+      "desktop/owned_job.py": "90b59dbdae226419fc9680c961c21dfa9e061df08512a7a8089d6f6d11b2ccc4",
+      "desktop/persistent_host.py": "acff567d5eb6f2c569588bfa684363907897bdb66be8008bc20c10d3ca7c0011",
+      "desktop/profile.py": "caac6f07fc87ccbf51d97003a0d8cb209d21e04bfc00acda6a5c9e05b2d3fbbc",
+      "desktop/recipe_dispatch.py": "3a4813e156448305e7880c3cc3ac3b82e992b34a0e05b7f6b74f09bc9e2c6f4b",
+      "desktop/retained_ui.py": "749b947510377518c452ae7a70fa21c32f27c3f10225f6eb90d87ef03406f5cb",
+      "desktop/run_gui.py": "eb67c9bac75b72bcc545c234b28c54b8c9c5fbfb3c2183f99e63a47abb3a6ef0",
+      "desktop/saved_tasks.py": "75703584b3c4cda42aed6de0e4645ea75b2a3b1e2e81c702e919f626cc8ec1b7",
+      "desktop/serial_listener.py": "048e8ab061e175a978f755801b9a27e3daa292c1dc7dabe3c8a8763be81199b2",
+      "desktop/startup_pipe.py": "0617c527461b4c437474a947a497300e4c28c06d11f8bb43f1e67fc51a159fae",
+      "desktop/task_admission.py": "2ca007580bca43678c529599b6296ff4b97c15e210b9daeb651a8f2c4f12b25d",
+      "desktop/task_handover.py": "6905f542ac26e5b1ad51fe94cfe3bf07accd7ec057b4d8521a4446a807bdf809",
+      "desktop/ui_intent.py": "ff67208a3890656bc76717ac18c8d0c02a19dc2e09b11b81d88fc1f63c0a29d1",
+      "desktop/ui_progress.py": "466deda7ba15d73ea779abf3b1b2e690e92217950b15afdbdf8acf9cda3d2de9",
+      "desktop/video_profile.py": "2ac53c40937e60d984e2903d643d2ee83372760756d1afedf5406b71644b41e4",
+      "desktop/video_recipe.py": "b255d3f939aa3a1e29449bc397e39b50859fcc0cf8a10201859b2ec2dc50bcff",
+      "desktop/video_template.py": "1a74d771d83eed358196467857e11c5986cfc6c196b6d172c614224db311a835",
+      "desktop/window_marker.py": "e2613ef662993be88c332657e4e53c598fdc006634bf8fabf9e0d0a9765c0d36",
+      "desktop/windows_host_base.py": "ad08c31435bc4da77b43c68321a7c08130ab1c4f7bc688c71191c6497abc97bd",
+      "execution_clock.py": "c9d04e8e029d4d88830560482e2437cab3d06ef140a942d16543c3be95642cff",
+      "feedback.py": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+      "gateway.py": "b2009a8a776bcea4dfc3bedac5296c930ae2211bb8e29d7ccdf76a227fefdef8",
+      "handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+      "resource_policy.py": "53768d4b95b589bb76d1788a9ccceefe60c05b332b1b1f43dece6b04bfec212a",
+      "resources.py": "a72e376e4dfc6021e61756812f93275af20c28ec1438faf5eb381a491d3db4d9",
+      "scheduler.py": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f",
+      "task_prepare.py": "9cddd6e09b3f5435da08316f8d9ccdfbcff67a336f6f74b420108c4c856223b2",
+      "task_spec.py": "2975c0c4489ac863502189777699d13d7b2b8aca6d19191247fd860ed4a0ce76",
+      "task_store.py": "7bf559ea55e0c19155515f321f7505b4d9275648333bcf2c983c2c280bd2e2e6"
+    },
+    "source_lineage": "provenance/video-tool/source-lineage.json",
+    "source_lineage_sha256": "2f6fe653edd7865aacc2302444b865f541f44e8419fa1046a0a6dee23a79556b"
+  },
+  "status": "local_ci_core_source_package_installation_and_profile_passed",
+  "video_profile_preparation": {
+    "direct_children": 1,
+    "elapsed_s": 4.32799999999952,
+    "environment_scope": "New explicit pinned profile input; component environment values were not retained",
+    "exit_code": 0,
+    "forced_cleanup": false,
+    "inference_tested": false,
+    "joined": true,
+    "log_sha256": "cb1a515445c31b1586a193727d3e71c81c7804b9555023938185266e0cbb075f",
+    "passed": true,
+    "prepared_only": true,
+    "profile_sha256": "6bfd5eb30fcd85c9abefc4078455c88521383cbebc0b7e6dff05de43a2b4a177",
+    "public_setup_used": true,
+    "receipt_sha256": "6977bf5f59bc1c8e8763f179e778f44fa052c6274445cbf87444c942ab162742",
+    "scope": "Ordinary public setup prepared an explicit pinned video profile; no launcher, model or video task was run.",
+    "settings_sha256": "16b456e9b98f817d729d8b7a731f9e1d3cc6a954b58fe7967bfe49df9798c15f"
+  }
+}

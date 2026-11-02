@@ -125,3 +125,11 @@ format described in SQLite 3.45.1 pager.c at
 189e44dfecdc7868bb860dfb5d98eab371318c37. That public-domain source and its original
 LICENSE.md are preserved in third_party/reference-sources/sqlite/. SQLite itself
 performs recovery; no copied pager implementation is part of the Python runtime.
+
+The fixed video-tool recipe reuses this project's Apache-2.0 protected_video
+commands and process ownership. It invokes externally installed FFmpeg and
+FFprobe executables; their code and binaries are not distributed here. FFmpeg's
+license depends on the selected build and enabled components. Preserve that
+build's own license and configuration records. NVIDIA Video Codec SDK and FFmpeg
+documentation inform the NVENC command and probe oracle, with citations in
+REFERENCES.bib; no NVIDIA SDK source or binaries are copied.

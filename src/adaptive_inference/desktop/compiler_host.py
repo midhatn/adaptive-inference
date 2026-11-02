@@ -32,6 +32,7 @@ from adaptive_inference.desktop.hermes.recovery import digest, task_contract
 from adaptive_inference.desktop.mailbox_runtime import MailboxRuntime
 from adaptive_inference.execution_clock import CLOCK_ID, execution_now
 from adaptive_inference.task_spec import strict_json
+from adaptive_inference.desktop.recipe_dispatch import definition
 
 _LINK = 'adaptive_inference.execution_authorization.v1'
 _DETAILS = {'name', 'args', 'tool_call_id', 'session_id', 'fingerprint',
@@ -77,8 +78,11 @@ class CompilerHost:
     to collect cancellation feedback, then close/join/retire explicitly.
     """
     def __init__(self, controller, settings, *, host_epoch, clock=execution_now,
-                 runner=run_recipe):
-        _require(type(settings) is CompilerSettings and callable(clock) and callable(runner)
+                 runner=None, kind='compiler'):
+        self.definition = definition(kind)
+        settings_type, _, default_runner, self._prepare_recipe = self.definition.components()
+        runner = default_runner if runner is None else runner
+        _require(type(settings) is settings_type and callable(clock) and callable(runner)
                  and type(host_epoch) is str
                  and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:-]{0,127}', host_epoch))
         self.controller, self.settings, self.host_epoch = controller, settings, host_epoch
@@ -99,7 +103,7 @@ class CompilerHost:
     def add_route(self, app):
         self._owner()
         _require(not self._installed and not self._fenced)
-        app.router.add_post(ROUTE, self.handle)
+        app.router.add_post(self.definition.route, self.handle)
         self._installed = True
 
     async def handle(self, request):
@@ -178,7 +182,7 @@ class CompilerHost:
                          and is_current_worker(worker) is True and is_worker_joined(worker) is False
                          and self._now() < task_deadline and cp.operation is None
                          and type(cp.owner_epoch) is str and re.fullmatch('[0-9a-f]{32}', cp.owner_epoch)
-                         and spec is not None and spec.compiler is not None)
+                         and self.definition.contract(spec) is not None)
                 binding = _Binding(runtime, mailbox, selection, worker, is_current_worker,
                     is_worker_joined, read_native_history, root, task_deadline, cp.owner_epoch,
                     spec, deepcopy(cp.metadata))
@@ -194,9 +198,10 @@ class CompilerHost:
                 # never grants dispatch; every _intent keeps dispatch=True.
                 self._current(binding, dispatch=False)
                 binding.bridge = CompilerBridge(self.controller,
-                    {RECIPE_ID: lambda request: self._prepare(binding, request)},
+                    {self.definition.recipe_id: lambda request: self._prepare(binding, request)},
                     capability=capability, task_deadline=task_deadline,
-                    validate_binding=lambda request: self._validate(binding, request), runner=self._runner)
+                    validate_binding=lambda request: self._validate(binding, request), runner=self._runner,
+                    kind=self.definition.kind)
             except BaseException:
                 self._binding = None
                 raise
@@ -208,10 +213,10 @@ class CompilerHost:
 
     async def _intent(self, binding, request):
         self._current(binding)
-        _require(_decode(_json(request)) == request)
+        _require(_decode(_json(request), kind=self.definition.kind) == request)
         expected = {'host_epoch': self.host_epoch, 'task_id': binding.runtime.prepared.task_id,
                     'execution_id': binding.selection['execution_id'], 'owner_epoch': binding.owner,
-                    'recipe_id': RECIPE_ID}
+                    'recipe_id': self.definition.recipe_id}
         _require(all(request[key] == value for key, value in expected.items())
                  and re.fullmatch('[0-9a-f]{32}', request['operation_id']))
 
@@ -224,24 +229,24 @@ class CompilerHost:
             details = operation.get('details')
             _require(type(details) is dict and set(details) == _DETAILS
                      and all(details.get(key) == value for key, value in expected.items() if key != 'recipe_id')
-                     and details['name'] == 'build_and_test' and details['tool_call_id'] == request['tool_call_id']
+                     and details['name'] == self.definition.tool_name and details['tool_call_id'] == request['tool_call_id']
                      and details['session_id'] == cp.state.get('session_id')
                      and details['spec_sha256'] == binding.spec.sha256
-                     and details['fingerprint'] == digest({'name': 'build_and_test', 'args': details['args']}))
+                     and details['fingerprint'] == digest({'name': self.definition.tool_name, 'args': details['args']}))
             native = binding.read_native(details['session_id'])
             _require(type(native) is list and native == cp.state.get('native_history'))
             calls = [(row, call) for row in native for call in row.get('tool_calls', [])
                      if call.get('id') == request['tool_call_id']]
             _require(len(calls) == 1 and calls[0][0].get('role') == 'assistant'
                      and calls[0][1].get('type') == 'function'
-                     and calls[0][1]['function']['name'] == 'build_and_test'
+                     and calls[0][1]['function']['name'] == self.definition.tool_name
                      and strict_json(calls[0][1]['function']['arguments']) == details['args']
                      and not any(row.get('role') == 'tool' and row.get('tool_call_id') == request['tool_call_id']
                                  for row in native)
                      and not any(row.get('tool_call_id') == request['tool_call_id'] for row in cp.state['tools']))
-            from adaptive_inference.desktop.hermes.compiler_evidence import verify_compiler_evidence
-            prior = verify_compiler_evidence(cp, binding.root, native, store_path=binding.mailbox.store.path)
-            _require(binding.spec.validate_compiler_args(details['args'], completed_runs=len(prior)).accepted)
+            from adaptive_inference.desktop.hermes.compiler_evidence import verify_recipe_evidence
+            prior = verify_recipe_evidence(cp, binding.root, native, store_path=binding.mailbox.store.path)
+            _require(self.definition.validate_args(binding.spec, details['args'], completed_runs=len(prior)).accepted)
             binding.spec.verify_inputs(binding.root / 'work')
             return first, binding.runtime._observe(binding.mailbox), deepcopy(details['args'])
 
@@ -266,9 +271,10 @@ class CompilerHost:
         args = await self._intent(binding, request)
 
         def prepare():
-            root = binding.root / 'compiler'
+            root = binding.root / self.definition.kind
             root.mkdir(exist_ok=True)
-            return prepare_cpp_recipe(self.settings, spec=binding.spec, args=args,
+            prepare_recipe = prepare_cpp_recipe if self.definition.kind == 'compiler' else self._prepare_recipe
+            return prepare_recipe(self.settings, spec=binding.spec, args=args,
                                       operation_id=request['operation_id'], root=root)
 
         def check(recipe):

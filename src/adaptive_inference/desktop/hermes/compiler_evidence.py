@@ -20,12 +20,13 @@ from adaptive_inference.desktop.hermes.recovery import (
 from adaptive_inference.execution_clock import CLOCK_ID
 from adaptive_inference.task_spec import strict_json, COMPILER_STATUSES
 from adaptive_inference.task_store import TaskStore
+from adaptive_inference.desktop.recipe_dispatch import definition, recipe_kind
 
 TOOL_NAME = 'build_and_test'
 _PRE_DISPATCH = frozenset({'binding_refused', 'preparation_failed', 'cancelled_before_dispatch'})
 
 
-def verify_compiler_result(*, task_root, task_spec, args, operation_id, tool_call_id,
+def verify_recipe_result(*, task_root, task_spec, args, operation_id, tool_call_id,
                            result, expected_deadline):
     """Validate one result against an explicitly supplied authoritative deadline.
 
@@ -33,9 +34,11 @@ def verify_compiler_result(*, task_root, task_spec, args, operation_id, tool_cal
     deadline. Historical callers obtain their deadline from _origin_deadline.
     This function alone does not prove native authorization or origin history.
     """
+    kind = recipe_kind(task_spec)
+    selected = definition(kind)
     if (type(expected_deadline) not in (int, float) or not math.isfinite(expected_deadline)
             or expected_deadline <= 0 or type(result) is not dict
-            or result.get('schema') != 'compiler-operation-result.v1'
+            or result.get('schema') != selected.result_schema
             or result.get('operation_id') != operation_id or result.get('recipe_id') != args['recipe_id']
             or result.get('status') not in COMPILER_STATUSES
             or result.get('owned_processes_exited') is not True
@@ -46,20 +49,37 @@ def verify_compiler_result(*, task_root, task_spec, args, operation_id, tool_cal
     if result['status'] in _PRE_DISPATCH:
         if result['dispatched']:
             raise ReconciliationRequired('Pre-dispatch compiler outcome reports an effect')
-        checked = {'source_sha256': digest(args['source'].encode('utf-8'))}
+        checked = {'source_sha256': digest(args['source'].encode('utf-8'))} if kind == 'compiler' else {}
     else:
-        checked = verify_cpp_artifacts(Path(task_root) / 'compiler', spec=task_spec, args=args,
+        if kind == 'compiler':
+            verifier = verify_cpp_artifacts
+        else:
+            from adaptive_inference.desktop.video_template import verify_video_artifacts
+            verifier = verify_video_artifacts
+        checked = verifier(Path(task_root) / kind, spec=task_spec, args=args,
                                        operation_id=operation_id, result=result)
     normalized = {'operation_id': operation_id, 'tool_call_id': tool_call_id,
                   'spec_sha256': task_spec.sha256, 'recipe_id': args['recipe_id'],
-                  'source_sha256': checked['source_sha256'], 'status': result['status'],
+                  **({'source_sha256': checked['source_sha256']} if kind == 'compiler' else {}),
+                  'status': result['status'],
                   'owned_processes_exited': True}
     if result['passed']:
+        if kind == 'video':
+            from adaptive_inference.desktop.video_template import validate_success_projection
+            validate_success_projection(result)
+            normalized.update({key: result[key] for key in ('artifact_sha256', 'probe_sha256', 'media')})
+            return normalized
         if not result['dispatched'] or result.get('tests_passed') != [TEST_NAME]:
             raise ReconciliationRequired('Successful compiler result lacks its actual test')
         normalized.update(stdout_sha256=checked['stdout_sha256'], artifact_sha256=result['artifact_sha256'],
                           test_report_sha256=result['test_report_sha256'])
     return normalized
+
+
+def verify_compiler_result(**kwargs):
+    if recipe_kind(kwargs['task_spec']) != 'compiler':
+        raise ReconciliationRequired('Compiler evidence requires a compiler task')
+    return verify_recipe_result(**kwargs)
 
 
 @contextmanager
@@ -145,7 +165,7 @@ def _origin_deadline(db, checkpoint, task_spec, row):
         raise ReconciliationRequired('Compiler receipt has no exact completed origin operation') from exc
 
 
-def verify_compiler_evidence(checkpoint, task_root, native_rows, *, store_path=None,
+def verify_recipe_evidence(checkpoint, task_root, native_rows, *, store_path=None,
                              require_native_results=True):
     """Return verified receipt evidence; do not claim task completion/authority.
 
@@ -157,15 +177,17 @@ def verify_compiler_evidence(checkpoint, task_root, native_rows, *, store_path=N
     checkpoint; no native DB initialization or worker claim occurs here.
     """
     task_spec = task_contract(checkpoint)
-    if task_spec is None or task_spec.compiler is None:
-        raise ReconciliationRequired('Compiler evidence requires an explicit compiler task')
+    kind = recipe_kind(task_spec)
+    if kind is None:
+        raise ReconciliationRequired('Recipe evidence requires an explicit recipe task')
+    selected = definition(kind)
     if type(require_native_results) is not bool:
         raise ValueError('Native result verification must be explicit')
     state = checkpoint.state
     if not require_native_results and state.get('phase') != 'awaiting_native_flush':
         raise ReconciliationRequired('Only the active native flush interval may defer result verification')
     assert_prefix(state['native_history'], native_rows)
-    rows = [row for row in state['tools'] if row['name'] == TOOL_NAME]
+    rows = [row for row in state['tools'] if row['name'] == selected.tool_name]
     if require_native_results:
         verify_tool_rows(native_rows, rows)
     receipts = []
@@ -176,19 +198,25 @@ def verify_compiler_evidence(checkpoint, task_root, native_rows, *, store_path=N
         for row in rows:
             args = row['args']
             if (row.get('reused') is not False or row.get('spec_sha256') != task_spec.sha256
-                    or row.get('fingerprint') != digest({'name': TOOL_NAME, 'args': args})
-                    or not task_spec.validate_compiler_args(args).accepted):
+                    or row.get('fingerprint') != digest({'name': selected.tool_name, 'args': args})
+                    or not selected.validate_args(task_spec, args).accepted):
                 raise ReconciliationRequired('Compiler receipt intent changed')
             calls = [call for message in native_rows for call in message.get('tool_calls', [])
                      if call.get('id') == row['tool_call_id']]
-            if (len(calls) != 1 or calls[0]['function']['name'] != TOOL_NAME
+            if (len(calls) != 1 or calls[0]['function']['name'] != selected.tool_name
                     or strict_json(calls[0]['function']['arguments']) != args):
                 raise ReconciliationRequired('Compiler receipt differs from native intent')
-            normalized = verify_compiler_result(task_root=task_root, task_spec=task_spec, args=args,
+            normalized = verify_recipe_result(task_root=task_root, task_spec=task_spec, args=args,
                 operation_id=row['operation_id'], tool_call_id=row['tool_call_id'], result=strict_json(row['result']),
                 expected_deadline=_origin_deadline(db, checkpoint, task_spec, row))
-            if normalized != row.get('compiler_receipt'):
+            if normalized != row.get(selected.receipt_key):
                 raise ReconciliationRequired('Normalized compiler receipt changed')
             receipts.append(normalized)
-    task_spec.compiler_completion(receipts)
+    selected.completion(task_spec, receipts)
     return receipts
+
+
+def verify_compiler_evidence(checkpoint, task_root, native_rows, **kwargs):
+    if recipe_kind(task_contract(checkpoint)) != 'compiler':
+        raise ReconciliationRequired('Compiler evidence requires a compiler task')
+    return verify_recipe_evidence(checkpoint, task_root, native_rows, **kwargs)

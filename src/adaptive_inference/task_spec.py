@@ -19,6 +19,9 @@ NAMESPACE = 'adaptive_inference.task_spec.v1'
 SCHEMA = 'adaptive.task-spec.v1'
 COMPILER_SCHEMA = 'adaptive.task-spec.v2'
 COMPILER_RECIPE = 'cpp17-stdout.v1'
+VIDEO_SCHEMA = 'adaptive.task-spec.v3'
+VIDEO_RECIPE = 'nvenc-testclip.v1'
+VIDEO_MEDIA = {'codec_name': 'h264', 'width': 1280, 'height': 720, 'frames': 90}
 COMPILER_STATUSES = frozenset({'passed', 'failed', 'interrupted', 'timed_out', 'cancelled',
                              'cancelled_before_dispatch', 'binding_refused', 'preparation_failed'})
 BUDGET = {'max_requests': 8, 'max_attempts': 8, 'max_admission_attempts': 32,
@@ -85,8 +88,10 @@ class TaskSpec:
         data = strict_json(encoded)
         fields = {'schema', 'prompt', 'inputs', 'outputs', 'budget', 'validation'}
         compiler_task = type(data) is dict and data.get('schema') == COMPILER_SCHEMA
-        if (type(data) is not dict or set(data) != fields | ({'compiler'} if compiler_task else set())
-                or data['schema'] not in (SCHEMA, COMPILER_SCHEMA) or type(data['prompt']) is not str
+        video_task = type(data) is dict and data.get('schema') == VIDEO_SCHEMA
+        extension = {'compiler'} if compiler_task else {'video'} if video_task else set()
+        if (type(data) is not dict or set(data) != fields | extension
+                or data['schema'] not in (SCHEMA, COMPILER_SCHEMA, VIDEO_SCHEMA) or type(data['prompt']) is not str
                 or not data['prompt'].strip() or len(data['prompt'].encode('utf-8')) > 16384
                 or type(data['budget']) is not dict or data['budget'] != BUDGET
                 or any(type(value) is not int for value in data['budget'].values())):
@@ -102,6 +107,12 @@ class TaskSpec:
                     or not 1 <= compiler['max_source_chars'] <= 16384
                     or type(compiler['max_runs']) is not int or not 1 <= compiler['max_runs'] <= 8):
                 raise ValueError('Bounded trusted compiler contract required')
+        if video_task:
+            video = data['video']
+            if (type(video) is not dict or set(video) != {'recipe_id', 'max_runs'}
+                    or video['recipe_id'] != VIDEO_RECIPE
+                    or type(video['max_runs']) is not int or not 1 <= video['max_runs'] <= 2):
+                raise ValueError('Bounded fixed video contract required')
         inputs, outputs = data['inputs'], data['outputs']
         if (type(inputs) is not list or type(outputs) is not list or len(inputs) + len(outputs) > 16):
             raise ValueError('Bounded input and output declarations required')
@@ -190,6 +201,62 @@ class TaskSpec:
     def compiler(self):
         """Detached explicit authority; existing v1 tasks have none."""
         return self.data.get('compiler')
+
+    @property
+    def video(self):
+        """Only v3 tasks authorize the fixed, silent calibration clip."""
+        return self.data.get('video')
+
+    def validate_video_args(self, args, *, completed_runs=0):
+        video = self.video
+        if video is None:
+            return Verdict(False, 'This task does not declare a video capability. No video tool was started.')
+        if type(completed_runs) is not int or not 0 <= completed_runs <= video['max_runs']:
+            raise ValueError('Exact completed video attempt count required')
+        if completed_runs == video['max_runs']:
+            return Verdict(False, 'The original video attempt allowance is exhausted. No video tool was started.')
+        if type(args) is not dict or args != {'recipe_id': video['recipe_id']}:
+            return Verdict(False, 'Use the declared fixed video recipe only. No video tool was started.')
+        return Verdict(True)
+
+    def video_completion(self, receipts):
+        """Validate normalized receipts after the adapter verifies actual effects.
+
+        Like compiler_completion, this is a task oracle, not process or native
+        authorization evidence. The adapter checks the saved artifact and probe.
+        """
+        video = self.video
+        if video is None:
+            raise ValueError('Task has no video contract')
+        if type(receipts) is not list or len(receipts) > video['max_runs']:
+            raise ValueError('Bounded complete video receipt history required')
+        common = {'operation_id', 'tool_call_id', 'spec_sha256', 'recipe_id',
+                  'status', 'owned_processes_exited'}
+        success_fields = {'artifact_sha256', 'probe_sha256', 'media'}
+        operations, calls, successful = set(), set(), None
+        for row in receipts:
+            passed = type(row) is dict and row.get('status') == 'passed'
+            if (type(row) is not dict or set(row) != common | (success_fields if passed else set())
+                    or type(row['status']) is not str or row['status'] not in COMPILER_STATUSES
+                    or row['spec_sha256'] != self.sha256 or row['recipe_id'] != video['recipe_id']
+                    or row['owned_processes_exited'] is not True):
+                raise ValueError('Video receipt does not establish this task contract')
+            for name, seen in (('operation_id', operations), ('tool_call_id', calls)):
+                value = row[name]
+                if (type(value) is not str or re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:-]{0,127}', value) is None
+                        or value in seen):
+                    raise ValueError('Video receipt identities must be unique and bounded')
+                seen.add(value)
+            if passed:
+                _sha(row['artifact_sha256']); _sha(row['probe_sha256'])
+                media = row['media']
+                if (type(media) is not dict or media != VIDEO_MEDIA
+                        or any(type(media[key]) is not int for key in ('width', 'height', 'frames'))):
+                    raise ValueError('Video differs from the fixed clip oracle')
+                successful = {name: row[name] for name in
+                              ('operation_id', 'artifact_sha256', 'probe_sha256', 'media')}
+        return {'qualified': successful is not None, 'recipe_id': video['recipe_id'],
+                'attempts': len(receipts), 'successful': successful}
 
     def validate_compiler_args(self, args, *, completed_runs=0):
         """Check a proposed source attempt, without writing or acquiring resources."""
@@ -327,7 +394,7 @@ class TaskSpec:
             return Verdict(False, 'Output did not match the declared validation check. Recheck the original inputs and correct the proposed content. No file was written.')
         return Verdict(True)
 
-    def completion(self, work, tools, final_response, *, compiler_receipts=None):
+    def completion(self, work, tools, final_response, *, compiler_receipts=None, video_receipts=None):
         self.verify_inputs(work)
         writes_by_name = {}
         for tool in tools:
@@ -361,4 +428,11 @@ class TaskSpec:
             result['compiler'] = compiler_result
         elif compiler_receipts is not None:
             raise ValueError('File-only task cannot acquire a compiler completion contract')
+        if self.video is not None:
+            video_result = self.video_completion(video_receipts)
+            if not video_result['qualified']:
+                raise ValueError('Task requires a validated successful video receipt')
+            result['video'] = video_result
+        elif video_receipts is not None:
+            raise ValueError('Task cannot acquire an undeclared video completion contract')
         return result

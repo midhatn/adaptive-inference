@@ -1,0 +1,136 @@
+{
+  "schema": "adaptive.video-tool.hosted-idle-release-fixture.v1",
+  "recorded_date": "2026-11-02",
+  "source_commit": "bf26c3caef9bd7483358b8e5b8c740a8620561aa",
+  "pr": 36,
+  "scope": "One positive-test wait allowance; original hosted failure and controlled local validation, without a production change.",
+  "status": "original_failure_preserved_fixture_validated_successor_pending",
+  "original_runs": [
+    {
+      "id": 41458087270,
+      "event": "push",
+      "head_sha": "bf26c3caef9bd7483358b8e5b8c740a8620561aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/midhatn/adaptive-inference/actions/runs/41458087270"
+    },
+    {
+      "id": 41458104108,
+      "event": "pull_request",
+      "head_sha": "bf26c3caef9bd7483358b8e5b8c740a8620561aa",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/midhatn/adaptive-inference/actions/runs/41458104108"
+    }
+  ],
+  "original_terminal_outcomes": {
+    "jobs_terminal": 14,
+    "jobs_successful": 13,
+    "jobs_failed": 1,
+    "core_steps_successful": 11,
+    "core_steps_failed": 1,
+    "distribution_steps_successful": 11,
+    "distribution_steps_skipped": 1,
+    "overall_ci_passed": false,
+    "final_observation_sha256": "4d40396181e4c5b3d389b64aa1c97c76c1c614bc5fe70d519239b2a2d46ec0f3",
+    "terminal_verification_sha256": "e8494fec94191771627b21462b691d44d92cd310a46fcbd240974128a75a14e1",
+    "core_step_verification_sha256": "abbabf058dd62d1b985a299fc86fe33748e1d48014679624995f848853f3bdaa"
+  },
+  "original_failure": {
+    "run_id": 41458104108,
+    "job_id": 125319869378,
+    "attempt": 1,
+    "job": "portable (windows-latest, 3.12)",
+    "tests_reported_before_failfast": 785,
+    "elapsed_seconds_reported_by_unittest": 543.958,
+    "reported_failures": 1,
+    "reported_skips": 5,
+    "test": "test_desktop_persistent_host.HostTests.test_demand_wakes_without_http_ticket_and_idle_releases",
+    "assertion": "Fixture deadline while waiting for parked after fulfilled demand",
+    "fixture_wait_limit_seconds": 3,
+    "observed_drive_turn_seconds_during_wait": [
+      0.188,
+      0.219,
+      0.797,
+      0.203,
+      0.437,
+      0.515
+    ],
+    "exact_hosted_controller_state_recorded": false,
+    "raw_log_sha256": "6dd99c964cec36753e698c1869a58f64b60a7c9a2307c6ca803bf9635f31fbfc",
+    "annotations_sha256": "55fdd86f789e23ddca838f46615f19736b465ed10556d20304b085cefbe3db03",
+    "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41458104108/job/125319869378"
+  },
+  "diagnosis": {
+    "observed": "The hosted positive idle-release wait exhausted its three-second test-supervisor bound while slow synchronous controller-drive turns were logged.",
+    "inference": "The local controlled experiment demonstrates sensitivity to synchronous status-save delay. It does not reconstruct the exact hosted scheduling or controller state.",
+    "production_behavior": "Unknown or stale demand does not authorize idle release. The controller waits for fresh absent demand and its existing idle grace."
+  },
+  "correction": {
+    "file": "tests/test_desktop_persistent_host.py",
+    "before_sha256": "e0f289ddd64fe419bf9743e180beddc3911ac315069b1c8bd04138fa90872fa4",
+    "after_sha256": "6461882654efc7a9b936d0a44e6b0191139836236ae2914ef00857cc0d1ae7d3",
+    "change": "Add limit=30 only to the fulfilled-to-parked positive-test until call.",
+    "positive_test_wait_seconds_before": 3,
+    "positive_test_wait_seconds_after": 30,
+    "general_until_helper_unchanged": true,
+    "all_behavior_assertions_unchanged": true,
+    "runtime_modules_unchanged": 77,
+    "freshness_idle_grace_and_close_limits_unchanged": true,
+    "real_sqlite_status_persistence_and_threads_retained": true,
+    "candidate_matches_controlled_after_ast": true
+  },
+  "controlled_diagnostic": {
+    "injected_single_status_save_delay_seconds": 3.2,
+    "delay_is_not_a_hosted_measurement": true,
+    "before": {
+      "tests": 1,
+      "expected_assertion_failures_observed": 1,
+      "tests_passed": false,
+      "diagnostic_expected_outcome_matched": true,
+      "receipt_sha256": "f112feb45cd8e735794c80f38526aa3790a4bcc7d76f4079b2adeae718e78b93"
+    },
+    "after": {
+      "tests": 1,
+      "passed": true,
+      "same_injected_delay": true,
+      "receipt_sha256": "e34f5de4d5577dadd45f01287168887f0bba4f844622b5b09e52a1d2a15d2130",
+      "observed_result": "Fresh absent demand, original idle grace elapsed, parked, one native fixture stop and normal close."
+    },
+    "both_runs_main_thread_only_after_teardown": true,
+    "both_runs_source_and_runtime_unchanged": true
+  },
+  "focused_validation": {
+    "module": "test_desktop_persistent_host",
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "elapsed_seconds_reported_by_unittest": 11.529,
+    "exit_code": 0,
+    "child_joined": true,
+    "source_inputs_unchanged": 78,
+    "receipt_sha256": "4d3993a0a0ccfccf0d707ddd45e52f38b2cd91f772727975d2f7d584fa60dcc7",
+    "source_check_sha256": "3c4f4e150a29f161506f97ae3bb3d6d236ebd80c061a75616d3a9e8bdf43aab4"
+  },
+  "independent_review": {
+    "file_only_checks": 103,
+    "manual_scope_reviews": 4,
+    "findings": [],
+    "receipt_sha256": "de718c0f490c387189333e01c55db12aa14f28c9777d6b475d78e2815ec4fd4e",
+    "scope": "Exact fixture diff, unchanged runtime and retained local/hosted evidence; no replay."
+  },
+  "references": [
+    "https://docs.python.org/3.12/library/asyncio-dev.html#concurrency-and-multithreading",
+    "https://docs.python.org/3.12/library/asyncio-dev.html#running-blocking-code"
+  ],
+  "limits": [
+    "The original PR workflow remains failed; the original push workflow passed. No original workflow was rerun or cancelled by the project.",
+    "A local controlled delay is not an observation of the original hosted controller state.",
+    "This test-supervisor correction does not alter application freshness, idle grace, task deadlines or close limits.",
+    "It does not improve event-loop responsiveness or establish a release-latency guarantee.",
+    "No model, SDK, GPU, foreground or reboot qualification is added. A successor requires its own original hosted results."
+  ]
+}

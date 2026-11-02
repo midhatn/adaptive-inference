@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 import uuid
 import traceback
 from adaptive_inference.execution_clock import CLOCK_ID, execution_now, verify_execution_clock
+from adaptive_inference.desktop.recipe_dispatch import (
+    recipe_kind, definition, expected_tool_names, completion_kwargs)
 
 HERE = Path(__file__).resolve().parent
 SDK_REV = '14e1e43a23761b369641208e204365cd6cb9399d'
@@ -39,10 +41,7 @@ TASK_TOOLS = ('read_file', 'write_file')
 def verify_task_tools(agent, task_spec=None):
     """The advertised SDK capabilities must match this consumer's operations."""
     from adaptive_inference.desktop.hermes.recovery import RecoveryStop
-    expected = set(TASK_TOOLS)
-    if task_spec is not None and task_spec.compiler is not None:
-        from adaptive_inference.desktop.hermes.compiler_recovery import TOOL_NAME
-        expected.add(TOOL_NAME)
+    expected = expected_tool_names(task_spec)
     definitions = getattr(agent, 'tools', None)
     if (type(definitions) is not list or len(definitions) != len(expected)
             or any(type(row) is not dict or row.get('type') != 'function'
@@ -386,7 +385,7 @@ def _worker(args, *, selected=None):
             return super().fake_response(req, 'parent', 1 if tools else 0)
 
     boundary = (Boundary(run, plan['fixture'], task_spec=task_spec)
-                if task_spec is not None and task_spec.compiler is not None else Boundary(run, plan['fixture']))
+                if recipe_kind(task_spec) is not None else Boundary(run, plan['fixture']))
     if selected is not None or (run / 'wire-observations.json').exists():
         boundary.rows = (selected.load_wire() if selected is not None else
                          json.loads((run / 'wire-observations.json').read_text()))
@@ -586,9 +585,8 @@ def _worker(args, *, selected=None):
                     create_custom_toolset(TASK_TOOLSET, 'Task-scoped file reads and writes',
                                           tools=list(TASK_TOOLS), includes=[])
                     enabled_toolsets = [TASK_TOOLSET]
-                    if task_spec is not None and task_spec.compiler is not None:
-                        from adaptive_inference.desktop.hermes.compiler_recovery import TOOLSET
-                        enabled_toolsets.append(TOOLSET)
+                    if recipe_kind(task_spec) is not None:
+                        enabled_toolsets.append(definition(recipe_kind(task_spec)).toolset)
                     agent = AIAgent(base_url=plan['gateway'], api_key='local-no-key', provider='custom:adaptive',
                         model=MODEL, api_mode='chat_completions', max_iterations=8, enabled_toolsets=enabled_toolsets,
                         quiet_mode=True, platform='cli', skip_context_files=True, skip_memory=True,
@@ -621,7 +619,7 @@ def _worker(args, *, selected=None):
                                       'report': report}
                     else:
                         completion = task_spec.completion(run / 'work', owned.checkpoint.state['tools'],
-                            outcome.get('final_response', ''), compiler_receipts=controller.compiler_receipts())
+                            outcome.get('final_response', ''), **completion_kwargs(task_spec, controller.recipe_receipts()))
                         completion['task_spec_sha256'] = task_spec.sha256
                     controller.finish(outcome)
                     result.update(passed=True, provider_calls=len(boundary.rows) - before,

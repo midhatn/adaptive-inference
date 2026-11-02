@@ -64,6 +64,7 @@ class DesktopSetupTests(unittest.TestCase):
         self.assertEqual(profile.gateway.port, 18100)
         self.assertEqual(profile.gateway.backend_url, 'http://127.0.0.1:18098/v1')
         self.assertIsNone(profile.compiler)
+        self.assertIsNone(profile.video)
         self.assertNotIn('compiler', json.loads(Path(result['profile']).read_bytes()))
         folder = Path(result['profile']).parent
         self.assertEqual((folder / 'launch.py').read_bytes(),
@@ -130,6 +131,47 @@ class DesktopSetupTests(unittest.TestCase):
         self.assertEqual(spec.compiler['max_runs'], 2)
         with self.assertRaisesRegex(ValueError, 'validated successful compiler receipt'):
             spec.completion(self.root, [], 'It worked.', compiler_receipts=[])
+
+    def video_settings(self):
+        value = {'schema': 'adaptive.video-settings.v1', 'environment': {'PATH': str(self.root)}}
+        for name in ('ffmpeg', 'ffprobe'):
+            path = self.root / (name + '.exe')
+            path.write_bytes(('inert selected tool: ' + name).encode())
+            value[name] = {'path': str(path), 'sha256': installation.sha(path)}
+        settings = self.root / 'video-settings.json'
+        settings.write_text(json.dumps(value), encoding='utf-8')
+        return settings, value
+
+    def test_video_cli_verifies_selected_tools_without_launching_them(self):
+        settings, expected = self.video_settings()
+        destination = self.root / 'video desktop'
+        argv = ['--destination', str(destination), '--video-settings', str(settings)]
+        for name, path in self.options.items():
+            argv.extend(['--' + name.replace('_', '-'), str(path)])
+        with mock.patch('builtins.print'), mock.patch.object(subprocess, 'Popen') as launch:
+            self.assertEqual(setup.main(argv), 0)
+            launch.assert_not_called()
+        profile = WindowsProfile.load(destination / 'deployment.json')
+        self.assertEqual(profile.video.ffmpeg.path, Path(expected['ffmpeg']['path']))
+        self.assertEqual(profile.video.environment, tuple(sorted(expected['environment'].items())))
+        self.assertIsNone(profile.compiler)
+        self.assertEqual(list((destination / 'runs').iterdir()), [])
+
+    def test_changed_video_binary_is_refused_before_setup(self):
+        settings, value = self.video_settings()
+        Path(value['ffprobe']['path']).write_bytes(b'changed after selection')
+        destination = self.root / 'refused video'
+        with self.assertRaisesRegex(ValueError, 'executable changed'):
+            setup.create_setup(destination, **self.options, video_settings=settings)
+        self.assertFalse(destination.exists())
+
+    def test_first_tool_deployment_selects_one_recipe_family(self):
+        video, _ = self.video_settings()
+        compiler, _ = self.compiler_settings()
+        destination = self.root / 'mixed tools'
+        with self.assertRaisesRegex(ValueError, 'Select one useful-tool deployment'):
+            setup.create_setup(destination, **self.options, video_settings=video, compiler_settings=compiler)
+        self.assertFalse(destination.exists())
 
     def test_failed_existing_contract_validation_leaves_no_output(self):
         destination = self.root / 'invalid'

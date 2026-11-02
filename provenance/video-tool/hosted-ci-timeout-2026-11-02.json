@@ -1,0 +1,111 @@
+{
+  "all_original_jobs_passed": false,
+  "annotation": "The job has exceeded the maximum execution time of 15m0s",
+  "cancelled_jobs": [
+    {
+      "annotation_sha256": "9ebaac84bf8ec1c68cd5fbe258e2929eadebd6c657865c10f2139d58c2851d8b",
+      "build_status": "success",
+      "cause": "Configured whole-job 15-minute timeout, explicitly reported by GitHub.",
+      "conclusion": "cancelled",
+      "core": {
+        "elapsed_seconds": 750.859,
+        "skipped": 43,
+        "status": "success",
+        "tests_reported": 1541
+      },
+      "distribution": {
+        "completed_at": "2026-11-02T09:51:48Z",
+        "qualified": false,
+        "started_at": "2026-11-02T09:49:55Z",
+        "status": "cancelled"
+      },
+      "job_id": 125199708310,
+      "name": "portable (ubuntu-latest, 3.12)",
+      "raw_log_sha256": "ca948389132cbccac94127f633d8c81803dc3842687a1a18ad844c0721ed573e",
+      "run_attempt": 1,
+      "run_id": 41422067127,
+      "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41422067127/job/125199708310"
+    },
+    {
+      "annotation_sha256": "9ebaac84bf8ec1c68cd5fbe258e2929eadebd6c657865c10f2139d58c2851d8b",
+      "build_status": "success",
+      "cause": "Configured whole-job 15-minute timeout, explicitly reported by GitHub.",
+      "conclusion": "cancelled",
+      "core": {
+        "elapsed_seconds": 801.106,
+        "skipped": 43,
+        "status": "success",
+        "tests_reported": 1541
+      },
+      "distribution": {
+        "completed_at": "2026-11-02T09:52:05Z",
+        "qualified": false,
+        "started_at": "2026-11-02T09:50:59Z",
+        "status": "cancelled"
+      },
+      "job_id": 125199822971,
+      "name": "portable (ubuntu-latest, 3.12)",
+      "raw_log_sha256": "287303ede6257f27af803a34566e0ff67af6652cc5adf122c023d1f7cff8007f",
+      "run_attempt": 1,
+      "run_id": 41422101934,
+      "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41422101934/job/125199822971"
+    }
+  ],
+  "diagnosis": "Both affected core suites and build steps completed successfully; GitHub cancelled the final distribution verification at the whole-job timeout. The cancelled distribution checks remain unqualified.",
+  "documentation_source": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes",
+  "limits": [
+    "No new model or hardware qualification",
+    "No claim that increasing a CI limit improves runtime performance",
+    "No claim that interrupted distribution verification passed",
+    "Both original runs are closed and nonpassing. No successor hosted result is claimed here."
+  ],
+  "original_runs": [
+    {
+      "attempt": 1,
+      "event": "push",
+      "id": 41422067127,
+      "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41422067127",
+      "status": "completed",
+      "conclusion": "cancelled"
+    },
+    {
+      "attempt": 1,
+      "event": "pull_request",
+      "id": 41422101934,
+      "url": "https://github.com/midhatn/adaptive-inference/actions/runs/41422101934",
+      "status": "completed",
+      "conclusion": "cancelled"
+    }
+  ],
+  "pr": 36,
+  "proposed_correction": {
+    "commands_and_assertions_unchanged": true,
+    "file": ".github/workflows/ci.yml",
+    "offline_source_job_timeout_minutes": 15,
+    "original_runs_not_rerun": true,
+    "portable_job_timeout_minutes": 30,
+    "runtime_unchanged": true,
+    "successor_validation": "A new commit requires its own original push and PR CI outcomes; no successor pass is claimed here.",
+    "task_execution_budget_seconds_unchanged": 900,
+    "video_recipe_budget_seconds_unchanged": 90
+  },
+  "recorded_date": "2026-11-02",
+  "schema": "adaptive.video-tool.hosted-ci-timeout.v1",
+  "scope": "Original hosted CI job timeout evidence; local, installed SDK and physical records remain separate.",
+  "source_commit": "66deb339fcea1e227891c0fc30c41075c79548fc",
+  "source_workflow_sha256": "f3ec76d23d54d7a72cb96aa4bf00201232ed95f3e653ef362bf13433f3ab672c",
+  "status": "original_timeout_preserved_successor_pending",
+  "original_terminal_outcomes": {
+    "jobs_terminal": 14,
+    "jobs_successful": 12,
+    "jobs_cancelled": 2,
+    "core_steps_successful": 12,
+    "distribution_steps_successful": 10,
+    "distribution_steps_cancelled": 2,
+    "overall_ci_passed": false,
+    "final_observation_sha256": "974f6db378b12eeaeab36a2d45eea34a15c4b069813fc5b028969a8a7fd8a4bd",
+    "terminal_verification_sha256": "15ed07290636d28a83719fe86608d655699eb1e053aa7e750afe834a63b35069",
+    "independent_timeout_review_sha256": "4e0f5705f122aac1643028290eaa6ba79ec5a5ba4225a227aa20317da31180eb",
+    "independent_timeout_review_checks": 38
+  }
+}

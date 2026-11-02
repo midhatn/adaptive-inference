@@ -39,6 +39,19 @@ daily-use coexistence, real-model error correction and broad M4 remain open.
 Try the [compiler task and setup example](examples/tasks/compiler-stdout/README.md)
 and read the [compiler recipe and scope](docs/compiler-tool-recipe.md).
 
+**Video-tool development:** a real IQ3_S/Hermes task now completes the same
+foreground handoff with a GPU video tool. It yields to Explorer activity,
+releases the model, encodes and checks a three-second clip, restores the model
+and finishes using the saved tool result. The [fresh physical result](provenance/video-tool/physical-foreground-video-2026-11-02.json)
+passed all 47 primary checks; the separate observer still failed during shutdown.
+[Local validation](provenance/video-tool/local-validation-2026-11-02.json) passed
+1,541 core tests, the remaining workflow checks, packaging and fresh installation.
+The [agent task and setup](examples/tasks/video-testclip/README.md) explain reproduction.
+The [first attempt](provenance/video-tool/physical-video-evidence-2026-11-02.json)
+completed the video work but missed its planned foreground action. Both results
+are retained. This silent calibration clip does not qualify H3 generation,
+audio/video quality, sustained desktop performance or all M4 recovery cases.
+
 **Continuing this project with an AI or a team?** Start with
 [AGENTS.md](AGENTS.md), the dated [continuation handoff](HANDOFF.md), and the
 [multi-agent workflow](docs/multi-agent-collaboration.md). They preserve the goal,

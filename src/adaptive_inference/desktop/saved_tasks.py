@@ -175,11 +175,12 @@ def read_saved(task_root):
             raise ReconciliationRequired('Saved task input or configuration changed')
     spec = rec.task_contract(cp)
     rec.verify_artifacts(cp.state, task_root / 'work', task_spec=spec)
-    compiler_receipts = rec.verified_compiler_receipts(cp, task_root)
+    from adaptive_inference.desktop.recipe_dispatch import recipe_kind, completion_kwargs
+    recipe_receipts = rec.verified_recipe_receipts(cp, task_root)
     completed = cp.state['status'] == 'accepted' and cp.state['phase'] == 'accepted'
-    if completed and spec is not None and spec.compiler is not None:
+    if completed and recipe_kind(spec) is not None:
         spec.completion(task_root/'work', cp.state['tools'], cp.state['output'],
-                        compiler_receipts=compiler_receipts)
+                        **completion_kwargs(spec, recipe_receipts))
     deadline = cp.state.get('deadline_monotonic')
     if not completed:
         if cp.state['status'] != 'pending' or cp.state.get(NAMESPACE, {}).get('state') == 'cancelled':

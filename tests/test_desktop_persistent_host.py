@@ -166,7 +166,7 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(self.driver.runtime_seen);self.assertEqual(self.driver.starts,1)
         self.assertFalse(self.host.gateway.scheduler.pending)
         self.assertEqual(self.host.controller.load_preview['state'],'candidate')
-        self.demand('fulfilled');await until(lambda:self.host.controller.state=='parked')
+        self.demand('fulfilled');await until(lambda:self.host.controller.state=='parked',limit=30)
         self.assertEqual(self.driver.stops,1)
         result=await self.host.close(timeout_s=3)
         self.assertEqual(result['outcome'],'released_owner');self.assertTrue(result['normal_release_confirmed'])

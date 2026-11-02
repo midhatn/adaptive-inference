@@ -1,0 +1,272 @@
+{
+  "contract": {
+    "admission_wait_included": true,
+    "budget": {
+      "execution_seconds": 900,
+      "max_admission_attempts": 32,
+      "max_attempts": 8,
+      "max_requests": 8
+    },
+    "job_commit_limit_mib": 2048,
+    "original_task_deadline_unchanged": true,
+    "recipe_max_seconds": 90,
+    "resource_limit_scope": "Capacity admission and aggregate committed memory for the owned Windows video job; not OS-wide physical resource reservation or application isolation.",
+    "resource_request": {
+      "commit_gib": 12,
+      "ram_gib": 8,
+      "vram_mib": 6000
+    },
+    "task_spec": "examples/tasks/video-testclip/task.json",
+    "task_spec_file_sha256": "8154b215c9cb526053a96ef89fbd12c8bd194058f89a0976c41b2e11d19ad65e",
+    "task_spec_sha256": "e5ebf412ec13e689815f46b42b12ea5e50377a5caf702f1e7a55ee40f1959ab8",
+    "video": {
+      "max_runs": 2,
+      "recipe_id": "nvenc-testclip.v1"
+    }
+  },
+  "core_result": {
+    "artifact": {
+      "audio": false,
+      "bytes": 1051294,
+      "codec": "h264",
+      "decode_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decoded_frames": 90,
+      "fixed_duration_seconds": 3,
+      "fixed_frame_rate": 30,
+      "height": 720,
+      "name": "handoff-video.mp4",
+      "probe_sha256": "b07166007a1b411e3db7bb3b97cf446a11fb5e20bb6178754a525f8494f72f23",
+      "sha256": "8425abb7459b478c239771eefb6e8202e1f01c466775ce30d5878b124c98e7cc",
+      "width": 1280
+    },
+    "durable_feedback_in_request": 2,
+    "durable_request_wire_and_native_history_checked": true,
+    "joins": {
+      "app_exit": 0,
+      "emergency_app_termination": false,
+      "forced_job_termination": false,
+      "forced_video_cleanup": false,
+      "gui_exit": 0,
+      "listener_and_transport_closed": true,
+      "native_retained_and_confirmed_exits": [
+        8,
+        7
+      ],
+      "native_server_exits": [
+        0,
+        0
+      ],
+      "prepare_exit": 0,
+      "video_bootstrap_children": 3,
+      "video_children_joined": true,
+      "video_job_accounting": {
+        "active": 0,
+        "limit_terminated": 0,
+        "total": 9
+      },
+      "worker_exit": 0
+    },
+    "model_requests": 2,
+    "provider_runtime_generations": [
+      1,
+      2
+    ],
+    "resource_sequence": [
+      "one observed F5 during the first active inference request",
+      "foreground policy closes admission and drains that request",
+      "first native owner fully released and parked while foreground activity holds admission",
+      "actual return to controller",
+      "fresh capacity checked and exclusive video grant",
+      "fixed NVENC encode, probe and decode completed",
+      "video grant completed",
+      "distinct native owner restored",
+      "second real inference request consumed video feedback",
+      "second native owner fully released",
+      "observed normal Stop"
+    ],
+    "restoration_during_video_grant": false,
+    "stage_exits": {
+      "decode": 0,
+      "encode": 0,
+      "probe": 0
+    },
+    "task_accepted": true,
+    "timing_note": "Recorded event order and stage clocks establish release, grant, encode and restoration sequence; no finer clock precision is invented. The 90-second recipe cap includes waiting for admission; recipe start is not encoder process start.",
+    "video_operations": 1,
+    "video_statuses": [
+      "passed"
+    ]
+  },
+  "environment": {
+    "actual_model_inference": true,
+    "context": {
+      "context_length": 65536,
+      "max_tokens": 10923,
+      "reserved_output": 10923,
+      "threshold": 0.8,
+      "threshold_tokens": 46421
+    },
+    "hermes_sdk_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "hermes_sdk_source": "https://github.com/NousResearch/hermes-agent/tree/14e1e43a23761b369641208e204365cd6cb9399d",
+    "host_python": "3.11.9",
+    "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+    "platform": "Windows x64",
+    "quality": {
+      "experimental_speed_projection": false,
+      "max_tokens": 10923,
+      "reasoning_budget_tokens": 8192,
+      "reasoning_effort": "high",
+      "strata_tune": {
+        "pcie_frac": 0.37
+      }
+    },
+    "video_tools": {
+      "ffmpeg": {
+        "sha256": "09948d4cdd0650da6ff5a87577469f2a218dc2615ae379f8f734d24c49de0f73",
+        "version": "ffmpeg version 8.1.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers"
+      },
+      "ffprobe": {
+        "sha256": "a6618e99bb58869ded3c6f37b53aa1a8d701c3591dbb7b5b317d47369c112be2",
+        "version": "ffprobe version 8.1.1-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers"
+      }
+    },
+    "worker_python": "3.14.7"
+  },
+  "evidence_sha256": {
+    "actual_foreground_projection": "34b02ddca4d56b48486e1b6e93f280e5ec04ae345f71034daacd0dc332cbff55",
+    "actual_ui_projection": "52553e0927b74b153231d543d17866db6249a9819fb7067a661d1cfb4516f8be",
+    "app_result": "9430d984312b2c269cfb4268a0eee5a6f5c630b5a1ae44f61d924abbc48ec208",
+    "app_supervisor": "2ddaa6c0c6febb597ab127359ad051c1b42dc863c10a0f5c0b2c4eda4e736b64",
+    "effect_receipts": "e12c73c3694902d499dcf36984a35ce3a5cb57b75bdc010661b52ec444b3c556",
+    "host_result": "b728f962ccb49ad6daa49fc7c9d3bbfe5bc2df6e1dea7a7e57614c776291f439",
+    "independent_foreground_review": "28a2e4b320d8e1618e15a34e60027fa47b616429ffcf4f88d0e72d7edfa7a8f1",
+    "independent_functional_review": "957e4b59148a075bfca6088d01ebece086c3f273cfa9d2b5ceb4e5e192d80d39",
+    "independent_observer": "8b6b0d98ceb49843d03e11db495fee765de951e3190a2b360b20ab33ad776a32",
+    "native_results_in_release_order": [
+      "b3da2873de8499a8fdd4848959230a492b12c6fa78b63ff299b64b285ef90127",
+      "4b5129cc2639a8709fe2fef430d70b3ebac203487a972bcc80542fc3e2f663f9"
+    ],
+    "primary_audit": "7420662719097e2e68d48d34613ba91c4b6c11c24377c31787ac45d9c1f070ca",
+    "root_join_attestation": "14eb871e5ffc64732631932bc382538edab6ab8ab51dfdf68e768d9d145999ef",
+    "video_recipe_receipt": "3bb02f120945928f4b514a5249f8016a80cd7dd57b7c0cd60d289e7f1943a970",
+    "wire_observations": "ac9dfc02744b3ec61faa8e23d18bfa511c09ea2fa5474cc70a692bbbe4a2afc6",
+    "worker_result": "85dab2f41207f9602fc33b284d38fa6be5d9f461e8e1828b50f7e0c10ed998d5"
+  },
+  "limits": [
+    "This qualifies one bounded foreground/IQ3_S/fixed-video workflow. The independent observer shutdown still failed; full M4, general desktop coexistence and the named autonomous media test remain open.",
+    "No restart, reboot, sleep/wake, active video cancellation, worker replacement or model-error-correction qualification.",
+    "Synthetic silent clip only; no H3/ComfyUI generation, visual realism, audio synchronization or named autonomous media-test qualification.",
+    "No performance comparison, gaming/playback quality, repeated reliability, cross-platform inference or OS-wide resource reservation claim.",
+    "The exact pinned composition was tested. Native model asset metadata was retained; model contents were not rehashed.",
+    "External FFmpeg build is identified, not distributed; its selected configuration enables GPL and version3."
+  ],
+  "preserved_previous_attempt": {
+    "actual_actions": 0,
+    "foreground_passed": false,
+    "path": "provenance/video-tool/physical-video-evidence-2026-11-02.json",
+    "previous_task_replayed": false,
+    "primary_exit_code": 1,
+    "prospective_change": "A fresh task captured one actual first-request F5 with immediate before/after observations and an observed parked state before return.",
+    "reason": "The first trial missed its planned foreground action. It remains a failed foreground attempt with a separately verified functional workflow.",
+    "same_runtime_profile_task_quality_limits_and_auditor": true,
+    "sha256": "6e8d7555a11b22886ddf2624ae48a079f580f78d4469d1c14ae0cbe851a8fb7a"
+  },
+  "recorded_date": "2026-11-02",
+  "references": [
+    "https://sqlite.org/wal.html#read_only_databases",
+    "https://sqlite.org/uri.html#uriimmutable"
+  ],
+  "related_records": {
+    "implementation": "docs/video-tool-recipe.md",
+    "installed_sdk_predecessor": "provenance/video-tool/installed-sdk-evidence-2026-11-02.json",
+    "native_component": "provenance/video-tool/native-component-2026-11-02.json",
+    "public_task": "examples/tasks/video-testclip/README.md"
+  },
+  "schema": "adaptive.video-tool.physical-evidence.v1",
+  "scope": "One Windows IQ3_S task responds to an actual foreground Explorer action, drains and parks inference, then dispatches a fixed NVENC video operation after return, consumes durable feedback in the following model request and completes with owned cleanup. The strict task/foreground gate passed; the independent observer still failed during shutdown.",
+  "source_identity": {
+    "actual_installed_identity_file_sha256": "ddf88e317eb073cb4a045923a77424de5ea66fcef7b6afe25ea0818833d12228",
+    "base_revision": "1f7f28e1388d4aa39fa6ff7f8ddc2445f88e127d",
+    "frozen_primary_auditor_sha256": "2dfaf022e9997f42e8311dd0c53f4fb0d3fd72462f4cc21edd4b65e2793f6962",
+    "host_worker_and_source_maps_identical": true,
+    "native_engine_sha256": "744205e4e024b5cbba19e4b560678ffe21e6899e59050929f7af51557f3c6198",
+    "native_manifest_sha256": "0fa3fa2c976c0d49b7849c80159307fabc0a4f82313a3eb6202a3d62f4ab7f14",
+    "native_provenance_sha256": "e612f721b5f17fba777606d72ed27ac463cb51917f2d955d10fe70ec24e6212f",
+    "note": "The base commit alone does not contain the candidate. The referenced complete runtime map identifies the tested additional video implementation.",
+    "package_version": "0.4.0a1",
+    "runtime_map": {
+      "hash_serialization": "UTF-8 json.dumps(map, sort_keys=True, ensure_ascii=False, allow_nan=False), default separators",
+      "json_pointer": "/source_identity/runtime_sha256",
+      "map_sha256": "aedbab2f52f3b42c281aca510783cc83d66edccc1a6437fb28654e066729b2fb",
+      "modules": 77,
+      "path": "provenance/video-tool/installed-sdk-evidence-2026-11-02.json",
+      "paths_relative_to": "src/adaptive_inference",
+      "record_sha256": "2dc88ca761ec7d6093d0ca92d7d295df078f8d08c3fcdec01f23fbb51affa579"
+    }
+  },
+  "status": "bounded_foreground_real_model_video_workflow_verified_observer_shutdown_failed",
+  "validation": {
+    "check_count_scope": "The 47 primary, 34 functional and 17 foreground checks overlap and are reported separately, not summed.",
+    "independent_foreground_review": {
+      "checks": 17,
+      "exit_code": 0,
+      "passed": true,
+      "review_sha256": "28a2e4b320d8e1618e15a34e60027fa47b616429ffcf4f88d0e72d7edfa7a8f1",
+      "scope": "Independent closed raw-trace and actual-observation review; no full audit or workload replay."
+    },
+    "independent_functional_review": {
+      "checks": 34,
+      "durable_history_rows": 22,
+      "exit_code": 0,
+      "foreground_review_separate": true,
+      "native_transcript_rows": 4,
+      "passed_at_narrow_scope": true,
+      "scope": "Closed JSON/hash checks and read-only SQL on new copies of original closed DBs plus every existing sidecar; no production imports or workload execution",
+      "source_runtime_modules": 77
+    },
+    "independent_observer": {
+      "activity_error_samples": 0,
+      "closure_passed": false,
+      "end_reason": "three_connection_errors_after_response",
+      "exit_code": 1,
+      "samples": 1972,
+      "scope": "Application and native cleanup are independently retained; the observer shutdown failure remains a separate failed observation.",
+      "successful_connection_refusal_observation": false,
+      "valid_responses": 390
+    },
+    "preservation": {
+      "copied_base_databases_unchanged": true,
+      "derived_copy_sidecars_retained": [
+        "home/state.db-shm",
+        "home/state.db-wal"
+      ],
+      "full_audit_repeated": false,
+      "method": "Original before/after inventories; SQL only on closed copies with every existing sidecar preserved. Derived shared-memory and empty WAL copy bookkeeping is retained.",
+      "original_files_unchanged": true,
+      "task_replayed": false
+    },
+    "primary_audit": {
+      "checks": 47,
+      "exit_code": 0,
+      "observer_closure_counted_separately": true,
+      "passed": true,
+      "unchanged_auditor_sha256": "2dfaf022e9997f42e8311dd0c53f4fb0d3fd72462f4cc21edd4b65e2793f6962"
+    },
+    "strict_foreground_onset": {
+      "acceptance_changed": false,
+      "action": "one targeted Explorer F5 followed immediately by refresh",
+      "action_interval_inferred": false,
+      "actual_actions": 1,
+      "entire_action_bracket_inside_first_active_request": true,
+      "first_request_drained_before_park": true,
+      "foreground_policy_closed_admission": true,
+      "independent_activity_samples": 87,
+      "no_tool_grant_during_foreground_hold": true,
+      "park_observed_before_return": true,
+      "passed": true,
+      "resume_actions": 1,
+      "return_observed": true,
+      "stop_actions": 1
+    }
+  }
+}
