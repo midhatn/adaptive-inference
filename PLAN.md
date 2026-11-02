@@ -934,14 +934,33 @@ result. The observer's shutdown failure remains separate. The
 missed the foreground action; preserve it. The fresh trial changed observation
 timing only, keeping runtime, quality, budgets and the onset predicate fixed.
 
-**Next:** qualify installed useful-tool interruption and worker recovery, keeping
-completed effects and their feedback intact. Begin with the existing compiler
-and video operation journal and retained owner; reuse the established recovery
-mechanisms before adding another tool family. Keep one useful-tool family per
+**Installed safe-worker restart accepted:** the [separate SDK gate](provenance/video-tool/installed-worker-restart-2026-11-02.json)
+completed one actual video operation, saved its receipt/native feedback, stopped
+the first worker cooperatively and completed with a replacement worker. The
+same task/session, original deadline and cumulative request accounting were
+preserved; the video was not repeated. An independent 58-check review passed.
+Provider replies and resource observations were scripted. This qualifies a
+same-host safe checkpoint, not abrupt worker loss or an actual-model restart.
+
+**Next:** reconcile completed useful-tool receipts after unexpected worker loss
+before feedback/native flush. Reuse the existing operation journal, native turn
+lease and retained owner: recover the exact recorded result, append feedback
+only if missing, and preserve the original operation and deadline. Unknown
+effects or unconfirmed cleanup must remain unresolved. First validate this
+boundary in component tests, then in an installed SDK interruption/replacement
+trial, and finally with unchanged IQ3_S inference. The safe-restart task is
+closed and must not be replayed. Keep one useful-tool family per
 deployment in this first increment; cross-family switching remains a later
 integration gate. Observer shutdown diagnosis and successful physical reboot
 continuation retain their separate gates. This small recipe
 does not replace the named model-bearing media test or its tuning/baseline gates.
+
+**Validation adjustment:** the [original video CI](provenance/video-tool/hosted-ci-timeout-2026-11-02.json)
+closed with all 12 core-test steps passing, but two final distribution checks
+were cancelled at the whole-job 15-minute limit. Preserve those failures. Give
+all portable jobs the existing Windows allowance of 30 minutes and observe the
+new commit's original runs. Do not change test assertions, task/recipe limits
+or claim a pass for the two interrupted checks.
 
 The named end-to-end media gate is the
 [Adaptive-Hermes-Media-Autonomous Test](docs/adaptive-hermes-media-autonomous-test.md).

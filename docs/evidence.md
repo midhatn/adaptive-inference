@@ -46,6 +46,45 @@ uses two scripted provider replies and actual video execution, with an independe
 does not claim GUI Stop. Final publication packaging and exact-head hosted CI
 are recorded separately from these installed and physical results.
 
+## Safe installed-worker restart after video
+
+The [2 November installed restart record](../provenance/video-tool/installed-worker-restart-2026-11-02.json)
+passed an independent **58-check review**, with 63 original/copied case files
+unchanged. An actual installed Hermes worker requested one NVENC operation,
+saved its checked receipt and native feedback, then stopped cooperatively with
+the expected exit code 4. After the old worker joined and its binding retired,
+a replacement worker acquired a fresh owner, consumed the saved feedback and
+completed with exit code 0. It did not execute the video operation again.
+
+The task, native session, original prompt and deadline stayed the same. Two
+provider requests were counted cumulatively, one per worker; reopening consumed
+remaining time instead of granting another 900 seconds. The one successful
+artifact and saved native prefix remained unchanged. All three video children
+joined with exit code 0, without forced cleanup. All 77 runtime modules matched
+the installed source. Root closure and independent review are separate records.
+
+The installed SDK, worker processes, HTTP dispatch and video encode/probe/decode
+were real. Provider replies, resource observations and the native inference
+adapter were scripted. This demonstrates a safe same-host worker restart after
+completed useful work. It does not establish abrupt-crash recovery, interruption
+of an active video operation, actual-model restart, application restart, Windows
+reboot continuation, H3/audio quality or a performance improvement.
+
+## Original video CI timeout and correction
+
+The [original hosted CI record](../provenance/video-tool/hosted-ci-timeout-2026-11-02.json)
+for `66deb339` retains both original attempt-1 runs: 14 terminal jobs, 12 passed
+and two cancelled. All 12 core-test steps passed; 10 distribution checks passed
+and two were interrupted. GitHub explicitly reported the 15-minute whole-job
+timeout for both Ubuntu/Python 3.12 jobs after their 1,541-test core suites and
+package builds had succeeded. An independent 38-check diagnosis verified the
+cause. The interrupted distribution checks remain unqualified.
+
+The correction sets the portable job limit to 30 minutes; the offline-source
+job remains at 15 minutes. Commands, assertions, runtime code and the 900/90-second
+task/recipe limits are unchanged. A successor commit requires its own original
+hosted CI outcome; this record does not turn the older cancellations into passes.
+
 ## Fixed GPU video-tool component
 
 The [2 November component record](../provenance/video-tool/native-component-2026-11-02.json)

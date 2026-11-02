@@ -40,8 +40,12 @@ citations and unsuccessful evidence. The full milestone sequence is in
 
 ## Current continuation state
 
-**Active isolated M4 increment:** publish the validated [agent-requested GPU video recipe](docs/video-tool-recipe.md),
-then qualify installed useful-tool interruption and worker recovery. Its fresh
+**Active isolated M4 increment:** extend the validated [agent-requested GPU video recipe](docs/video-tool-recipe.md)
+from a safe installed-worker restart to recovery after unexpected worker loss.
+The [safe-restart gate](provenance/video-tool/installed-worker-restart-2026-11-02.json)
+preserved one completed video operation across two workers in the same task and
+original time allowance. Provider replies and resource observations were scripted;
+the installed SDK and video execution were real. Its separate fresh
 IQ3_S trial passed 47 primary checks, 34 independent functional checks and a
 separate 17-check foreground review. The earlier [compiler recipe](docs/compiler-tool-recipe.md)
 also passed its bounded foreground/task gate. The reboot candidate at `84ef4d2`
@@ -138,9 +142,25 @@ counts are not added together. It retained the entire F5 action bracket,
 87 matching foreground samples, native release before video, durable feedback,
 model restoration and normal Stop. Both observer shutdowns still failed.
 The runtime, IQ3_S settings and original 900/90-second limits stayed fixed.
-Keep both consumed tasks closed. Next qualify installed useful-tool interruption
-and worker recovery using the existing operation journal and retained owners.
-Successful reboot continuation,
+Keep both consumed tasks closed. A subsequent [installed safe-worker restart](provenance/video-tool/installed-worker-restart-2026-11-02.json)
+passed an independent 58-check review. The first worker saved one actual video
+result and stopped cooperatively; a replacement worker used that exact feedback
+and completed without dispatching the video again. The original task, session,
+deadline and two-request accounting were preserved. This headless SDK gate used
+scripted provider replies and resource observations; it does not qualify an
+abrupt crash, actual-model restart, application restart or computer restart.
+
+The original CI for `66deb339` is closed: 12 of 14 jobs passed, and both
+Ubuntu/Python 3.12 jobs hit their 15-minute whole-job limit during distribution
+verification. All 12 core-test steps passed. The [timeout record](provenance/video-tool/hosted-ci-timeout-2026-11-02.json)
+preserves both interrupted checks. The portable job allowance is now 30 minutes,
+with commands, assertions and product limits unchanged; the successor head needs
+its own original hosted CI result.
+
+Next reconcile a retained exact tool receipt when a worker dies before durable
+feedback/native flush, using the existing operation journal, native lease and
+retained owners. Qualify that changed boundary before an installed interruption
+trial and then an unchanged-IQ3_S run. Successful reboot continuation,
 observer shutdown diagnosis and the autonomous media workflow retain separate
 gates. This single foreground episode is not sustained desktop-performance evidence.
 

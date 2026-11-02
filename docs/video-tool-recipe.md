@@ -88,6 +88,33 @@ physical NVENC operation, agent continuation, H3 quality, audio synchronization,
 playback quality, reboot recovery or performance. Physical qualification must
 retain its own exact executable, model, source and hardware identities.
 
+## Safe worker restart and the next recovery boundary
+
+The [installed restart gate](../provenance/video-tool/installed-worker-restart-2026-11-02.json)
+verified that completed video work survives a cooperative worker stop. The
+first worker stored the actual recipe result and native feedback before exiting;
+the replacement worker continued the same task/session from that checkpoint.
+It consumed the exact saved result without another video dispatch. A fresh owner
+replaced the joined worker's retired binding, while the original deadline and
+cumulative request count stayed intact. Independent review passed 58 checks.
+Provider replies and resource observations were scripted in this SDK gate.
+
+Unexpected worker loss before that checkpoint remains the next implementation
+boundary. The existing recovery path refuses unresolved effects or feedback
+awaiting a native flush. The planned extension will reconcile a retained exact
+receipt through the existing native lease and operation journal, append missing
+feedback once and keep ambiguous effects fenced. It must not repeat completed
+work or grant a new time allowance. Active-tool interruption, actual-model
+restart and computer restart need their own qualification.
+
+This sequence uses the existing local recovery mechanisms. The design draws on
+[Temporal's activity idempotency guidance](https://docs.temporal.io/activity-definition#idempotency)
+and [LangGraph's saved-result and resumption guidance](https://docs.langchain.com/oss/python/langgraph/functional-api).
+These references informed the checkpoint/reconciliation boundary; no framework
+dependency, implementation copy or inherited exactly-once guarantee is claimed.
+Their inspected source revisions and licenses are recorded in
+[REFERENCES.bib](../REFERENCES.bib).
+
 ## Sources and licensing
 
 The commands and media oracle reuse this repository's `protected_video` work;

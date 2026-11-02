@@ -539,6 +539,20 @@
   note = {MIT documentation, inspected revision 013b6f8b13f0613056250b17a5034960b3a440ae, docs/develop/python/workflows/continue-as-new.mdx, blob a1f8fe2b0b44a923375375eb6bd85ce0def73e41; official page rechecked 2026-10-26. Stable logical identity, new execution identity and handler-drain guidance adapted to existing TaskStore. No successful-workflow closure semantics, Temporal dependency or implementation copied}
 }
 
+@misc{temporalActivityIdempotency,
+  title = {{Temporal Activity Definition: idempotency}},
+  author = {{Temporal Technologies and contributors}},
+  url = {https://docs.temporal.io/activity-definition#idempotency},
+  note = {MIT documentation; inspected 2026-11-02 at temporalio/documentation revision 2fabba4e81d9d038879c5ae3991541757cf5cbcf, activity definition blob 3e1d8d0f377680ce95ebe70ee96ac21eded187ab. Design reference for completed-result reuse and the uncertain-effect boundary during useful-tool worker recovery. Existing local TaskStore, native lease and retained process owners are reused; no Temporal dependency, copied implementation or inherited exactly-once guarantee}
+}
+
+@misc{langgraphFunctionalRecovery,
+  title = {{LangGraph Functional API: saved results and resumption}},
+  author = {{LangChain and contributors}},
+  url = {https://github.com/langchain-ai/docs/blob/7ebe911d96cbf6d2e2df5237fb47f47134610cfb/src/oss/langgraph/functional-api.mdx},
+  note = {MIT documentation; inspected 2026-11-02, blob 80839092076b5b5a46f0b8f8856bd6e05e4aad9f; official Functional API page rechecked the same date. Design reference for reusing completed tool results at a safe checkpoint and distinguishing unfinished side effects. No LangGraph dependency, copied implementation or inherited exactly-once guarantee; the installed SDK test and future abrupt-loss gate retain separate evidence}
+}
+
 @misc{langgraphExplicitInterruptResume,
   title = {{LangGraph interrupts and explicit saved-state resumption}},
   author = {{LangChain and contributors}},
