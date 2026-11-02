@@ -42,6 +42,16 @@ citations and unsuccessful evidence. The full milestone sequence is in
 
 **Active isolated M4 increment:** extend the validated [agent-requested GPU video recipe](docs/video-tool-recipe.md)
 from a safe installed-worker restart to recovery after unexpected worker loss.
+The completed-result feedback repair is now implemented through the existing
+explicit reconciliation command. It passed ten new component tests, 49 related
+tests, source-preservation checks and the complete 1,557-test local core suite.
+The fresh installed SDK worker-loss trial now completed: a worker exited after
+one actual video effect, ordinary reconciliation restored its missing feedback,
+and a replacement completed the same task within its original deadline. Provider
+replies and resource observations were scripted. Independent closed review
+passed 99 checks with 74 original case files unchanged. Unchanged-IQ3_S recovery and automatic desktop
+recovery remain separate gates. The first trial stopped on a private checker
+projection error and remains recorded as failed.
 The [safe-restart gate](provenance/video-tool/installed-worker-restart-2026-11-02.json)
 preserved one completed video operation across two workers in the same task and
 original time allowance. Provider replies and resource observations were scripted;
@@ -157,10 +167,14 @@ preserves both interrupted checks. The portable job allowance is now 30 minutes,
 with commands, assertions and product limits unchanged; the successor head needs
 its own original hosted CI result.
 
-Next reconcile a retained exact tool receipt when a worker dies before durable
-feedback/native flush, using the existing operation journal, native lease and
-retained owners. Qualify that changed boundary before an installed interruption
-trial and then an unchanged-IQ3_S run. Successful reboot continuation,
+The new [completed-result repair](docs/video-tool-recipe.md#completed-result-feedback-repair)
+handles an already completed operation whose native feedback was not flushed.
+It uses the original journal proof and artifact checks, acquires the native turn
+lease, appends only missing feedback and saves a ready checkpoint. Pending effects
+remain fenced. The [installed explicit-repair evidence](provenance/recipe-reconciliation/installed-worker-loss-2026-11-02.json)
+is complete. Next extend exact terminal-receipt recovery to pending effects and qualify
+active-tool interruption and unchanged-IQ3_S recovery. Automatic desktop recovery
+must use the same verified path and needs its own integration gate. Successful reboot continuation,
 observer shutdown diagnosis and the autonomous media workflow retain separate
 gates. This single foreground episode is not sustained desktop-performance evidence.
 

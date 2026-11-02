@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 
 from paused_expiry_lineage import fingerprint
+import recipe_reconciliation_lineage
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = 'provenance/video-tool'
@@ -27,7 +28,8 @@ def inputs(root=None):
     if rows is None:
         return []
     return [root / ARCHIVE / 'source-lineage.json',
-            *(root / row['predecessor_source'] for row in rows['files'].values())]
+            *(root / row['predecessor_source'] for row in rows['files'].values()),
+            *recipe_reconciliation_lineage.inputs(root)]
 
 
 def retained(relative, row, root):
@@ -46,6 +48,7 @@ def retained(relative, row, root):
 def predecessor(relative, data, root=None):
     """Project known complete successor bytes; unknown bytes remain unknown."""
     root = ROOT if root is None else root
+    data = recipe_reconciliation_lineage.predecessor(relative, data, root)
     rows = record(root)
     row = None if rows is None else rows['files'].get(relative)
     if row is None:
@@ -69,6 +72,7 @@ def runtime_view(current, root=None):
     if set(result) == set(baseline):
         if {name: hashlib.sha256(data).hexdigest() for name, data in result.items()} == baseline:
             return result
+    result = recipe_reconciliation_lineage.runtime_view(result, root)
     if set(result) != set(baseline) | set(additions):
         raise AssertionError('Changed video-tool runtime closure')
     for name, row in additions.items():
@@ -89,12 +93,13 @@ def runtime_view(current, root=None):
 def restore(tree, relative, root=None):
     """AST restoration also requires exact complete on-disk successor bytes."""
     root = ROOT if root is None else root
+    tree = recipe_reconciliation_lineage.restore(tree, relative, root)
     rows = record(root)
     source = 'src/adaptive_inference/' + relative
     row = None if rows is None else rows['files'].get(source)
     if row is None or fingerprint(tree) != row['successor_ast_sha256']:
         return tree
-    data = (root / source).read_bytes()
+    data = recipe_reconciliation_lineage.predecessor(source, (root / source).read_bytes(), root)
     if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
         raise AssertionError('Changed complete reboot-budget source (complete video-tool source): ' + relative)
     return ast.parse(predecessor(source, data, root))
