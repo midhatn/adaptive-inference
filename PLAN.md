@@ -1,6 +1,6 @@
 # Adaptive Inference roadmap
 
-**Updated: 1 November 2026. Status: living plan, with evidence-based completion gates.**
+**Updated: 2 November 2026. Status: living plan, with evidence-based completion gates.**
 
 ## Destination
 
@@ -207,7 +207,7 @@ and public reproduction retain their separate evidence boundaries.
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
 | M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded foreground/continuation/two-task run passed both audits; public reproduction, task preparation and setup/launcher startup checks available; narrow reference alpha delivery is next |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
-| M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Planned |
+| M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Active: real compiler and installed SDK feedback verified with scripted provider/resource inputs; IQ3_S foreground handoff remains open |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |
 | M6 | A reproducible daily-use release with fault and soak qualification | M3, M4 and M5 for its advertised scope | Planned |
 | M7 | Broader engine and agent adapters using the same contracts | M2 contract stability; native acceptance follows M3–M6 | Staged expansion |
@@ -760,17 +760,31 @@ unchanged capture ended before the measurement finished. Both timing failure
 and unknown video-surface attribution remain explicit; good browser counters
 do not override either.
 
-**Next bounded step:** verify an ordinary foreground-switch round trip before
-consuming another comparison. Microsoft documents [Alt+Tab task switching](https://support.microsoft.com/en-us/windows/experience/how-to-multitask-in-windows)
-and distinguishes [showing a window at its current geometry from restoring it](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow).
-That suggests a minimal operator correction, not proof of the automation tool's
-internals or a qualified fix. With the task paused and no capture running,
-observe that the actual switch preserves the intended window, full video,
-reachable Start and enough timing margin. If this rehearsal fails, stop before
-another model attempt. Reuse the verified switch in the timed sequence, without
-an additional activation or geometry repair. Preserve the existing 20-second
-capture lead, quality, task budgets, clip, post-handback write requirement and
-all acceptance thresholds. Missing display attribution stays unknown.
+**Inert operator rehearsal passed:** a fresh paused controller and unstarted
+video page completed ordinary Alt+Tab switching without geometry repair. Both
+returns to Chrome preserved its maximized 1536×816 whole-window bounds, full
+video area and reachable Start. These are window bounds, not a new browser
+viewport measurement. Independent closed-record review confirmed zero provider
+calls, no native-engine launch and normal cleanup. The [record](provenance/video-coexistence/inert-focus-switch-2026-11-01.json)
+separates operator observations from reviewed process records. No timing margin
+or playback result was measured; keep the cold rehearsal task closed.
+
+The procedure reuses Microsoft's [Alt+Tab task switching](https://support.microsoft.com/en-us/windows/experience/how-to-multitask-in-windows)
+and distinction between [showing and restoring a window](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow).
+Recheck actual geometry after setup changes, then use ordinary switching without
+an activation/resize repair in the timed sequence. The 20-second capture lead,
+quality, budgets, clip, post-handback write and acceptance thresholds remain.
+
+**Next diagnostic:** establish whether an existing graphics trace can identify
+the actual video presentation path before another coexistence comparison. The
+retained PresentMon CSV cannot retrospectively prove that attribution. Reuse a
+short no-inference [WPT/GPUView feasibility sample](https://learn.microsoft.com/en-us/windows-hardware/drivers/display/using-gpuview)
+and [Chrome player diagnostics](https://developer.chrome.com/docs/devtools/media-panel),
+if their actual recording requirements can be met; require a demonstrated
+video-to-presentation-to-monitor relationship. An overlay mode alone is
+insufficient. Keep recording ownership explicit and never stop an unknown trace.
+If attribution remains unavailable, report it as unknown. This does not repair
+the previous incomplete capture or authorize replaying its consumed attempts.
 
 Do not keep replaying the inventory task to chase green counters. Preserve this
 closed sequence and its independent review. The separately scoped installed
@@ -832,6 +846,53 @@ emitted output or tool effects. Lowering model quality is not the remedy.
 
 **User result:** an agent can compile code or run a supported GPU step, then
 continue its original task automatically.
+
+**Current bounded implementation:** develop the [compiler recipe](docs/compiler-tool-recipe.md)
+to connect authorized Hermes dispatch to the existing host tool grant,
+owned compiler/test subtree and durable feedback. Reuse CMake/CTest and current
+ownership APIs. First qualify the real compile/test and SDK integration, then
+the unchanged IQ3_S model path. A joined compiler error is useful feedback;
+uncertain process cleanup remains fenced. Work proceeds in an isolated source
+checkout while the separately installed reboot candidate stays fixed. No
+physical model/compiler handoff result is claimed yet, and general terminal access is not
+enabled through the accepted file-only worker contract.
+
+The [actual compiler component](provenance/compiler/component-validation-2026-11-02.json)
+now has a checked LLVM/CMake/CTest success and a separate checked compilation
+failure, with retained children joined and empty owned jobs. Scripted foreground
+and resource inputs keep that result below physical handoff qualification. The
+isolated source now connects the bounded worker HTTP client to the selected
+host's durable operation, interrupts the compiler before waiting for a worker
+Stop acknowledgement, and checks compiler receipts at completion/reopening.
+Duplicate native call IDs are refused before a new effect; historical receipt
+deadlines are checked against their original operation history. Review also
+found two integration blockers in the earlier file-task consumer: its provider
+audit rejected the compiler tool, and its continuation effect-file comparison
+omitted compiler receipts. Both paths now use the explicit compiler contract.
+Continue releases its transition fence before worker readiness, and failed
+handover cleanup retains compiler joins before closing the native host.
+
+The complete local suite passed 1,499 tests, historical-source checks passed,
+and the actual readonly host SDK reader passed with explicit dependencies and
+an isolated initialization home. The [fixed-template native run](provenance/compiler/template-native-validation-2026-11-02.json)
+produced exact `23 units`, passed CTest and released all owned processes.
+These component results use scripted resource inputs and do not qualify a model
+handoff. The [local package and installation](provenance/compiler/local-validation-2026-11-02.json)
+and the [actual installed SDK workflow](provenance/compiler/installed-sdk-evidence-2026-11-02.json)
+have now supplied the next evidence: real compiler failure reached the following
+provider request, corrected source passed CTest, and the same task completed.
+The provider replies remained scripted. The full harness failed its final file
+comparison; an independent closed audit verified the workflow, and a disposable
+copy reproduced the readonly SQLite reader creating WAL bookkeeping files.
+Keep the original failure and the narrower acceptance separate. Future closed
+audits must retain before/after inventories and respect SQLite's WAL state;
+immutable reads are for verified closed copies, never live agent databases.
+The [repository-contained compiler task](examples/tasks/compiler-stdout/README.md)
+and optional ordinary setup input now have nine focused checks and an actual
+setup-generation check against the unchanged installed runtime. Publish this
+candidate and complete hosted checks, then let unchanged IQ3_S qualify
+physical model/tool handoff. These checks do not renew an old task budget or
+turn any earlier failed run into a pass.
 
 The named end-to-end media gate is the
 [Adaptive-Hermes-Media-Autonomous Test](docs/adaptive-hermes-media-autonomous-test.md).
@@ -900,6 +961,18 @@ until it has an explicit resource model and convincing benefit. The gateway
 does not become an arbitrary shell-execution endpoint.
 
 ### M5 — Survive application and computer lifecycle changes
+
+**Physical restart feedback — 2 November 2026:** the
+[first normal Windows Restart attempt](provenance/installed-reopen/reboot-budget/physical-restart-expired-2026-11-02.json)
+preserved the completed first task and the second task's confirmed read, but its
+original allowance expired before postboot continuation. The installed reader
+correctly refused the expired execution before app launch. This attempt does not
+satisfy the successful-reboot gate and must not be replayed or given a renewed
+deadline. A fresh attempt must include a concrete postboot return path within
+the unchanged 900 seconds. Preserve the observer's separate three-timeout result;
+add bounded error-stage/numeric diagnostics before another physical observation,
+keeping timeout distinct from confirmed connection refusal. M4 compiler/tool
+integration can continue independently while this physical gate remains open.
 
 **Installed application path passed, 1 November 2026:** the [recorded IQ3_S
 trial](provenance/installed-reopen/application-restart-2026-11-01.json) closed an
@@ -996,7 +1069,7 @@ archives and wheel container bytes remain distinct. Preserve the failed head
 and private runner failure separately; neither changes earlier runtime results.
 Research existing lifecycle/budget implementations first. Do not replay the
 accepted application trial or silently reset a saved monotonic deadline. M3's
-inert window-switch rehearsal and M4 useful-tool/media gates remain open; this
+measured video comparison and M4 useful-tool/media gates remain open; this
 result does not waive them.
 
 **User result:** reopening the application or restarting the supported computer

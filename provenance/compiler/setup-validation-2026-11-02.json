@@ -1,0 +1,62 @@
+{
+  "schema": "adaptive.compiler.setup-validation.v1",
+  "recorded_date": "2026-11-02",
+  "status": "optional_setup_and_example_validated",
+  "scope": "Optional public compiler-settings input, example task and actual setup generation using the existing installed candidate. No task, SDK, compiler, model or UI was launched by this check.",
+  "source_sha256": {
+    "examples/desktop/setup.py": "7f004373a17c31e59a34eb73af01c601079668aeaa07a0c92d23efb59f938ea1",
+    "tests/test_desktop_setup.py": "931602160714fd275a4c2a1b37035d954ab17064f97949771463cc6a1b832b08",
+    "examples/tasks/compiler-stdout/task.json": "105b5a33ddc7ea6a91d19342eb43e6006e2c4f3e1dcba72664417d93c08a8410",
+    "examples/tasks/compiler-stdout/README.md": "1f4fe4aa94865cd25380a3a79b354eab11078c75155c9ede1ed39191003d5cba"
+  },
+  "focused_tests": {
+    "passed": true,
+    "tests": 9,
+    "new_tests": 3,
+    "existing_tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "child_joined": true,
+    "child_exit_code": 0,
+    "checks": [
+      "Default setup remains compiler-free.",
+      "The CLI verifies five explicitly selected tools without launching them.",
+      "Unsupported settings or changed tool bytes produce no setup output.",
+      "The example retains its original 900-second allowance and requires a verified compiler result."
+    ],
+    "count_note": "A separate focused run after the earlier 1499-test suite; it does not relabel that suite as a later combined-tree run."
+  },
+  "actual_public_setup": {
+    "command_exit_code": 0,
+    "passed": true,
+    "profile_data_equal_to_accepted_sdk_profile": true,
+    "launcher_matches_repository_source": true,
+    "runs_directory_empty": true,
+    "runtime_modules_unchanged_per_role": 73,
+    "selected_executable_pins_unchanged": true,
+    "inference_tested": false,
+    "profile_sha256": "c4f10d08aab4ff0d215c0a517658f24eb40f7c607da4f6d48dffc8d992d07e8c"
+  },
+  "documentation": {
+    "powershell_blocks_parsed": 2,
+    "relative_links_verified": 3,
+    "preparation_snippets_executed": false
+  },
+  "evidence_sha256": {
+    "focused_result": "a86951073e427ef9d8adaeb8eede14774b94d9e179a9b1007e031e53daf15566",
+    "focused_log": "a550cea3372d85e5dfd04d89c8f3d947b376f5da1f548cf6b68d4d3ac95c6435",
+    "focused_final_review": "09b8ea93171917ea394c44b746daf1aacda9f2c02a433d4ffd528929449ebea6",
+    "actual_setup_verification": "9951e6604e11ff4df193e3e7288dccdcc09157c2e6208b33acb8dc7b1d4288b7"
+  },
+  "related_records": {
+    "runtime_identity": "provenance/compiler/local-validation-2026-11-02.json",
+    "sdk_workflow": "provenance/compiler/installed-sdk-evidence-2026-11-02.json",
+    "user_example": "examples/tasks/compiler-stdout/README.md"
+  },
+  "limits": [
+    "The setup command verifies configuration and selected executable identities; it does not qualify a new compiler version or native resource handoff.",
+    "The existing installed runtime bytes were unchanged. Public setup/helper changes have the separate focused evidence above.",
+    "Hosted final-candidate checks and the IQ3_S foreground compiler task remain separate gates."
+  ]
+}

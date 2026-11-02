@@ -63,6 +63,8 @@ class DesktopSetupTests(unittest.TestCase):
         self.assertEqual(profile.hermes_site_packages, self.dependencies)
         self.assertEqual(profile.gateway.port, 18100)
         self.assertEqual(profile.gateway.backend_url, 'http://127.0.0.1:18098/v1')
+        self.assertIsNone(profile.compiler)
+        self.assertNotIn('compiler', json.loads(Path(result['profile']).read_bytes()))
         folder = Path(result['profile']).parent
         self.assertEqual((folder / 'launch.py').read_bytes(),
                          (ROOT / 'examples/desktop/launch.py').read_bytes())
@@ -70,6 +72,64 @@ class DesktopSetupTests(unittest.TestCase):
         self.assertFalse(result['inference_tested'])
         with self.assertRaisesRegex(ValueError, 'new setup folder'):
             self.prepare()
+
+    def compiler_settings(self):
+        value = {'schema': 'adaptive.compiler-settings.v1',
+                 'environment': {'PATH': str(self.root), 'INCLUDE': 'headers', 'LIB': 'libraries'}}
+        for name, filename in (('cmake', 'cmake.exe'), ('ctest', 'ctest.exe'),
+                               ('compiler', 'clang-cl.exe'), ('ninja', 'ninja.exe'),
+                               ('linker', 'lld-link.exe')):
+            path = self.root / filename
+            path.write_bytes(('inert selected tool: ' + name).encode())
+            value[name] = {'path': str(path), 'sha256': installation.sha(path)}
+        settings = self.root / 'compiler-settings.json'
+        settings.write_text(json.dumps(value), encoding='utf-8')
+        return settings, value
+
+    def test_compiler_cli_verifies_selected_tools_without_launching_them(self):
+        settings, expected = self.compiler_settings()
+        destination = self.root / 'compiler desktop'
+        argv = ['--destination', str(destination), '--compiler-settings', str(settings)]
+        for name, path in self.options.items():
+            argv.extend(['--' + name.replace('_', '-'), str(path)])
+        with mock.patch('builtins.print'), mock.patch.object(subprocess, 'Popen') as launch:
+            self.assertEqual(setup.main(argv), 0)
+            launch.assert_not_called()
+        profile_path = destination / 'deployment.json'
+        self.assertEqual(json.loads(profile_path.read_bytes())['compiler'], expected)
+        profile = WindowsProfile.load(profile_path)
+        self.assertEqual(profile.compiler.compiler.path, Path(expected['compiler']['path']))
+        self.assertEqual(profile.compiler.environment, tuple(sorted(expected['environment'].items())))
+        self.assertEqual(profile.compiler.parallel_jobs, 2)
+        self.assertEqual(profile.compiler.job_memory_mib, 2048)
+        self.assertEqual(profile.compiler.max_seconds, 90)
+        self.assertEqual(list((destination / 'runs').iterdir()), [])
+
+    def test_invalid_or_changed_compiler_settings_leave_no_setup(self):
+        settings, value = self.compiler_settings()
+        destination = self.root / 'refused compiler'
+        value['schema'] = 'unsupported'
+        settings.write_text(json.dumps(value), encoding='utf-8')
+        with self.assertRaisesRegex(ValueError, 'Unsupported compiler settings'):
+            setup.create_setup(destination, **self.options, compiler_settings=settings)
+        self.assertFalse(destination.exists())
+        value['schema'] = 'adaptive.compiler-settings.v1'
+        settings.write_text(json.dumps(value), encoding='utf-8')
+        Path(value['compiler']['path']).write_bytes(b'changed after selection')
+        with self.assertRaisesRegex(ValueError, 'executable changed'):
+            setup.create_setup(destination, **self.options, compiler_settings=settings)
+        self.assertFalse(destination.exists())
+
+    def test_compiler_example_has_original_budget_and_requires_real_result(self):
+        from adaptive_inference.task_spec import BUDGET, TaskSpec
+        spec = TaskSpec.from_bytes((ROOT / 'examples/tasks/compiler-stdout/task.json').read_bytes())
+        self.assertEqual(spec.data['budget'], BUDGET)
+        self.assertEqual(spec.data['inputs'], [])
+        self.assertEqual(spec.data['outputs'], [])
+        self.assertEqual(spec.compiler['expected_stdout'], '23 units')
+        self.assertEqual(spec.compiler['max_runs'], 2)
+        with self.assertRaisesRegex(ValueError, 'validated successful compiler receipt'):
+            spec.completion(self.root, [], 'It worked.', compiler_receipts=[])
 
     def test_failed_existing_contract_validation_leaves_no_output(self):
         destination = self.root / 'invalid'

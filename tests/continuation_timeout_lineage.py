@@ -9,6 +9,7 @@ import hashlib
 import json
 
 from paused_expiry_lineage import ROOT, fingerprint
+import compiler_lineage
 
 ARCHIVE = 'provenance/task-handover/continuation-timeout-diagnostics'
 INPUTS = {'tests/test_continuation_host.py', 'tests/test_continuation_readiness.py',
@@ -56,7 +57,8 @@ def preparation_inputs(root=None):
     root = ROOT if root is None else root
     return ([root / PREPARATION / 'source-lineage.json', root / PREPARATION / 'cli.before.py']
             + reopen_inputs(root) + fixture_stop_inputs(root) + integration_inputs(root)
-            + handover_inputs(root) + tool_capabilities_inputs(root) + reboot_budget_inputs(root))
+            + handover_inputs(root) + tool_capabilities_inputs(root) + reboot_budget_inputs(root)
+            + compiler_lineage.inputs(root))
 
 
 def preparation_predecessor(relative, data, root=None):
@@ -451,6 +453,7 @@ def reboot_budget_inputs(root=None):
 
 def reboot_budget_predecessor(relative, data, root=None):
     """Restore only exact reviewed bytes; unknown changes reach old validators."""
+    data = compiler_lineage.predecessor(relative, data, root)
     root = ROOT if root is None else root
     if relative not in REBOOT_BUDGET_INPUTS or not (root / REBOOT_BUDGET / 'source-lineage.json').exists():
         return data
@@ -472,7 +475,7 @@ def reboot_budget_predecessor(relative, data, root=None):
 def reboot_budget_runtime_view(current, root=None):
     """Remove only the exact addition before the unchanged historical closures."""
     root = ROOT if root is None else root
-    result = dict(current)
+    result = compiler_lineage.runtime_view(current, root)
     if not (root / REBOOT_BUDGET / 'source-lineage.json').exists():
         return result
     addition = reboot_budget_record(root)['addition']
@@ -492,6 +495,7 @@ def reboot_budget_runtime_view(current, root=None):
 
 
 def restore_reboot_budget(tree, relative, root=None):
+    tree = compiler_lineage.restore(tree, relative, root)
     root = ROOT if root is None else root
     if relative not in REBOOT_BUDGET_RUNTIME or not (root / REBOOT_BUDGET / 'source-lineage.json').exists():
         return tree
@@ -499,7 +503,7 @@ def restore_reboot_budget(tree, relative, root=None):
     row = reboot_budget_record(root)['files'][source]
     if fingerprint(tree) != row['successor_ast_sha256']:
         return tree
-    data = (root / source).read_bytes()
+    data = compiler_lineage.predecessor(source, (root / source).read_bytes(), root)
     if hashlib.sha256(data).hexdigest() != row['successor_sha256']:
         raise AssertionError('Changed complete reboot-budget source: ' + relative)
     return ast.parse(reboot_budget_predecessor(source, data, root))

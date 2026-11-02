@@ -8,6 +8,7 @@ import unittest
 from unittest import mock
 
 import continuation_timeout_lineage as lineage
+import compiler_lineage
 import task_file_alias_lineage as aliases
 from paused_expiry_lineage import fingerprint
 
@@ -460,6 +461,7 @@ class RebootBudgetLineageTests(unittest.TestCase):
         for relative, row in rows['files'].items():
             with self.subTest(relative=relative):
                 current = (lineage.ROOT / relative).read_bytes()
+                current = compiler_lineage.predecessor(relative, current, lineage.ROOT)
                 before = (lineage.ROOT / row['predecessor_source']).read_bytes()
                 self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
                 self.assertEqual(fingerprint(ast.parse(current)), row['successor_ast_sha256'])
@@ -491,6 +493,7 @@ class RebootBudgetLineageTests(unittest.TestCase):
     def test_complete_runtime_and_addition_cannot_hide_unknown_changes(self):
         runtime = lineage.ROOT / 'src/adaptive_inference'
         current = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
+        current = compiler_lineage.runtime_view(current, lineage.ROOT)
         before = dict(current)
         self.assertEqual(len(current), 63)
         view = lineage.reboot_budget_runtime_view(current)

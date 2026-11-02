@@ -239,6 +239,8 @@ class HostTaskHandover:
                     source = {key: request[key] for key in ('task_spec_path','task_spec_sha256','task_inputs')}
                     spec = TaskSpec.read(source['task_spec_path'], source['task_spec_sha256'])
                     spec.verify_inputs(Path(source['task_inputs']))
+                    if spec.compiler is not None and getattr(c.profile, 'compiler', None) is None:
+                        raise ValueError('Compiler task requires explicit compiler deployment settings')
                     payload = self.authority.request(command_id=request['request_id'],
                         expected_selection_revision=request['expected_selection_revision'],
                         predecessor_execution_id=request['execution_id'],
@@ -297,6 +299,7 @@ class HostTaskHandover:
                         c.host.commit_task_runtime(runtime, episode['runtime'], record, self)
             finally:
                 c.host._control_rebinding = False
+            await c.bind_compiler_worker(episode['runtime'], episode['worker'], episode['work'], episode['deadline'])
             await self.open_view(record)
             if not self.live(runtime, intent_valid):
                 record['phase'] = 'blocked'; return self.reply(record)
@@ -395,6 +398,8 @@ class HostTaskHandover:
             'worker','--run',str(work),'--controller-ready',str(episode['first_ready']),
             '--gateway-instance',c.host.gateway.instance,'--deadline-monotonic',str(deadline),
             '--stop-request-id',episode['stop_id']]
+        command.extend(c.compiler_launch_args(work, plan, execution_id=identity.task_id,
+            task_id=identity.task_id, deadline=deadline, diagnostics=work))
         if c.reopen_context is not None:
             command.extend(['--execution-boot-id', rec.digest(c.reopen_context['boot'])])
         record['launch_attempted'] = True
@@ -723,6 +728,24 @@ class HostTaskHandover:
                     failures.append(type(error).__name__)
             self._failure_drains.append(asyncio.create_task(drain_view(episode)))
         self._failure_drains.extend(asyncio.create_task(c.join_child(child)) for child in c.handles)
+        compiler = getattr(c, 'compiler_host', None)
+        if compiler is not None:
+            compiler.interrupt()
+            async def drain_compiler():
+                await compiler.close()
+                tasks = []
+                for row in compiler.obligations():
+                    tasks.append(row['close_task'])
+                    for operation in row['operations']:
+                        tasks.extend((operation['task'], operation['runner']))
+                # Cancelled recipe runners are an expected interruption path;
+                # the bridge, not cancellation alone, proves cleanup completion.
+                await asyncio.gather(*(asyncio.shield(task) for task in tasks if task is not None),
+                                     return_exceptions=True)
+                state = compiler.lifecycle()
+                if state['bridge'] is not None and not state['bridge']['closed']:
+                    raise RuntimeError('Retained compiler cleanup is unresolved')
+            self._failure_drains.append(asyncio.create_task(drain_compiler()))
         drained = await asyncio.gather(*(asyncio.shield(task) for task in self._failure_drains),
                                        return_exceptions=True)
         errors = [value for value in drained if isinstance(value,BaseException)]

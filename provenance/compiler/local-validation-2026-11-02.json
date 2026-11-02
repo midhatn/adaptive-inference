@@ -1,0 +1,402 @@
+{
+  "core": {
+    "actual_tool_parent_completion": "Root agent attestation; child join and result retained in the hashed receipt.",
+    "all_recorded_import_origins_unchanged": true,
+    "child_receipt_sha256": "6fb7c80068b43d0bcb724d3f6bba99cd66d5f043d53682d49fca69e5e828a0b2",
+    "elapsed_s": 543.0630000000001,
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "joined": true,
+    "log_sha256": "d2c8750539b78fdc85c4c23f9d4b4894f290d81dcc5932fff56e3dd647914abb",
+    "passed": true,
+    "receipt_sha256": "7d0d9b18d84373542a8a28438bb9a5dc1d0cb6486ebdc8247b72b4e83f9f2ef9",
+    "skipped": 0,
+    "tests": 1499,
+    "threads_remaining": [
+      "MainThread"
+    ]
+  },
+  "installation": {
+    "all_direct_children_joined": true,
+    "base_profile_sha256": "b8ec8d97c63d8809fc99a4b6603bcd73950b06eb2bfed804bc432eecfff25ea4",
+    "direct_children": 7,
+    "expected_identity_sha256": "9535f84a9faa9eb22a3f7a11a20d033714f61c2ed225beb9b483e50164fb94c2",
+    "inference_tested": false,
+    "old_prefix_inventory_checks_passed": true,
+    "ordinary_setup_runs_empty": true,
+    "parent_receipt_sha256": "0cd45093da4824f7f06e85fdfdabff1f7a9c90714265287b5b7c50a442de5271",
+    "passed": true,
+    "python_versions": {
+      "host": "3.11.9",
+      "worker": "3.14.7"
+    },
+    "receipt_sha256": "45396a9b96d0529a25382d1894b7a1667a72311474ba085ea92d472fc0933e25",
+    "runtime_modules_per_role": 73,
+    "same_package_identity_both_roles": true
+  },
+  "limitations": [
+    "Historical TaskSpec-bound physical audits require their original frozen installed environment; source projection does not execute or impersonate historical validators.",
+    "No model, compiler or desktop workload was run by the source/package/install checks summarized here.",
+    "Windows local results do not qualify Linux, macOS or Python3.12."
+  ],
+  "lineage": {
+    "elapsed_s": 304.855,
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "historical_lineage_manifests_unchanged": 34,
+    "historical_runtime_modules": 63,
+    "joined": true,
+    "log_sha256": "cd9e67802383de17edbad2298dbd277170d33708c224dba2c911f88c5ff2b012",
+    "passed": true,
+    "preserved_predecessor_files": 16,
+    "receipt_sha256": "21f605989830704daf73320464c0d9976c303b0cc6f8268abcb7cc8302fb9e64",
+    "source_unchanged": true,
+    "tests": 110
+  },
+  "package": {
+    "all_direct_children_joined": true,
+    "direct_children": 2,
+    "installed_identity_sha256": "57605c530aa9a23a5371675621f3ead7a42703bde3c834a137c00c169cb0ff24",
+    "parent_receipt_sha256": "661fa065dc78dc8867d0f9e6118f40502c93f27fa162b9da5ba70c6ad34f3bf5",
+    "passed": true,
+    "receipt_sha256": "74822f68a002377274eeb2a8a50aca55437dfe586ceaa3214b39ae9557dc598a",
+    "sdist_sha256": "0f465cf2f79662e1ac4a461952c4099c9ae5c872a15489f078a32be633b0e1f3",
+    "source_files_verified": 1326,
+    "source_unchanged": true,
+    "version": "0.4.0a1",
+    "wheel_modules_verified": 73,
+    "wheel_sha256": "dcb8f266d88f6fbcee0abc56fbb27596de7a5e4149b632336768373e5ee37bb0"
+  },
+  "preserved_failed_checks": [
+    {
+      "errors": 2,
+      "exit_code": 1,
+      "failures": 0,
+      "joined": true,
+      "label": "compiler-lifecycle-integration-02",
+      "log_sha256": "669c1dfb59453874173537d5f1f6d1b96a3a28a56c3a6a3d19525d046efcfdc2",
+      "reason": "An older fixture lacked prepared-task attributes; a selected test module name also did not exist.",
+      "receipt_sha256": "02aa9780bc3f7b3ca4a6bbf7c81ed49f2917e8968be4749785c4360f990f22f6",
+      "source_pin_record_sha256": "ff2c7069f3384134fcf59a16dc30659b174431db3cdff79c5c8c455545c19e16",
+      "tests": 87,
+      "treatment": "Preserved original failed result; final current-core success is separate evidence."
+    },
+    {
+      "errors": 3,
+      "exit_code": 1,
+      "failures": 0,
+      "joined": true,
+      "label": "compiler-lifecycle-integration-03",
+      "log_sha256": "88b81fa7d558233c7cf5dea0e6c9fb82c7fdfdcda1ef8c97c53d1fd0e4d0bcf1",
+      "reason": "Three older composition fixtures omitted required prepared task-specification fields.",
+      "receipt_sha256": "9c52fe2c5cceeabb5f7a520ff9277e73152d6e9c7c798af45af01eb22fc20840",
+      "source_pin_record_sha256": "0a3673ed661d51afb52d2621e44dcc27e60ce026172a31441ff9c2b859facd98",
+      "tests": 40,
+      "treatment": "Preserved original failed result; final current-core success is separate evidence."
+    }
+  ],
+  "public_harness_wrappers": {
+    "all_children_joined": true,
+    "count_note": "Two wrapper test outcomes; nested harness test totals are not added here.",
+    "errors": 0,
+    "failures": 0,
+    "log_sha256": [
+      "7f5923fc46aed5fa63fd9c8e5336e1149872aebca1d0f3a52806d58090637800",
+      "70330920b9dc4d02cd5110c3edc2cc537869cc65142ddef04ffcc854dae0aad9"
+    ],
+    "passed": true,
+    "receipt_sha256": "38804e4f7f4dddb8c17d731786560e0e0f3d2a7be91a08475c75067fa1a91b4f",
+    "source_unchanged": true,
+    "tests": 2
+  },
+  "recorded_date": "2026-11-02",
+  "remaining_gates": [
+    "Actual installed SDK/compiler workflow and durable feedback.",
+    "Unchanged IQ3_S model task with actual foreground/resource handoff.",
+    "Cross-platform hosted CI and physical restart gates remain separate."
+  ],
+  "remaining_local_ci": {
+    "all_direct_children_joined": true,
+    "commands": [
+      {
+        "elapsed_s": 28.03099999999995,
+        "exit_code": 0,
+        "joined": true,
+        "label": "provenance-remaining",
+        "log_sha256": "728cff062e2b55c2e82500ccd92dd2bab3bbe4c37eeb9f2dcbfb445c7d1df643",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 27.674,
+            "tests": 88
+          }
+        ]
+      },
+      {
+        "elapsed_s": 1.344000000000051,
+        "exit_code": 0,
+        "joined": true,
+        "label": "hermes-boundary",
+        "log_sha256": "5901765fc6e11638fe8e34dab330b27075b7ec2f673ac22a7af396c28f4d6b72",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 0.652,
+            "tests": 12
+          }
+        ]
+      },
+      {
+        "elapsed_s": 0.25,
+        "exit_code": 0,
+        "joined": true,
+        "label": "foreground-fixtures",
+        "log_sha256": "640451c0c0e04492f813065063378f29d9651b1c1004045a4a0bd83cd80530ed",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 0.094,
+            "tests": 11
+          }
+        ]
+      },
+      {
+        "elapsed_s": 8.82800000000043,
+        "exit_code": 0,
+        "joined": true,
+        "label": "native-fixtures",
+        "log_sha256": "4a4461ff5130643ce22c463cfdd2433c5b214a6b27325157d7da8801fc319e9d",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 8.13,
+            "tests": 74
+          }
+        ]
+      },
+      {
+        "elapsed_s": 1.9219999999995707,
+        "exit_code": 0,
+        "joined": true,
+        "label": "arithmetic-feedback",
+        "log_sha256": "e4b65f2ed5736260fbcc832ea78db316641dd4da6513adf2d3f1e882980c0278",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 1.174,
+            "tests": 11
+          }
+        ]
+      },
+      {
+        "elapsed_s": 1.2179999999998472,
+        "exit_code": 0,
+        "joined": true,
+        "label": "shutdown-receipts",
+        "log_sha256": "40151528f4a42734a5fe16d7af7856612cf4d375493d552f43a931dc83915e3a",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 0.548,
+            "tests": 9
+          }
+        ]
+      },
+      {
+        "elapsed_s": 0.31300000000010186,
+        "exit_code": 0,
+        "joined": true,
+        "label": "historical-native-sources",
+        "log_sha256": "9fce712757fee80765de6437c92a62f36d064339bab8c4347961fe138fefb4c4",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 0.064,
+            "tests": 3
+          }
+        ]
+      },
+      {
+        "elapsed_s": 3.6090000000003783,
+        "exit_code": 0,
+        "joined": true,
+        "label": "sanitizer",
+        "log_sha256": "9b624c6aad23c6eaef067c40b1c4702fda42b7440bf6011d532b7187b2d835e5",
+        "reported_unittest_summaries": [
+          {
+            "elapsed_s": 3.303,
+            "tests": 158
+          }
+        ]
+      },
+      {
+        "elapsed_s": 0.125,
+        "exit_code": 0,
+        "joined": true,
+        "label": "reference-sources",
+        "log_sha256": "3d2b3dda7fb7bf23b77745b7abd19134ca17116e865e9edd00341818719ca6ea",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 0.125,
+        "exit_code": 0,
+        "joined": true,
+        "label": "client-transports",
+        "log_sha256": "1ffe3530989328c54a02839804673ecca5388166a95c834d33d0370800537ffe",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 0.2969999999995707,
+        "exit_code": 0,
+        "joined": true,
+        "label": "strata-verify-only",
+        "log_sha256": "2780603be4c952661d193e01b7219feea318e356a511d9700724bac3aba6ea96",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 0.4530000000004293,
+        "exit_code": 0,
+        "joined": true,
+        "label": "hermes-verify-only",
+        "log_sha256": "5585ff7be8c4f90b98d93519105b080879083349f5bfddc620597519dd7ac7fb",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 0.9529999999995198,
+        "exit_code": 0,
+        "joined": true,
+        "label": "demo",
+        "log_sha256": "e5e97c1e33ae077f2193a76b273d2a3a63bb58fe743f47f58949ddff159a353b",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 0.6570000000001528,
+        "exit_code": 0,
+        "joined": true,
+        "label": "profiles",
+        "log_sha256": "cf0b68d1d56d3a05f846b0a7862df30b913b962713693a83e44be674034dfb96",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 31.23400000000038,
+        "exit_code": 0,
+        "joined": true,
+        "label": "offline-source",
+        "log_sha256": "af8e28bdd5c620aff959a4487978d156f21da99338934374656c9fffa62f4fc1",
+        "reported_unittest_summaries": []
+      },
+      {
+        "elapsed_s": 13.20299999999952,
+        "exit_code": 0,
+        "joined": true,
+        "label": "hermes-current-source",
+        "log_sha256": "527eb377ca81a272d57a2e6280125ea058fb686d5ae3a6b9592cc969eda56d79",
+        "reported_unittest_summaries": []
+      }
+    ],
+    "dependency_reuse": {
+      "download_or_install_performed": false,
+      "httpx_version": "0.28.1",
+      "pin_record_sha256": "3d5c3ab4a7bad3b8c27216513ef4e329580c88288f912370c2b911631c9a7ad4",
+      "retained_dependency_files": 196,
+      "scope": "Explicit retained SDK dependencies used only by the existing boundary fixture."
+    },
+    "parent_receipt_sha256": "51c48278c2b19dae77ec24c1d490469d8f41470624f20df5e4bc4256ca6d698c",
+    "passed": true,
+    "provenance": {
+      "discovered": 90,
+      "errors": 0,
+      "executed": 88,
+      "failures": 0,
+      "previously_passed_wrapper_tests_excluded": 2,
+      "receipt_sha256": "637b2f52f78fa10fbc7a2f5d940824682e6be409393dbd6dc1269e01bcec7da2",
+      "skipped": 0
+    },
+    "receipt_sha256": "cf3c9bbc18104f235ab1c56a434246e2242a95d351dd5b6cc4c25f302fd164ea",
+    "scope": "The remaining current workflow gates completed locally on Windows CPython 3.11.9. No repeated core/package/install run and no hosted cross-platform result.",
+    "source_and_retained_dependencies_unchanged": true,
+    "workflow_sha256": "f3ec76d23d54d7a72cb96aa4bf00201232ed95f3e653ef362bf13433f3ab672c"
+  },
+  "schema": "adaptive.compiler.local-validation.v1",
+  "scope": "Current local Windows CPython 3.11.9 core/source checks plus fresh full 3.11.9 host/3.14.7 worker wheel installation. Does not establish full installed SDK/compiler task completion, physical foreground/resource handoff, model quality, restart recovery, or hosted cross-platform CI.",
+  "source_identity": {
+    "baseline_commit": "84ef4d21bf948c8266c76910a22648c27f1113d8",
+    "baseline_note": "Compiler changes are identified by exact source bytes; baseline commit alone does not contain this candidate.",
+    "complete_packaged_source_pin_record_sha256": "e75c44a022400a669c6558bb033195a477cd67ebaf6c6917c8bccc81e8832b94",
+    "core_source_pin_record_sha256": "52fb42abe7d553743188dd39c6a9db45c3c28f71b21d24550612c0869ac6af7b",
+    "runtime_modules": 73,
+    "runtime_sha256": {
+      "__init__.py": "1d906cca6d5581290d73292cce949dcaf74001de67bda63b903dfb2e70edacba",
+      "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "adapters.py": "378ee41c1bdbb16873e31752d704e656a70009862d41b36898d30f57a36dfc58",
+      "cli.py": "a13d6c2c52445884f2ee9897eb7fadb75188339be4472db98bd760c18bce5ecf",
+      "client_routing.py": "d57178cfbd5666e75aef311f1362cf8486f48085c6f4995861b4fbd0cb7e41d1",
+      "config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+      "context_budget.py": "cd16b57bc105a179e94dbc9e429c02b901bcd8602cfaf04c9cf8776e9d799ccf",
+      "control_mailbox.py": "12e6ceaef36b41099422040fb23db0a9bccf96a6afb799f0e301a64bccb95888",
+      "costs.py": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1",
+      "demand.py": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+      "demo.py": "5a3b1ff743bee6c45f85df8417bedbc18657f2c59f3e894f1f3298a480b22b93",
+      "desktop/__init__.py": "6169073159f3c0e506752f54aa51b40b058f71ed058d5272e160aa4a61ee7daa",
+      "desktop/activity.py": "3282dc37b493ba3fd347e279b074fa3dfd5d2c1ea5eaba8131dc568d97ec0750",
+      "desktop/cold_start.py": "1264f34910a0d619c6502c7565e66abbfe7ec642391a461390271b8e0799bf68",
+      "desktop/compiler_bridge.py": "ca29bab6b9b307d7534b690d5dd399d2418be09b00bd4f3f9cb486c9c90c4c2b",
+      "desktop/compiler_host.py": "2b333474af164a697ce72e6f7b104f53567ea664f9dd11834e4b3f5c1421d67e",
+      "desktop/compiler_profile.py": "872b8babf3fe26828ce50422485489fdde35bd59f010ff063be66ef253e323fc",
+      "desktop/compiler_recipe.py": "12b31514327a7c168c915b3a321ee1c17bf8446b49181eed6bed2bced55b01d2",
+      "desktop/compiler_template.py": "bf7a3123eb147caded7700c7f67e0c072cfe915239fa3a5cb004e7e1772f7f85",
+      "desktop/composition.py": "e38d8c76e60135bded598ec8dc8b6f5551a74cd335afca6df77010cbace90e8b",
+      "desktop/continuation_host.py": "9bd258aa8b1a2516e80cd94641f2a9fce3584c5b8aa484badf9854dfc121d7c7",
+      "desktop/control_client.py": "ba950c73328e084329fdb29ab78fdfe86cfed1715a792cdbf9872a74e8c75919",
+      "desktop/control_transport.py": "280d8a55793c241b3ec30e253b758de42386f3329bb6477ba47537f9ca264c6b",
+      "desktop/desktop_controls.py": "081cfc11a5335299ad119007dfc7a428ed011f55386af50d4d1289ec0f62e786",
+      "desktop/execution_budget.py": "77ad74ddbf0eaa89379fbecb305574d5b70cc32f9e63934a14f439ed2c744728",
+      "desktop/foreground_policy.py": "35781fb869c03220c6f48c3e138083b15bbcf7e40187edbfe546ad4da09b7faa",
+      "desktop/gui_launch.py": "c93e837ae15092de1a7814f766731ef38dc118f3e8a50280ee7658b91966355b",
+      "desktop/gui_session.py": "f232609a01f11977d7f011a8b1c7f2b7c2a0c3ca697766b63ec0873ec9f4cc64",
+      "desktop/hermes/__init__.py": "43830f7aa3deb6001eb8aa8646fc515f5d8d74a26f50590984c8278e4db67532",
+      "desktop/hermes/admission.py": "6f12fd6ad21fa194cb337590cf0bbd71b1d394e6a2be0cd79dfdd634af5e0f07",
+      "desktop/hermes/compiler_client.py": "a6fe95a11b9ea2363e3b4ecbdbe8e00120745fc3e86742d008ddaf3e0d1812b2",
+      "desktop/hermes/compiler_evidence.py": "4ae175f3688bd4aa4e5cc09e54dbbd011862598d5cf6c7aa7e657ab98ced2dd8",
+      "desktop/hermes/compiler_recovery.py": "b863bc3299a30881deca39e19efa80c4baeed5ebe26b68e7c84270917314d913",
+      "desktop/hermes/compiler_worker.py": "96120ecaf77cbe49334bac1ccc5d2ff7ecdb937aeeeef37520a75b11ce89e556",
+      "desktop/hermes/continuation.py": "bff62efef718fb0acefe75ce11d88152eca61ed1a983fd286c31d34f958379e0",
+      "desktop/hermes/continuation_worker.py": "546d00a9566291c71a256639229bbfab9a66c46f428ee9303d632d314fb235ea",
+      "desktop/hermes/control_bridge.py": "7a8e0aa672efeb1c6f676446e0f3b6886fd778f5d0f6c185a87d005a0256a3db",
+      "desktop/hermes/native_reader.py": "1f51ea1180ef0d7ad52359430831084de7cde45e21e758068fee5b9a93079464",
+      "desktop/hermes/pause_activity.py": "3cffa8eae39b956de3d873e82593a052c2682aad5f06b36a8ff845080baf0e5d",
+      "desktop/hermes/recovery.py": "cca5deb3070eb501b3af20ae48213d29eac8a06c2065316482b098a63102b11d",
+      "desktop/hermes/report_contract.py": "19073e664ea46c933f895fa7c78a3e5da79273ff9c7a6c01354a118b32eff96b",
+      "desktop/hermes/report_validator.py": "378dd445a088a075d300fc85b86160f3b96790ee046adecf926f9e59e8e7d9af",
+      "desktop/hermes/run_recovery.py": "dc0d7848bb773cd6be2a33186002984a7746a095cb82c65130bc7ebca0ead3e7",
+      "desktop/hermes/sdk_pins.py": "538a5ea8651e1106c7c535ccd73b33b2f56de6c736d926ce6b92c5fb6eb075ce",
+      "desktop/hermes/service_stop.py": "e8bb0ae2c94545454a29451f5c8cae96b55d5f2893440f8993037623d5a83ab9",
+      "desktop/installation.py": "13e13d532bedb68f150d1096767c98796de83f74dce54021d286c6c18c521e85",
+      "desktop/load_feasibility.py": "23e94f3ee770b065fb323f30bb104d8d5732bf710bd3cc9b2a27daa746014dda",
+      "desktop/mailbox_runtime.py": "aad1c3b383f6954be89ebe6c9f2e680cd286c672d7bb26bd7027402e0a7d6b72",
+      "desktop/native_owner_adapter.py": "5a79c48911c798310104be07ebb978f9ad9fe4f7ab000c328afd992f75415977",
+      "desktop/owned_job.py": "90b59dbdae226419fc9680c961c21dfa9e061df08512a7a8089d6f6d11b2ccc4",
+      "desktop/persistent_host.py": "acff567d5eb6f2c569588bfa684363907897bdb66be8008bc20c10d3ca7c0011",
+      "desktop/profile.py": "3604af0cf5bc1a6f9837ae782df4cac4a5b3a7ecf48b69e1c9b9958eba5e2dd1",
+      "desktop/retained_ui.py": "749b947510377518c452ae7a70fa21c32f27c3f10225f6eb90d87ef03406f5cb",
+      "desktop/run_gui.py": "eb67c9bac75b72bcc545c234b28c54b8c9c5fbfb3c2183f99e63a47abb3a6ef0",
+      "desktop/saved_tasks.py": "810dbb249728ba57fe313463000fc20e8efff47ba903dba9cd6c1c1fe8490c4d",
+      "desktop/serial_listener.py": "048e8ab061e175a978f755801b9a27e3daa292c1dc7dabe3c8a8763be81199b2",
+      "desktop/startup_pipe.py": "0617c527461b4c437474a947a497300e4c28c06d11f8bb43f1e67fc51a159fae",
+      "desktop/task_admission.py": "2ca007580bca43678c529599b6296ff4b97c15e210b9daeb651a8f2c4f12b25d",
+      "desktop/task_handover.py": "2ef603c10fec0094085b16f4b4e18d3eaaec3a3ddc918ca67e65774dfb0da002",
+      "desktop/ui_intent.py": "ff67208a3890656bc76717ac18c8d0c02a19dc2e09b11b81d88fc1f63c0a29d1",
+      "desktop/ui_progress.py": "466deda7ba15d73ea779abf3b1b2e690e92217950b15afdbdf8acf9cda3d2de9",
+      "desktop/window_marker.py": "e2613ef662993be88c332657e4e53c598fdc006634bf8fabf9e0d0a9765c0d36",
+      "desktop/windows_host_base.py": "ad08c31435bc4da77b43c68321a7c08130ab1c4f7bc688c71191c6497abc97bd",
+      "execution_clock.py": "c9d04e8e029d4d88830560482e2437cab3d06ef140a942d16543c3be95642cff",
+      "feedback.py": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+      "gateway.py": "b2009a8a776bcea4dfc3bedac5296c930ae2211bb8e29d7ccdf76a227fefdef8",
+      "handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+      "resource_policy.py": "53768d4b95b589bb76d1788a9ccceefe60c05b332b1b1f43dece6b04bfec212a",
+      "resources.py": "a72e376e4dfc6021e61756812f93275af20c28ec1438faf5eb381a491d3db4d9",
+      "scheduler.py": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f",
+      "task_prepare.py": "9cddd6e09b3f5435da08316f8d9ccdfbcff67a336f6f74b420108c4c856223b2",
+      "task_spec.py": "d2a714e544250756855ee1cfaca90dfbaca998b460d1d748ecee661b2fdb7356",
+      "task_store.py": "7bf559ea55e0c19155515f321f7505b4d9275648333bcf2c983c2c280bd2e2e6"
+    },
+    "source_lineage": "provenance/compiler/source-lineage.json",
+    "source_lineage_sha256": "21606221cf65fba78fab867228d7aee4a82a1d52593c3aa13402266a5ef81f8d"
+  },
+  "status": "local_ci_core_source_package_and_installation_passed"
+}

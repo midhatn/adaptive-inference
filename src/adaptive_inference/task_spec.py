@@ -17,6 +17,10 @@ from .feedback import Verdict
 
 NAMESPACE = 'adaptive_inference.task_spec.v1'
 SCHEMA = 'adaptive.task-spec.v1'
+COMPILER_SCHEMA = 'adaptive.task-spec.v2'
+COMPILER_RECIPE = 'cpp17-stdout.v1'
+COMPILER_STATUSES = frozenset({'passed', 'failed', 'interrupted', 'timed_out', 'cancelled',
+                             'cancelled_before_dispatch', 'binding_refused', 'preparation_failed'})
 BUDGET = {'max_requests': 8, 'max_attempts': 8, 'max_admission_attempts': 32,
           'execution_seconds': 900}
 MAX_INPUT_BYTES = 256 * 1024
@@ -79,12 +83,25 @@ class TaskSpec:
         if len(encoded) > MAX_SPEC_BYTES:
             raise ValueError('Task specification exceeds its bound')
         data = strict_json(encoded)
-        if (type(data) is not dict or set(data) != {'schema', 'prompt', 'inputs', 'outputs', 'budget', 'validation'}
-                or data['schema'] != SCHEMA or type(data['prompt']) is not str
+        fields = {'schema', 'prompt', 'inputs', 'outputs', 'budget', 'validation'}
+        compiler_task = type(data) is dict and data.get('schema') == COMPILER_SCHEMA
+        if (type(data) is not dict or set(data) != fields | ({'compiler'} if compiler_task else set())
+                or data['schema'] not in (SCHEMA, COMPILER_SCHEMA) or type(data['prompt']) is not str
                 or not data['prompt'].strip() or len(data['prompt'].encode('utf-8')) > 16384
                 or type(data['budget']) is not dict or data['budget'] != BUDGET
                 or any(type(value) is not int for value in data['budget'].values())):
             raise ValueError('Unsupported task contract or execution budget')
+        if compiler_task:
+            compiler = data['compiler']
+            if (type(compiler) is not dict
+                    or set(compiler) != {'recipe_id', 'expected_stdout', 'max_source_chars', 'max_runs'}
+                    or compiler['recipe_id'] != COMPILER_RECIPE
+                    or type(compiler['expected_stdout']) is not str
+                    or len(compiler['expected_stdout'].encode('utf-8')) > 4096
+                    or type(compiler['max_source_chars']) is not int
+                    or not 1 <= compiler['max_source_chars'] <= 16384
+                    or type(compiler['max_runs']) is not int or not 1 <= compiler['max_runs'] <= 8):
+                raise ValueError('Bounded trusted compiler contract required')
         inputs, outputs = data['inputs'], data['outputs']
         if (type(inputs) is not list or type(outputs) is not list or len(inputs) + len(outputs) > 16):
             raise ValueError('Bounded input and output declarations required')
@@ -169,6 +186,72 @@ class TaskSpec:
         return {'version': 'bounded-file-validation.v1', 'spec_sha256': self.sha256,
                 'source_sha256': digest(Path(__file__).read_bytes())}
 
+    @property
+    def compiler(self):
+        """Detached explicit authority; existing v1 tasks have none."""
+        return self.data.get('compiler')
+
+    def validate_compiler_args(self, args, *, completed_runs=0):
+        """Check a proposed source attempt, without writing or acquiring resources."""
+        compiler = self.compiler
+        if compiler is None:
+            return Verdict(False, 'This task does not declare a compiler capability. No compiler was started.')
+        if type(completed_runs) is not int or not 0 <= completed_runs <= compiler['max_runs']:
+            raise ValueError('Exact completed compiler attempt count required')
+        if completed_runs == compiler['max_runs']:
+            return Verdict(False, 'The original compiler attempt allowance is exhausted. No compiler was started.')
+        if (type(args) is not dict or set(args) != {'recipe_id', 'source'}
+                or args['recipe_id'] != compiler['recipe_id'] or type(args['source']) is not str
+                or not args['source'].strip() or '\x00' in args['source']
+                or len(args['source']) > compiler['max_source_chars']):
+            return Verdict(False, 'Use the declared recipe and bounded C++ source only. No compiler was started.')
+        try:
+            args['source'].encode('utf-8')
+        except UnicodeEncodeError:
+            return Verdict(False, 'Source must be valid UTF-8 text. No compiler was started.')
+        return Verdict(True)
+
+    def compiler_completion(self, receipts):
+        """Check normalized receipts already verified by the owning adapter.
+
+        This validates the task's exact stdout oracle and attempt accounting.
+        Native intent, host authorization, durable receipt/artifact bytes and
+        actual process joins must be verified by the adapter, not inferred here.
+        Unknown dispatch/cleanup is never a finalized compiler receipt.
+        """
+        compiler = self.compiler
+        if compiler is None:
+            raise ValueError('Task has no compiler contract')
+        if type(receipts) is not list or len(receipts) > compiler['max_runs']:
+            raise ValueError('Bounded complete compiler receipt history required')
+        common = {'operation_id', 'tool_call_id', 'spec_sha256', 'recipe_id', 'source_sha256',
+                  'status', 'owned_processes_exited'}
+        success_fields = {'stdout_sha256', 'artifact_sha256', 'test_report_sha256'}
+        operations, calls, successful = set(), set(), None
+        for row in receipts:
+            passed = type(row) is dict and row.get('status') == 'passed'
+            if (type(row) is not dict or set(row) != common | (success_fields if passed else set())
+                    or type(row['status']) is not str or row['status'] not in COMPILER_STATUSES
+                    or row['spec_sha256'] != self.sha256 or row['recipe_id'] != compiler['recipe_id']
+                    or row['owned_processes_exited'] is not True):
+                raise ValueError('Compiler receipt does not establish this task contract')
+            for name, seen in (('operation_id', operations), ('tool_call_id', calls)):
+                value = row[name]
+                if (type(value) is not str or re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:-]{0,127}', value) is None
+                        or value in seen):
+                    raise ValueError('Compiler receipt identities must be unique and bounded')
+                seen.add(value)
+            _sha(row['source_sha256'])
+            if passed:
+                for name in success_fields:
+                    _sha(row[name])
+                if row['stdout_sha256'] != digest(compiler['expected_stdout'].encode('utf-8')):
+                    raise ValueError('Compiler stdout differs from the exact declared oracle')
+                successful = {name: row[name] for name in
+                              ('operation_id', 'source_sha256', 'artifact_sha256', 'stdout_sha256', 'test_report_sha256')}
+        return {'qualified': successful is not None, 'recipe_id': compiler['recipe_id'],
+                'attempts': len(receipts), 'successful': successful}
+
     def verify_inputs(self, work):
         work = Path(work).resolve(strict=True)
         for row in self.data['inputs']:
@@ -244,7 +327,7 @@ class TaskSpec:
             return Verdict(False, 'Output did not match the declared validation check. Recheck the original inputs and correct the proposed content. No file was written.')
         return Verdict(True)
 
-    def completion(self, work, tools, final_response):
+    def completion(self, work, tools, final_response, *, compiler_receipts=None):
         self.verify_inputs(work)
         writes_by_name = {}
         for tool in tools:
@@ -269,5 +352,13 @@ class TaskSpec:
         if type(final_response) is not str or not final_response.strip() and not artifacts:
             raise ValueError('Task produced neither a response nor an artifact')
         oracle = self.data['validation']['validator']
-        return {'artifacts': artifacts, 'semantic_validation': 'not_checked' if oracle is None else 'oracle_matched',
-                'validated_artifacts': [] if oracle is None else sorted(oracle['expected'])}
+        result = {'artifacts': artifacts, 'semantic_validation': 'not_checked' if oracle is None else 'oracle_matched',
+                  'validated_artifacts': [] if oracle is None else sorted(oracle['expected'])}
+        if self.compiler is not None:
+            compiler_result = self.compiler_completion(compiler_receipts)
+            if not compiler_result['qualified']:
+                raise ValueError('Task requires a validated successful compiler receipt')
+            result['compiler'] = compiler_result
+        elif compiler_receipts is not None:
+            raise ValueError('File-only task cannot acquire a compiler completion contract')
+        return result

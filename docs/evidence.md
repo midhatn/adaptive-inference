@@ -2,7 +2,73 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Bounded compiler tool and installed Hermes feedback
+
+The [compiler increment](compiler-tool-recipe.md) lets an explicitly opted-in task
+submit bounded C++ source to a fixed CMake/CTest recipe through the existing
+controller. Its [local record](../provenance/compiler/local-validation-2026-11-02.json)
+binds 1,499 passing core tests, complementary coverage of all 90 provenance tests,
+the remaining local workflow gates, a 1,326-file source package, 73 runtime
+modules and seven successful fresh-installation child processes. These local
+Windows results do not establish the hosted Linux/macOS/Python matrix.
+
+The [fixed-template native run](../provenance/compiler/template-native-validation-2026-11-02.json)
+produced exactly `23 units` and passed CTest with all compiler children joined.
+The [actual installed SDK workflow](../provenance/compiler/installed-sdk-evidence-2026-11-02.json)
+then completed a deliberately failed build followed by corrected source and a
+successful test. Three scripted provider answers exercised real Hermes dispatch,
+the host HTTP route, durable native feedback, two actual compiler operations and
+the original 900-second allowance. An independent 54-check closed audit verified
+that workflow and its normal worker/compiler joins without repeating the task.
+
+The full SDK harness remains failed: its final whole-tree comparison reported a
+change during a readonly database audit. A disposable-copy experiment reproduced
+SQLite creating the exact observed WAL bookkeeping files without changing the
+database/history. The original before/after maps were not retained, so that
+diagnosis does not reconstruct every original file change. Earlier harness
+failures and the interrupted attempt remain preserved. The accepted evidence is
+the independently verified SDK/compiler workflow; no model reasoning, real
+foreground/resource handoff, restart or performance result is claimed.
+
+## Inert foreground-switch rehearsal
+
+The [1 November rehearsal](../provenance/video-coexistence/inert-focus-switch-2026-11-01.json)
+used a fresh paused controller and unstarted video page at installed source
+`7306a530`. Ordinary Alt+Tab switching preserved Chrome's maximized whole-window
+bounds of 1536×816 and visible video/Start controls on both returns. These UI
+facts are coordinator-attested observations. Independent review of 22 unchanged
+closed records verified zero provider calls, no native-engine launch, no output
+write and normal controller cleanup. The worker's expected Stop exit 4 and the
+page server's intentional Ctrl+C shell exit 1 retain their actual meanings.
+
+The page remained `not_started`. No capture timing, playback quality, physical
+video attribution, performance or full M3 claim follows. Window bounds are not
+a new browser-viewport measurement. Keep this cold task closed and recheck setup
+before a future comparison; the earlier incomplete capture remains failed.
+
 ## Durable reboot-budget source integration
+
+### First physical restart attempt: expired before continuation
+
+The [source-bound attempt record](../provenance/installed-reopen/reboot-budget/physical-restart-expired-2026-11-02.json)
+retains an actual IQ3_S clean Stop followed by normal Windows Restart. Welcome A
+completed; inventory B stopped after one confirmed read, with zero output writes.
+The closed Stop audit passed with about 711.912 seconds remaining from the
+original 900 seconds. The first postboot eligibility check occurred about
+274.452 seconds after the fixed expiration and refused before application launch.
+Independent review found all checked A/B canonical entries and the admission
+database unchanged. No new session, resumed provider call or output write was
+created. The same-computer boot changed; this is actual reboot evidence, but
+**successful task continuation across reboot remains unqualified**.
+
+The app parent joined with exit 0 and reported clean Stop. The separate observer
+joined with exit 1: three retained `URLError(TimeoutError)` observations followed
+shutdown. Its final valid response reported closing; all three timeouts saw the
+terminal file and none proved connection refusal. Preserve those failures and
+the original deadlines. The fixed installation's 63 runtime modules remain
+identical to the reviewed candidate; source archive and wheel-container identities
+remain distinct. This result adds no crash, sleep/wake, desktop-performance or
+full M5 claim.
 
 The [versioned budget implementation](reboot-budget.md) preserves the original
 task expiration across a clean Stop and changed Windows boot. It reuses fixed

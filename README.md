@@ -25,6 +25,15 @@ completed result repeated no work. See the [later-task result](provenance/instal
 This is a development-source increment beyond the released alpha above;
 computer-reboot and broad daily-use qualification remain on the roadmap.
 
+**Compiler development:** an opted-in Hermes task can now send C++ source to a
+bounded CMake/CTest recipe, receive a real compiler error, correct the source and
+complete the same task. The [source-bound SDK evidence](provenance/compiler/installed-sdk-evidence-2026-11-02.json)
+was verified independently from the closed artifacts using scripted provider
+replies and resource observations. The compiler and Hermes dispatch were real;
+IQ3_S decisions and physical foreground/tool handoff remain the next gate.
+Try the [compiler task and setup example](examples/tasks/compiler-stdout/README.md)
+and read the [compiler recipe and scope](docs/compiler-tool-recipe.md).
+
 **Continuing this project with an AI or a team?** Start with
 [AGENTS.md](AGENTS.md), the dated [continuation handoff](HANDOFF.md), and the
 [multi-agent workflow](docs/multi-agent-collaboration.md). They preserve the goal,

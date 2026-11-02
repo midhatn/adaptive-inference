@@ -1,0 +1,21 @@
+{
+  "schema": "adaptive.task-spec.v2",
+  "prompt": "Compile and test a C++17 program that writes exactly \"23 units\" to stdout, with no newline. Correct a compiler error if necessary, then report the actual result.",
+  "inputs": [],
+  "outputs": [],
+  "budget": {
+    "execution_seconds": 900,
+    "max_admission_attempts": 32,
+    "max_attempts": 8,
+    "max_requests": 8
+  },
+  "validation": {
+    "validator": null
+  },
+  "compiler": {
+    "recipe_id": "cpp17-stdout.v1",
+    "expected_stdout": "23 units",
+    "max_source_chars": 16384,
+    "max_runs": 2
+  }
+}

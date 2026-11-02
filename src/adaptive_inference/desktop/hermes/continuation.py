@@ -91,6 +91,9 @@ def safe_state(cp, *, sealed):
 
 
 def wire_rows(raw, cp, scope):
+    from adaptive_inference.desktop.hermes.recovery import task_contract
+    spec = task_contract(cp)
+    compiler = spec is not None and spec.compiler is not None
     def pairs(items):
         result = {}
         for key, value in items:
@@ -112,8 +115,13 @@ def wire_rows(raw, cp, scope):
                 and row['method'] == 'POST' and row['url'] == scope['gateway'] + '/chat/completions'
                 and row['phase'] == 'parent' and row['class'] == 'normal'
                 and row['finish_reason'] in ('stop', 'tool_calls'), 'Wire model/quality/route changed')
-        require(type(row['tool_names']) is list and {'read_file', 'write_file'} <= set(row['tool_names'])
-                <= {'read_file', 'write_file', 'patch', 'search_files'}, 'Wire tool scope changed')
+        if compiler:
+            require(type(row['tool_names']) is list and len(row['tool_names']) == 3
+                    and set(row['tool_names']) == {'read_file', 'write_file', 'build_and_test'},
+                    'Wire compiler tool scope changed')
+        else:
+            require(type(row['tool_names']) is list and {'read_file', 'write_file'} <= set(row['tool_names'])
+                    <= {'read_file', 'write_file', 'patch', 'search_files'}, 'Wire tool scope changed')
         times = [row[k] for k in ('started_at', 'finished_at')]
         require(all(type(v) in (int, float) and math.isfinite(v) and v > 0 for v in times)
                 and times[0] <= times[1], 'Incomplete wire response')
