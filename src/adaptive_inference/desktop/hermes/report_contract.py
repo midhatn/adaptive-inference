@@ -88,7 +88,11 @@ class Refused(BaseException):
     pass
 
 class Boundary:
-    def __init__(self, run, fixture):
+    def __init__(self, run, fixture, *, task_spec=None):
+        from adaptive_inference.task_spec import TaskSpec
+        if task_spec is not None and type(task_spec) is not TaskSpec:
+            raise ValueError('Wire capability scope requires an exact immutable TaskSpec')
+        self._compiler = task_spec is not None and task_spec.compiler is not None
         self.run, self.fixture = run, fixture
         self.rows = []; self.seen = set(); self.steps = {"parent": 0, "child": 0}
         self.original = None
@@ -121,8 +125,12 @@ class Boundary:
         expected = None if phase == "parent" else "background"
         if req.headers.get("X-Adaptive-Class") != expected:
             raise Refused("Plugin class disagrees with production parent/child identity")
-        names = {t.get("function", {}).get("name") for t in body.get("tools", [])}
-        if not {"read_file", "write_file"} <= names <= {"read_file", "write_file", "patch", "search_files"}:
+        tools = body.get("tools", [])
+        names = {t.get("function", {}).get("name") for t in tools}
+        allowed = (type(tools) is list and len(tools) == 3
+                   and names == {"read_file", "write_file", "build_and_test"}) if self._compiler else (
+                   {"read_file", "write_file"} <= names <= {"read_file", "write_file", "patch", "search_files"})
+        if not allowed:
             raise Refused("Unexpected tool capabilities")
         key = digest(req.content)
         if key in self.seen:

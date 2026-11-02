@@ -70,3 +70,6 @@ examples/validation/hermes_admission_activity/sdk-references.json -text whitespa
 # Preserve the exact reboot-budget manifest and predecessor bytes reviewed locally.
 # Reuse Git's no-conversion rule: https://git-scm.com/docs/gitattributes#_text
 provenance/installed-reopen/reboot-budget/** -text whitespace=cr-at-eol
+# Preserve the exact compiler evidence and historical source bytes.
+provenance/compiler/** -text whitespace=cr-at-eol
+provenance/compiler/predecessor/src/adaptive_inference/desktop/hermes/report_contract.py whitespace=cr-at-eol,-blank-at-eof

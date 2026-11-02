@@ -1,0 +1,163 @@
+{
+  "schema": "compiler-template-native-evidence.v1",
+  "recorded_date": "2026-11-02",
+  "status": "native_template_correctness_validated",
+  "scope": "One actual Windows C++17 build and CTest from the production fixed TaskSpec v2 template, plus production receipt projection and exact artifact verification. Controller adapter and foreground/capacity samples were scripted.",
+  "source_identity": {
+    "base_commit": "84ef4d21bf948c8266c76910a22648c27f1113d8",
+    "base_note": "Additional working-tree implementation is identified by exact bytes below; the base commit alone does not contain the candidate. Publication commit is assigned by the integrating maintainer.",
+    "files": {
+      "src/adaptive_inference/__init__.py": "1d906cca6d5581290d73292cce949dcaf74001de67bda63b903dfb2e70edacba",
+      "src/adaptive_inference/config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+      "src/adaptive_inference/desktop/__init__.py": "6169073159f3c0e506752f54aa51b40b058f71ed058d5272e160aa4a61ee7daa",
+      "src/adaptive_inference/desktop/compiler_bridge.py": "ca29bab6b9b307d7534b690d5dd399d2418be09b00bd4f3f9cb486c9c90c4c2b",
+      "src/adaptive_inference/desktop/compiler_recipe.py": "12b31514327a7c168c915b3a321ee1c17bf8446b49181eed6bed2bced55b01d2",
+      "src/adaptive_inference/desktop/compiler_template.py": "bf7a3123eb147caded7700c7f67e0c072cfe915239fa3a5cb004e7e1772f7f85",
+      "src/adaptive_inference/desktop/control_client.py": "ba950c73328e084329fdb29ab78fdfe86cfed1715a792cdbf9872a74e8c75919",
+      "src/adaptive_inference/desktop/gui_launch.py": "c93e837ae15092de1a7814f766731ef38dc118f3e8a50280ee7658b91966355b",
+      "src/adaptive_inference/desktop/owned_job.py": "90b59dbdae226419fc9680c961c21dfa9e061df08512a7a8089d6f6d11b2ccc4",
+      "src/adaptive_inference/desktop/retained_ui.py": "749b947510377518c452ae7a70fa21c32f27c3f10225f6eb90d87ef03406f5cb",
+      "src/adaptive_inference/desktop/startup_pipe.py": "0617c527461b4c437474a947a497300e4c28c06d11f8bb43f1e67fc51a159fae",
+      "src/adaptive_inference/desktop/ui_intent.py": "ff67208a3890656bc76717ac18c8d0c02a19dc2e09b11b81d88fc1f63c0a29d1",
+      "src/adaptive_inference/feedback.py": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+      "src/adaptive_inference/handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+      "src/adaptive_inference/scheduler.py": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f",
+      "src/adaptive_inference/task_spec.py": "d2a714e544250756855ee1cfaca90dfbaca998b460d1d748ecee661b2fdb7356",
+      "tests/test_compiler_recipe.py": "cf7662e4e2974a1d6190862733d5c5a77c1aeb274b082331f16c2169639ff642",
+      "tests/test_handoff.py": "db9725043a720b29e3af4b809c3af4d92bba540febea94515de52d5505c7d8f7"
+    }
+  },
+  "environment": {
+    "platform": "Windows x64",
+    "python": "full CPython 3.11.9",
+    "clang_cl": "22.1.3 observed in actual configure log",
+    "cmake": "4.4.3 observed in generated cache",
+    "msvc_header_library_toolset": "14.51.36231",
+    "windows_sdk_path_version": "10.0.26100.0",
+    "tool_sha256": {
+      "cmake": "ab8247ca4554871e5d75c0ee118ee8663727bd6fdf37ad76b17e9cc8d5f286a8",
+      "ctest": "083f482c8656c86932c28906445cb3c10c0c5ee649a90ff3e0080ee4447d3dfc",
+      "ninja": "9546466f0feca6d62d7d4ea9b7fbc381f8e302cb7f02f4ce327a39d8577bb293",
+      "compiler": "ec094d5f8f37c106eefcfc47c9997c261a06e3bd8eaaa7255835983a58524156",
+      "linker": "631a02cecb87f9f7f2270713d6c7f84e54a0fabce6c6638d21d3a0caea78204d",
+      "msvc_compiler": "b0a1818ebae6da7f18230a84e76ce839212584ac4c2ab55b97a0d5268085da57",
+      "vsdevcmd": "a7815e85d636828e5cf70fe4235b11fcb41750896a4d2d60756b43bacaf4f0b2",
+      "default_version": "2ca998516f8f18b39c28ce022abb90ef5ad711b468494671dd84b74618b569d9",
+      "cmd": "15cd209c995b7d3009c91ca40892d5b8f1fb162f3e5f10716642ea278e8e0d7b"
+    },
+    "additional_tool_sha256": {
+      "link.exe": "a8c42e25c91ca2453e1110540ac08f0fc12d7539454a11b9af8baeecb469837d",
+      "rc.exe": "65db0d7b4f10ba0f55973fd9356543a556da9ec1c777a0c05f05a0329c8a100a",
+      "mt.exe": "fb1ab75294b78619bd6ac8cadf30cb95befbc7324703cbe2654ef800ddd2bf4d"
+    },
+    "limits": "Installed Windows SDK headers/libraries and Python dependencies remain part of the environment; this is not a hermetic compiler-distribution qualification."
+  },
+  "contract": {
+    "task_spec": {
+      "schema": "adaptive.task-spec.v2",
+      "prompt": "Compile and test C++17 that adds the four quantities 4, 6, 5, and 8 and prints exactly 23 units without a newline.",
+      "inputs": [],
+      "outputs": [],
+      "budget": {
+        "max_requests": 8,
+        "max_attempts": 8,
+        "max_admission_attempts": 32,
+        "execution_seconds": 900
+      },
+      "validation": {
+        "validator": null
+      },
+      "compiler": {
+        "recipe_id": "cpp17-stdout.v1",
+        "expected_stdout": "23 units",
+        "max_source_chars": 16384,
+        "max_runs": 1
+      }
+    },
+    "task_spec_sha256": "18b54ee8f013326bd28effb77e8b251595d40b651dcaeeafbe1fe6620bb74f92",
+    "compiler_arguments": {
+      "recipe_id": "cpp17-stdout.v1",
+      "source": "#include <array>\n#include <iostream>\n#include <numeric>\nint main() {\n    const std::array<int, 4> quantities{4, 6, 5, 8};\n    const int units = std::accumulate(quantities.begin(), quantities.end(), 0);\n    std::cout << units << \" units\";\n    return units == 23 ? 0 : 2;\n}\n"
+    },
+    "recipe_max_seconds": 90,
+    "original_component_task_seconds": 120,
+    "requested_parallel_jobs": 2,
+    "job_commit_limit_mib": 2048,
+    "resource_limit_scope": "Windows job bound is aggregate committed memory, not physical RAM or an OS CPU cap.",
+    "retries": 0,
+    "source_input_sha256": {
+      "CMakeLists.txt": "01266c43d55042eaf10b33fda6e8f0fb0b5bf3abb9c3c3e971209641ebb8485b",
+      "check.cmake": "b700f93887095b52e5273f1775ddb05ed380b32a3a2b3fee55ba4dad70fc607e",
+      "expected.stdout": "458e1deb705506687fa676772dbc70df06f3168034f03eef9679ac85d5bbc5c7",
+      "program.cpp": "106181eeefd0d56306b185f08cb7797d155e9da28ad6012b8bef316de4abf20c"
+    },
+    "oracle": {
+      "expected_stdout": "23 units",
+      "stdout_bytes": 8,
+      "stdout_has_newline": false,
+      "exit_record_hex": "30",
+      "stderr_bytes": 0,
+      "test_name": "program_stdout",
+      "normalization": "none"
+    }
+  },
+  "result": {
+    "recipe_passed": true,
+    "overall_probe_passed": true,
+    "closed_artifact_review_passed": true,
+    "stage_exits": {
+      "configure": 0,
+      "build": 0,
+      "test": 0
+    },
+    "ctest_passes": 1,
+    "artifact_sha256": "5def90e3870bff8bf1cfa929c0218690d1068b885695d26645263ea8b7d725ef",
+    "artifact_bytes": 11776,
+    "stdout_sha256": "458e1deb705506687fa676772dbc70df06f3168034f03eef9679ac85d5bbc5c7",
+    "test_report_sha256": "78bccfa574e9e0cdfbad8dbd3a751b577c23be0a61133ba7b9ebe4567a4522e7",
+    "projected_result_matches_real_receipt": true,
+    "exact_artifact_verification_passed": true,
+    "pinned_clang_and_lld_in_cache_rules_and_abi_commands": true,
+    "msvc_compiler_linker_command_fallback": false,
+    "bootstrap_children_joined": 3,
+    "bootstrap_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "recipe_job_active_processes": 0,
+    "recipe_job_limit_terminated": 0,
+    "forced_cleanup": false,
+    "environment_child_exit": 0,
+    "native_child_exit": 0,
+    "parent_exit": 0,
+    "parent_exit_evidence": "Physical execution owner observed the terminal command result.",
+    "outer_job_before_parent_exit": "contained only the parent",
+    "known_owned_pids_present_at_closed_review": 0,
+    "source_and_tool_files_unchanged": true,
+    "closed_artifacts_unchanged_by_review": true
+  },
+  "evidence_sha256": {
+    "raw_parent_record": "75dc2c09d55bf55d67b371ce5ef7b58426b370f63f62927d0b809cc0802656ff",
+    "raw_child_record": "80d763282b8e3d0541572c3e3535aa392370451ddf1289702f2bf44768c879ba",
+    "raw_case_record": "bba9ded5a8e25b949eb0c4f4ff9d9a85a6be844e73e76ef761a2acac98326b0f",
+    "actual_recipe_receipt": "aa630b5805115e00d542a298c2428714f22d72310232d8368298b50cbe8b0a36",
+    "runner_source": "83aee7f27addc9e5391b7038cf90871e7390f6835c30061496e79402adc72121",
+    "prepared_manifest": "994d4823b745ce4ff938dff84956a2c412b3dd2fccee29d81d2f202228cd0626",
+    "retained_environment_helper": "b5f5e452d731137ea3626076095ec16a3dc7d5710e6c28a1bee442c9622c8c12",
+    "closed_review": "5def32b8be6c977be271b79dcdfeb37af1dbc3c0671581223efc394fecc86b2a"
+  },
+  "review_method": "Separate file-only audit reconstructed the projection and template bytes, parsed CTest, checked all source/tool pins and joins, and corroborated no known owned PIDs. The reviewer prepared the harness; execution and its prior review were owned by the coordinator.",
+  "limitations": [
+    "No Hermes SDK, LLM, host HTTP route, durable native-task authorization or model correction behavior was exercised.",
+    "No physical engine release/restore, real foreground activity, GPU workload, UI or restart recovery was qualified.",
+    "A concurrent component test suite was running; no speed, performance or comparative timing claim is made.",
+    "This successful template check does not change the closed earlier native-recipe records or erase their original checker failure."
+  ],
+  "references": [
+    "https://cmake.org/cmake/help/latest/command/execute_process.html",
+    "https://cmake.org/cmake/help/latest/command/file.html#hash",
+    "https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170",
+    "https://learn.microsoft.com/en-us/windows/win32/procthread/nested-jobs"
+  ]
+}

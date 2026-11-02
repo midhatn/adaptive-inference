@@ -1,0 +1,250 @@
+{
+  "contract": {
+    "budget": {
+      "execution_seconds": 900,
+      "max_admission_attempts": 32,
+      "max_attempts": 8,
+      "max_requests": 8
+    },
+    "compiler": {
+      "expected_stdout": "23 units",
+      "max_runs": 2,
+      "max_source_chars": 16384,
+      "recipe_id": "cpp17-stdout.v1"
+    },
+    "job_commit_limit_mib": 2048,
+    "parallel_jobs": 2,
+    "recipe_max_seconds": 90,
+    "resource_limit_scope": "Aggregate committed memory for the owned Windows compiler job and explicit build parallelism; not physical RAM, CPU isolation or system-wide reservation.",
+    "task_spec": "examples/tasks/compiler-stdout/task.json",
+    "task_spec_file_sha256": "105b5a33ddc7ea6a91d19342eb43e6006e2c4f3e1dcba72664417d93c08a8410",
+    "task_spec_sha256": "69f2397ad31abda8b7b12e8eb4823ae66619476465e680f53157405576fab832"
+  },
+  "core_result": {
+    "artifact_bytes": 11776,
+    "artifact_sha256": "ea1df5cc32c89001b8aa671c4377bc7b017a6dee713b970ca3c4e3356694093e",
+    "compiler_admission_timing_note": "The original recipe deadline includes its wait for a grant; actual compiler stages start only after the grant.",
+    "compiler_operations": 1,
+    "compiler_statuses": [
+      "passed"
+    ],
+    "durable_feedback_in_request": 2,
+    "durable_request_wire_and_native_history_checked": true,
+    "joins": {
+      "app_exit": 0,
+      "compiler_bootstrap_children": 3,
+      "compiler_children_joined": true,
+      "compiler_job_accounting": {
+        "active": 0,
+        "limit_terminated": 0,
+        "total": 58
+      },
+      "emergency_app_termination": false,
+      "forced_compiler_cleanup": false,
+      "gui_exit": 0,
+      "listener_and_transport_closed": true,
+      "native_retained_and_confirmed_exits": [
+        8,
+        9
+      ],
+      "native_server_exits": [
+        0,
+        0
+      ],
+      "prepare_exit": 0,
+      "worker_exit": 0
+    },
+    "model_requests": 2,
+    "program_exit": 0,
+    "program_stderr_bytes": 0,
+    "provider_runtime_generations": [
+      1,
+      2
+    ],
+    "resource_sequence": [
+      "first request active with admission open",
+      "actual Explorer F5 and immediate UI refresh",
+      "same first request still active with foreground admission closed",
+      "request drained and native owner fully released",
+      "foreground hold maintained through parked observation",
+      "returned to controller",
+      "fresh capacity checked and exclusive compiler grant",
+      "configure, build and CTest completed with children joined",
+      "compiler grant completed",
+      "distinct native runtime restored",
+      "second inference request consumed compiler feedback",
+      "task accepted and native runtime released",
+      "observed normal Stop"
+    ],
+    "restoration_during_compiler_grant": false,
+    "stage_exits": {
+      "build": 0,
+      "configure": 0,
+      "test": 0
+    },
+    "stdout": "23 units",
+    "stdout_bytes": 8,
+    "stdout_has_newline": false,
+    "stdout_sha256": "458e1deb705506687fa676772dbc70df06f3168034f03eef9679ac85d5bbc5c7",
+    "task_accepted": true,
+    "test_report_sha256": "7fd5b30477ff56830bd7d26d4b699330e3f7058b65178a7b2b84cb921707054a",
+    "tests_passed": [
+      "program_stdout"
+    ]
+  },
+  "environment": {
+    "actual_model_inference": true,
+    "compiler_reference": "provenance/compiler/template-native-validation-2026-11-02.json",
+    "context": {
+      "context_length": 65536,
+      "max_tokens": 10923,
+      "reserved_output": 10923,
+      "threshold": 0.8,
+      "threshold_tokens": 46421
+    },
+    "hermes_sdk_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "hermes_sdk_source": "https://github.com/NousResearch/hermes-agent/tree/14e1e43a23761b369641208e204365cd6cb9399d",
+    "host_python": "3.11.9",
+    "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+    "platform": "Windows x64",
+    "quality": {
+      "experimental_speed_projection": false,
+      "max_tokens": 10923,
+      "reasoning_budget_tokens": 8192,
+      "reasoning_effort": "high",
+      "strata_tune": {
+        "pcie_frac": 0.37
+      }
+    },
+    "worker_python": "3.14.7"
+  },
+  "evidence_sha256": {
+    "actual_foreground_projection": "932485e61b40174bb289fa687d36ddfef75f1b8200c9d7b69971e7d7e1f74dc6",
+    "actual_ui_projection": "2106794d5e28b3312438a2c5f790d003e001a826afc451b1ba61f5e90e78ae9c",
+    "app_result": "352dea858d22ad31e3d334f242e1fa122a769f3cbcc4b6909e7fe5c84ebb1fb1",
+    "app_supervisor": "f569273b9eae02792c847e5bcacdab661f2d5e012f9b7c829331e03d27571a1b",
+    "budget_only_audit_diff": "cf693b0f89a2c6f4769b6a63861b31186516da36f3e627283bac281dd190d895",
+    "compiler_recipe_receipt": "8f09905bf01955766c6fa47714544ce015ec38b8f4c6c7977fe67aa6372a0fc3",
+    "effect_receipts": "6ae1b1bece2a8ecc9f8f80d6ab44d0da276ede5a49bfd40f80dbdb939800a107",
+    "host_result": "fad7429b8fb913ca863541c66d5099fca161e3aa9623e3f872bf286c18fe09a3",
+    "independent_functional_review": "72b1c9e621afadd0980a1cabce4a626d90f517266dcc37873cf4483460d08ad3",
+    "independent_observer": "a8f6a7741bcfc01c68e918da3ff007f0495d7340edc2feb4fb4e8badcaa0bd0a",
+    "independent_prospective_audit_review": "ed2188906009e0b52aee8e07382a58fd0d4613bc126165ecb9c86da42997f6bd",
+    "native_results_in_release_order": [
+      "38937ef32c67d4f2ba23b0fd50121ace338a66892e59395c3bcfdf59648dd85e",
+      "3bc46ae5fe0ee5e2b36ac23b31dbe001297fda0c4cb5604848a005e803adee1f"
+    ],
+    "primary_closed_audit": "4b40e2938fb3d9e8507c9b1de26c7096d22f112c2d9874d347418628928abf43",
+    "prospective_auditor": "b0078b012d4fbe368b509d92a4be5fe26d37cd53806957de18e61c4e9afcaa19",
+    "raw_foreground_trace": "d3f15278e98f5b35056a07688e4162401ac2b664c343cad341c91450b103e34e",
+    "root_join_attestation": "75d43efe425580b795684377a86accefcd339ee8bdf95cd282dde1aa957b2af1",
+    "wire_observations": "4d25f42786145a325a882ba052d7b55973ec5f45330b6989141535740b7368e3",
+    "worker_result": "fb5ba500af40a8acb6d4edf26dece1eb74a9c266f5fb9cc62c60407301c1c956"
+  },
+  "foreground_result": {
+    "action": "One targeted F5 on observed Explorer This PC, with immediate UI refresh.",
+    "held_until_parked_before_return": true,
+    "independent_matching_activity_samples": 82,
+    "post_action_first_request_active_and_draining": true,
+    "real_actions": 1,
+    "scope": "The timing describes the recorded action bracket; it is not a responsiveness or performance benchmark.",
+    "second_provider_dispatch_or_compiler_grant_during_hold": false,
+    "strict_onset_passed": true,
+    "whole_action_bracket_seconds": 1.4968281
+  },
+  "limits": [
+    "This passes the bounded foreground/compiler workflow at one exact composition; complete M4 and the broader always-on roadmap remain open.",
+    "Independent observer shutdown acceptance remains failed. No aggregate claim that every experiment subsystem passed is made.",
+    "Foreground activity and compiler demand shared this release sequence; it does not isolate compiler-only causation of unloading.",
+    "No restart/reboot, sleep/wake, worker replacement, active compiler cancellation, model-error correction, repeated reliability or cross-platform inference claim.",
+    "No performance comparison, gaming/video quality, media autonomy, arbitrary-application isolation or OS-wide resource reservation claim.",
+    "The named autonomous media test and its latest-supported-stack requirements remain separate. Raw private paths, identifiers, prompts, runtime binaries and databases remain local."
+  ],
+  "predecessor": {
+    "path": "provenance/compiler/physical-compiler-evidence-2026-11-02.json",
+    "preserved_outcomes": "Run01 retains its failed full audit, missed strict foreground overlap, observer shutdown failure and separate projection/budget diagnoses.",
+    "sha256": "bafc4718848f7b685f5b5243cd7dcb0410a1cfef19e539b87f1b0f8433c8300f",
+    "unchanged": true
+  },
+  "prospective_changes": {
+    "audit": "Before this task, only the budget block was corrected to check the ordinary CLI allowance and unchanged persisted deadline. The strict onset function and all other checker functions stayed unchanged.",
+    "input_projection": "Exact Python JSON values retained original UTC strings and 64-bit identities; nested clock tags came from the raw captures.",
+    "operator_capture": "A fresh task used one F5 and immediate refresh instead of the predecessor compound switch-and-click. Its complete observed bracket was preserved.",
+    "predecessor_reinterpreted_or_rerun": false,
+    "runtime_model_quality_and_budgets_unchanged": true
+  },
+  "recorded_date": "2026-11-02",
+  "references": [
+    "https://sqlite.org/wal.html#read_only_databases",
+    "https://sqlite.org/uri.html#uriimmutable"
+  ],
+  "related_records": {
+    "implementation": "docs/compiler-tool-recipe.md",
+    "installed_sdk_predecessor": "provenance/compiler/installed-sdk-evidence-2026-11-02.json",
+    "local_validation": "provenance/compiler/local-validation-2026-11-02.json",
+    "public_task": "examples/tasks/compiler-stdout/README.md",
+    "source_lineage": "provenance/compiler/source-lineage.json"
+  },
+  "schema": "adaptive.compiler.physical-evidence.v1",
+  "scope": "One Windows IQ3_S task yielded to actual Explorer activity, released native inference, ran an exclusive compiler operation, restored a fresh native runtime, consumed actual compiler feedback and completed with normal owned cleanup. The independent observer shutdown check still failed.",
+  "source_identity": {
+    "actual_installed_identity_file_sha256": "68950b06b3036e2bde93e9466fe61ff5098a5b4f6c3c53ac49304ff1d52f20ee",
+    "host_worker_and_source_maps_identical": true,
+    "identity_note": "The tested successor changes documentation and evidence only; all 73 source/host/worker runtime modules retain the previously pinned bytes.",
+    "native_engine_sha256": "744205e4e024b5cbba19e4b560678ffe21e6899e59050929f7af51557f3c6198",
+    "native_manifest_sha256": "0fa3fa2c976c0d49b7849c80159307fabc0a4f82313a3eb6202a3d62f4ab7f14",
+    "native_provenance_sha256": "e612f721b5f17fba777606d72ed27ac463cb51917f2d955d10fe70ec24e6212f",
+    "package_version": "0.4.0a1",
+    "runtime_equivalent_to_commit": "414b7670b4dbbb00f8c2e9dec4ab143fba516b65",
+    "runtime_map": {
+      "hash_serialization": "UTF-8 json.dumps(map, sort_keys=True, ensure_ascii=False, allow_nan=False), default separators",
+      "json_pointer": "/source_identity/runtime_sha256",
+      "map_sha256": "c54825a1c8b0a49f39707dd47e9ecfd42e53c82f732d00a667421fa2cd9092ad",
+      "modules": 73,
+      "path": "provenance/compiler/local-validation-2026-11-02.json",
+      "paths_relative_to": "src/adaptive_inference"
+    },
+    "tested_commit": "c72e26578561ec6b8a72356b34dae164f8e17550"
+  },
+  "status": "foreground_compiler_workflow_verified_observer_shutdown_failed",
+  "validation": {
+    "independent_functional_review": {
+      "checks": 34,
+      "exit_code": 0,
+      "input_files_unchanged": 255,
+      "passed_at_stated_scope": true,
+      "scope": "Independent closed JSON, file/source identity, artifact/CTest, native/GUI cleanup and raw foreground-trace inspection. No SQL reads or repeated onset/audit/workload execution."
+    },
+    "independent_observer": {
+      "activity_error_samples": 0,
+      "closure_passed": false,
+      "end_reason": "three_connection_errors_after_response",
+      "exit_code": 1,
+      "samples": 1753,
+      "scope": "The main task/audit and retained app/native joins passed independently. The observer did not establish its expected final refusal condition and remains failed.",
+      "successful_connection_refusal_observation": false,
+      "valid_responses": 346
+    },
+    "original_budget": {
+      "durable_deadline_unchanged": true,
+      "execution_seconds": 900,
+      "recipe_max_seconds": 90,
+      "reopen_mode_enabled": false,
+      "scope": "Ordinary same-session CLI deadline, not restart-budget or reboot qualification."
+    },
+    "preservation": {
+      "full_audit_invocations": 1,
+      "immutable_database_copies_unchanged": true,
+      "nonempty_wal_discarded": false,
+      "original_files_unchanged": true,
+      "task_replayed": false
+    },
+    "primary_closed_audit": {
+      "checks": 44,
+      "exit_code": 0,
+      "includes_observer_shutdown_acceptance": false,
+      "main_body_passed": true,
+      "scope": "Task/model, durable history, ordinary deadline, actual foreground interval, compiler artifact, native release/restoration, observed controls, joins and immutable evidence checks."
+    }
+  }
+}

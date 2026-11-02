@@ -1,0 +1,286 @@
+{
+  "additions": {
+    "desktop/compiler_bridge.py": {
+      "ast_sha256": "9f2733a890c04e4dd3ddd07c573aa60e3c02b6702bd86683627760c2e48e7ba5",
+      "sha256": "ca29bab6b9b307d7534b690d5dd399d2418be09b00bd4f3f9cb486c9c90c4c2b",
+      "source": "src/adaptive_inference/desktop/compiler_bridge.py"
+    },
+    "desktop/compiler_host.py": {
+      "ast_sha256": "3684cb639932c244c1863caacb2da51742bd2ee5af7de0d462524d976296bf5d",
+      "sha256": "2b333474af164a697ce72e6f7b104f53567ea664f9dd11834e4b3f5c1421d67e",
+      "source": "src/adaptive_inference/desktop/compiler_host.py"
+    },
+    "desktop/compiler_profile.py": {
+      "ast_sha256": "89a40869c6eb2e50b12720b7b6b2a77f19b7a8cdd23e8bbc13fc39a7d5c47e14",
+      "sha256": "872b8babf3fe26828ce50422485489fdde35bd59f010ff063be66ef253e323fc",
+      "source": "src/adaptive_inference/desktop/compiler_profile.py"
+    },
+    "desktop/compiler_recipe.py": {
+      "ast_sha256": "9d9fc1c0897247e10cef2e018ee8e24441a236a04ccae5d7a9eb24dd3b37dc1f",
+      "sha256": "12b31514327a7c168c915b3a321ee1c17bf8446b49181eed6bed2bced55b01d2",
+      "source": "src/adaptive_inference/desktop/compiler_recipe.py"
+    },
+    "desktop/compiler_template.py": {
+      "ast_sha256": "d405bd4911d840e663158c326d19e5e4b79d724199df829cf53cdd75fefc5a95",
+      "sha256": "bf7a3123eb147caded7700c7f67e0c072cfe915239fa3a5cb004e7e1772f7f85",
+      "source": "src/adaptive_inference/desktop/compiler_template.py"
+    },
+    "desktop/hermes/compiler_client.py": {
+      "ast_sha256": "bf8d2c3b3fa559bc9babe458a348c74482786570c082bdcfd884d3b7ac85bb4a",
+      "sha256": "a6fe95a11b9ea2363e3b4ecbdbe8e00120745fc3e86742d008ddaf3e0d1812b2",
+      "source": "src/adaptive_inference/desktop/hermes/compiler_client.py"
+    },
+    "desktop/hermes/compiler_evidence.py": {
+      "ast_sha256": "c57b17208fda2baa6fce01df4b2752a474b0fa6f7c98937f8548969884881c5f",
+      "sha256": "4ae175f3688bd4aa4e5cc09e54dbbd011862598d5cf6c7aa7e657ab98ced2dd8",
+      "source": "src/adaptive_inference/desktop/hermes/compiler_evidence.py"
+    },
+    "desktop/hermes/compiler_recovery.py": {
+      "ast_sha256": "14fdfecc1fdd40b84b36404dc48d09089d3fe529816df70a13b24354de0cc260",
+      "sha256": "b863bc3299a30881deca39e19efa80c4baeed5ebe26b68e7c84270917314d913",
+      "source": "src/adaptive_inference/desktop/hermes/compiler_recovery.py"
+    },
+    "desktop/hermes/compiler_worker.py": {
+      "ast_sha256": "e2ba818d5fb12daa21789fa964fbb6bfba5c69b97296af825b323e45f0c2b6b7",
+      "sha256": "96120ecaf77cbe49334bac1ccc5d2ff7ecdb937aeeeef37520a75b11ce89e556",
+      "source": "src/adaptive_inference/desktop/hermes/compiler_worker.py"
+    },
+    "desktop/hermes/native_reader.py": {
+      "ast_sha256": "afd39e113fbb51cfddfcd5a65607c8708d592babfaad58cd6e924cc0f4240f62",
+      "sha256": "1f51ea1180ef0d7ad52359430831084de7cde45e21e758068fee5b9a93079464",
+      "source": "src/adaptive_inference/desktop/hermes/native_reader.py"
+    }
+  },
+  "baseline_runtime": {
+    "__init__.py": "1d906cca6d5581290d73292cce949dcaf74001de67bda63b903dfb2e70edacba",
+    "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "adapters.py": "378ee41c1bdbb16873e31752d704e656a70009862d41b36898d30f57a36dfc58",
+    "cli.py": "a13d6c2c52445884f2ee9897eb7fadb75188339be4472db98bd760c18bce5ecf",
+    "client_routing.py": "d57178cfbd5666e75aef311f1362cf8486f48085c6f4995861b4fbd0cb7e41d1",
+    "config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+    "context_budget.py": "cd16b57bc105a179e94dbc9e429c02b901bcd8602cfaf04c9cf8776e9d799ccf",
+    "control_mailbox.py": "12e6ceaef36b41099422040fb23db0a9bccf96a6afb799f0e301a64bccb95888",
+    "costs.py": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1",
+    "demand.py": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+    "demo.py": "5a3b1ff743bee6c45f85df8417bedbc18657f2c59f3e894f1f3298a480b22b93",
+    "desktop/__init__.py": "6169073159f3c0e506752f54aa51b40b058f71ed058d5272e160aa4a61ee7daa",
+    "desktop/activity.py": "3282dc37b493ba3fd347e279b074fa3dfd5d2c1ea5eaba8131dc568d97ec0750",
+    "desktop/cold_start.py": "1264f34910a0d619c6502c7565e66abbfe7ec642391a461390271b8e0799bf68",
+    "desktop/composition.py": "bbc7ea5d9a7973117bc8739de490ccc0a973ba055fc8a2b64ed58656dad566c2",
+    "desktop/continuation_host.py": "9bd258aa8b1a2516e80cd94641f2a9fce3584c5b8aa484badf9854dfc121d7c7",
+    "desktop/control_client.py": "ba950c73328e084329fdb29ab78fdfe86cfed1715a792cdbf9872a74e8c75919",
+    "desktop/control_transport.py": "280d8a55793c241b3ec30e253b758de42386f3329bb6477ba47537f9ca264c6b",
+    "desktop/desktop_controls.py": "58cc26f7777b8b6ae105b7b14cfb057bf74d679ed574f5079909df850a0ad422",
+    "desktop/execution_budget.py": "77ad74ddbf0eaa89379fbecb305574d5b70cc32f9e63934a14f439ed2c744728",
+    "desktop/foreground_policy.py": "35781fb869c03220c6f48c3e138083b15bbcf7e40187edbfe546ad4da09b7faa",
+    "desktop/gui_launch.py": "c93e837ae15092de1a7814f766731ef38dc118f3e8a50280ee7658b91966355b",
+    "desktop/gui_session.py": "f232609a01f11977d7f011a8b1c7f2b7c2a0c3ca697766b63ec0873ec9f4cc64",
+    "desktop/hermes/__init__.py": "43830f7aa3deb6001eb8aa8646fc515f5d8d74a26f50590984c8278e4db67532",
+    "desktop/hermes/admission.py": "6f12fd6ad21fa194cb337590cf0bbd71b1d394e6a2be0cd79dfdd634af5e0f07",
+    "desktop/hermes/continuation.py": "6355952c0ba29c9046e5806728f9bcc6c94097429288c46bbc287eb32c57b91a",
+    "desktop/hermes/continuation_worker.py": "31f177f34985a2ef595b46784fd10873192eef70a299b3daa25979cdf35bf958",
+    "desktop/hermes/control_bridge.py": "7a8e0aa672efeb1c6f676446e0f3b6886fd778f5d0f6c185a87d005a0256a3db",
+    "desktop/hermes/pause_activity.py": "3cffa8eae39b956de3d873e82593a052c2682aad5f06b36a8ff845080baf0e5d",
+    "desktop/hermes/recovery.py": "188a627bda174b75878630a8804445dfff2a2499a277e9104a0417bde881f575",
+    "desktop/hermes/report_contract.py": "9c30978a14192f055f9e618ae2eec76ae683305c4c27462370f3cb4694adb1fe",
+    "desktop/hermes/report_validator.py": "378dd445a088a075d300fc85b86160f3b96790ee046adecf926f9e59e8e7d9af",
+    "desktop/hermes/run_recovery.py": "a0ef789bd3b42e20fcfbff4ae254030f17ddc7fd5b789399aa0608b228300b34",
+    "desktop/hermes/sdk_pins.py": "538a5ea8651e1106c7c535ccd73b33b2f56de6c736d926ce6b92c5fb6eb075ce",
+    "desktop/hermes/service_stop.py": "ff35326fb214bdd47870e46a90df351940ab4bc62e10fb2c0c60f37c27d8afd8",
+    "desktop/installation.py": "13e13d532bedb68f150d1096767c98796de83f74dce54021d286c6c18c521e85",
+    "desktop/load_feasibility.py": "23e94f3ee770b065fb323f30bb104d8d5732bf710bd3cc9b2a27daa746014dda",
+    "desktop/mailbox_runtime.py": "aad1c3b383f6954be89ebe6c9f2e680cd286c672d7bb26bd7027402e0a7d6b72",
+    "desktop/native_owner_adapter.py": "5a79c48911c798310104be07ebb978f9ad9fe4f7ab000c328afd992f75415977",
+    "desktop/owned_job.py": "90b59dbdae226419fc9680c961c21dfa9e061df08512a7a8089d6f6d11b2ccc4",
+    "desktop/persistent_host.py": "acff567d5eb6f2c569588bfa684363907897bdb66be8008bc20c10d3ca7c0011",
+    "desktop/profile.py": "93618a9e3c078d163d6e15fae2cc06e1fd16b85962fd8a164492992515227551",
+    "desktop/retained_ui.py": "749b947510377518c452ae7a70fa21c32f27c3f10225f6eb90d87ef03406f5cb",
+    "desktop/run_gui.py": "eb67c9bac75b72bcc545c234b28c54b8c9c5fbfb3c2183f99e63a47abb3a6ef0",
+    "desktop/saved_tasks.py": "b8090b9e551d93f5c29b5a56919260f73e033a807430c9d2dd9e0560fec36c0f",
+    "desktop/serial_listener.py": "048e8ab061e175a978f755801b9a27e3daa292c1dc7dabe3c8a8763be81199b2",
+    "desktop/startup_pipe.py": "0617c527461b4c437474a947a497300e4c28c06d11f8bb43f1e67fc51a159fae",
+    "desktop/task_admission.py": "2ca007580bca43678c529599b6296ff4b97c15e210b9daeb651a8f2c4f12b25d",
+    "desktop/task_handover.py": "7e9b6277ff85aa423be5ad2aecdf8b2398a4605bc50633287a60e2daf1c49d48",
+    "desktop/ui_intent.py": "ff67208a3890656bc76717ac18c8d0c02a19dc2e09b11b81d88fc1f63c0a29d1",
+    "desktop/ui_progress.py": "466deda7ba15d73ea779abf3b1b2e690e92217950b15afdbdf8acf9cda3d2de9",
+    "desktop/window_marker.py": "e2613ef662993be88c332657e4e53c598fdc006634bf8fabf9e0d0a9765c0d36",
+    "desktop/windows_host_base.py": "ad08c31435bc4da77b43c68321a7c08130ab1c4f7bc688c71191c6497abc97bd",
+    "execution_clock.py": "c9d04e8e029d4d88830560482e2437cab3d06ef140a942d16543c3be95642cff",
+    "feedback.py": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+    "gateway.py": "b2009a8a776bcea4dfc3bedac5296c930ae2211bb8e29d7ccdf76a227fefdef8",
+    "handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+    "resource_policy.py": "53768d4b95b589bb76d1788a9ccceefe60c05b332b1b1f43dece6b04bfec212a",
+    "resources.py": "a72e376e4dfc6021e61756812f93275af20c28ec1438faf5eb381a491d3db4d9",
+    "scheduler.py": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f",
+    "task_prepare.py": "9cddd6e09b3f5435da08316f8d9ccdfbcff67a336f6f74b420108c4c856223b2",
+    "task_spec.py": "e5c85a4f07b256c799a654fb1c5631dd71a177ed6ac3218f9453b8e56ccba425",
+    "task_store.py": "7bf559ea55e0c19155515f321f7505b4d9275648333bcf2c983c2c280bd2e2e6"
+  },
+  "files": {
+    "src/adaptive_inference/desktop/composition.py": {
+      "predecessor_ast_sha256": "a321e4b619a90e9cca01c7a47569b61fe8fc9dc539822beee47f73144e42a8c5",
+      "predecessor_sha256": "bbc7ea5d9a7973117bc8739de490ccc0a973ba055fc8a2b64ed58656dad566c2",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/composition.py",
+      "successor_ast_sha256": "0f9dff0ce64fb5ea0c7edddff6d8ba1dbc587e14fa88b9c73ce0b6405980c4dc",
+      "successor_sha256": "e38d8c76e60135bded598ec8dc8b6f5551a74cd335afca6df77010cbace90e8b"
+    },
+    "src/adaptive_inference/desktop/desktop_controls.py": {
+      "predecessor_ast_sha256": "13f3d0ef95d6402677c622df410fca461b7f30880a7be857f07000de3d590e63",
+      "predecessor_sha256": "58cc26f7777b8b6ae105b7b14cfb057bf74d679ed574f5079909df850a0ad422",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/desktop_controls.py",
+      "successor_ast_sha256": "a5e6a6bb28b947cad24d21218c87bdfb6fa39d0a7ac204253ca098b3d19b5f24",
+      "successor_sha256": "081cfc11a5335299ad119007dfc7a428ed011f55386af50d4d1289ec0f62e786"
+    },
+    "src/adaptive_inference/desktop/hermes/continuation.py": {
+      "predecessor_ast_sha256": "0b8e792bc9218da320b222c1c250f658a6ed0188857af3fa652a12450372e8d2",
+      "predecessor_sha256": "6355952c0ba29c9046e5806728f9bcc6c94097429288c46bbc287eb32c57b91a",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/hermes/continuation.py",
+      "successor_ast_sha256": "d7f3ef663d1a6f64ac36a5713a129a376cdd6e79478ccee550a2b371d1903612",
+      "successor_sha256": "bff62efef718fb0acefe75ce11d88152eca61ed1a983fd286c31d34f958379e0"
+    },
+    "src/adaptive_inference/desktop/hermes/continuation_worker.py": {
+      "predecessor_ast_sha256": "804243f3e24880a4db7c95b7e945f243dabdf5d0791c0647568e59f3c0bf8e5b",
+      "predecessor_sha256": "31f177f34985a2ef595b46784fd10873192eef70a299b3daa25979cdf35bf958",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/hermes/continuation_worker.py",
+      "successor_ast_sha256": "028ef06e945ce0b582327e05919e5015244408495169fbdb5ed5a459f8a222b9",
+      "successor_sha256": "546d00a9566291c71a256639229bbfab9a66c46f428ee9303d632d314fb235ea"
+    },
+    "src/adaptive_inference/desktop/hermes/recovery.py": {
+      "predecessor_ast_sha256": "031c71c5972561d4ecbf9f7f5281833ce372022bd965f60908e605f3f36a0925",
+      "predecessor_sha256": "188a627bda174b75878630a8804445dfff2a2499a277e9104a0417bde881f575",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/hermes/recovery.py",
+      "successor_ast_sha256": "04299a0ecf8421a08b4c368c68bd0db25668bfc3355d00ae942ae44175fb5d21",
+      "successor_sha256": "cca5deb3070eb501b3af20ae48213d29eac8a06c2065316482b098a63102b11d"
+    },
+    "src/adaptive_inference/desktop/hermes/report_contract.py": {
+      "predecessor_ast_sha256": "b16dca7879a0b492e983695b028421fb64f7fe61eb8c81f1ee71fe4278d5abb4",
+      "predecessor_sha256": "9c30978a14192f055f9e618ae2eec76ae683305c4c27462370f3cb4694adb1fe",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/hermes/report_contract.py",
+      "successor_ast_sha256": "2d1c4428f9b125fbfc98de3e2f1643534314faa3bfc57f71bc9214f72466c077",
+      "successor_sha256": "19073e664ea46c933f895fa7c78a3e5da79273ff9c7a6c01354a118b32eff96b"
+    },
+    "src/adaptive_inference/desktop/hermes/run_recovery.py": {
+      "predecessor_ast_sha256": "19d5737f2eb2647fe4a3a38c185b42f26f852dc7b954a113d3e1f658951af70e",
+      "predecessor_sha256": "a0ef789bd3b42e20fcfbff4ae254030f17ddc7fd5b789399aa0608b228300b34",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/hermes/run_recovery.py",
+      "successor_ast_sha256": "2ebac0fefe8428778a02998955caeb5c4725041b34944341d73755f2cc619250",
+      "successor_sha256": "dc0d7848bb773cd6be2a33186002984a7746a095cb82c65130bc7ebca0ead3e7"
+    },
+    "src/adaptive_inference/desktop/hermes/service_stop.py": {
+      "predecessor_ast_sha256": "073981e7f69da47530bc94680ad9ca7fed4ead6e0e35248033b5eecf4de83fbe",
+      "predecessor_sha256": "ff35326fb214bdd47870e46a90df351940ab4bc62e10fb2c0c60f37c27d8afd8",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/hermes/service_stop.py",
+      "successor_ast_sha256": "a7f60dd430a2120db278b6bc12335862a93824184e574bca9620ab1d2ccd3023",
+      "successor_sha256": "e8bb0ae2c94545454a29451f5c8cae96b55d5f2893440f8993037623d5a83ab9"
+    },
+    "src/adaptive_inference/desktop/profile.py": {
+      "predecessor_ast_sha256": "a594ca3ef09801e23c2361ee8ef70a2ede864a6ee68c14c153fa3e62516e36de",
+      "predecessor_sha256": "93618a9e3c078d163d6e15fae2cc06e1fd16b85962fd8a164492992515227551",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/profile.py",
+      "successor_ast_sha256": "c1e0bb845c578532ba72ae6fda415135eb0143c8078368b58f0ea95cc06305b6",
+      "successor_sha256": "3604af0cf5bc1a6f9837ae782df4cac4a5b3a7ecf48b69e1c9b9958eba5e2dd1"
+    },
+    "src/adaptive_inference/desktop/saved_tasks.py": {
+      "predecessor_ast_sha256": "5d9ebd5678a39648eb7fa9c8c782a5c2e127bf667ef0d65d7470e5627522d541",
+      "predecessor_sha256": "b8090b9e551d93f5c29b5a56919260f73e033a807430c9d2dd9e0560fec36c0f",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/saved_tasks.py",
+      "successor_ast_sha256": "e44ab2b5847e73e93e8d86651fe0774160a8004fe985b12136d85316f235cc41",
+      "successor_sha256": "810dbb249728ba57fe313463000fc20e8efff47ba903dba9cd6c1c1fe8490c4d"
+    },
+    "src/adaptive_inference/desktop/task_handover.py": {
+      "predecessor_ast_sha256": "4cdd863504aa3710c8064fa5a925934e4d4cb1c23677437a307400837d127c0c",
+      "predecessor_sha256": "7e9b6277ff85aa423be5ad2aecdf8b2398a4605bc50633287a60e2daf1c49d48",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/desktop/task_handover.py",
+      "successor_ast_sha256": "0c2701a6ca3dd2106f1a9b6f587402682bc05af27a97d20f39c98b2fd5bc6708",
+      "successor_sha256": "2ef603c10fec0094085b16f4b4e18d3eaaec3a3ddc918ca67e65774dfb0da002"
+    },
+    "src/adaptive_inference/task_spec.py": {
+      "predecessor_ast_sha256": "2a33b4e96398d9a168f2b2d0c06d5edf25ab6be2a459920d4d7fad5172e2e83a",
+      "predecessor_sha256": "e5c85a4f07b256c799a654fb1c5631dd71a177ed6ac3218f9453b8e56ccba425",
+      "predecessor_source": "provenance/compiler/predecessor/src/adaptive_inference/task_spec.py",
+      "successor_ast_sha256": "a5b759dce5ca627c362765c0f6e3d069c1cb58e4407c1ddc3395bb5b2780f08f",
+      "successor_sha256": "d2a714e544250756855ee1cfaca90dfbaca998b460d1d748ecee661b2fdb7356"
+    },
+    "tests/continuation_timeout_lineage.py": {
+      "predecessor_ast_sha256": "c8e3da44dd813e9db2f49fea4cb5dbf7408ce4c3a2233fa7851debb161aa2e95",
+      "predecessor_sha256": "ee4b7b513e6c15931805db14f80481c6baa6f6c14e3a1730fb35ff52e9191778",
+      "predecessor_source": "provenance/compiler/predecessor/tests/continuation_timeout_lineage.py",
+      "successor_ast_sha256": "b181eac994afa1c43ea8e5728d00a8ba8bf8a6b3e92d99327aee68234c608132",
+      "successor_sha256": "81de8bdcff663fe84d3f248a4f69e56b33c3fd6410d19e3b1722f92d85165917"
+    },
+    "tests/test_continuation_host.py": {
+      "predecessor_ast_sha256": "6be2fd0e3a69a03d3d7c6753bb47bfd71406bf4b11d1356c8b24ab77b5cfa92b",
+      "predecessor_sha256": "c59b04e3ac2ccce5f3ee2f21a94bc569838998c7c4b839d096da1161a123e075",
+      "predecessor_source": "provenance/compiler/predecessor/tests/test_continuation_host.py",
+      "successor_ast_sha256": "510cab5877aa1a88d2e9e66469aaa4ecbc1e39223dc67c5792e89c88bd22485e",
+      "successor_sha256": "4858cf5d589dd3960ccf16f16896c8c6c085672d8c6aa4425c37184f02810bbf"
+    },
+    "tests/test_desktop_composition.py": {
+      "predecessor_ast_sha256": "5073d487eeb5560f8d9e2dd89c74872460ca5058b31f4485a38da7a99af60333",
+      "predecessor_sha256": "debaca0adf292336acaf115ac32c6c46ce103c55fc3c380b007abe257a9f0042",
+      "predecessor_source": "provenance/compiler/predecessor/tests/test_desktop_composition.py",
+      "successor_ast_sha256": "040422da37507cfb592cab3fa3f24bf10e5307f129e28850921f022416b6874f",
+      "successor_sha256": "b84ea2ce1b5e8484387dbe1fc5d0557dfb62589452442ea3e48b08ab2f50f1c0"
+    },
+    "tests/test_task_preparation_lineage.py": {
+      "predecessor_ast_sha256": "b81069973b53732a80fe4c294fd8d5e9d7d22c5af5b420b7f7d817b5b11b49bc",
+      "predecessor_sha256": "d7f04ebd76a8802bc301959b253c72aee6bac29584027e8d269d416b841d7416",
+      "predecessor_source": "provenance/compiler/predecessor/tests/test_task_preparation_lineage.py",
+      "successor_ast_sha256": "1138b860163f18b365e019a4935ec41844dc6988893c9e3efde4038ba353a1f6",
+      "successor_sha256": "669ed83471487167829bf2ce3c3dcdc72f62f0c099b301801d36a87a2316a7c0"
+    }
+  },
+  "predecessor_revision": "84ef4d21bf948c8266c76910a22648c27f1113d8",
+  "preserved_manifests": {
+    "provenance/control-mailbox/source-lineage.json": "03c012c1cce0a4540730e181b0ceab6c2f7ae29a37b7dab5c2aa7188c1434eed",
+    "provenance/desktop-control-core/source-lineage.json": "9c56384cc2d47e5e511a23e358da228eba834e8421d15d5208f1503f35df232b",
+    "provenance/desktop-control-intent/source-lineage.json": "fca73b9482ca8799967ec0f2c0b14670076c0b04a69329466f6a47339cf432e3",
+    "provenance/explicit-continuation/deadline-arithmetic/predecessor/source-lineage.json": "1d598b6e647614f29cf00b5745cf906b5cd2c0482628001dff3c1f087e5354f7",
+    "provenance/explicit-continuation/deadline-arithmetic/source-lineage.json": "f7a5157a1ccdd7900631a58872021e21482d062773dd9b16105c764228c3bead",
+    "provenance/explicit-continuation/qualification-predecessor/source-lineage.json": "a29e2da5e9c1dc9b52c74445d07d810b776ff22c52c292b8ce3caea2957073cb",
+    "provenance/explicit-continuation/source-lineage.json": "cd7472c3736fd31b99afbb09b387827a968df437b196f0aa1494a2d964d42849",
+    "provenance/installed-desktop/source-lineage.json": "22420f883b4ea5f6011f2309019182d50e5f844e4c2b5f3bdde155c675ab2b7d",
+    "provenance/installed-reopen/fixture-stop-integration/source-lineage.json": "1355b2d945c00358602ebc3de316237a8c9b863e5d0151ec9fb603d47ee9857a",
+    "provenance/installed-reopen/handover-tasks/source-lineage.json": "d634c761c6aad3ee4864402e10cb331b46f25d8eba96dfe9e8cf3319978f0201",
+    "provenance/installed-reopen/reboot-budget/source-lineage.json": "9477f9692b063e6514f3b947455b4384bdba9ba40a5282e0eefe2f15281b1a95",
+    "provenance/installed-reopen/source-lineage.json": "27ec409d26b4fd1c2c3344474ea7d825297dc55cc8ebead12075465e79b1c214",
+    "provenance/installed-reopen/tool-capabilities/source-lineage.json": "600b3a9311f29fa003d45674213ea4fc3cbb876918a7817ee94a6583a13078d5",
+    "provenance/paused-budget-expiry/clock-successor/source-lineage.json": "723b76c8946a886182c4d27c1dbe257e1556a468246b16543bf9b8ae0eb154fe",
+    "provenance/paused-budget-expiry/reviewed-repository-bf70a2ac/provenance/paused-budget-expiry/clock-successor/source-lineage.json": "723b76c8946a886182c4d27c1dbe257e1556a468246b16543bf9b8ae0eb154fe",
+    "provenance/paused-budget-expiry/reviewed-repository-bf70a2ac/provenance/paused-budget-expiry/source-lineage.json": "10e909e6f003d898b222987669e85fee90daeda777f54b2ca3d570974723a67d",
+    "provenance/paused-budget-expiry/reviewed-repository-bf70a2ac/provenance/paused-budget-expiry/thread-successor/source-lineage.json": "62224129ea57753d7c12d1c3a67af2f87fd68e43359c47da05ee51918c5a1db3",
+    "provenance/paused-budget-expiry/source-lineage.json": "10e909e6f003d898b222987669e85fee90daeda777f54b2ca3d570974723a67d",
+    "provenance/paused-budget-expiry/thread-successor/source-lineage.json": "62224129ea57753d7c12d1c3a67af2f87fd68e43359c47da05ee51918c5a1db3",
+    "provenance/persistent-desktop/reviewed-timing/source-lineage.json": "86f16c4a5462ef179fbb2ffdd50c4539716e55e727d8b7fd0e9ef7a858197a68",
+    "provenance/persistent-desktop/source-lineage.json": "d29d0cc820cb5f415df3ee7e1bff7eadcb4f741129ec950b17b46f80b81dd958",
+    "provenance/task-contract/source-lineage.json": "ce2de73752b258be50a7feba02068ed63e65ae55ecaf0dd4a4af8caea93ff81c",
+    "provenance/task-handover/admission-activity/source-lineage.json": "979bc980fd37e3548787f4563d8ac4e27a69cc2643d9d8f07b54070ca3f860ae",
+    "provenance/task-handover/continuation-observation/source-lineage.json": "366705b84504f0d9654a73f96da5d2f43d6a5d59f4dad7294ff243e357c7a106",
+    "provenance/task-handover/continuation-timeout-diagnostics/source-lineage.json": "6cb899c81dcc4bfb5ed3df8d801b3fcb4bc2bcab718ff3cc2f41bc69ab14a885",
+    "provenance/task-handover/fixture-readiness/source-lineage.json": "6d261a23cd05577b4ea780f5a62dbe42ee788e05075eba3157957367b16c4341",
+    "provenance/task-handover/fixture-stop-verification/source-lineage.json": "688f1b1a0232b251b42be0aafaadd2f6a97963e627a5112ae42ee3c5415fcef5",
+    "provenance/task-handover/pause-observation/source-lineage.json": "04933b01c9e6442707f9674e8403aa5e9d86f1f4c7642d6f3adf88b3e56786af",
+    "provenance/task-handover/safe-admission-wait/source-lineage.json": "6bf633f3f35d20a867a640a0a94a8fda37fdac9b0c3d26b77acad0df86714429",
+    "provenance/task-handover/source-lineage.json": "6f67b2d758d1ac9e08d8e287ed875cfd7d55eb3499c6863435f2aee7d99c4ed5",
+    "provenance/task-handover/task-file-aliases/ci-diagnostics/source-lineage.json": "4c681cb0161a0f4afa19f228cfbb422bc476d7991c382e0ad0aba884fc6b93d7",
+    "provenance/task-handover/task-file-aliases/source-lineage.json": "c99b9386c8426ff792bd078e643e110630a5cad7ae3c3cec7ba269556e1c07ba",
+    "provenance/task-preparation/source-lineage.json": "88171eec897810198467e6a193ad0869e2fb2514dc0431cab1155757a097943b",
+    "provenance/task-store-verification/source-lineage.json": "169b05395294711c3d4020cdd0ba7eda021e2c1997ec6d3dd00f3670ad901c8c"
+  },
+  "reuse": {
+    "ast_source": "tests/ast_preservation.py",
+    "ast_source_sha256": "0961a958c54975ff8eee14359015e6c221896b3cef91cb2bddc42333d7829b18",
+    "functions": [
+      "reboot_budget_predecessor",
+      "reboot_budget_runtime_view",
+      "restore_reboot_budget"
+    ],
+    "license": "Apache-2.0",
+    "revision": "84ef4d21bf948c8266c76910a22648c27f1113d8",
+    "semantics": "Exact successor SHA and portable AST; unchanged retained predecessor SHA and AST; unknown inputs passed to original strict readers.",
+    "source": "tests/continuation_timeout_lineage.py",
+    "url": "https://github.com/midhatn/adaptive-inference/blob/84ef4d21bf948c8266c76910a22648c27f1113d8/tests/continuation_timeout_lineage.py"
+  },
+  "schema": "adaptive.compiler.source-lineage.v1",
+  "scope": "Exact source-only predecessor view for historical assertions. Retained files are parsed, never executed; compiler behavior and installed/physical qualification require separate validation. Historical TaskSpec-bound physical audits still require their frozen installed environment."
+}
