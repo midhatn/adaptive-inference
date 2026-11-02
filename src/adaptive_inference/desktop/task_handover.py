@@ -241,6 +241,8 @@ class HostTaskHandover:
                     spec.verify_inputs(Path(source['task_inputs']))
                     if spec.compiler is not None and getattr(c.profile, 'compiler', None) is None:
                         raise ValueError('Compiler task requires explicit compiler deployment settings')
+                    if spec.video is not None and getattr(c.profile, 'video', None) is None:
+                        raise ValueError('Video task requires explicit video deployment settings')
                     payload = self.authority.request(command_id=request['request_id'],
                         expected_selection_revision=request['expected_selection_revision'],
                         predecessor_execution_id=request['execution_id'],

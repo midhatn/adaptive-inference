@@ -2,6 +2,74 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Agent-requested GPU video and foreground handoff
+
+The [second physical video task](../provenance/video-tool/physical-foreground-video-2026-11-02.json)
+passed **47 primary checks**, **34 independent functional checks** and a separate
+**17-check foreground review**. These overlapping checks are not summed. The
+actual IQ3_S model made two requests and one NVENC video operation. An Explorer
+F5 and immediate refresh fell entirely between observations of the first active
+request. Admission closed for foreground draining, then stayed closed through
+parking; 87 matching activity samples covered the hold. The first native owner
+confirmed 8/8 process exits. After return to the controller, one resource grant
+covered encode, probe and decode. Three video children joined normally, and the
+owned job was empty. A distinct model owner served request 2, consumed the saved
+video result and confirmed 7/7 exits. One ordinary Stop closed the app normally.
+
+The clip is silent H.264, 1280×720, 90 frames and 1,051,294 bytes, with full decode
+and artifact/probe hashes checked. The original 900-second task allowance and
+90-second recipe limit, including admission wait, stayed fixed. All 77 runtime
+modules matched source and both installed interpreters. Original evidence and
+copied base databases remained unchanged by review.
+
+The [first physical task](../provenance/video-tool/physical-video-evidence-2026-11-02.json)
+completed the real video workflow but had no foreground action. Its primary
+audit failed that requirement after 37 passing checks; a separate 35-check
+review qualified only the useful workflow. That review's earlier incorrect
+reopen-budget assumption and correction remain recorded. The fresh second task
+changed observation timing only; it used the same runtime, model, quality,
+budgets and strict foreground predicate. Neither consumed task was replayed.
+
+Both independent observers exited 1 after shutdown connection errors. Their
+closure acceptance remains failed, separately from verified app/native cleanup.
+This bounded foreground episode does not establish sustained responsiveness,
+isolate tool demand from foreground release causation, or qualify interruption,
+worker recovery, H3/audio quality, reboot continuation or complete M4.
+
+Earlier separate gates also passed: [local validation](../provenance/video-tool/local-validation-2026-11-02.json)
+contains 1,541 core tests, 16 workflow commands, package verification, fresh
+installation and public setup. The initial core supervisor timeout is retained;
+only the test supervisor's limit changed for the complete run, not task limits.
+[Installed SDK evidence](../provenance/video-tool/installed-sdk-evidence-2026-11-02.json)
+uses two scripted provider replies and actual video execution, with an independent
+34-check review. Its resource observations were scripted and its headless harness
+does not claim GUI Stop. Final publication packaging and exact-head hosted CI
+are recorded separately from these installed and physical results.
+
+## Fixed GPU video-tool component
+
+The [2 November component record](../provenance/video-tool/native-component-2026-11-02.json)
+separates nine simulated process-owner checks from one actual Windows/NVENC
+run. The real run used the existing retained process owner and pinned external
+FFmpeg/FFprobe 8.1.1. Encode, probe and full decode all exited zero. Three
+retained gated children joined, and the job accounted for nine processes total
+with zero active or limit-terminated processes. No forced job termination was
+needed. The observation pump joined and scheduler closed.
+
+The silent 1280×720 H.264 clip contains exactly 90 frames and is 1,051,294 bytes.
+Its hash matches the earlier checked video artifact. One resource grant covered
+all three stages; its 90-second cap included admission wait within the original
+900-second task allowance. The component author checked 19 closed-evidence
+conditions with 21 inputs unchanged; root independently reviewed the source
+before actual execution. This evidence-consistency check is not presented as a
+second independent source review.
+
+Resource observations and the native inference adapter were scripted. This gate
+does not establish actual inference release/restoration, installed Hermes
+dispatch, foreground coexistence, H3 generation, sound/synchronization quality,
+restart survival or a performance improvement. The [agent-facing integration](video-tool-recipe.md)
+has its own source and installed/real-model qualification gates.
+
 ## Bounded compiler tool and installed Hermes feedback
 
 The [second physical compiler task](../provenance/compiler/physical-foreground-compiler-2026-11-02.json)

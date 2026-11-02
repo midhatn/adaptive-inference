@@ -92,7 +92,9 @@ class Boundary:
         from adaptive_inference.task_spec import TaskSpec
         if task_spec is not None and type(task_spec) is not TaskSpec:
             raise ValueError('Wire capability scope requires an exact immutable TaskSpec')
-        self._compiler = task_spec is not None and task_spec.compiler is not None
+        from adaptive_inference.desktop.recipe_dispatch import recipe_kind, expected_tool_names
+        self._compiler = recipe_kind(task_spec) is not None
+        self._recipe_tools = expected_tool_names(task_spec)
         self.run, self.fixture = run, fixture
         self.rows = []; self.seen = set(); self.steps = {"parent": 0, "child": 0}
         self.original = None
@@ -128,7 +130,7 @@ class Boundary:
         tools = body.get("tools", [])
         names = {t.get("function", {}).get("name") for t in tools}
         allowed = (type(tools) is list and len(tools) == 3
-                   and names == {"read_file", "write_file", "build_and_test"}) if self._compiler else (
+                   and names == self._recipe_tools) if self._compiler else (
                    {"read_file", "write_file"} <= names <= {"read_file", "write_file", "patch", "search_files"})
         if not allowed:
             raise Refused("Unexpected tool capabilities")

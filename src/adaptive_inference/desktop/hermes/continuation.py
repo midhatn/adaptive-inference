@@ -92,8 +92,9 @@ def safe_state(cp, *, sealed):
 
 def wire_rows(raw, cp, scope):
     from adaptive_inference.desktop.hermes.recovery import task_contract
+    from adaptive_inference.desktop.recipe_dispatch import recipe_kind, expected_tool_names
     spec = task_contract(cp)
-    compiler = spec is not None and spec.compiler is not None
+    compiler = recipe_kind(spec) is not None
     def pairs(items):
         result = {}
         for key, value in items:
@@ -117,7 +118,7 @@ def wire_rows(raw, cp, scope):
                 and row['finish_reason'] in ('stop', 'tool_calls'), 'Wire model/quality/route changed')
         if compiler:
             require(type(row['tool_names']) is list and len(row['tool_names']) == 3
-                    and set(row['tool_names']) == {'read_file', 'write_file', 'build_and_test'},
+                    and set(row['tool_names']) == expected_tool_names(spec),
                     'Wire compiler tool scope changed')
         else:
             require(type(row['tool_names']) is list and {'read_file', 'write_file'} <= set(row['tool_names'])

@@ -44,13 +44,17 @@ class WindowsProfile:
     gateway: Config
     foreground_policy: str
     compiler: object = None
+    video: object = None
 
     @classmethod
     def from_dict(cls, value):
         names = {'schema', 'host_python', 'worker_python', 'hermes',
                  'native_owner', 'gateway', 'foreground_policy'}
         if type(value) is dict and 'compiler' in value: names.add('compiler')
+        if type(value) is dict and 'video' in value: names.add('video')
         fields(value, names, 'profile')
+        if 'compiler' in value and 'video' in value:
+            raise ValueError('Select one useful-tool deployment: compiler or video')
         if value['schema'] != SCHEMA:
             raise ValueError('Unsupported installed desktop profile')
         host = fields(value['host_python'], {'path', 'sha256'}, 'host interpreter')
@@ -73,10 +77,14 @@ class WindowsProfile:
         if 'compiler' in value:
             from adaptive_inference.desktop.compiler_profile import compiler_settings
             compiler = compiler_settings(value['compiler'])
+        video = None
+        if 'video' in value:
+            from adaptive_inference.desktop.video_profile import video_settings
+            video = video_settings(value['video'])
         return cls(absolute(host['path']), pin(host['sha256']),
                    absolute(worker['path']), pin(worker['sha256']),
                    absolute(hermes['source']), absolute(hermes['site_packages']),
-                   native, gateway, policy, compiler)
+                   native, gateway, policy, compiler, video)
 
     @classmethod
     def load(cls, path):

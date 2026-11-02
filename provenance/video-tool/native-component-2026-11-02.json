@@ -1,0 +1,110 @@
+{
+  "schema": "adaptive.video-tool.native-component.v1",
+  "date": "2026-11-02",
+  "scope": "Actual fixed NVENC encoding, probe and decode using retained Windows process ownership; resource observations and the native inference adapter are scripted",
+  "source": {
+    "base_revision": "1f7f28e1388d4aa39fa6ff7f8ddc2445f88e127d",
+    "recipe_source": "src/adaptive_inference/desktop/video_recipe.py",
+    "recipe_sha256": "b255d3f939aa3a1e29449bc397e39b50859fcc0cf8a10201859b2ec2dc50bcff",
+    "loaded_project_sources": {
+      "src/adaptive_inference/__init__.py": "1d906cca6d5581290d73292cce949dcaf74001de67bda63b903dfb2e70edacba",
+      "src/adaptive_inference/desktop/__init__.py": "6169073159f3c0e506752f54aa51b40b058f71ed058d5272e160aa4a61ee7daa",
+      "src/adaptive_inference/handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+      "src/adaptive_inference/desktop/compiler_recipe.py": "12b31514327a7c168c915b3a321ee1c17bf8446b49181eed6bed2bced55b01d2",
+      "src/adaptive_inference/desktop/video_recipe.py": "b255d3f939aa3a1e29449bc397e39b50859fcc0cf8a10201859b2ec2dc50bcff",
+      "src/adaptive_inference/config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+      "src/adaptive_inference/scheduler.py": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f",
+      "tests/test_handoff.py": "db9725043a720b29e3af4b809c3af4d92bba540febea94515de52d5505c7d8f7"
+    },
+    "compiler_process_owner_unchanged": true
+  },
+  "tools": {
+    "ffmpeg": {
+      "version": "ffmpeg version 8.1.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+      "sha256": "09948d4cdd0650da6ff5a87577469f2a218dc2615ae379f8f734d24c49de0f73",
+      "version_log_sha256": "ccf923e713e82e8b3d7b4534dca9347bfc69618112d3b7fdc02d7d148512476c"
+    },
+    "ffprobe": {
+      "version": "ffprobe version 8.1.1-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers",
+      "sha256": "a6618e99bb58869ded3c6f37b53aa1a8d701c3591dbb7b5b317d47369c112be2",
+      "version_log_sha256": "bda0892fcc264eb3c36b4e2a1d36d40221223b82656e4cd73fab0f17ef8462e2"
+    }
+  },
+  "validation": {
+    "component_tests": 9,
+    "component_tests_passed": true,
+    "component_process_owner": "simulated",
+    "component_source_followup": "Only the SPDX header was added after the component tests; the actual tool ran that successor source.",
+    "actual_tool_passed": true,
+    "stages": [
+      {
+        "stage": "encode",
+        "exit_code": 0
+      },
+      {
+        "stage": "probe",
+        "exit_code": 0
+      },
+      {
+        "stage": "decode",
+        "exit_code": 0
+      }
+    ],
+    "retained_children": 3,
+    "all_children_joined": true,
+    "job_accounting": {
+      "total": 9,
+      "active": 0,
+      "limit_terminated": 0
+    },
+    "forced_job_termination": false,
+    "owned_processes_exited": true,
+    "observation_pump_joined": true,
+    "scheduler_closed": true,
+    "closed_evidence_consistency_checks": 19,
+    "closed_evidence_inputs_unchanged": 21,
+    "review_role": "Component author checked closed evidence consistency; root independently reviewed source before actual execution"
+  },
+  "artifact": {
+    "name": "handoff-video.mp4",
+    "bytes": 1051294,
+    "sha256": "8425abb7459b478c239771eefb6e8202e1f01c466775ce30d5878b124c98e7cc",
+    "probe": {
+      "codec_name": "h264",
+      "width": 1280,
+      "height": 720,
+      "nb_read_frames": "90"
+    },
+    "probe_sha256": "b07166007a1b411e3db7bb3b97cf446a11fb5e20bb6178754a525f8494f72f23",
+    "decode_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "budgets": {
+    "original_task_seconds": 900,
+    "recipe_max_seconds": 90,
+    "admission_wait_included": true,
+    "single_grant": true,
+    "task_deadline_unchanged": true,
+    "resource_request": {
+      "ram_gib": 8,
+      "commit_gib": 12,
+      "vram_mib": 6000
+    },
+    "job_commit_limit_mib": 2048
+  },
+  "retained_evidence_sha256": {
+    "native_result": "e93f1141418f4216c2b12b1854f3063ef19e2358a31ee4f9e93c85f5229a2dfc",
+    "recipe_receipt": "58a96ef10edb791b320e95da58875183e9098cbe4afdfe469ec70abd2c2151a3",
+    "execution_script": "d7570ea69ed707e19a62767521f6d1b39afc4536eaf02d2ddd51e4a598941835",
+    "component_result": "0237eacf875f6d0d72093e931b582282f3e8f3bdb21d8eb5573c945329061fd1",
+    "spdx_only_followup": "c70c88599d43587dba81d6e35f3278ca56dab5f0aed449274112233fb4e04fa3",
+    "closed_consistency_review": "040781449e0ee0ab57bb2bd6b1b019275f4195c0f1525885dbb6b4cdf4d0d6e7"
+  },
+  "limitations": [
+    "No real model or native inference release/restoration at this gate.",
+    "No installed Hermes dispatch or agent continuation qualification at this gate.",
+    "No foreground or playback measurement.",
+    "Synthetic silent clip only: no H3 generation or audio realism/synchronization claim.",
+    "No performance comparison, restart qualification or full M4 acceptance.",
+    "External FFmpeg build is not distributed; its selected configuration enables GPL and version3."
+  ]
+}

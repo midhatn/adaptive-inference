@@ -1,0 +1,14 @@
+{
+  "schema": "adaptive.task-spec.v3",
+  "prompt": "Create and check a silent three-second 1280 by 720 H.264 calibration video with 90 frames using the declared nvenc-testclip.v1 recipe. Use encode_and_check_video, then report the actual checked artifact identity and video facts returned by the tool. Do not claim completion before the tool reports success.",
+  "inputs": [],
+  "outputs": [],
+  "budget": {
+    "max_requests": 8,
+    "max_attempts": 8,
+    "max_admission_attempts": 32,
+    "execution_seconds": 900
+  },
+  "validation": {"validator": null},
+  "video": {"recipe_id": "nvenc-testclip.v1", "max_runs": 2}
+}

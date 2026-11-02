@@ -8,6 +8,7 @@ import unittest
 from unittest import mock
 
 import compiler_lineage as lineage
+import video_lineage
 from paused_expiry_lineage import fingerprint
 
 
@@ -24,6 +25,7 @@ class CompilerLineageTests(unittest.TestCase):
         for relative, row in rows['files'].items():
             with self.subTest(relative=relative):
                 data = (lineage.ROOT / relative).read_bytes()
+                data = video_lineage.predecessor(relative, data, lineage.ROOT)
                 before = lineage.retained(relative, row, lineage.ROOT)
                 self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
                 self.assertEqual(fingerprint(ast.parse(data)), row['successor_ast_sha256'])
@@ -67,7 +69,9 @@ class CompilerLineageTests(unittest.TestCase):
 
     def test_ast_projection_requires_exact_current_file_even_for_comment_only_change(self):
         relative = 'task_spec.py'; source = 'src/adaptive_inference/' + relative
-        target = lineage.ROOT / source; data = target.read_bytes(); tree = ast.parse(data)
+        target = lineage.ROOT / source
+        data = video_lineage.predecessor(source, target.read_bytes(), lineage.ROOT)
+        tree = ast.parse(data)
         row = lineage.record()['files'][source]
         self.assertEqual(fingerprint(lineage.restore(tree, relative)), row['predecessor_ast_sha256'])
         self.assertEqual(fingerprint(tree), row['successor_ast_sha256'])

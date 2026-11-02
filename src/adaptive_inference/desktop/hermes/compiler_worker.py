@@ -13,17 +13,23 @@ from urllib.parse import urlsplit
 
 from adaptive_inference.desktop.hermes.recovery import Recovery, ReconciliationRequired
 from adaptive_inference.task_spec import strict_json
+from adaptive_inference.desktop.recipe_dispatch import recipe_kind, definition
 
 SCHEMA = 'adaptive.compiler-worker-binding.v1'
 FIELDS = {'schema', 'host_epoch', 'task_id', 'execution_id', 'task_deadline',
           'gateway_instance', 'capability'}
 
 
+def binding_schema(kind='compiler'):
+    return 'adaptive.' + definition(kind).kind + '-worker-binding.v1'
+
+
 def make_recovery(owned, db, work, run, *, task_spec, plan, args, **kwargs):
     """Select the opted-in controller before bootstrap or SDK construction."""
     path = getattr(args, 'compiler_binding', None)
     expected = getattr(args, 'compiler_binding_sha256', None)
-    if task_spec is None or task_spec.compiler is None:
+    kind = recipe_kind(task_spec)
+    if kind is None:
         if path is not None or expected is not None:
             raise ReconciliationRequired('File-only task cannot receive compiler authority')
         return Recovery(owned, db, work, run, **kwargs)
@@ -44,7 +50,7 @@ def make_recovery(owned, db, work, run, *, task_spec, plan, args, **kwargs):
     logical = cp.metadata.get('adaptive_inference.execution_authorization.v1', {}).get('logical_task_id', cp.task_id)
     endpoint = urlsplit(plan['gateway'])
     deadline = cp.state.get('deadline_monotonic')
-    if (type(binding) is not dict or set(binding) != FIELDS or binding['schema'] != SCHEMA
+    if (type(binding) is not dict or set(binding) != FIELDS or binding['schema'] != binding_schema(kind)
             or binding['task_id'] != logical or binding['execution_id'] != cp.task_id
             or binding['gateway_instance'] != args.gateway_instance
             or type(binding['task_deadline']) not in (int, float)
@@ -56,6 +62,6 @@ def make_recovery(owned, db, work, run, *, task_spec, plan, args, **kwargs):
         raise ReconciliationRequired('Compiler binding differs from the original selected task')
     from adaptive_inference.desktop.hermes.compiler_client import CompilerClient
     from adaptive_inference.desktop.hermes.compiler_recovery import CompilerRecovery
-    client = CompilerClient(endpoint.port, binding['capability'], deadline)
+    client = CompilerClient(endpoint.port, binding['capability'], deadline, kind=kind)
     return CompilerRecovery(owned, db, work, run, compiler_client=client,
-        host_epoch=binding['host_epoch'], task_id=logical, execution_id=cp.task_id, **kwargs)
+        host_epoch=binding['host_epoch'], task_id=logical, execution_id=cp.task_id, kind=kind, **kwargs)

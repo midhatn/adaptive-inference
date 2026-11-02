@@ -135,6 +135,8 @@ class DesktopComposition:
             initial_spec = TaskSpec.from_bytes(raw)
             if initial_spec.compiler is not None and self.profile.compiler is None:
                 raise ValueError('Compiler task requires explicit compiler deployment settings')
+            if initial_spec.video is not None and self.profile.video is None:
+                raise ValueError('Video task requires explicit video deployment settings')
             self.task_spec_sha256 = rec.digest(raw)
             if qualification_hold_after_report:
                 raise ValueError('The orders report qualification hold cannot select another task')
@@ -154,21 +156,26 @@ class DesktopComposition:
         self.continuation = None
         self.handover = None
         self.compiler_host = None
+        self.compiler_kind = 'video' if self.profile.video is not None else 'compiler'
         self.compiler_bindings = {}
         self.compiler_native_reader = None
 
     def compiler_launch_args(self, work, plan, *, execution_id, task_id, deadline, diagnostics):
         from adaptive_inference.desktop.hermes.run_recovery import prepared_contract
+        from adaptive_inference.desktop.recipe_dispatch import recipe_kind
         spec = prepared_contract(plan)
-        if spec is None or spec.compiler is None:
+        kind = recipe_kind(spec)
+        if kind is None:
             return []
         if self.compiler_host is None:
-            raise RuntimeError('Selected task has no configured compiler host')
-        from adaptive_inference.desktop.hermes.compiler_worker import SCHEMA
+            raise RuntimeError('Selected task has no configured recipe host')
+        if kind != getattr(self, 'compiler_kind', 'compiler'):
+            raise RuntimeError('Selected task differs from the configured useful-tool deployment')
+        from adaptive_inference.desktop.hermes.compiler_worker import binding_schema
         key = (task_id, execution_id)
         if key in self.compiler_bindings:
             raise RuntimeError('Compiler worker launch binding cannot be reused')
-        binding = {'schema': SCHEMA, 'host_epoch': self.host_epoch, 'task_id': task_id,
+        binding = {'schema': binding_schema(kind), 'host_epoch': self.host_epoch, 'task_id': task_id,
             'execution_id': execution_id, 'task_deadline': deadline,
             'gateway_instance': self.host.gateway.instance, 'capability': secrets.token_hex(32)}
         path = Path(diagnostics)/('compiler-binding-'+uuid.uuid4().hex+'.private.json')
@@ -510,14 +517,19 @@ class DesktopComposition:
             ForegroundPolicy(ui_intent=self.gate, cooperative_progress=self.progress),
             demand=self.registry, restore_requirements=ToolRequirements(3,3,250), adapter=adapter,
             reader=self.reader, job=self.job, max_runtime_seconds=None, idle_grace_s=30, runtime_timing=True)
-        if profile.compiler is not None:
-            from adaptive_inference.desktop.compiler_profile import verify_settings
+        settings = profile.video if profile.video is not None else profile.compiler
+        if settings is not None:
+            if self.compiler_kind == 'video':
+                from adaptive_inference.desktop.video_profile import verify_settings
+            else:
+                from adaptive_inference.desktop.compiler_profile import verify_settings
             from adaptive_inference.desktop.compiler_host import CompilerHost
             from adaptive_inference.desktop.hermes.native_reader import native_reader_factory
-            verify_settings(profile.compiler)
+            verify_settings(settings)
             self.compiler_native_reader = native_reader_factory(profile.hermes_source,
                 profile.hermes_site_packages, home=self.root/'compiler-native-reader-home')
-            self.compiler_host = CompilerHost(self.host.controller, profile.compiler, host_epoch=self.host_epoch)
+            self.compiler_host = CompilerHost(self.host.controller, settings,
+                host_epoch=self.host_epoch, kind=self.compiler_kind)
             self.compiler_host.add_route(self.host.app)
             self.host.compiler_operations = self.compiler_host
         await self.host.start(timeout_s=30)
@@ -837,8 +849,9 @@ class DesktopComposition:
                     spec = rec.task_contract(cp)
                     if spec is None:
                         raise RuntimeError('Completed user task lost its declared contract')
+                    from adaptive_inference.desktop.recipe_dispatch import completion_kwargs
                     self.result.update(spec.completion(self.stop_binding.run/'work',cp.state['tools'],cp.state['output'],
-                        compiler_receipts=rec.verified_compiler_receipts(cp, self.stop_binding.run)))
+                        **completion_kwargs(spec, rec.verified_recipe_receipts(cp, self.stop_binding.run))))
                     self.result['task_spec_sha256'] = spec.sha256
                 self.result['task_completed'] = outcome == 'task_completed'
                 self.result['execution_expired'] = outcome in ('paused_budget_expired', 'admission_wait_budget_expired')
