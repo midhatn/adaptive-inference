@@ -132,7 +132,9 @@ class DesktopComposition:
                 raw = stream.read(MAX_SPEC_BYTES + 1)
             # Decode now, before retaining any process. Preparation independently
             # verifies these same bytes and stages the declared input files.
-            TaskSpec.from_bytes(raw)
+            initial_spec = TaskSpec.from_bytes(raw)
+            if initial_spec.compiler is not None and self.profile.compiler is None:
+                raise ValueError('Compiler task requires explicit compiler deployment settings')
             self.task_spec_sha256 = rec.digest(raw)
             if qualification_hold_after_report:
                 raise ValueError('The orders report qualification hold cannot select another task')
@@ -151,6 +153,48 @@ class DesktopComposition:
         self.worker_exit_verified=False
         self.continuation = None
         self.handover = None
+        self.compiler_host = None
+        self.compiler_bindings = {}
+        self.compiler_native_reader = None
+
+    def compiler_launch_args(self, work, plan, *, execution_id, task_id, deadline, diagnostics):
+        from adaptive_inference.desktop.hermes.run_recovery import prepared_contract
+        spec = prepared_contract(plan)
+        if spec is None or spec.compiler is None:
+            return []
+        if self.compiler_host is None:
+            raise RuntimeError('Selected task has no configured compiler host')
+        from adaptive_inference.desktop.hermes.compiler_worker import SCHEMA
+        key = (task_id, execution_id)
+        if key in self.compiler_bindings:
+            raise RuntimeError('Compiler worker launch binding cannot be reused')
+        binding = {'schema': SCHEMA, 'host_epoch': self.host_epoch, 'task_id': task_id,
+            'execution_id': execution_id, 'task_deadline': deadline,
+            'gateway_instance': self.host.gateway.instance, 'capability': secrets.token_hex(32)}
+        path = Path(diagnostics)/('compiler-binding-'+uuid.uuid4().hex+'.private.json')
+        raw = json.dumps(binding, sort_keys=True).encode('utf-8')
+        with path.open('xb') as stream:
+            stream.write(raw); stream.flush(); os.fsync(stream.fileno())
+        self.compiler_bindings[key] = binding
+        return ['--compiler-binding', str(path), '--compiler-binding-sha256', rec.digest(raw)]
+
+    def compiler_worker_joined(self, child):
+        task = self.waits.get(child)
+        return (task is not None and task.done() and not task.cancelled()
+                and task.exception() is None and type(task.result()) is int)
+
+    async def bind_compiler_worker(self, runtime, child, work, deadline):
+        if not getattr(self, 'compiler_bindings', None):
+            return
+        key = (runtime.prepared.task_id, runtime.selected_execution()['execution_id'])
+        binding = getattr(self, 'compiler_bindings', {}).get(key)
+        if binding is None:
+            return
+        await self.compiler_host.bind(runtime=runtime, worker=child,
+            is_current_worker=lambda value: value is self.worker and value.poll() is None,
+            is_worker_joined=self.compiler_worker_joined,
+            read_native_history=lambda session: self.compiler_native_reader(work, session),
+            task_root=work, capability=binding['capability'], task_deadline=deadline)
 
     def launch(self, command, label):
         stream=(self.root/(label+'.log')).open('wb'); self.logs.append(stream)
@@ -258,6 +302,8 @@ class DesktopComposition:
         return code
 
     def fence(self):
+        if getattr(self, 'compiler_host', None) is not None:
+            self.compiler_host.interrupt()
         if self.facade is not None:self.facade.fence_admission()
         elif self.host is not None:
             self.host.closing=True;self.host.gateway.scheduler.closing=True
@@ -278,6 +324,11 @@ class DesktopComposition:
 
     def obligations(self):
         tasks=[]
+        if getattr(self, 'compiler_host', None) is not None:
+            for row in self.compiler_host.obligations():
+                tasks.append(row['close_task'])
+                for operation in row['operations']:
+                    tasks.extend((operation['task'], operation['runner']))
         if self.facade is not None:tasks += [self.facade._wake,self.facade._stop,*self.facade._joins]
         if self.runtime is not None:tasks += [self.runtime._stop_task,*tuple(self.runtime._pending),
                                              *tuple(self.runtime._continuation_tasks)]
@@ -332,6 +383,8 @@ class DesktopComposition:
         if getattr(self,'handover',None) is not None:
             return await self.handover.dispose(failed)
         self.fence()
+        if getattr(self, 'compiler_host', None) is not None:
+            await self.compiler_host.close()
         if self.worker is not None and self.stop_binding is None:self.bind_worker_stop()
         if self.transport is not None:
             self.transport._request_stop()  # Trusted failure cleanup; no network command or auto Resume.
@@ -457,6 +510,16 @@ class DesktopComposition:
             ForegroundPolicy(ui_intent=self.gate, cooperative_progress=self.progress),
             demand=self.registry, restore_requirements=ToolRequirements(3,3,250), adapter=adapter,
             reader=self.reader, job=self.job, max_runtime_seconds=None, idle_grace_s=30, runtime_timing=True)
+        if profile.compiler is not None:
+            from adaptive_inference.desktop.compiler_profile import verify_settings
+            from adaptive_inference.desktop.compiler_host import CompilerHost
+            from adaptive_inference.desktop.hermes.native_reader import native_reader_factory
+            verify_settings(profile.compiler)
+            self.compiler_native_reader = native_reader_factory(profile.hermes_source,
+                profile.hermes_site_packages, home=self.root/'compiler-native-reader-home')
+            self.compiler_host = CompilerHost(self.host.controller, profile.compiler, host_epoch=self.host_epoch)
+            self.compiler_host.add_route(self.host.app)
+            self.host.compiler_operations = self.compiler_host
         await self.host.start(timeout_s=30)
         self.initial_events = deepcopy(list(self.host.controller.events))
         complete_ledger(self.host.controller.events, self.initial_events)
@@ -470,6 +533,8 @@ class DesktopComposition:
             'adaptive_inference.desktop.hermes.run_recovery', 'worker', '--run', str(self.work),
             '--controller-ready', str(self.first_ready), '--gateway-instance', self.host.gateway.instance,
             '--deadline-monotonic', str(self.deadline), '--stop-request-id', self.stop_id]
+        command.extend(self.compiler_launch_args(self.work, self.plan, execution_id=self.identity.task_id,
+            task_id=self.identity.task_id, deadline=self.deadline, diagnostics=self.worker_diagnostics()))
         if self.reopen_context is not None:
             command.extend(['--execution-boot-id', rec.digest(self.reopen_context['boot'])])
         if self.saved is not None:
@@ -495,6 +560,7 @@ class DesktopComposition:
         self.runtime = MailboxRuntime(prepared,self.box,requester_capability=self.capability,
             gate=self.gate,intent_capability=self.intent_cap,lifecycle=self.facade)
         await self.runtime.refresh()
+        await self.bind_compiler_worker(self.runtime, self.worker, self.work, self.deadline)
         self.host.attach_control_runtime(self.runtime)
         from adaptive_inference.desktop.continuation_host import HostContinuation
         self.continuation = HostContinuation(self,self.runtime)
@@ -620,6 +686,8 @@ class DesktopComposition:
             release={'worker_joined':True,'worker_pid':child.pid,'exit_code':code,'outcome':outcome,
                      'native':native,'execution_id':request['execution_id']}
             self.assert_continuation_parked(release)
+        if getattr(self, 'compiler_host', None) is not None and self.compiler_host.lifecycle()['bound']:
+            await self.compiler_host.retire()
         return release
 
     async def launch_continuation(self, record, coordinator, intent_valid):
@@ -643,6 +711,9 @@ class DesktopComposition:
             '--host-generation',self.runtime.prepared.host_epoch,'--controller-ready',str(self.first_ready),
             '--gateway-instance',self.host.gateway.instance,'--deadline-monotonic',str(grant['deadline_monotonic']),
             '--stop-request-id',record['stop_id']]
+        command.extend(self.compiler_launch_args(self.work, self.plan,
+            execution_id=grant['payload']['successor_id'], task_id=self.runtime.prepared.task_id,
+            deadline=grant['deadline_monotonic'], diagnostics=diagnostics))
         # The original trial's report hold is not inherited: this click supplies
         # one fresh Resume, and existing artifact/receipt verification still wins.
         record['launch_attempted']=True
@@ -670,6 +741,8 @@ class DesktopComposition:
         record['retained_child_identity']={'pid':observed[0],'creation_time_100ns':observed[1],
                                            'containing_job_verified':True}
         await self.wait_continuation_ack(record,record['pause_id'],intent_valid)
+        if coordinator.live(intent_valid):
+            await self.bind_compiler_worker(self.runtime, child, self.work, grant['deadline_monotonic'])
 
     async def wait_continuation_ack(self,record,request_id,intent_valid):
         child,mailbox=record['child'],record['mailbox']
@@ -728,6 +801,9 @@ class DesktopComposition:
         value={'ready':True,'model':MODEL,'quality':QUALITY,'gateway':self.plan['gateway'],
                'gateway_instance':self.host.gateway.instance,'observed_at':time.time(),
                'selected_execution':selection(record['grant'])}
+        # The verified selected worker may act as soon as this file appears.
+        # Finish the observation-only transition before publishing readiness.
+        self.runtime._transitioning = False
         await asyncio.to_thread(rec.save,self.first_ready,value)
 
     async def interact(self):
@@ -761,7 +837,8 @@ class DesktopComposition:
                     spec = rec.task_contract(cp)
                     if spec is None:
                         raise RuntimeError('Completed user task lost its declared contract')
-                    self.result.update(spec.completion(self.stop_binding.run/'work',cp.state['tools'],cp.state['output']))
+                    self.result.update(spec.completion(self.stop_binding.run/'work',cp.state['tools'],cp.state['output'],
+                        compiler_receipts=rec.verified_compiler_receipts(cp, self.stop_binding.run)))
                     self.result['task_spec_sha256'] = spec.sha256
                 self.result['task_completed'] = outcome == 'task_completed'
                 self.result['execution_expired'] = outcome in ('paused_budget_expired', 'admission_wait_budget_expired')

@@ -360,6 +360,9 @@ class DesktopControlLifecycle:
         if self._fenced:
             return
         self._fenced = True
+        compiler = getattr(self.host, 'compiler_operations', None)
+        if compiler is not None:
+            compiler.interrupt()
         # These existing owner-loop latches are checked by actual acquire,
         # capacity and observer/drive paths. No worker command is appended yet.
         self.host.closing = True
@@ -451,6 +454,19 @@ class DesktopControlLifecycle:
         deadline = self.clock() + self.timeout
         try:
             await asyncio.shield(self._wake)
+            compiler = getattr(self.host, 'compiler_operations', None)
+            if compiler is not None:
+                while True:
+                    remaining = deadline - self.clock()
+                    if remaining <= 0:
+                        raise TimeoutError('Compiler cleanup did not finish before Stop deadline')
+                    state = await compiler.close(timeout=min(2, remaining))
+                    if state['bridge'] is None or state['bridge']['closed']:
+                        break
+                    if state['bridge']['unknown']:
+                        raise RuntimeError('Compiler cleanup is unresolved')
+                    # close retains its actual tasks even after a bounded wait.
+                    await asyncio.sleep(.05)
             if self._replacement_pending:
                 # A replacement may exist without a constructed Stop binding.
                 # Its retained exceptional cleanup must run; the old worker's

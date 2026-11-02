@@ -978,6 +978,48 @@
   note = {Refreshed 2026-11-01 with acquiring-high-resolution-time-stamps and the precise UTC API. QPC remains the current-boot execution clock; fixed UTC expiry supports a changed-boot budget under a valid system clock. UTC can move backward or forward, so detectable rollback must refuse automatic continuation and a saved remaining cap does not prove arbitrary offline duration. Documentation attribution only, no copied Windows code}
 }
 
+@misc{gpuviewVideoAttribution,
+  author = {{Microsoft and Google Chromium contributors}},
+  title = {GPUView flip queues and Chrome media diagnostics},
+  url = {https://learn.microsoft.com/en-us/windows-hardware/drivers/display/using-gpuview},
+  note = {Inspected 2026-11-01 with GPUView flip-queue documentation, https://developer.chrome.com/docs/devtools/media-panel and https://www.chromium.org/audio-video/media-internals/. Informs the prospective no-inference video-surface attribution diagnostic after a PresentMon CSV could not identify the video presentation path. No trace has yet established that relationship; overlay mode alone is insufficient. Documentation consulted, no implementation copied}
+}
+
+@misc{hermesCompilerAuthorization,
+  author = {{Nous Research and Hermes contributors}},
+  title = {Hermes registered tools and the authorized dispatch boundary},
+  url = {https://github.com/NousResearch/hermes-agent/blob/b7ab3f7d85448e3a586510a4d6844b745f563ce7/agent/tool_executor.py},
+  note = {MIT APIs inspected 2026-11-01 with hermes_cli/plugins.py, hermes_cli/middleware.py and tools/registry.py at the same revision, and model_tools.py at installed revision 14e1e43a23761b369641208e204365cd6cb9399d. General tool_execution middleware wraps authorization; the compiler grant must begin inside the registered handler after authorization reaches it. No copied implementation or silent installed-SDK upgrade}
+}
+
+@misc{cmakeBoundedCompilerRecipe,
+  author = {{Kitware and CMake contributors}},
+  title = {CMake build CLI and CTest execution and test reports},
+  url = {https://cmake.org/cmake/help/latest/manual/cmake.1.html},
+  note = {Inspected 2026-11-01 with ctest.1.html and prop_test/PASS_REGULAR_EXPRESSION.html. Uses existing configure/build/test, explicit parallelism, no-tests error and JUnit output. CTest PASS_REGULAR_EXPRESSION ignores process exit codes, so the retained component oracle independently checks actual executable exit and exact output. No build-system implementation copied}
+}
+
+@misc{msvcBoundedCompilerEnvironment,
+  author = {{Microsoft}},
+  title = {Use the Microsoft C++ Build Tools from the command line},
+  url = {https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170},
+  note = {Inspected 2026-11-01. Reuses installed VsDevCmd for the selected x64 toolset in an isolated child environment, retaining only build variables. No global environment modification, toolchain redistribution or Microsoft implementation copy}
+}
+
+@misc{cmakeMsvcPersistentPdbCorrection,
+  author = {{Kitware, Microsoft and Martin Storsjo and contributors}},
+  title = {MSVC embedded debug information and explicit CMake compiler-probe configuration},
+  url = {https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_DEBUG_INFORMATION_FORMAT.html},
+  note = {Inspected 2026-11-01 with CMP0141 and CMAKE_TRY_COMPILE_CONFIGURATION documentation, Microsoft /FS and /Z7 references, and https://github.com/mstorsjo/msvc-wine/blob/master/README.md. The first real compiler probe configured successfully but timed out waiting for its owned MSPDBSRV descendant; retained ABI commands used /Zi /FS and debug linking. Prospective fixed recipe uses CMP0141 NEW, Embedded debug information and Release try_compile, preserving deadlines and descendant ownership. Research informs the configuration fix; no upstream implementation copied or Wine dependency}
+}
+
+@misc{compilerOwnedJobAndRetainedBridge,
+  author = {{Microsoft, Python Software Foundation and aiohttp contributors}},
+  title = {Windows nested jobs and retained asynchronous operation ownership},
+  url = {https://learn.microsoft.com/en-us/windows/win32/procthread/nested-jobs},
+  note = {Inspected 2026-11-01 with Windows job-objects, JOBOBJECT_EXTENDED_LIMIT_INFORMATION, Python 3.11 asyncio shield and aiohttp web routing. Reuses this project's job and listener mechanisms for a contained compiler subtree and an operation that survives HTTP disconnect. Job committed-memory limits are not physical-RAM limits. No new scheduler or external implementation copy}
+}
+
 @misc{pythonObserverTimeoutRefusal,
   author = {{Python Software Foundation and contributors}},
   title = {Python 3.11 urllib errors and connection exception semantics},
@@ -990,4 +1032,46 @@
   title = {Windows Sockets error codes},
   url = {https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2},
   note = {Inspected 2026-11-02 for the closed physical-restart observer. Timeout 10060 and refused connection 10061 are distinct; the retained timeout records do not establish a refusal or a particular network root cause. Documentation attribution only, no Windows code copied}
+}
+
+@misc{pythonBoundedCompilerHttpClient,
+  author = {{Python Software Foundation and contributors}},
+  title = {Python 3.11 HTTP handlers and socket timeout boundaries},
+  url = {https://docs.python.org/3.11/library/urllib.request.html},
+  note = {Inspected 2026-11-02 with library/urllib.error.html and library/socket.html\#notes-on-socket-timeouts. Reuses the existing project's explicit no-proxy/no-redirect urllib pattern for the synchronous compiler-operation client. Only a valid pending reply permits another exchange with identical operation bytes; transport uncertainty retains the original operation and never refunds its deadline. No external implementation copied; socket-operation timeout is not an OS-enforced total wall deadline}
+}
+
+@misc{llvmWindowsCompilerRecipe,
+  author = {{LLVM Project contributors}},
+  title = {Clang-cl driver and LLD Windows support},
+  url = {https://clang.llvm.org/docs/UsersManual.html#clang-cl},
+  note = {Inspected 2026-11-01 and refreshed 2026-11-02 with https://lld.llvm.org/windows_support.html. Existing installed clang-cl22.1.3 and lld-link provide the bounded compiler recipe while retaining the MSVC header/library and Windows SDK environment. No LLVM code copied or toolchain upgrade. Actual compiler component evidence remains separate from agent dispatch and physical resource handoff}
+}
+
+@misc{cmakePinnedLinkerSelection,
+  author = {{Kitware and CMake contributors}},
+  title = {CMake explicit linker selection},
+  url = {https://cmake.org/cmake/help/latest/variable/CMAKE_LINKER_TYPE.html},
+  note = {Inspected 2026-11-01 and refreshed 2026-11-02 for the existing LLVM Windows recipe. Fixed FILEPATH linker cache entries use CMake path spelling after the retained backslash-escape failure; no timeout extension or ownership assertion was removed. No CMake implementation copied}
+}
+
+@misc{hermesPinnedCompilerStorage,
+  author = {{NousResearch and Hermes Agent contributors}},
+  title = {Pinned Hermes public tool registration and readonly session storage},
+  url = {https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/hermes_cli/plugins.py},
+  note = {Inspected 2026-11-02 together with hermes_state.py, hermes_state_messages.py and model_tools.py at the same revision. MIT upstream interfaces reused by the opted-in compiler handler and readonly native intent reader; no SDK implementation copied. Reuses the installed worker dependency setup and scopes SDK initialization files to a fresh host-run home. Fixture validation does not establish model-driven handoff}
+}
+
+@misc{sqliteClosedCompilerAudit,
+  author = {{SQLite authors}},
+  title = {Read-only WAL databases and immutable URI connections},
+  url = {https://sqlite.org/wal.html#read_only_databases},
+  note = {Inspected 2026-11-02 with https://sqlite.org/uri.html#uriimmutable after the compiler SDK harness completed its task but failed a whole-tree audit. A copied-only experiment reproduced readonly connection creation of WAL and shared-memory files without changing the main database or logical history. Immutable reads were used only on independently copied, verified closed databases with empty or absent WAL. Original full-harness failure and missing historical before/after maps remain recorded. Documentation reuse only; the live SDK reader is unchanged}
+}
+
+@misc{pythonCompilerFixtureSupervision,
+  author = {{Python Software Foundation and contributors}},
+  title = {Python 3.11 task waiting and retained cleanup},
+  url = {https://docs.python.org/3.11/library/asyncio-task.html#asyncio.wait},
+  note = {Refreshed online 2026-11-02 for the private compiler SDK harness. FIRST_COMPLETED observes the existing worker wait and scripted-resource task; timeout does not cancel pending tasks, which remain owned by the existing cleanup. The simulated multiple-restore adapter reuses this project's existing fixture. No upstream implementation copied or production task allowance changed}
 }

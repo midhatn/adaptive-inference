@@ -36,18 +36,22 @@ TASK_TOOLSET = 'adaptive_file_read_write'
 TASK_TOOLS = ('read_file', 'write_file')
 
 
-def verify_task_tools(agent):
+def verify_task_tools(agent, task_spec=None):
     """The advertised SDK capabilities must match this consumer's operations."""
     from adaptive_inference.desktop.hermes.recovery import RecoveryStop
+    expected = set(TASK_TOOLS)
+    if task_spec is not None and task_spec.compiler is not None:
+        from adaptive_inference.desktop.hermes.compiler_recovery import TOOL_NAME
+        expected.add(TOOL_NAME)
     definitions = getattr(agent, 'tools', None)
-    if (type(definitions) is not list or len(definitions) != len(TASK_TOOLS)
+    if (type(definitions) is not list or len(definitions) != len(expected)
             or any(type(row) is not dict or row.get('type') != 'function'
                    or type(row.get('function')) is not dict for row in definitions)):
         raise RecoveryStop('SDK tool declarations differ from the supported read/write capabilities')
     names = [row['function'].get('name') for row in definitions]
     if (any(type(name) is not str for name in names)
-            or set(names) != set(TASK_TOOLS)
-            or getattr(agent, 'valid_tool_names', None) != set(TASK_TOOLS)):
+            or set(names) != expected
+            or getattr(agent, 'valid_tool_names', None) != expected):
         raise RecoveryStop('SDK tool declarations differ from the supported read/write capabilities')
 
 
@@ -381,7 +385,8 @@ def _worker(args, *, selected=None):
                 return httpx.Response(200,request=req,headers=response.headers,json=payload)
             return super().fake_response(req, 'parent', 1 if tools else 0)
 
-    boundary = Boundary(run, plan['fixture'])
+    boundary = (Boundary(run, plan['fixture'], task_spec=task_spec)
+                if task_spec is not None and task_spec.compiler is not None else Boundary(run, plan['fixture']))
     if selected is not None or (run / 'wire-observations.json').exists():
         boundary.rows = (selected.load_wire() if selected is not None else
                          json.loads((run / 'wire-observations.json').read_text()))
@@ -499,7 +504,8 @@ def _worker(args, *, selected=None):
                     controls=Controls(mailbox,deadline=deadline,
                         deadline_clock=CLOCK_ID,
                         utc_now=lambda:datetime.now(timezone.utc).isoformat().replace('+00:00','Z'))
-                    controller=rec.Recovery(owned,db,run/'work',run,controls=controls,
+                    from adaptive_inference.desktop.hermes.compiler_worker import make_recovery
+                    controller=make_recovery(owned,db,run/'work',run,task_spec=task_spec,plan=plan,args=args,controls=controls,
                         pre_effect_validator=pre_effect_validator,validator_identity=validator_identity)
                     from adaptive_inference.desktop.hermes.pause_activity import PauseActivity
                     def sdk_thread_interrupted():
@@ -579,14 +585,18 @@ def _worker(args, *, selected=None):
                     # patch/search, which this bounded recovery consumer cannot execute.
                     create_custom_toolset(TASK_TOOLSET, 'Task-scoped file reads and writes',
                                           tools=list(TASK_TOOLS), includes=[])
+                    enabled_toolsets = [TASK_TOOLSET]
+                    if task_spec is not None and task_spec.compiler is not None:
+                        from adaptive_inference.desktop.hermes.compiler_recovery import TOOLSET
+                        enabled_toolsets.append(TOOLSET)
                     agent = AIAgent(base_url=plan['gateway'], api_key='local-no-key', provider='custom:adaptive',
-                        model=MODEL, api_mode='chat_completions', max_iterations=8, enabled_toolsets=[TASK_TOOLSET],
+                        model=MODEL, api_mode='chat_completions', max_iterations=8, enabled_toolsets=enabled_toolsets,
                         quiet_mode=True, platform='cli', skip_context_files=True, skip_memory=True,
                         skip_background_review=True, max_tokens=10923, reasoning_config={'enabled': True, 'effort': 'high'},
                         request_overrides={'extra_body': QUALITY}, cwd=str(run / 'work'),
                         session_id=plan['session_id'], session_db=db)
                     controller.agent = agent
-                    verify_task_tools(agent)
+                    verify_task_tools(agent, task_spec)
                     if plan['fixture']:
                         def private_transport_forbidden(*_args,**_kwargs):
                             raise AssertionError('Private Hermes watchdog/transport was invoked')
@@ -611,7 +621,7 @@ def _worker(args, *, selected=None):
                                       'report': report}
                     else:
                         completion = task_spec.completion(run / 'work', owned.checkpoint.state['tools'],
-                                                          outcome.get('final_response', ''))
+                            outcome.get('final_response', ''), compiler_receipts=controller.compiler_receipts())
                         completion['task_spec_sha256'] = task_spec.sha256
                     controller.finish(outcome)
                     result.update(passed=True, provider_calls=len(boundary.rows) - before,
@@ -721,6 +731,8 @@ def main():
     p.add_argument('--qualification-hold-after-report',action='store_true')
     p.add_argument('--continuation-grant', type=Path)
     p.add_argument('--host-generation')
+    p.add_argument('--compiler-binding', type=Path)
+    p.add_argument('--compiler-binding-sha256')
     p.add_argument('--validate-report-before-write',action='store_true')
     p.add_argument('--control-case',choices=['complete','cancel'])
     p.add_argument('--fixture-scenario',choices=['normal','wait-race','unknown-failure','report-feedback'],default='normal')

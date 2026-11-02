@@ -217,7 +217,7 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
             owned.save_checkpoint(state,expected_revision=owned.checkpoint.revision)
         q.rec.save(work/'plan.json',{'task_id':cp.task_id,'demand_identity':q.asdict(identity),
             'deadline_clock':q.CLOCK_ID,'base_python':str(self.case.profile.worker_python),
-            'gateway':'http://127.0.0.1:18100/v1','pins':{},'task_spec':spec.data,
+            'gateway':'http://127.0.0.1:18100/v1','pins':{},'task_spec':spec.data,'task_spec_sha256':spec.sha256,
             saved_tasks.CONTEXT:context})
         old=(work/'controller-ready-1.json');old.write_text('{"old":true}')
         self.case=q.DesktopComposition(self.case.profile_path,self.root/'reopened',saved_task=work)
@@ -257,7 +257,8 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
                 prepare_task(store,identity,q.PROMPT if spec is None else spec.prompt,'session',
                     metadata={'model':q.MODEL,'quality':q.QUALITY,'deadline_clock':q.CLOCK_ID,
                               **({} if spec is None else spec.metadata())})
-                q.rec.save(c.work/'plan.json',{'demand_identity':q.asdict(identity),
+                q.rec.save(c.work/'plan.json',{'demand_identity':q.asdict(identity),'task_id':task_id,
+                    **({} if spec is None else {'task_spec':spec.data,'task_spec_sha256':spec.sha256}),
                     'deadline_clock':q.CLOCK_ID,
                     'base_python':str(c.profile.worker_python),'gateway':'http://127.0.0.1:18100/v1'})
                 events.append('prepare');child=prepare_child

@@ -1,0 +1,225 @@
+{
+  "schema": "compiler-recipe-component-evidence.v1",
+  "recorded_date": "2026-11-02",
+  "status": "component_outcomes_validated",
+  "scope": "Real Windows C++17 compilation and CTest through the existing resource-handoff controller, using a scripted native adapter and scripted capacity/foreground samples. Not agent dispatch or physical resource handoff.",
+  "source_identity": {
+    "base_commit": "84ef4d21bf948c8266c76910a22648c27f1113d8",
+    "base_note": "Candidate recipe is an additional working-tree module, identified by exact bytes below; base commit alone does not contain this candidate. Publication commit is assigned by the integrating maintainer.",
+    "files": {
+      "src/adaptive_inference/desktop/compiler_recipe.py": "12b31514327a7c168c915b3a321ee1c17bf8446b49181eed6bed2bced55b01d2",
+      "tests/test_compiler_recipe.py": "cf7662e4e2974a1d6190862733d5c5a77c1aeb274b082331f16c2169639ff642",
+      "src/adaptive_inference/handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+      "tests/test_handoff.py": "db9725043a720b29e3af4b809c3af4d92bba540febea94515de52d5505c7d8f7"
+    }
+  },
+  "environment": {
+    "platform": "Windows x64",
+    "python": "full CPython3.11.9",
+    "cmake": "4.4.3",
+    "ctest": "4.4.3",
+    "clang_cl": "22.1.3",
+    "lld_link_version": "Not separately queried; exact executable SHA recorded",
+    "ninja_version": "Not separately queried; exact executable SHA recorded",
+    "msvc_header_library_toolset": "14.51.36231",
+    "windows_sdk_path_version": "10.0.26100.0",
+    "tool_sha256": {
+      "cmake": "ab8247ca4554871e5d75c0ee118ee8663727bd6fdf37ad76b17e9cc8d5f286a8",
+      "ctest": "083f482c8656c86932c28906445cb3c10c0c5ee649a90ff3e0080ee4447d3dfc",
+      "compiler": "ec094d5f8f37c106eefcfc47c9997c261a06e3bd8eaaa7255835983a58524156",
+      "linker": "631a02cecb87f9f7f2270713d6c7f84e54a0fabce6c6638d21d3a0caea78204d",
+      "ninja": "9546466f0feca6d62d7d4ea9b7fbc381f8e302cb7f02f4ce327a39d8577bb293"
+    },
+    "limits": "No claim that every transitive tool/dependency was individually pre-pinned."
+  },
+  "contract": {
+    "language": "C++17",
+    "build_configuration": "Release",
+    "recipe_limit_seconds": 90,
+    "original_component_task_limit_seconds": 120,
+    "requested_parallel_jobs": 2,
+    "aggregate_job_commit_limit_mib": 2048,
+    "tool_requirements": {
+      "minimum_available_ram_gib": 2,
+      "minimum_available_commit_gib": 2,
+      "minimum_available_vram_mib": 0
+    },
+    "resource_limit_scope": "Windows job limit bounds committed memory, not physical RAM; CMake/CTest requested parallelism is not an OS CPU cap.",
+    "retries_per_case": 0,
+    "source_inputs_sha256": {
+      "CMakeLists.txt": "70f6ce485274058f31fa41892a20503ce8bac0cb022862abd7b33310c641c323",
+      "inventory.cpp": "9f61815584dac603c18aee4aaf429a1fd445fdb9c9bd076aa89257a081996108",
+      "check.cmake": "a43949af51ed0c5ad251cdd7887268da763d1d11860d045998dd5c0afa2ba3f5"
+    },
+    "failure_source_sha256": "f6fb5b20807d3d0b11d7bfddcf81d34704dc3b3c2c771b1bce19d3ddd4f3e526",
+    "failure_mutation": {
+      "from": "const int units =",
+      "to": "const int units = INVALID_CPP_TOKEN"
+    },
+    "oracle": {
+      "quantities": [
+        4,
+        6,
+        5,
+        2
+      ],
+      "expected_units": 17,
+      "required_program_exit": 0,
+      "expected_stdout": "units=17 followed by one platform newline",
+      "test_name": "inventory_units",
+      "mechanism": "CTest invokes a trusted CMake script that checks the actual executable exit and output before emitting its success marker. PASS_REGULAR_EXPRESSION alone is insufficient."
+    }
+  },
+  "successful_case": {
+    "recipe_passed": true,
+    "original_probe_overall_passed": false,
+    "independent_closed_review_passed": true,
+    "stage_exits": {
+      "configure": 0,
+      "build": 0,
+      "test": 0
+    },
+    "ctest_passes": 1,
+    "program_exit_record": 0,
+    "exit_record_line_ending": "CRLF",
+    "stdout": "units=17",
+    "stdout_line_ending": "CRLF",
+    "stderr_bytes": 0,
+    "artifact_sha256": "833b50c7c80c25455b452458bf966fb98f3d03363922784623be448561a3347a",
+    "artifact_bytes": 12800,
+    "recipe_elapsed_seconds": 5.404089100004057,
+    "retained_bootstrap_count": 3,
+    "retained_bootstrap_exits": [
+      0,
+      0,
+      0
+    ],
+    "owned_job_total_processes": 58,
+    "owned_job_active_after": 0,
+    "job_terminated": false,
+    "independent_review_sha256": "c6afaae2199eedad570bf35f22c756c0bf56b2f15482976939efea3c3aff53a5",
+    "recipe_receipt_sha256": "44a56ceb683718f8be2f44d8c3778a45b725e7c99e8c8fa1fba2e8746741a539",
+    "original_probe_result_sha256": "21f8230d606679b3a4e5afcdaf290850816f8638a55ec2469cabb8353ab62d48"
+  },
+  "deliberate_build_failure": {
+    "expected_failure_verified": true,
+    "probe_overall_passed": true,
+    "recipe_passed": false,
+    "failure_stage": "build",
+    "stage_exits": {
+      "configure": 0,
+      "build": 1
+    },
+    "diagnostic": "Use of undeclared identifier INVALID_CPP_TOKEN",
+    "ctest_started": false,
+    "final_artifact_exists": false,
+    "success_case_replayed": false,
+    "recipe_elapsed_seconds": 2.456800599997223,
+    "retained_bootstrap_count": 2,
+    "retained_bootstrap_exits": [
+      0,
+      1
+    ],
+    "owned_job_total_processes": 49,
+    "owned_job_active_after": 0,
+    "job_terminated": false,
+    "independent_review_sha256": "36f6ea7e638a2e8fc50ee8a6792cdaab8e0edc07ea3bfe85396894e61cba6ac1",
+    "recipe_receipt_sha256": "f5bce16000e503dbe5d715da043da3459fb215b16262659931a40422477fbbf2",
+    "probe_result_sha256": "f3d302ced90750f2acceec4035f8c628314a70b329f187acdc89935bf1606cfd"
+  },
+  "retained_attempts": [
+    {
+      "attempt": 1,
+      "kind": "msvc_pdb_helper_timeout",
+      "original_overall_passed": false,
+      "description": "Configuration returned zero; owned descendant remained until original90-second limit. ABI commands used /Zi /FS. Operator identified a PDB helper; no external named process was killed.",
+      "result_sha256": "c3f4533220cdad4740426e25771de5ad6ccfeacb3f260ea9360a4c46f7930ea3"
+    },
+    {
+      "attempt": 2,
+      "kind": "msvc_vctip_helper_timeout",
+      "original_overall_passed": false,
+      "description": "Embedded debug format removed the observed PDB helper, but a separately observed owned VCTIP helper remained until the same limit. No installed component or global setting was changed.",
+      "result_sha256": "24f75ed927080341afbad64e02bdff9a23987ad6f2428cd723e44e307b507b83"
+    },
+    {
+      "attempt": 3,
+      "kind": "llvm_cmake_path_escape",
+      "original_overall_passed": false,
+      "description": "Configuration failed on a native Windows backslash escape in generated linker metadata. CMake -D paths were subsequently serialized with forward slashes.",
+      "result_sha256": "9d5275a3b9fc5308ba1520a6ad3a5ad1cf51bd4f46335076eb7f6f7378e48812"
+    },
+    {
+      "attempt": 4,
+      "kind": "successful_recipe_checker_line_ending_failure",
+      "original_overall_passed": false,
+      "description": "Actual configure/build/CTest and cleanup succeeded. Private checker rejected zero followed by CRLF because it required LF exactly. Original overall result remains failed; closed-record review accepted the actual success without rerunning it.",
+      "result_sha256": "21f8230d606679b3a4e5afcdaf290850816f8638a55ec2469cabb8353ab62d48"
+    }
+  ],
+  "evidence_boundaries": {
+    "same_recipe_bytes_in_success_and_failure": true,
+    "actual_llvm_selection_verified_in_cache_rules_and_compiler_checks": true,
+    "actual_children_joined": true,
+    "raw_records_preserved": true,
+    "compiler_service_companion_processes_exited": true,
+    "scripted_native_adapter_release_is_physical_proof": false,
+    "agent_dispatch_qualified": false,
+    "sdk_execution_qualified": false,
+    "foreground_response_qualified": false,
+    "physical_reboot_qualified": false,
+    "milestone_m4_complete": false,
+    "performance_comparison_claim": false
+  },
+  "next_gate": "Connect the separately reviewed fixed compiler capability to genuine agent dispatch and durable task effects, then validate that integrated path. No general terminal capability is implied.",
+  "sources": [
+    {
+      "title": "CMake linker selection",
+      "url": "https://cmake.org/cmake/help/latest/variable/CMAKE_LINKER_TYPE.html"
+    },
+    {
+      "title": "Clang-cl supported Ninja configuration",
+      "url": "https://clang.llvm.org/docs/UsersManual.html#clang-cl"
+    },
+    {
+      "title": "LLD Windows support",
+      "url": "https://lld.llvm.org/windows_support.html"
+    },
+    {
+      "title": "CMake debug format policy",
+      "url": "https://cmake.org/cmake/help/latest/policy/CMP0141.html"
+    },
+    {
+      "title": "CMake embedded debug information and compiler checks",
+      "url": "https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_DEBUG_INFORMATION_FORMAT.html"
+    },
+    {
+      "title": "CMake compiler-check configuration",
+      "url": "https://cmake.org/cmake/help/latest/variable/CMAKE_TRY_COMPILE_CONFIGURATION.html"
+    },
+    {
+      "title": "MSVC PDB service behavior",
+      "url": "https://learn.microsoft.com/en-us/cpp/build/reference/fs-force-synchronous-pdb-writes?view=msvc-170"
+    },
+    {
+      "title": "CMake path representation",
+      "url": "https://cmake.org/cmake/help/latest/command/file.html#path-conversion"
+    },
+    {
+      "title": "CTest success regex does not establish executable exit",
+      "url": "https://cmake.org/cmake/help/latest/prop_test/PASS_REGULAR_EXPRESSION.html"
+    },
+    {
+      "title": "Windows nested jobs",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/procthread/nested-jobs"
+    },
+    {
+      "title": "Earlier Bazel report of compilation-finish waiting",
+      "url": "https://github.com/bazelbuild/bazel/issues/15094"
+    },
+    {
+      "title": "Earlier VCTIP issue; its tool-removal workaround was not used",
+      "url": "https://github.com/mstorsjo/msvc-wine/issues/23"
+    }
+  ]
+}

@@ -43,11 +43,14 @@ class WindowsProfile:
     owner: dict
     gateway: Config
     foreground_policy: str
+    compiler: object = None
 
     @classmethod
     def from_dict(cls, value):
-        fields(value, {'schema', 'host_python', 'worker_python', 'hermes',
-                       'native_owner', 'gateway', 'foreground_policy'}, 'profile')
+        names = {'schema', 'host_python', 'worker_python', 'hermes',
+                 'native_owner', 'gateway', 'foreground_policy'}
+        if type(value) is dict and 'compiler' in value: names.add('compiler')
+        fields(value, names, 'profile')
         if value['schema'] != SCHEMA:
             raise ValueError('Unsupported installed desktop profile')
         host = fields(value['host_python'], {'path', 'sha256'}, 'host interpreter')
@@ -66,10 +69,14 @@ class WindowsProfile:
         policy = value['foreground_policy']
         if policy not in (STRICT_POLICY, COOPERATIVE_POLICY):
             raise ValueError('Select the explicit strict or cooperative foreground profile')
+        compiler = None
+        if 'compiler' in value:
+            from adaptive_inference.desktop.compiler_profile import compiler_settings
+            compiler = compiler_settings(value['compiler'])
         return cls(absolute(host['path']), pin(host['sha256']),
                    absolute(worker['path']), pin(worker['sha256']),
                    absolute(hermes['source']), absolute(hermes['site_packages']),
-                   native, gateway, policy)
+                   native, gateway, policy, compiler)
 
     @classmethod
     def load(cls, path):
