@@ -173,6 +173,35 @@ host-reporting pattern also draws on
 [Temporal's asynchronous activity completion](https://docs.temporal.io/develop/python/activities/asynchronous-activity);
 it is implemented through the existing local task journal and host ownership.
 
+### Automatic desktop recovery
+
+The desktop composition now performs that same sequence itself. When the
+retained worker exits non-zero while its checkpoint holds one pending effect
+and the live tool host has the exact joined terminal result, `DesktopComposition`
+joins the worker, exports and saves `CompilerHost.terminal_receipt`, retires the
+old binding and runs the ordinary `run_recovery reconcile` command as a retained
+child. It then requires a cleanly repaired `ready` checkpoint and launches one
+replacement worker through a narrow recovered-state lifecycle entry, which keeps
+the task, native session, original deadline, request counters, reopen context and
+durable execution budget. The replacement is committed into the current handover
+episode, so Stop and cleanup still join every child.
+
+Recovery is refused after a clean or Stop-requested exit, when the host is
+closing or faulted, without a pending effect or bound host, within 5 seconds of
+the original deadline, at the attempt limit, or for a second recovery of the same
+worker and operation. A failed reconcile or unclean checkpoint stops recovery
+rather than dispatching around it. The bounded-restart shape follows
+[Erlang/OTP supervision principles](https://www.erlang.org/doc/system/sup_princ.html).
+
+The [local validation record](../provenance/automatic-tool-recovery/local-validation-2026-11-08.json)
+retains 41 focused component tests, the complete 1,595-test core suite, all 16
+remaining workflow commands, package verification and an isolated installation.
+The [installed SDK trial](../provenance/automatic-tool-recovery/installed-worker-loss-2026-11-08.json)
+(scripted provider) and the [physical IQ3_S foreground trial](../provenance/automatic-tool-recovery/physical-foreground-recovery-2026-11-08.json)
+both completed with automatic recovery after worker exit 86 and passed independent
+closed reviews of 21 and 49 checks. Loss of the host, interruption during a running
+tool, application restart and reboot remain separate gates.
+
 ## Sources and licensing
 
 The commands and media oracle reuse this repository's `protected_video` work;
