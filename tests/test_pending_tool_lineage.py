@@ -8,6 +8,7 @@ import unittest
 from unittest import mock
 
 import pending_tool_lineage as lineage
+import automatic_tool_recovery_lineage
 import recipe_reconciliation_lineage
 from paused_expiry_lineage import fingerprint
 
@@ -24,7 +25,8 @@ class PendingToolLineageTests(unittest.TestCase):
         self.assertTrue(rows['files'])
         for relative, row in rows['files'].items():
             with self.subTest(relative=relative):
-                data = (lineage.ROOT / relative).read_bytes()
+                data = automatic_tool_recovery_lineage.predecessor(
+                    relative, (lineage.ROOT / relative).read_bytes())
                 before = lineage.retained(relative, row, lineage.ROOT)
                 self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
                 self.assertEqual(fingerprint(ast.parse(data)), row['successor_ast_sha256'])
@@ -70,7 +72,8 @@ class PendingToolLineageTests(unittest.TestCase):
     def test_ast_projection_requires_complete_current_bytes(self):
         relative = 'desktop/hermes/compiler_recovery.py'
         source = 'src/adaptive_inference/' + relative
-        target = lineage.ROOT / source; data = target.read_bytes(); tree = ast.parse(data)
+        target = lineage.ROOT / source
+        data = automatic_tool_recovery_lineage.predecessor(source, target.read_bytes()); tree = ast.parse(data)
         row = lineage.record()['files'][source]
         self.assertEqual(fingerprint(lineage.restore(tree, relative)), row['predecessor_ast_sha256'])
         self.assertEqual(fingerprint(tree), row['successor_ast_sha256'])

@@ -213,6 +213,41 @@ class DesktopControlLifecycle:
                 or snapshot.target.operation is not None or snapshot.target.requires_reconciliation
                 or snapshot.demand is None or snapshot.demand['state'] != 'paused'):
             raise RuntimeError('Replacement requires the same known paused task')
+        return self._commit_replacement(expected, code, snapshot, create_replacement_binding)
+
+    def replace_recovered_worker(self, expected, create_replacement_binding):
+        """Trusted synchronous replacement after automatic tool recovery.
+
+        Shares synchronous launch, binding, and commit mechanics with replace_worker,
+        with narrow recovered-state preconditions requiring a reconciled pending task
+        with active/waiting/paused demand and ready phase.
+        """
+        self._owner()
+        from adaptive_inference.desktop.hermes.service_stop import WorkerStopBinding
+        if (expected is not self.worker_stop or type(expected) is not WorkerStopBinding
+                or self._worker_capability is not expected._capability
+                or self._fenced or self._stop is not None or self._replacement_pending
+                or self._faults or self.host.closing or self.host.closed
+                or expected._work is not None or expected._fault is not None
+                or not callable(create_replacement_binding)):
+            raise RuntimeError('Replacement requires the exact current unfenced worker binding')
+        expected._owner()
+        code = expected.worker.poll()
+        if type(code) is not int or expected.worker.wait(timeout=0) != code:
+            raise RuntimeError('The exact previous worker must already have exited and joined')
+        snapshot = expected.mailbox.snapshot()
+        expected._original(snapshot.target)
+        if (snapshot.target.task_id != self.prepared.task_id
+                or execution_outcome(snapshot.target.state) is not None
+                or snapshot.target.state['status'] != 'pending'
+                or snapshot.target.operation is not None or snapshot.target.requires_reconciliation
+                or snapshot.target.state.get('phase') != 'ready'
+                or snapshot.demand is None or snapshot.demand['state'] not in ('active', 'waiting', 'paused')):
+            raise RuntimeError('Recovered replacement requires reconciled pending task with active/waiting/paused demand')
+        return self._commit_replacement(expected, code, snapshot, create_replacement_binding)
+
+    def _commit_replacement(self, expected, code, snapshot, create_replacement_binding):
+        from adaptive_inference.desktop.hermes.service_stop import WorkerStopBinding
         # Failure after child creation must never let the old binding authorize
         # native close. Retain this obligation before calling fallible launch.
         record = {'previous_binding': expected, 'previous_exit_code': code,
@@ -244,6 +279,14 @@ class DesktopControlLifecycle:
             self._worker_bindings.append((replacement, capability))
             self.worker_stop, self._worker_capability = replacement, capability
             self.worker_receipt = None
+            if self.service is not None and getattr(self.service, 'current', None) is not None:
+                if hasattr(self.service, 'replace_worker_episode'):
+                    self.service.replace_worker_episode(replacement.worker, replacement, capability, replacement.request_id)
+                else:
+                    self.service.current['worker'] = replacement.worker
+                    self.service.current['stop_binding'] = replacement
+                    self.service.current['worker_cap'] = capability
+                    self.service.current['stop_id'] = replacement.request_id
             record['committed'] = True
             self._replacement_pending = False
             return replacement

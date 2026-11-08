@@ -158,6 +158,10 @@ class DesktopComposition:
         self.compiler_host = None
         self.compiler_kind = 'video' if self.profile.video is not None else 'compiler'
         self.compiler_bindings = {}
+        self.compiler_bindings_history = []
+        self.compiler_generations = {}
+        self.recovery_records = {}
+        self.worker_replacements_count = 0
         self.compiler_native_reader = None
 
     def compiler_launch_args(self, work, plan, *, execution_id, task_id, deadline, diagnostics):
@@ -174,7 +178,18 @@ class DesktopComposition:
         from adaptive_inference.desktop.hermes.compiler_worker import binding_schema
         key = (task_id, execution_id)
         if key in self.compiler_bindings:
-            raise RuntimeError('Compiler worker launch binding cannot be reused')
+            if (self.compiler_host is not None
+                    and not self.compiler_host.lifecycle()['bound']
+                    and getattr(self, 'worker', None) is not None
+                    and self.compiler_worker_joined(self.worker)):
+                if not hasattr(self, 'compiler_bindings_history'):
+                    self.compiler_bindings_history = []
+                self.compiler_bindings_history.append((key, self.compiler_bindings.pop(key)))
+                if not hasattr(self, 'compiler_generations'):
+                    self.compiler_generations = {}
+                self.compiler_generations[key] = self.compiler_generations.get(key, 0) + 1
+            else:
+                raise RuntimeError('Compiler worker launch binding cannot be reused')
         binding = {'schema': binding_schema(kind), 'host_epoch': self.host_epoch, 'task_id': task_id,
             'execution_id': execution_id, 'task_deadline': deadline,
             'gateway_instance': self.host.gateway.instance, 'capability': secrets.token_hex(32)}
@@ -202,6 +217,47 @@ class DesktopComposition:
             is_worker_joined=self.compiler_worker_joined,
             read_native_history=lambda session: self.compiler_native_reader(work, session),
             task_root=work, capability=binding['capability'], task_deadline=deadline)
+
+    def create_replacement_binding(self):
+        """Trusted synchronous replacement worker launch callback."""
+        generation = getattr(self, 'worker_replacements_count', 0) + 1
+        self.worker_replacements_count = generation
+        self.stop_id = 'service-stop-' + uuid.uuid4().hex
+        self.worker_cap = object()
+        ready = self.worker_diagnostics() / f'controller-ready-{generation + 1}.json'
+        if ready.exists():
+            raise RuntimeError('Replacement readiness must be fresh')
+        command = [self.plan['base_python'], '-I', '-B', '-m',
+            'adaptive_inference.desktop.hermes.run_recovery', 'worker', '--run', str(self.work),
+            '--controller-ready', str(ready), '--gateway-instance', self.host.gateway.instance,
+            '--deadline-monotonic', str(self.deadline), '--stop-request-id', self.stop_id]
+        command.extend(self.compiler_launch_args(self.work, self.plan, execution_id=self.identity.task_id,
+            task_id=self.identity.task_id, deadline=self.deadline, diagnostics=self.worker_diagnostics()))
+        if self.reopen_context is not None:
+            command.extend(['--execution-boot-id', rec.digest(self.reopen_context['boot'])])
+        if self.saved is not None:
+            command.extend(['--diagnostics', str(self.saved_diagnostics)])
+        if self.qualification_hold_after_report:
+            command.append('--qualification-hold-after-report')
+        before = len(self.handles)
+        try:
+            child = self.launch(command, f'worker-{generation + 1}')
+        finally:
+            if len(self.handles) == before + 1:
+                self.worker = self.handles[-1]
+                self.stop_binding = None
+        self.bind_worker_stop()
+        if hasattr(self, 'launch_api') and self.launch_api is not None and getattr(self, 'job', None) is not None:
+            handle = self.launch_api.handle(child)
+            identity = self.launch_api.identity(handle)
+            if (identity[0] != child.pid or self.launch_api.in_job(handle, self.job._HANDLE) is not True
+                    or child.poll() is not None):
+                raise RuntimeError('Replacement is not retained and live in the containing job')
+            self.result['replacement_retained_identity'] = {
+                'pid': identity[0], 'creation_time_100ns': identity[1], 'containing_job_verified': True
+            }
+        self.first_ready = ready
+        return self.stop_binding, self.worker_cap
 
     def launch(self, command, label):
         stream=(self.root/(label+'.log')).open('wb'); self.logs.append(stream)
@@ -818,6 +874,127 @@ class DesktopComposition:
         self.runtime._transitioning = False
         await asyncio.to_thread(rec.save,self.first_ready,value)
 
+    async def _try_recover_pending_tool_worker(self, code):
+        """Host-owned automatic recovery of a known terminal tool result.
+
+        If a worker exits with non-clean exit code while the compiler host retains
+        the terminal recipe result for that worker's pending effect operation,
+        exports the receipt, retires the old binding, reconciles TaskStore via
+        run_recovery CLI, launches a replacement worker under the unchanged deadline,
+        awaits its bootstrap, re-binds compiler host, and publishes readiness.
+        """
+        if code == 0:
+            return False
+        if getattr(self, 'transport', None) is None:
+            return False
+        if self.transport.lifecycle()['stop_requested']:
+            return False
+        if getattr(self, 'host', None) is not None:
+            if getattr(self.host, 'closing', False) or getattr(self.host, 'closed', False):
+                return False
+            controller = getattr(self.host, 'controller', None)
+            if controller is not None and getattr(controller, 'fault', None):
+                return False
+        if getattr(self, 'stop_binding', None) is None:
+            return False
+        mailbox = getattr(self.stop_binding, 'mailbox', None)
+        if mailbox is None:
+            return False
+        snapshot = mailbox.snapshot()
+        cp = getattr(snapshot, 'target', None)
+        if cp is None or cp.operation is None or cp.operation.get('kind') != 'effect':
+            return False
+        op_id = cp.operation.get('id')
+        if not op_id:
+            return False
+        if self.compiler_host is None or not self.compiler_host.lifecycle()['bound']:
+            return False
+        if execution_now() >= self.deadline or (self.deadline - execution_now()) < 5.0:
+            return False
+        if cp.state.get('attempts', 0) >= getattr(cp, 'max_attempts', 8):
+            return False
+        if not hasattr(self, 'recovery_records'):
+            self.recovery_records = {}
+        if (self.worker.pid, op_id) in self.recovery_records:
+            return False
+
+        # Export terminal receipt from compiler host
+        try:
+            exported = await self.compiler_host.terminal_receipt(op_id)
+        except Exception:
+            return False
+
+        self.recovery_records[(self.worker.pid, op_id)] = {
+            'worker_pid': self.worker.pid,
+            'operation_id': op_id,
+            'receipt': exported,
+        }
+
+        # 1. Durably save receipt to disk
+        reconcile_diagnostics = self.work / 'episodes' / f'reconcile-{self.worker.pid}'
+        reconcile_diagnostics.mkdir(parents=True, exist_ok=True)
+        explicit_receipt = reconcile_diagnostics / 'retained-terminal.json'
+        rec.save(explicit_receipt, exported)
+
+        # 2. Retire old host binding
+        await self.compiler_host.retire(timeout=30)
+
+        # 3. Run reconcile subcommand via child process
+        base_py = getattr(self, 'plan', {}).get('base_python', sys.executable)
+        reconcile_cmd = [
+            base_py, '-I', '-B', '-m',
+            'adaptive_inference.desktop.hermes.run_recovery', 'reconcile',
+            '--run', str(self.work),
+            '--diagnostics', str(reconcile_diagnostics),
+            '--receipt', str(explicit_receipt),
+            '--operation-id', op_id,
+        ]
+        reconciler = self.launch(reconcile_cmd, f'reconcile-{self.worker.pid}')
+        reconcile_code = await self.join_child(reconciler)
+        if reconcile_code != 0:
+            raise RuntimeError(f'Reconcile subcommand failed with exit code {reconcile_code}')
+
+        # 4. Refresh runtime & verify checkpoint
+        await self.runtime.refresh()
+        snapshot = self.stop_binding.mailbox.snapshot()
+        repaired_cp = snapshot.target
+        if (repaired_cp.operation is not None or repaired_cp.requires_reconciliation
+                or repaired_cp.state.get('status') != 'pending'
+                or repaired_cp.state.get('phase') != 'ready'):
+            raise RuntimeError('Checkpoint not cleanly repaired after reconciliation')
+
+        # 5. Replace worker via narrow recovered-state lifecycle entry
+        prev_binding = self.stop_binding
+        replacement_binding = self.facade.replace_recovered_worker(
+            prev_binding, self.create_replacement_binding
+        )
+
+        # 6. Synchronously update composition & handover references
+        self.stop_binding = replacement_binding
+        self.worker = replacement_binding.worker
+        self.worker_cap = replacement_binding._capability
+        self.stop_id = replacement_binding.request_id
+        self.worker_exit_verified = False
+        if getattr(self, 'handover', None) is not None:
+            self.handover.replace_worker_episode(
+                self.worker, self.stop_binding, self.worker_cap, self.stop_id, first_ready=self.first_ready
+            )
+
+        # 7. Await replacement bootstrap
+        await self.until(
+            lambda: (self.worker_diagnostics() / f'bootstrap-{self.worker.pid}.json').exists(),
+            self.worker
+        )
+
+        # 8. Re-bind compiler worker
+        await self.runtime.refresh()
+        await self.bind_compiler_worker(self.runtime, self.worker, self.work, self.deadline)
+
+        # 9. Publish readiness
+        await self.ready(self.worker, self.first_ready)
+
+        return True
+
     async def interact(self):
         # No invented admission or automatic Resume: the worker's saved demand,
         # host capacity and authenticated GUI intent must agree first.
@@ -841,6 +1018,8 @@ class DesktopComposition:
                     self.remaining()
             if code is not None and not self.worker_exit_verified:
                 await self.join_child(self.worker)
+                if await self._try_recover_pending_tool_worker(code):
+                    continue
                 outcome = self.stop_binding._verify_exit(code)
                 self.worker_exit_verified = True
                 self.result['worker_outcome'] = outcome
