@@ -24,6 +24,8 @@ from adaptive_inference.desktop.recipe_dispatch import definition, recipe_kind
 
 TOOL_NAME = 'build_and_test'
 _PRE_DISPATCH = frozenset({'binding_refused', 'preparation_failed', 'cancelled_before_dispatch'})
+RECIPE_INTENT_FIELDS = ('name', 'args', 'tool_call_id', 'session_id', 'fingerprint',
+                       'host_epoch', 'task_id', 'execution_id', 'owner_epoch', 'spec_sha256')
 
 
 def verify_recipe_result(*, task_root, task_spec, args, operation_id, tool_call_id,
@@ -113,56 +115,100 @@ def _history(db, task_id):
                                        (task_id,)))
 
 
-def _origin_deadline(db, checkpoint, task_spec, row):
-    """Bind a completed result to its actual originating operation snapshot.
+def _origin_start(db, checkpoint, task_spec, row):
+    """One exact original intent, shared by pending and completed evidence."""
+    execution = row['execution_id']
+    if type(execution) is not str or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:-]{0,127}', execution):
+        raise ValueError('Invalid origin execution')
+    link_name = 'adaptive_inference.execution_authorization.v1'
+    logical = checkpoint.metadata.get(link_name, {}).get('logical_task_id', checkpoint.task_id)
+    origin = TaskStore._read(db, execution)
+    origin_logical = origin.metadata.get(link_name, {}).get('logical_task_id', origin.task_id)
+    if origin_logical != logical or task_contract(origin).sha256 != task_spec.sha256:
+        raise ValueError('Origin task contract differs')
+    if execution != checkpoint.task_id:
+        initial = _history(db, checkpoint.task_id)[0]
+        link = checkpoint.metadata.get(link_name, {})
+        if (initial['event'] != 'created' or initial['payload']['metadata'] != checkpoint.metadata
+                or link.get('logical_task_id') != logical or link.get('execution_id') != checkpoint.task_id
+                or initial['payload']['state']['tools'].count(row) != 1):
+            raise ValueError('Historical receipt was not inherited by the selected execution')
+    history = _history(db, execution)
+    starts = [entry for entry in history if entry['event'] == 'operation_started'
+              and (entry['payload'].get('operation') or {}).get('id') == row['operation_id']]
+    ends = [entry for entry in history if entry['event'] in ('operation_completed', 'operation_reconciled')
+            and (entry['payload'].get('event_data') or {}).get('operation', {}).get('id') == row['operation_id']]
+    if len(starts) != 1:
+        raise ValueError('Unique origin operation required')
+    start = starts[0]['payload']
+    operation, state = start['operation'], start['state']
+    if (operation['kind'] != 'effect' or operation['details'] != {key: row[key] for key in RECIPE_INTENT_FIELDS}
+            or state['phase'] != 'tool_running' or state['status'] != 'pending'
+            or state['session_id'] != row['session_id'] or state.get('deadline_clock') != CLOCK_ID):
+        raise ValueError('Compiler receipt differs from its durable origin')
+    deadline = state['deadline_monotonic']
+    if type(deadline) not in (int, float) or not math.isfinite(deadline) or deadline <= 0:
+        raise ValueError('Invalid originating deadline')
+    if BUDGET in state:
+        budget = validate_budget(state[BUDGET])
+        if budget['episode']['deadline'] != deadline or budget['clean_stop']:
+            raise ValueError('Origin operation has no matching active budget episode')
+    return starts[0], ends, deadline
 
-    Continue selection still requires the existing ContinuationAuthority; here
-    its selected execution additionally needs the verbatim inherited receipt.
-    """
+
+def _origin_deadline(db, checkpoint, task_spec, row):
+    """Require an exact completed or explicitly reconciled-completed origin."""
     try:
-        execution = row['execution_id']
-        if type(execution) is not str or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:-]{0,127}', execution):
-            raise ValueError('Invalid origin execution')
-        link_name = 'adaptive_inference.execution_authorization.v1'
-        logical = checkpoint.metadata.get(link_name, {}).get('logical_task_id', checkpoint.task_id)
-        origin = TaskStore._read(db, execution)
-        origin_logical = origin.metadata.get(link_name, {}).get('logical_task_id', origin.task_id)
-        if origin_logical != logical or task_contract(origin).sha256 != task_spec.sha256:
-            raise ValueError('Origin task contract differs')
-        if execution != checkpoint.task_id:
-            initial = _history(db, checkpoint.task_id)[0]
-            link = checkpoint.metadata.get(link_name, {})
-            if (initial['event'] != 'created' or initial['payload']['metadata'] != checkpoint.metadata
-                    or link.get('logical_task_id') != logical or link.get('execution_id') != checkpoint.task_id
-                    or initial['payload']['state']['tools'].count(row) != 1):
-                raise ValueError('Historical receipt was not inherited by the selected execution')
-        history = _history(db, execution)
-        starts = [entry for entry in history if entry['event'] == 'operation_started'
-                  and (entry['payload'].get('operation') or {}).get('id') == row['operation_id']]
-        ends = [entry for entry in history if entry['event'] == 'operation_completed'
-                and (entry['payload'].get('event_data') or {}).get('operation', {}).get('id') == row['operation_id']]
-        if len(starts) != 1 or len(ends) != 1 or ends[0]['revision'] <= starts[0]['revision']:
+        start, ends, deadline = _origin_start(db, checkpoint, task_spec, row)
+        if len(ends) != 1 or ends[0]['revision'] <= start['revision']:
             raise ValueError('Unique completed origin operation required')
-        start, end = starts[0]['payload'], ends[0]['payload']
-        operation, state = start['operation'], start['state']
-        details = {key: row[key] for key in ('name', 'args', 'tool_call_id', 'session_id', 'fingerprint',
-                   'host_epoch', 'task_id', 'execution_id', 'owner_epoch', 'spec_sha256')}
-        if (operation['kind'] != 'effect' or operation['details'] != details
-                or end['event_data'] != {'operation': operation, 'result': row}
-                or not end['state']['tools'] or end['state']['tools'][-1] != row
-                or state['phase'] != 'tool_running' or state['status'] != 'pending'
-                or state['session_id'] != row['session_id'] or state.get('deadline_clock') != CLOCK_ID):
-            raise ValueError('Compiler receipt differs from its durable origin')
-        deadline = state['deadline_monotonic']
-        if type(deadline) not in (int, float) or not math.isfinite(deadline) or deadline <= 0:
-            raise ValueError('Invalid originating deadline')
-        if BUDGET in state:
-            budget = validate_budget(state[BUDGET])
-            if budget['episode']['deadline'] != deadline or budget['clean_stop']:
-                raise ValueError('Origin operation has no matching active budget episode')
+        expected = {'operation': start['payload']['operation'], 'result': row}
+        if ends[0]['event'] == 'operation_reconciled':
+            expected['resolution'] = 'completed'
+        end = ends[0]['payload']
+        if (end['event_data'] != expected or not end['state']['tools']
+                or end['state']['tools'][-1] != row):
+            raise ValueError('Compiler receipt differs from its completed origin')
         return deadline
     except Exception as exc:
         raise ReconciliationRequired('Compiler receipt has no exact completed origin operation') from exc
+
+
+def verify_pending_recipe_receipt(checkpoint, task_root, receipt, *, store_path=None):
+    """Prove a terminal result for the unchanged interrupted intent, not completion.
+
+    No synthetic completed checkpoint or new operation is used. The caller must
+    still own the task/native lease and explicitly commit reconcile_operation.
+    https://docs.temporal.io/develop/python/activities/asynchronous-activity
+    """
+    try:
+        spec = task_contract(checkpoint)
+        selected = definition(recipe_kind(spec))
+        operation = checkpoint.operation
+        if (not checkpoint.requires_reconciliation or type(operation) is not dict
+                or operation.get('kind') != 'effect' or type(receipt) is not dict
+                or receipt.get('operation_id') != operation['id']
+                or receipt.get('execution_id') != checkpoint.task_id
+                or receipt.get('name') != selected.tool_name or receipt.get('reused') is not False
+                or receipt.get('fingerprint') != digest({'name': selected.tool_name, 'args': receipt['args']})
+                or receipt.get('spec_sha256') != spec.sha256):
+            raise ValueError('Expected interrupted recipe receipt required')
+        path = Path(task_root)/'task.sqlite3' if store_path is None else Path(store_path)
+        with _readonly_store(path) as db:
+            if TaskStore._read(db, checkpoint.task_id) != checkpoint:
+                raise ValueError('Pending checkpoint changed before inspection')
+            start, ends, deadline = _origin_start(db, checkpoint, spec, receipt)
+            if (ends or start['payload']['operation'] != operation
+                    or start['payload']['state'] != checkpoint.state):
+                raise ValueError('Pending origin or original state changed')
+        normalized = verify_recipe_result(task_root=task_root, task_spec=spec,
+            args=receipt['args'], operation_id=operation['id'], tool_call_id=receipt['tool_call_id'],
+            result=strict_json(receipt['result']), expected_deadline=deadline)
+        if normalized != receipt.get(selected.receipt_key):
+            raise ValueError('Pending recipe normalization changed')
+        return normalized
+    except Exception as exc:
+        raise ReconciliationRequired('Recipe receipt has no exact pending origin operation') from exc
 
 
 def verify_recipe_evidence(checkpoint, task_root, native_rows, *, store_path=None,

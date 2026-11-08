@@ -40,8 +40,35 @@ citations and unsuccessful evidence. The full milestone sequence is in
 
 ## Current continuation state
 
-**Active isolated M4 increment:** extend the validated [agent-requested GPU video recipe](docs/video-tool-recipe.md)
-from a safe installed-worker restart to recovery after unexpected worker loss.
+**Active isolated M4 increment:** recover a pending compiler/video operation when
+the tool host has retained its exact terminal result but the worker disappeared
+before recording completion. Reuse the existing explicit reconciliation path,
+native lease and task journal; unknown outcomes remain unresolved. This new
+pending-effect branch passed 104 distinct component tests (including 15 new tests),
+independent source/evidence review, 24 source-preservation checks, and the complete
+[1,578-test local core suite](provenance/pending-tool-recovery/local-validation-2026-11-02.json)
+plus all 16 remaining workflow commands, 1,403-file/77-module package verification
+and a fresh isolated host/worker installation. The first component attempt
+found two incorrect test expectations; their corrections changed tests only and
+the unsuccessful attempt is retained. The fresh
+[installed SDK pending-effect worker-loss trial](provenance/pending-tool-recovery/installed-worker-loss-2026-11-02.json)
+now completed: a worker exited with code 86 after the host finished one actual
+video effect and before recording completion in the task journal; the coordinator
+exported `CompilerHost.terminal_receipt`, retired the old binding, ran ordinary
+reconciliation to repair both the effect journal and missing native feedback,
+and completed the same task with a replacement worker within its original 900-second
+deadline. Provider replies and resource observations were scripted. Independent
+closed review passed 99 checks with 74 original case files unchanged. Automatic
+desktop recovery and unchanged-IQ3_S recovery remain separate gates.
+
+The preceding [completed-feedback increment](https://github.com/midhatn/adaptive-inference/pull/37)
+is published in draft at `93eba3ce4eee9609283f360fb7ca51b6c136e8bb` and merged
+with the validated video fixture correction at `3a07a7776ed41fc811aa92ef2f8ee0b9639d13f9`,
+stacked on [the video recipe](https://github.com/midhatn/adaptive-inference/pull/36).
+Both original hosted workflows at `93eba3c`, `e62a291`, and merged ancestor `3a07a77`
+passed all 14 jobs, 12 core suites and 12 distribution checks. The completed-feedback work extends the validated
+[agent-requested GPU video recipe](docs/video-tool-recipe.md) from a safe
+installed-worker restart to a specific unexpected-worker-loss boundary.
 The completed-result feedback repair is now implemented through the existing
 explicit reconciliation command. It passed ten new component tests, 49 related
 tests, source-preservation checks and the complete 1,557-test local core suite.
@@ -168,14 +195,15 @@ with commands, assertions and product limits unchanged; the successor head needs
 its own original hosted CI result.
 
 The new [completed-result repair](docs/video-tool-recipe.md#completed-result-feedback-repair)
-handles an already completed operation whose native feedback was not flushed.
-It uses the original journal proof and artifact checks, acquires the native turn
-lease, appends only missing feedback and saves a ready checkpoint. Pending effects
-remain fenced. The [installed explicit-repair evidence](provenance/recipe-reconciliation/installed-worker-loss-2026-11-02.json)
-is complete. Next extend exact terminal-receipt recovery to pending effects and qualify
-active-tool interruption and unchanged-IQ3_S recovery. Automatic desktop recovery
-must use the same verified path and needs its own integration gate. Successful reboot continuation,
-observer shutdown diagnosis and the autonomous media workflow retain separate
+and [pending-operation terminal-receipt repair](docs/video-tool-recipe.md#pending-operation-with-a-verified-host-result)
+handle unexpected worker loss both after durable tool completion and earlier after
+the host finishes a tool operation before the worker records completion. Both
+routes use the existing native turn lease, task journal and artifact checks, while
+keeping unknown effects fenced. Both the [completed-result SDK evidence](provenance/recipe-reconciliation/installed-worker-loss-2026-11-02.json)
+and [pending-effect SDK evidence](provenance/pending-tool-recovery/installed-worker-loss-2026-11-02.json)
+are complete. Next integrate automatic desktop recovery through the same verified
+reconciliation path and qualify active-tool interruption and unchanged-IQ3_S recovery.
+Successful reboot continuation, observer shutdown diagnosis and the autonomous media workflow retain separate
 gates. This single foreground episode is not sustained desktop-performance evidence.
 
 **Installed application-restart result:** the ordinary IQ3_S task has now passed

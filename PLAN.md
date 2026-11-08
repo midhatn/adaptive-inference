@@ -972,6 +972,32 @@ integration gate. Observer shutdown diagnosis and successful physical reboot
 continuation retain their separate gates. This small recipe
 does not replace the named model-bearing media test or its tuning/baseline gates.
 
+The pending-effect implementation reuses the existing TaskStore
+`reconcile_operation` and native-first repair sequence. A read-only host accessor
+exposes an already terminal, joined tool result before the old binding is
+retired. The reconciler must prove that result belongs to the original durable
+operation, preserve its original deadline and append the exact missing journal
+and conversation records once. The saved-evidence reader must recognize only an
+exact `operation_reconciled` record with `resolution: completed`, alongside the
+existing completed-operation form. No new HTTP endpoint, effect retry or task
+allowance follows from this work. Component validation passed 104 distinct tests,
+including 15 new tests, and independent source/evidence review. Two initial incorrect
+test expectations were corrected without changing runtime behavior; that attempt is
+retained. The [local validation record](provenance/pending-tool-recovery/local-validation-2026-11-02.json)
+passed 24 source-preservation checks, all 1,578 local core tests in 709.750 seconds,
+all 16 remaining workflow commands, 1,403-file/77-module package verification and
+a fresh isolated installation. The [installed SDK pending-effect trial](provenance/pending-tool-recovery/installed-worker-loss-2026-11-02.json)
+then completed: the first worker exited with code 86 after the host finished one
+actual video operation and before recording completion in the task journal; the
+coordinator exported `CompilerHost.terminal_receipt` after the worker joined and
+before stopping the mailbox runtime or retiring the host binding, ran ordinary
+reconciliation, and finished the task with a replacement worker under the original
+900-second deadline. Independent closed review passed 99 checks with 74 original
+case files unchanged. Next wire automatic desktop recovery through the same
+verified host export and reconciliation path, then qualify automatic SDK recovery
+and unchanged-IQ3_S recovery. Interruption during active tool execution remains a
+subsequent gate.
+
 **Validation adjustment:** the [original video CI](provenance/video-tool/hosted-ci-timeout-2026-11-02.json)
 closed with all 12 core-test steps passing, but two final distribution checks
 were cancelled at the whole-job 15-minute limit. Preserve those failures. Give

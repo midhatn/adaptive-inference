@@ -314,6 +314,23 @@ class CompilerBridge:
                       'error': row['error'], 'owner': row['owner'], 'receipt': row['receipt']}
                      for key, row in self._records.items())
 
+    def terminal_result(self, operation_id):
+        """Host-only read of an already projected, joined result; never dispatch.
+
+        The explicit reconciler must revalidate its artifacts and original
+        TaskStore intent. A live HTTP retry or missing outcome grants nothing.
+        """
+        self._owner()
+        row = self._records.get(operation_id)
+        if (row is None or not row['task'].done() or row['task'].cancelled()
+                or row['runner'] is None or not row['runner'].done()
+                or row['unknown'] or row['error'] is not None
+                or type(row['receipt']) is not dict or type(row['result']) is not dict
+                or row['receipt'].get('owned_processes_exited') is not True
+                or row['result'].get('owned_processes_exited') is not True):
+            raise ValueError('Exact joined terminal recipe result is unavailable')
+        return {'request': deepcopy(row['request']), 'result': deepcopy(row['result'])}
+
     def lifecycle(self):
         self._owner()
         pending = sum(not row['task'].done() or row['runner'] is not None and not row['runner'].done()

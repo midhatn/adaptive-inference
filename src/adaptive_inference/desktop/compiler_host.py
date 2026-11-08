@@ -16,7 +16,7 @@ https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365
 """
 import asyncio
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import math
 from pathlib import Path
 import re
@@ -66,6 +66,7 @@ class _Binding:
     close_task: object = None
     error: object = None
     fenced: bool = False
+    intents: dict = field(default_factory=dict)
 
 
 class CompilerHost:
@@ -248,15 +249,18 @@ class CompilerHost:
             prior = verify_recipe_evidence(cp, binding.root, native, store_path=binding.mailbox.store.path)
             _require(self.definition.validate_args(binding.spec, details['args'], completed_runs=len(prior)).accepted)
             binding.spec.verify_inputs(binding.root / 'work')
-            return first, binding.runtime._observe(binding.mailbox), deepcopy(details['args'])
+            return first, binding.runtime._observe(binding.mailbox), deepcopy(details)
 
         def check(value):
             self._current(binding)
-            first, last, args = value
+            first, last, details = value
             a = binding.runtime._check_observation(first, execution=binding.selection)
             b = binding.runtime._check_observation(last, execution=binding.selection)
             _require(a == b)
-            return args
+            previous = binding.intents.get(request['operation_id'])
+            _require(previous is None or previous == details)
+            binding.intents[request['operation_id']] = deepcopy(details)
+            return details['args']
         return await binding.runtime._database(read, check)
 
     async def _validate(self, binding, request):
@@ -281,6 +285,43 @@ class CompilerHost:
             self._current(binding)
             return recipe
         return await binding.runtime._database(prepare, check)
+
+    async def terminal_receipt(self, operation_id):
+        """Export retained completion after the exact worker's actual join.
+
+        Read before retirement clears this binding. Reuse the already authorized
+        intent and result; do not rerun the live-worker admission check or grant
+        work. Explicit reconciliation separately verifies the pending ledger.
+        https://docs.temporal.io/develop/python/activities/asynchronous-activity
+        """
+        self._owner()
+        binding = self._binding
+        _require(binding is not None and not self._binding_pending
+                 and binding.is_joined(binding.worker) is True
+                 and binding.is_current(binding.worker) is False)
+        retained = binding.bridge.terminal_result(operation_id)
+        details = deepcopy(binding.intents.get(operation_id))
+        _require(type(details) is dict and set(details) == _DETAILS)
+        expected = {'schema': self.definition.request_schema, 'host_epoch': self.host_epoch,
+            'task_id': binding.runtime.prepared.task_id, 'execution_id': binding.selection['execution_id'],
+            'owner_epoch': binding.owner, 'operation_id': operation_id,
+            'tool_call_id': details['tool_call_id'], 'recipe_id': self.definition.recipe_id}
+        _require(retained['request'] == expected)
+
+        def read():
+            from adaptive_inference.desktop.hermes.compiler_recovery import make_recipe_receipt
+            return make_recipe_receipt(task_root=binding.root, task_spec=binding.spec,
+                details=details, operation_id=operation_id, result=retained['result'],
+                expected_deadline=binding.deadline)
+
+        def check(receipt):
+            self._owner()
+            _require(self._binding is binding and binding.is_joined(binding.worker) is True
+                     and binding.is_current(binding.worker) is False
+                     and binding.intents.get(operation_id) == details
+                     and binding.bridge.terminal_result(operation_id) == retained)
+            return receipt
+        return await binding.runtime._database(read, check)
 
     def interrupt(self):
         """Fence synchronously; retain the close before the caller joins its worker."""
