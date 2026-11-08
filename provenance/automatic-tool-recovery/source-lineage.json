@@ -118,8 +118,8 @@
       "predecessor_ast_sha256": "040422da37507cfb592cab3fa3f24bf10e5307f129e28850921f022416b6874f",
       "predecessor_sha256": "b84ea2ce1b5e8484387dbe1fc5d0557dfb62589452442ea3e48b08ab2f50f1c0",
       "predecessor_source": "provenance/automatic-tool-recovery/predecessor/tests/test_desktop_composition.py",
-      "successor_ast_sha256": "76f9c2f7f3f43eea819956480347c4263b99bfc70cf55508c8715f8050b7ae5a",
-      "successor_sha256": "29efb54d499c69c00d44ef5b5660c9aa7c747ccdb0ef109c9c431d0787b35df1"
+      "successor_ast_sha256": "a59cdd585527f714e72cf734227b9466ff11de52dff4e3ced68523f16f2e86d5",
+      "successor_sha256": "8aae72acbe6e265a29d60281604fd7ccff3933e9dcd0da79e5532fc55fbc32a3"
     },
     "tests/test_pending_tool_lineage.py": {
       "predecessor_ast_sha256": "e1789a3af4289c067a8233c636c60473b4d95012f512421d33814276cffe1e4c",

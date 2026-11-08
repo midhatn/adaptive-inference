@@ -337,7 +337,7 @@
       "task_store.py": "7bf559ea55e0c19155515f321f7505b4d9275648333bcf2c983c2c280bd2e2e6"
     },
     "sdist_sha256": "efd17ce8a5c588878c995857c18b135b12f777c392de1bd48b242947ab1f94f9",
-    "source_lineage_sha256": "ccf7907107cebdac3f3c9f25ac39710ff352c0179737f961ca86f4ff85bfab26",
+    "source_lineage_sha256": "8707639da53e139967a5b6762550aca758402aa0dab053e50caa146780243881",
     "wheel_sha256": "401977bfb0541069752ac386ddc6aaaafad23ab095afc74dc7613ef80481b6a7"
   },
   "status": "bounded_foreground_iq3s_automatic_recovery_verified_observer_shutdown_failed"

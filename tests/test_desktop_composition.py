@@ -400,7 +400,10 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
 
         interact_task = asyncio.create_task(c.interact())
         # Let interact() run through worker_1 joining and recovery
-        await asyncio.sleep(0.05)
+        for _ in range(200):
+            if c.worker is worker_2:
+                break
+            await asyncio.sleep(0.01)
         self.assertIn((501, op_id), c.recovery_records)
         self.assertIs(c.worker, worker_2)
 
