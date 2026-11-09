@@ -2,6 +2,34 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Development integration — 9 November 2026
+
+The six reviewed development PRs merged in dependency order. Before each merge,
+all fourteen original hosted jobs for its exact head had completed successfully;
+the prospective merge tree matched that head. After each merge, the actual
+merge tree was checked again and the reviewed head was an ancestor of main.
+The following identities preserve the integration record independently of PR
+descriptions. Hosted source checks do not extend the installed or physical
+qualification recorded in the receipts below.
+
+| PR | Reviewed head | Merge commit |
+| --- | --- | --- |
+| [#34](https://github.com/midhatn/adaptive-inference/pull/34) | `f94e11b360c15d41b621ee9641301521846774b0` | `3819a8209a66800901654279a01639dd5a305739` |
+| [#35](https://github.com/midhatn/adaptive-inference/pull/35) | `1f7f28e1388d4aa39fa6ff7f8ddc2445f88e127d` | `771692fa5abc650679130790a302a03e9c079f24` |
+| [#36](https://github.com/midhatn/adaptive-inference/pull/36) | `e62a2915759eb32a42d607b1a0837103bb54e426` | `6753acad46df17b5d35dd9e8a89a176132592fb8` |
+| [#37](https://github.com/midhatn/adaptive-inference/pull/37) | `3a07a7776ed41fc811aa92ef2f8ee0b9639d13f9` | `ba6bf2cc665d6851c528791920e591fe4b29d86c` |
+| [#38](https://github.com/midhatn/adaptive-inference/pull/38) | `9242434991f2c2c21461061d61d898649299b847` | `4796c680920a4af3ee0ed7cef8b0b153d66852ba` |
+| [#39](https://github.com/midhatn/adaptive-inference/pull/39) | `08053a00d92c065b88bda3ce14f80a7cfe078f0f` | `f362ed0ed8c0f9f6552bd71c9c3ba9e8a847aa3a` |
+
+The final merge tree is `7d17387075e4ac11be05384c5c1b109eaa76f149`, identical to
+the reviewed #39 head. This is development integration, not a new release or
+installation. The existing `0.4.0a1` tag and assets remain unchanged. Successful
+physical computer-reboot continuation remains unqualified: the recorded expired
+attempt stays failed. The automatic recovery result still requires an exact
+completed tool result in the surviving host, and its separate shutdown observer
+remains failed pending diagnosis. See the [Unreleased notes](../CHANGELOG.md#unreleased--development-after-040a1)
+and [current plan](../PLAN.md) for the applicable capabilities and next work.
+
 ## Agent-requested GPU video and foreground handoff
 
 The [second physical video task](../provenance/video-tool/physical-foreground-video-2026-11-02.json)
