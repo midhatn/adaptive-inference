@@ -1,0 +1,132 @@
+{
+  "date": "2026-11-09",
+  "status": "Source/component correction independently reviewed; physical workflow qualification remains open",
+  "scope": "GET-only observer shutdown classification; source/component and owned loopback evidence, not physical qualification",
+  "base_revision": "f362ed0ed8c0f9f6552bd71c9c3ba9e8a847aa3a",
+  "source_binding": {
+    "scope": "Frozen four-file candidate before integration onto newer canonical documentation",
+    "observer_sha256": "224af2ec6ff166ded5c0f04a972edf1d2b8436b782ca38d2ba8857933d47c395",
+    "final_test_sha256": "7a4e9779ee61cf0bee30482bc49f94cfc002bceef5c6bc40473a805392a843cd",
+    "guide_sha256": "7f168b8ab3a4d03397bc9a87cbb59d2c0b306e2f75bc6464fdc7ba3e618f93b4",
+    "bibliography_sha256": "f3069355a3d64b47b7c0aba2f6ee5818080093ee46e67a94de9e0d299931beab",
+    "historical_observer_sha256": "668b2f1f2f917d2629265e02e8a4b11b022cc2babd0635a4783c75e375dfcff2"
+  },
+  "change": {
+    "normal_blocking_operation_timeout_s": 2,
+    "known_terminal_gateway_blocking_operation_timeout_s": 5,
+    "longer_bound_requires": [
+      "A gateway instance previously accepted by the existing status parser",
+      "Terminal-result existence observed before the request"
+    ],
+    "remaining_outer_allowance_clamps_selected_timeout": true,
+    "no_request_starts_with_exhausted_allowance": true,
+    "actual_refusal_predicate_unchanged": true,
+    "existing_three_connection_error_policy_unchanged": true,
+    "additional_retry_loop": false,
+    "terminal_contents_read": false,
+    "new_error_fields": [
+      "underlying errno",
+      "underlying Windows error number"
+    ]
+  },
+  "diagnostic": {
+    "environment": "Windows, Python 3.11.9; owned disposable loopback sockets only",
+    "cases": 9,
+    "valid_response_cases": 1,
+    "closed_listener_cases_at_two_seconds": {
+      "count": 3,
+      "outcome": "URLError wrapping TimeoutError during connect; not classified as refusal"
+    },
+    "closed_listener_cases_at_five_seconds": {
+      "count": 3,
+      "outcome": "URLError wrapping actual ConnectionRefusedError, WinError 10061, during connect",
+      "elapsed_range_s": [
+        2.0,
+        2.032
+      ]
+    },
+    "accepted_but_stalled_response_cases": {
+      "count": 2,
+      "bounds_s": [
+        2,
+        5
+      ],
+      "outcome": "Response-header TimeoutError at both bounds; neither classified as closure"
+    },
+    "all_owned_sockets_closed": true,
+    "all_owned_threads_joined": true,
+    "supervisor_exit_code": 0,
+    "timed_out": false,
+    "result_sha256": "2044b3a77af0013e32186f6fdc08afff752b15166a6011d35b2ad33b1736cf1f",
+    "supervisor_sha256": "39930eaf51b5dd1ce14a9da3b50ace5b17b7ca60729e096656e9c1bca913478e",
+    "cleanup_sha256": "9dd6a23baa652d6def18eea4e3601d07f3b974dea470a8be911df3434fa5765a"
+  },
+  "validation": {
+    "initial_component_suite": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "unittest_elapsed_s": 4.013,
+      "test_source_sha256": "5ce1d6933c6771714fa161ce947a97a1aed46e650747ddfcbec7fa5c639e2f57",
+      "result_sha256": "90f3008b31eb8e044b5dd3bf12a59cd72d561d77a2c005336ef786ce63591fe0",
+      "log_sha256": "92ec11636f5d3cf336e2c0fb8d51e6d45e71a874d8511e7873ca7bf8934754ba",
+      "includes_actual_owned_listener_closure": true
+    },
+    "deterministic_clock_followup": {
+      "reason": "Remove a real-time scheduling premise from the unknown-instance prerequisite test and reuse its logical clock for deadline clamping",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "unittest_elapsed_s": 0.047,
+      "result_sha256": "f2af10d9120caa4ce0f53813ff29022dc025779ba71fa35677c2b73ce9fa3312",
+      "log_sha256": "52ebe4ff7549d4cf2908b73a7b1bdeb51dd3edc01328dcc6677f2b68400a7f5c",
+      "observer_guide_bibliography_unchanged": true,
+      "actual_socket_test_rerun": false
+    },
+    "interpretation": "Ten component tests followed by two affected-test checks, not twelve distinct tests or a final full-suite rerun",
+    "meaningful_checks": [
+      "Actual listener refusal after checked identity and terminal existence",
+      "Wrapped timeout, response timeout and reset remain failure",
+      "Each missing prerequisite keeps the normal timeout and cannot establish closure",
+      "Terminal timeout is clamped to the original remaining allowance",
+      "Existing changed-instance, redirect, size, existence-only and owned-child checks remain"
+    ],
+    "reviewer_reran_tests": false
+  },
+  "historical_evidence": {
+    "automatic_physical_03_observer_exit_code": 2,
+    "automatic_physical_03_end_reason": "three_connection_errors_after_response",
+    "original_failure_preserved": true,
+    "historical_physical_attempt_replayed": false
+  },
+  "limits": [
+    "The loopback diagnostic reproduces the suspected Windows behavior; it does not reconstruct unrecorded historical socket phases.",
+    "The timeout bounds each blocking HTTP operation, not an absolute wall-clock deadline across connection, response and body operations.",
+    "A timeout, reset, terminal existence alone or accepted task result cannot establish observer closure.",
+    "No runtime task allowance, inference quality contract, TCP setting, firewall setting, dependency or physical qualification threshold changes.",
+    "A new physical observation remains necessary before claiming this candidate is qualified in the full IQ3_S foreground workflow."
+  ],
+  "references": [
+    "https://github.com/python/cpython/issues/85480",
+    "https://docs.python.org/3/library/urllib.error.html",
+    "https://docs.python.org/3/library/urllib.request.html"
+  ],
+  "retained_predecessors": {
+    "examples/validation/video_coexistence/observe_adaptive.py": {
+      "path": "provenance/video-coexistence/observer-shutdown/predecessor/examples/validation/video_coexistence/observe_adaptive.py",
+      "sha256": "668b2f1f2f917d2629265e02e8a4b11b022cc2babd0635a4783c75e375dfcff2"
+    },
+    "tests/test_video_adaptive_observation.py": {
+      "path": "provenance/video-coexistence/observer-shutdown/predecessor/tests/test_video_adaptive_observation.py",
+      "sha256": "7c26abb6b121bc280dd88e2a82f1e481225bcbe0127b16daf8a02e86bf57a5b2"
+    }
+  },
+  "integration": {
+    "source_commit_before_evidence_publication": "7e7c20e7913f6d10d15be30cb211c78c84068b93",
+    "parent_roadmap_revision": "a83844b5fed20bf01dcfd61d4061b00961b787cc",
+    "observer_and_final_test_bytes_unchanged": true,
+    "bibliography_addition": "Parent roadmap adds separate agent engineering references; the recorded pre-integration bibliography identity is historical."
+  }
+}

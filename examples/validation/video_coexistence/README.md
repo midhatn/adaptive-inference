@@ -136,8 +136,15 @@ the controller's policy-input stream. Blocking HTTP can delay samples; actual
 gaps are saved and missing CPU deltas stay unknown. It reads only the existence
 of the terminal result path while the case runs, never active SQLite or result
 contents. Redirects, oversized responses and a changed gateway instance are
-refused. Its 2700-second loop bound is not a hard operating-system deadline for
-every blocking operation.
+refused. Normal requests retain a two-second timeout per blocking HTTP operation.
+After both a known gateway instance and terminal-path existence have been
+observed, the same GET may use up to five seconds to allow Windows to report a
+closed localhost listener as connection refused. The selected timeout is clamped
+to the remaining 2700-second loop allowance and saved as `status_timeout_s`,
+alongside the selected two/five-second limit. No extra retry is added. This
+per-operation timeout is not a hard operating-system deadline across connection,
+response and body operations. CPU gaps remain unknown. Error rows retain the
+underlying exception type, errno and Windows error number.
 
 Both helpers write fresh private sidecars next to the run. Terminal-path
 existence plus a refused status connection does not establish task correctness
@@ -157,6 +164,17 @@ and [HTTPError response ownership](https://docs.python.org/3.11/library/urllib.e
 Component checks use `python -m unittest discover -s tests -p
 test_video_adaptive_observation.py -v`: actual inert Python children, fake loopback
 status and injected activity only. They do not qualify desktop coexistence.
+
+The terminal timeout adjustment follows the Windows localhost behavior reported
+in [CPython issue 85480](https://github.com/python/cpython/issues/85480), reviewed
+on 9 November 2026, and reproduced in a bounded local no-engine diagnostic.
+An accepted-but-stalled response remained a timeout at both settings; a longer
+timeout did not convert it into closure. The observer still requires a known
+instance, terminal-path existence and an actual `ConnectionRefusedError` or
+WinError 10061. A timeout, reset or marker alone remains insufficient. This reuses
+the existing urllib parser and loop; no external implementation, dependency,
+per-socket TCP override or system setting is added. See the bibliography entry
+`cpythonWindowsLoopbackRefusal` in [REFERENCES.bib](../../../REFERENCES.bib).
 
 ## Auditing one closed inventory task
 

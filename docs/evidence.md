@@ -73,6 +73,47 @@ and the original compiler source assertion. The retained test child joined
 normally, with no timeout or source change during the check. Production behavior
 and prior failed outcomes are unchanged; the new head still requires full CI.
 
+The corrected successor `142a838de9cd8f41a1f027c13578301f11077bb7`
+subsequently passed both original hosted workflows: all 14 jobs, 12 full-core
+checks, 12 distribution checks and both offline/source-delta checks passed.
+[PR #40](https://github.com/midhatn/adaptive-inference/pull/40) merged through
+the protected branch at `d33c979e1047f9c125ab94788fcbb2b3d8ef6c12`, with
+exactly the reviewed tree `c18247124cadbf9b3503467a37a569c9370daa6d`.
+The correction record retains the successful run/job identities and independent
+terminal-audit hashes alongside every earlier failure. This is source/package
+validation, with no new installed, model or physical qualification.
+
+## Installed active-tool interruption and observer correction — 9 November 2026
+
+The [installed SDK/compiler record](../provenance/compiler/installed-active-tool-interruption-2026-11-09.json)
+captures one worker, three provider requests and two distinct compiler effects.
+The first completed configure/build and entered an actual CTest test before
+foreground activity was injected. A retained live CTest handle, exact Job
+membership and flushed stderr marker establish that the test was running.
+The controller interrupted its grant, joined the children and retained an empty
+Job plus durable interrupted feedback. No provider request proceeded during the
+foreground hold. After it cleared, a distinct compiler operation passed CTest
+and produced exactly `23 units`; the original task/session/deadline completed.
+
+Independent inspection of fresh closed database copies, native SDK messages,
+admission/wire records and raw compiler artifacts passed **61 checks**. All
+114 original case files remained byte-identical. All 25 budget-bearing
+checkpoints retained the original allowance; the worker and tool host closed
+normally. Provider replies, foreground/resource observations and inference-owner
+actions were scripted. This does not qualify actual IQ3_S active-tool recovery,
+physical foreground resource handoff, active-tool worker loss, host loss, reboot,
+full media quality or a performance improvement.
+
+The separate [observer correction record](../provenance/video-coexistence/observer-shutdown/record.json)
+retains its predecessor sources and owned-loopback diagnosis. After observing a
+known instance and terminal marker, the GET timeout can reach five seconds,
+clamped to the remaining outer allowance; ordinary polling stays at two seconds.
+Actual connection refusal remains required, and timeout/reset responses remain
+failures. Ten component tests passed, followed by two affected-test checks after
+making a test clock deterministic; these are not twelve distinct tests or a new
+full-suite run. This is source/component evidence pending fresh physical use.
+Earlier physical observer failures remain unchanged.
+
 ## Agent-requested GPU video and foreground handoff
 
 The [second physical video task](../provenance/video-tool/physical-foreground-video-2026-11-02.json)

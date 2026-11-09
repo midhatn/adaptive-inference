@@ -78,3 +78,5 @@ provenance/video-tool/** -text whitespace=cr-at-eol
 provenance/video-tool/predecessor/src/adaptive_inference/desktop/hermes/report_contract.py whitespace=cr-at-eol,-blank-at-eof
 # Exact historical CI fixture bytes include their original CRLF line endings.
 provenance/ci-fixtures/** -text whitespace=cr-at-eol
+# Preserve the observer version used by the retained physical failure.
+provenance/video-coexistence/observer-shutdown/** -text whitespace=cr-at-eol

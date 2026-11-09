@@ -117,14 +117,21 @@ def observe(profile_path, run, *, activity_reader, qpc_now, clock_id,
                 if stamp >= next_status:
                     row['status_before_deadline_clock'] = qpc_now()
                     next_status = time.monotonic() + status_interval_s
+                    # Windows localhost refusal can arrive after two seconds
+                    # (CPython #85480). Only a known terminal gateway gets the
+                    # longer bound; timeout alone still cannot establish closure.
+                    limit = 5. if terminal_exists and instance is not None else 2.
+                    row['status_timeout_limit_s'] = limit
+                    row['status_timeout_s'] = min(limit, max(0., deadline - time.monotonic()))
                     try:
-                        value = fetch_status(opener, url, min(2., max(.001, deadline - time.monotonic())))
-                        if instance is not None and value['instance'] != instance:
-                            raise ValueError('Gateway instance changed')
-                        instance = value['instance']
-                        valid += 1
-                        failures = 0
-                        row['gateway_status'] = value
+                        if row['status_timeout_s'] > 0:
+                            value = fetch_status(opener, url, row['status_timeout_s'])
+                            if instance is not None and value['instance'] != instance:
+                                raise ValueError('Gateway instance changed')
+                            instance = value['instance']
+                            valid += 1
+                            failures = 0
+                            row['gateway_status'] = value
                     except urllib.error.HTTPError as error:
                         reason = 'http_error'
                         fault = row['observation_error'] = {'type': 'HTTPError', 'status': error.code}
@@ -134,7 +141,10 @@ def observe(profile_path, run, *, activity_reader, qpc_now, clock_id,
                         refused = (isinstance(underlying, ConnectionRefusedError)
                                    or getattr(underlying, 'winerror', None) == 10061)
                         row['observation_error'] = {'type': type(error).__name__,
-                            'reason_type': type(underlying).__name__, 'connection_refused': refused}
+                            'reason_type': type(underlying).__name__,
+                            'errno': getattr(underlying, 'errno', None),
+                            'winerror': getattr(underlying, 'winerror', None),
+                            'connection_refused': refused}
                         row['consecutive_connection_errors'] = failures
                         if terminal_exists and refused and instance is not None:
                             reason = 'terminal_path_exists_and_connection_refused'
@@ -175,7 +185,7 @@ def observe(profile_path, run, *, activity_reader, qpc_now, clock_id,
         'active_case_file_contents_read': False, 'task_completion_claimed': False,
         'qualification_claimed': False,
         'scope': 'Independent foreground samples and GET-only gateway status. Not the controller sample stream, GPU attribution, task acceptance or cleanup proof.',
-        'timeout_scope': 'Two seconds per blocking HTTP operation and a bounded sampling loop; not a hard OS wall-clock deadline. CPU gaps remain unknown.'}
+        'timeout_scope': 'Two seconds per blocking HTTP operation, or five after terminal-path existence and a known gateway instance; the selected timeout is clamped to the remaining loop allowance. Not a hard OS wall-clock deadline across all operations. CPU gaps remain unknown.'}
     with receipt_path.open('x', encoding='utf-8') as stream:
         stream.write(json.dumps(receipt, indent=2, allow_nan=False) + '\n')
     return receipt
