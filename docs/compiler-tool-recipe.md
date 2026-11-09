@@ -2,7 +2,9 @@
 
 Status: source, local package/installation, actual SDK/compiler feedback and the
 bounded IQ3_S compiler/foreground workflow are verified at the scopes below.
-Observer shutdown and broader interruption/daily-use qualification remain open.
+An installed SDK active-interruption gate and observer component correction are
+also verified below; actual IQ3_S active-tool interruption and broader daily-use
+qualification remain open.
 This is the first small useful-tool increment in
 [M4](../PLAN.md#m4--let-the-agent-hand-resources-to-useful-tools); the separate
 reboot installation remains fixed. The first physical restart preserved saved
@@ -13,6 +15,23 @@ room for it, the compiler and tests finish under retained ownership, and their
 result returns to the same conversation. The next IQ3_S request can proceed
 only after confirmed resource release or a truthful failure. The original model,
 context, quality, task allowance and consumed work remain unchanged.
+
+## Active compiler interruption — installed SDK gate
+
+On 9 November 2026, one installed Hermes SDK worker interrupted an actual running
+CTest operation, retained its feedback and completed a distinct successful
+compiler call within the original task/session/deadline. The controller held
+provider admission while foreground activity stayed busy. The first operation's
+children were joined and its Job emptied before the second operation passed its
+stdout test. Independent closed review passed 61 checks, with three provider
+requests, two effects and all 114 original case files unchanged. See the
+[source-bound record](../provenance/compiler/installed-active-tool-interruption-2026-11-09.json).
+
+Provider replies, foreground/resource observations and inference-owner actions
+were scripted. The next gate uses actual IQ3_S and physical foreground activity
+with the [reviewed observer correction](../provenance/video-coexistence/observer-shutdown/record.json).
+Worker loss while the tool is active, host loss and successful Windows-reboot
+continuation remain separate unqualified cases.
 
 ## Reuse and scope
 

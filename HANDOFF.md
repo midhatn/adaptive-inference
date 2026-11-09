@@ -58,7 +58,18 @@ negative expiry checks. Production deadlines and runtime source are unchanged.
 Use the exact current PR checks before integrating; historical or local passes
 do not override a failed required check. Main branch protection is enabled.
 
-**Latest accepted M4 increment:** automatic desktop recovery of a pending
+**Latest bounded M4 gate — 9 November 2026:** the
+[installed active-compiler interruption case](provenance/compiler/installed-active-tool-interruption-2026-11-09.json)
+passed 61 independent closed-evidence checks. One actual Hermes SDK worker
+interrupted a running CTest operation, durably retained its feedback and completed
+a distinct successful compiler call: three provider requests, two effects and the
+same original task/deadline. Provider replies, foreground/resource observations
+and inference-owner actions were scripted. The
+[observer shutdown correction](provenance/video-coexistence/observer-shutdown/record.json)
+has source/component and owned-loopback evidence; it does not relabel earlier
+physical observer failures.
+
+**Preceding accepted M4 increment:** automatic desktop recovery of a pending
 compiler/video operation after worker loss. `DesktopComposition` now detects
 a non-zero worker exit with one pending effect whose exact terminal result is
 held by the live tool host, exports `CompilerHost.terminal_receipt`, runs the
@@ -74,10 +85,10 @@ separate observer failed during shutdown; the accepted task/cleanup audit does
 not erase that failure. Recovery requires the live host's exact completed result
 and does not qualify interruption of an active tool or loss of that host.
 
-**Next bounded work:** diagnose the retained observer shutdown failure before
-relying on it for a fresh physical acceptance, then follow M4's active-tool
-interruption gate. Reuse existing cancellation and ownership mechanisms and
-research any missing behavior before implementation. Whole-host loss, successful
+**Next bounded work:** qualify active-tool interruption with actual IQ3_S and
+physical foreground activity using the reviewed observer correction. Reuse
+existing cancellation and ownership mechanisms and research any missing behavior
+before implementation. Worker loss during an active tool, whole-host loss, successful
 OS-reboot continuation and broad desktop/media qualification remain open under
 the roadmap. Preserve unchanged IQ3_S quality and the closed accepted/failed
 cases; a new experiment needs a fresh case, not a renewed historical budget.
@@ -354,12 +365,12 @@ daily-use qualification remain open.
 | Integrated main starting point | Commit `f362ed0ed8c0f9f6552bd71c9c3ba9e8a847aa3a`, including PRs #34–#39, has the exact reviewed `08053a0` tree. Verify current `main`; this is the 9 November anchor, not a claim that it will remain HEAD. |
 | Released reference and active work | [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1) is published at tested source `57f673f8e934e275bc2bd51e85d434dc7025bc9a`; PR #28's merged tree matches it exactly. PR #29's measurement preparation merged after its exact-head checks. The first adaptive diagnostic and following control are closed; their scoped results and unmet comparison gates are recorded in the [evidence ledger](docs/evidence.md#first-adaptive-video-diagnostic). |
 | Installed source and evidence | The latest automatic-recovery [physical receipt](provenance/automatic-tool-recovery/physical-foreground-recovery-2026-11-08.json) binds its actual installation. Earlier later-task M5 used `b35b631aca9ec37da9955903b87463201a6b3630`; initial-task M5 used `6ac601546daf32d96e38b6689a5818e4cc8dafa8`; M3 video used `7306a53085ddc31d53d2ba50e91975c80cfc0014`. All preserved IQ3_S and quality. A source merge does not update those installations. |
-| Current work | Compiler/video handoffs, known-result reconciliation and automatic desktop worker recovery are integrated. The latest physical trial passed 49 closed-audit checks at the completed-tool/surviving-host boundary. Observer shutdown remains unresolved; active-tool interruption and whole-host loss remain open. PR #34's budget source is integrated, but its expired physical restart attempt does not qualify successful reboot continuation. All consumed trials stay closed. |
+| Current work | Compiler/video handoffs, known-result reconciliation and automatic desktop worker recovery are integrated. The latest physical trial passed 49 closed-audit checks at the completed-tool/surviving-host boundary. Active compiler interruption now passes the scripted-provider installed SDK gate; the observer has a component correction. Their fresh physical gate and loss during an active tool or of the whole host remain open. PR #34's expired physical restart attempt does not qualify successful reboot continuation. All consumed trials stay closed. |
 | Preserved M5 same-boot result | The installed same-boot application restart preserved one input read, the task/native session and original deadline; three calls total completed the correct 23-unit answer with one physical write. A third launch viewed the result without additional calls or changes to the eight canonical files. All three app parents joined normally; bounded observer shutdown errors remain retained. See the source-bound M5 record above. |
 | Preserved M2 recovery result | Case17 passed both original audits: 99 primary recovery/handover checks plus the foreground/lineage supplement. Its correct inventory result survived safe expiry and one Continue; a separate welcome task completed before one normal Stop. Six calls produced two physical writes. Welcome has format-only acceptance. Full M2 is broader than that run. |
 | Preserved limits and failures | Original quality, 900-second execution budgets, 2,700-second outer bound and task accounting remain unchanged. Cases14/15/16 keep their original failed outcomes. Case17 retains the rejected file-picker input and 30-second operating-target misses; neither repeated a task control nor violated the strict foreground gate. |
 | Foreground evidence | Case17 retained 25 real document actions, 24 wholly preseal, maximum adjacent interval 54.680872 seconds and preseal tail 37.453106 seconds. The original supplement passed onset, continuous hold and saved-read lineage; the postseal action is excluded from coverage. This is not a desktop-performance or GPU-preemption measurement. |
-| Next bounded work | Diagnose the retained observer shutdown failure first, then qualify active-tool interruption using the existing compiler/video journal and owner, preserving completed effects and feedback. Whole-host loss remains separate. A future M5 attempt needs fresh identity, prompt postboot return and unchanged allowance. M3's bounded diagnostic remains video-surface attribution without inference. Follow PLAN.md before starting any fresh case. |
+| Next bounded work | Qualify active compiler interruption with actual IQ3_S and physical foreground activity, using the reviewed observer and existing journal/owner while preserving task budget and feedback. Loss during an active tool and whole-host loss remain separate. A future M5 attempt needs fresh identity, prompt postboot return and unchanged allowance. M3's bounded diagnostic remains video-surface attribution without inference. Follow PLAN.md before starting any fresh case. |
 | Latest release validation | Corrected source `57f673f` passed all 14 original hosted jobs, final archive/runtime verification and merge-tree verification. All five uploaded assets and the tag were verified at publication. The 48-check watchdog and 21-check refusal corrections retain their own local scope; earlier failed runs remain failed. |
 | M3 publication | [PR #29](https://github.com/midhatn/adaptive-inference/pull/29) merged at `f6c0da1` with the tested `3136e35` tree. Its original 14 head jobs and seven post-merge jobs passed, including portable archive checks. Earlier archive/fixture failures remain retained; these preparation checks do not requalify the installed runtime. |
 | Diagnostic publication and test correction | [PR #30](https://github.com/midhatn/adaptive-inference/pull/30) merged at `c348398` with the tested `72ac717` tree after 14 head jobs and seven post-merge jobs passed. Its original `fd4d483` pair retains 13 passes and one Windows SQLite concurrency-fixture failure. The [bounded correction](docs/evidence.md#sqlite-concurrency-fixture-ownership) keeps test threads in a retained child and joins before cleanup; 18 focused checks passed. Runtime, models and physical records are unchanged. |

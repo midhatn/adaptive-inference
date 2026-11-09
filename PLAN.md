@@ -53,7 +53,7 @@ A roadmap entry is not a qualification receipt.
 | Native foreground and tool work | One complete source-bound Windows/IQ3_S workflow is accepted: real foreground interaction, verified release, checked GPU encode, restoration and clean shutdown. |
 | Resource-aware agent waiting | Immediate admission and the pinned Hermes recovery adapter completed the same accepted workflow, with durable waiting following foreground interruption and one same-boot worker restart. |
 | Desktop protection observation | A later qualification withheld model startup while a foreground game was active. That observation is not a gaming-performance benchmark or a completed qualification. |
-| Integrated M4 development | Bounded IQ3_S compiler/video foreground handoffs and automatic worker recovery with an exact completed result retained by the surviving tool host are accepted at their recorded scopes. The independent shutdown observer remains unresolved. |
+| Integrated M4 development | Bounded IQ3_S compiler/video foreground handoffs and automatic worker recovery with an exact completed result retained by the surviving tool host are accepted at their recorded scopes. Active compiler interruption now passes an installed SDK gate with scripted provider/signals; the observer correction has component evidence. Their physical qualification remains open. |
 | Restart development | Same-boot application close/reopen is accepted for the recorded tasks. The reboot-budget foundation is integrated, but the first actual reboot attempt expired before continuation; successful OS-reboot recovery remains open. |
 | Full always-on experience | Persistent everyday operation, broad foreground coverage, physical reboot recovery and native qualification of other engines remain development work. |
 
@@ -75,11 +75,21 @@ passed 49 closed-audit checks at the exact-known-result boundary described in
 the [evidence ledger](docs/evidence.md#physical-iq3_s-foreground-recovery).
 That result does not complete M4 or qualify successful computer-reboot recovery.
 
-**Next bounded work:** diagnose the retained observer shutdown failure using its
-closed evidence and current primary documentation, then continue M4's active-tool
-interruption gate through the existing owned-process and handoff mechanisms.
-Preserve completed effects, original task/budget and unchanged IQ3_S quality.
-Whole-host loss and the M5 restart/reboot sequence remain separate gates. The
+**Latest bounded gate — 9 November 2026:** an installed Hermes SDK worker
+interrupted an actual compiler test, retained its feedback and completed a
+distinct successful compiler call within the same task and original budget.
+[Independent closed review](provenance/compiler/installed-active-tool-interruption-2026-11-09.json)
+passed 61 checks. Provider responses, foreground/resource observations and
+inference-owner actions were scripted; actual IQ3_S inference was not run.
+The [observer correction](provenance/video-coexistence/observer-shutdown/record.json)
+has owned-loopback/component evidence; earlier physical observer failures remain
+failed.
+
+**Next bounded work:** qualify active-tool interruption with actual IQ3_S and
+physical foreground activity, using the reviewed observer correction and existing
+owned-process/handoff mechanisms. Preserve completed effects, the original task
+and budget, and unchanged IQ3_S quality. Worker loss while a tool is still active,
+whole-host loss and the M5 restart/reboot sequence remain separate gates. The
 expired reboot trial stays closed; successful continuation needs a fresh,
 separately coordinated case. Keep this main workflow ahead of optional ports or
 optimization. Do not replay accepted trials merely because their source merged.
@@ -248,7 +258,7 @@ and public reproduction retain their separate evidence boundaries.
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
 | M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded foreground/continuation/two-task run passed both audits; public reproduction and task preparation/setup are available; reference alpha delivered; persistent everyday use remains open |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
-| M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Active: bounded IQ3_S compiler/video foreground handoffs and exact-known-result automatic worker recovery accepted; observer shutdown, active-tool interruption, whole-host loss and broader workflows remain open |
+| M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Active: bounded IQ3_S handoffs and exact-known-result automatic worker recovery accepted; active compiler interruption has installed SDK evidence and observer shutdown has a component correction. Their fresh physical gate, loss during an active tool, whole-host loss and broader workflows remain open |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Active: bounded same-boot application close/reopen accepted; durable reboot-budget checks passed; first actual reboot attempt expired; successful OS reboot and sleep/wake remain open |
 | M6 | A reproducible daily-use release with fault and soak qualification | M3, M4 and M5 for its advertised scope | Planned |
 | M7 | Broader engine and agent adapters using the same contracts | M2 contract stability; native acceptance follows M3–M6 | Staged expansion |
