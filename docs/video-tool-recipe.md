@@ -107,8 +107,10 @@ flushed. The repair verifies the selected task, original completed operation,
 deadline, native call and actual artifact. It acquires the existing Hermes native
 turn lease and appends the exact missing result before saving a ready checkpoint.
 If the result was already appended, a retry verifies and reuses it. Conflicting
-messages, changed artifacts, pending effects and live native ownership remain
-refused. Ordinary file reconciliation retains its existing route.
+messages, changed artifacts and live native ownership remain refused. This
+completed-result route requires a durable completed operation; the separate
+pending-result route below uses the host's retained evidence. Ordinary file
+reconciliation retains its existing route.
 
 The command requires the original task directory, exact saved receipt and
 operation ID. It does not execute the tool, call a model, change task/request
@@ -127,8 +129,6 @@ closed review passed 99 checks, with 74 original files unchanged. The
 also preserves the first failed private checker and the correction to reuse the
 pinned SDK's read-only conversation projection. This is not an actual-model or
 automatic-host recovery claim.
-An unresolved effect with a retained terminal receipt is a separate upcoming
-branch; this increment preserves the existing pending-effect refusal.
 Active-tool interruption, actual-model restart and computer restart still need
 their own qualification.
 
@@ -139,6 +139,39 @@ These references informed the checkpoint/reconciliation boundary; no framework
 dependency, implementation copy or inherited exactly-once guarantee is claimed.
 Their inspected source revisions and licenses are recorded in
 [REFERENCES.bib](../REFERENCES.bib).
+
+### Pending operation with a verified host result
+
+The next increment handles an earlier worker-loss boundary: the tool host has
+finished and joined its tool processes, but the worker disappeared before
+recording the result. `CompilerHost.terminal_receipt(operation_id)` exports the
+same canonical receipt used by normal completion. It is a host-only read and
+requires the original worker to have joined. The coordinator must obtain this
+receipt before stopping the mailbox runtime or retiring the host binding.
+
+The existing explicit reconciliation command checks that receipt against the
+original pending operation, authorized native call, deadline and actual output.
+It repairs the effect journal and native feedback once, then records
+`operation_reconciled` with resolution `completed`. If recovery itself stops
+after an append, retry recognizes the exact existing record. It never dispatches
+the tool again, renews the task allowance or treats an unknown outcome as success.
+
+This path has passed 104 distinct component tests (including 15 new tests),
+independent source/evidence review, 24 source-preservation checks, and the complete
+[1,578-test local core suite](../provenance/pending-tool-recovery/local-validation-2026-11-02.json)
+plus 16 remaining workflow commands, 1,403-file/77-module package verification and
+a fresh isolated installation. The [installed SDK pending-effect trial](../provenance/pending-tool-recovery/installed-worker-loss-2026-11-02.json)
+then passed an independent 99-check closed review with 74 original case files
+unchanged: a worker exited with code 86 after the host finished one actual video
+operation and before recording completion in the task journal; the coordinator
+exported `CompilerHost.terminal_receipt`, retired the old binding, ran ordinary
+reconciliation to repair both the effect journal and native feedback, and
+completed the task with a replacement worker under the original 900-second
+allowance. Automatic desktop recovery, loss of the host, interruption during a
+running tool and unchanged-IQ3_S recovery remain separate gates. The
+host-reporting pattern also draws on
+[Temporal's asynchronous activity completion](https://docs.temporal.io/develop/python/activities/asynchronous-activity);
+it is implemented through the existing local task journal and host ownership.
 
 ## Sources and licensing
 

@@ -129,6 +129,56 @@ installed SDK dispatch, process loss, lease recovery, explicit repair and worker
 replacement were real. This gate does not qualify automatic controller recovery,
 active-tool interruption, actual-IQ3_S restart, application restart or reboot.
 
+## Pending-operation terminal-receipt recovery
+
+`CompilerHost.terminal_receipt(operation_id)` and explicit reconciliation now
+recover an earlier worker-loss boundary: the tool host has finished and joined
+its tool processes, but the worker disappeared before recording completion in
+the task journal. The reconciler verifies the exported terminal receipt against
+the original pending operation, authorized native call, deadline and actual
+artifact, repairs both the effect journal (`operation_reconciled` with resolution
+`completed`) and missing native feedback once under the existing Hermes turn
+lease, and saves a ready checkpoint. The saved-evidence reader accepts only
+exact `operation_reconciled` completion alongside ordinary `operation_completed`.
+
+Component validation passed 104 distinct tests (48 focused and 56 related,
+including 15 new tests), independent source review (389 programmatic checks
+plus 10 manual checks), and 24 source-preservation tests. Two initial test
+expectation errors were corrected in tests only and remain preserved. The
+complete local suite then passed **1,578 tests with no failures or skips** in
+709.750 seconds, with all 230 recorded runtime/test source files unchanged
+(child receipt SHA-256:
+`a1fac00bc5af011378eb3fe8e3fd2690dcebabbda0020ca69cc36040356fa5b0`). The
+[source-preservation record](../provenance/pending-tool-recovery/source-lineage.json)
+binds the four changed runtime modules to the published `93eba3c` baseline, and
+the [local validation record](../provenance/pending-tool-recovery/local-validation-2026-11-02.json)
+retains the 16 remaining workflow commands, 1,403-file/77-module package
+verification and fresh 7-step isolated installation.
+
+### Installed worker loss before journal completion
+
+The [fresh installed SDK trial](../provenance/pending-tool-recovery/installed-worker-loss-2026-11-02.json)
+passed the pending-effect repair and replacement gate. A private fault exited
+the first actual worker with exit code 86 after the host returned its verified
+video result, before the worker recorded completion in the task journal or
+flushed native feedback. After the original worker joined, the supervisor
+exported `CompilerHost.terminal_receipt(operation_id)` before stopping the
+mailbox runtime or retiring the old binding, then ran `run_recovery reconcile`.
+Reconciliation reclaimed the dead worker's Hermes lease, appended the single
+missing native tool result, recorded `operation_reconciled` (`completed`) and
+transitioned the task from `tool_running` to `ready`. A replacement worker
+then consumed the repaired conversation and completed the original task (`accepted`).
+
+The same task, session and original 900-second deadline were preserved across
+two cumulative scripted provider requests and one real NVENC operation; all
+three video children joined with exit code 0 and empty final job accounting.
+Independent closed review passed **99 checks**, with **74 original case files
+unchanged**, and verified all 77 runtime modules across the checkout, package
+and both installed interpreters using read-only derived database copies.
+Provider replies and resource observations were scripted; this gate does not
+establish automatic desktop recovery, active-tool interruption, actual-IQ3_S
+recovery or computer reboot continuation.
+
 ## Original video CI timeout and correction
 
 The [original hosted CI record](../provenance/video-tool/hosted-ci-timeout-2026-11-02.json)

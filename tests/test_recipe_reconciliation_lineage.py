@@ -8,6 +8,7 @@ import unittest
 from unittest import mock
 
 import recipe_reconciliation_lineage as lineage
+import pending_tool_lineage
 import video_lineage
 from paused_expiry_lineage import fingerprint
 
@@ -24,7 +25,8 @@ class RecipeReconciliationLineageTests(unittest.TestCase):
         self.assertTrue(rows['files'])
         for relative, row in rows['files'].items():
             with self.subTest(relative=relative):
-                data = (lineage.ROOT / relative).read_bytes()
+                data = pending_tool_lineage.predecessor(
+                    relative, (lineage.ROOT / relative).read_bytes())
                 before = lineage.retained(relative, row, lineage.ROOT)
                 self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
                 self.assertEqual(fingerprint(ast.parse(data)), row['successor_ast_sha256'])
@@ -70,7 +72,8 @@ class RecipeReconciliationLineageTests(unittest.TestCase):
     def test_ast_projection_requires_complete_current_bytes(self):
         relative = 'desktop/hermes/compiler_recovery.py'
         source = 'src/adaptive_inference/' + relative
-        target = lineage.ROOT / source; data = target.read_bytes(); tree = ast.parse(data)
+        target = lineage.ROOT / source
+        data = pending_tool_lineage.predecessor(source, target.read_bytes()); tree = ast.parse(data)
         row = lineage.record()['files'][source]
         self.assertEqual(fingerprint(lineage.restore(tree, relative)), row['predecessor_ast_sha256'])
         self.assertEqual(fingerprint(tree), row['successor_ast_sha256'])

@@ -1076,6 +1076,20 @@
   note = {Inspected 2026-11-02 together with hermes_state.py, hermes_state_messages.py and model_tools.py at the same revision. MIT upstream interfaces reused by the opted-in compiler handler and readonly native intent reader; no SDK implementation copied. Reuses the installed worker dependency setup and scopes SDK initialization files to a fresh host-run home. Fixture validation does not establish model-driven handoff}
 }
 
+@misc{temporalExternalActivityCompletion,
+  author = {{Temporal Technologies and contributors}},
+  title = {Asynchronous activity completion in the Temporal Python SDK},
+  url = {https://docs.temporal.io/develop/python/activities/asynchronous-activity},
+  note = {Inspected 2026-11-02 for the pending-recipe recovery plan. Separating external work from its recorded completion informs reuse of the existing tool-host result and TaskStore operation identity. Design reference only; no Temporal service, dependency, copied implementation or inherited exactly-once guarantee}
+}
+
+@misc{awsDurableEffectIdempotency,
+  author = {{Amazon Web Services}},
+  title = {Idempotency in durable execution},
+  url = {https://docs.aws.amazon.com/durable-execution/patterns/best-practices/idempotency/},
+  note = {Inspected 2026-11-02 before the pending-recipe recovery implementation. Per-attempt checkpointing does not by itself prevent duplicate external effects across retries. The local design retains an unresolved state until exact terminal evidence can be verified. Design reference only; no AWS dependency or implementation copied}
+}
+
 @misc{hermesCompletedFeedbackReplay,
   author = {{Nous Research and contributors}},
   title = {Hermes durable conversation projection and tool-call identity recovery},

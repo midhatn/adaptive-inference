@@ -15,10 +15,12 @@ from copy import deepcopy
 import json
 import math
 import os
+from pathlib import Path
 import re
 
 from adaptive_inference.desktop.hermes.compiler_evidence import (
-    TOOL_NAME, verify_recipe_evidence, verify_recipe_result)
+    TOOL_NAME, RECIPE_INTENT_FIELDS, verify_recipe_evidence, verify_recipe_result,
+    verify_pending_recipe_receipt)
 from adaptive_inference.desktop.hermes.recovery import (
     Recovery, RecoveryStop, ReconciliationRequired, native_history, assert_prefix, digest,
     task_contract, verify_artifacts, verify_tool_rows, verify_validation_rows)
@@ -34,11 +36,64 @@ def _identity(value):
     return type(value) is str and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:-]{0,127}', value) is not None
 
 
+def make_recipe_receipt(*, task_root, task_spec, details, operation_id, result, expected_deadline):
+    """One verified envelope for the worker and retained host result export.
+
+    This does not prove TaskStore origin, dispatch work, or alter any journal.
+    The explicit reconciler separately proves the original pending operation.
+    """
+    selected = definition(recipe_kind(task_spec))
+    if (type(details) is not dict or set(details) != set(RECIPE_INTENT_FIELDS)
+            or details['name'] != selected.tool_name or details['spec_sha256'] != task_spec.sha256
+            or details['fingerprint'] != digest({'name': selected.tool_name, 'args': details['args']})
+            or not _identity(operation_id)
+            or any(not _identity(details[key]) for key in
+                   ('tool_call_id', 'session_id', 'host_epoch', 'task_id', 'execution_id', 'owner_epoch'))):
+        raise ReconciliationRequired('Exact recipe receipt identity required')
+    normalized = verify_recipe_result(task_root=task_root, task_spec=task_spec,
+        args=details['args'], operation_id=operation_id, tool_call_id=details['tool_call_id'],
+        result=result, expected_deadline=expected_deadline)
+    encoded = json.dumps(result, sort_keys=True, ensure_ascii=False, allow_nan=False)
+    if len(encoded.encode('utf-8')) > 24576:
+        raise ReconciliationRequired('Compiler feedback exceeds its bound')
+    return {**deepcopy(details), 'operation_id': operation_id, 'result': encoded,
+            selected.receipt_key: normalized, 'reused': False}
+
+
+def _ensure_recipe_journal(run, state, receipt, selected):
+    """Reuse continuation's bounded physical-receipt projection; append once."""
+    expected = [row for row in state['tools']
+                if row['name'] in ('write_file', selected.tool_name) and row.get('reused') is False]
+    path = Path(run)/'effect-receipts.jsonl'
+
+    def rows():
+        raw = path.read_bytes() if path.is_file() else b''
+        if len(raw) > 1024 * 1024:
+            raise ReconciliationRequired('Effect receipt file exceeds bound')
+        try:
+            return [strict_json(line) for line in raw.splitlines() if line.strip()]
+        except (ValueError, UnicodeError) as exc:
+            raise ReconciliationRequired('Effect receipt journal is malformed') from exc
+
+    recorded = rows()
+    if recorded == expected + [receipt]:
+        return
+    if recorded != expected:
+        raise ReconciliationRequired('Effect receipt journal differs from original effects')
+    with path.open('a', encoding='utf-8', newline='\n') as stream:
+        stream.write(json.dumps(receipt, ensure_ascii=False) + '\n')
+        stream.flush(); os.fsync(stream.fileno())
+    if rows() != expected + [receipt]:
+        raise ReconciliationRequired('Effect receipt journal changed during repair')
+
+
 def reconcile_recipe(owned, db, work, receipt, *, expected_operation_id):
-    """Explicitly restore feedback for an already completed, verified recipe.
+    """Explicitly restore exact terminal feedback, without redispatching a recipe.
 
     Reuse reconcile_write's native-lease/native-first checkpoint sequence. The
-    original operation_completed row is proof; an unresolved effect stays fenced.
+    original completed row or exact pending intent plus terminal receipt is proof.
+    Unknown effects and unconfirmed cleanup stay fenced. The original TaskStore
+    reconciliation transaction closes a pending effect; no new operation begins.
     Repeated recovery recognizes the identical native row instead of dispatching
     again, including loss after append but before checkpoint. Design references:
     https://docs.temporal.io/activity-definition#idempotency
@@ -48,17 +103,23 @@ def reconcile_recipe(owned, db, work, receipt, *, expected_operation_id):
     state = deepcopy(cp.state)
     spec = task_contract(cp)
     kind = recipe_kind(spec)
-    if (kind is None or cp.operation or cp.requires_reconciliation
-            or execution_outcome(state) is not None or state.get('status') != 'pending'
-            or state.get('phase') not in ('awaiting_native_flush', 'ready')
+    pending = cp.operation is not None
+    if (kind is None or execution_outcome(state) is not None or state.get('status') != 'pending'
             or type(receipt) is not dict or not _identity(expected_operation_id)
-            or receipt.get('operation_id') != expected_operation_id):
-        raise ReconciliationRequired('Expected completed recipe checkpoint required')
+            or receipt.get('operation_id') != expected_operation_id
+            or (pending and (not cp.requires_reconciliation or state.get('phase') != 'tool_running'))
+            or (not pending and (cp.requires_reconciliation
+                                 or state.get('phase') not in ('awaiting_native_flush', 'ready')))):
+        raise ReconciliationRequired('Expected completed or interrupted recipe checkpoint required')
     selected = definition(kind)
-    if (receipt.get('name') != selected.tool_name or not state['tools']
-            or state['tools'][-1] != receipt
+    if receipt.get('name') != selected.tool_name:
+        raise ReconciliationRequired('Receipt differs from declared recipe')
+    if not pending and (not state['tools'] or state['tools'][-1] != receipt
             or sum(row.get('operation_id') == expected_operation_id for row in state['tools']) != 1):
         raise ReconciliationRequired('Receipt differs from the last durable completed recipe')
+    if pending and any(row.get('operation_id') == expected_operation_id
+                       or row.get('tool_call_id') == receipt.get('tool_call_id') for row in state['tools']):
+        raise ReconciliationRequired('Pending recipe already appears in durable tools')
     session_id = state['session_id']
     holder = f'pid={os.getpid()}:adaptive-recipe-reconcile={expected_operation_id}'
     if not db.acquire_session_turn_lease(session_id, holder, wait_seconds=0):
@@ -68,10 +129,24 @@ def reconcile_recipe(owned, db, work, receipt, *, expected_operation_id):
         assert_prefix(state['native_history'], history)
         verify_artifacts(state, work, task_spec=spec)
         verify_validation_rows(history, state, cp.metadata.get('pre_effect_validator'))
-        verify_tool_rows(history, state['tools'][:-1])
+        verify_tool_rows(history, state['tools'] if pending else state['tools'][:-1])
         ready = state['phase'] == 'ready'
-        verify_recipe_evidence(cp, owned._store.path.parent, history,
-            store_path=owned._store.path, require_native_results=ready)
+        run = owned._store.path.parent
+        prior = verify_recipe_evidence(cp, run, history,
+            store_path=owned._store.path, require_native_results=pending or ready)
+        if pending:
+            normalized = verify_pending_recipe_receipt(cp, run, receipt, store_path=owned._store.path)
+            exact = make_recipe_receipt(task_root=run, task_spec=spec, details=cp.operation['details'],
+                operation_id=expected_operation_id, result=strict_json(receipt['result']),
+                expected_deadline=state['deadline_monotonic'])
+            calls = [call for row in history if row.get('role') == 'assistant'
+                     for call in row.get('tool_calls', []) if call.get('id') == receipt['tool_call_id']]
+            if (exact != receipt or len(calls) != 1 or calls[0].get('type') != 'function'
+                    or calls[0]['function']['name'] != selected.tool_name
+                    or strict_json(calls[0]['function']['arguments']) != receipt['args']
+                    or not selected.validate_args(spec, receipt['args'], completed_runs=len(prior)).accepted):
+                raise ReconciliationRequired('Pending recipe differs from exact native intent')
+            selected.completion(spec, prior + [normalized])
         if ready:
             if history != state['native_history']:
                 raise ReconciliationRequired('Ready recipe checkpoint differs from native history')
@@ -84,6 +159,8 @@ def reconcile_recipe(owned, db, work, receipt, *, expected_operation_id):
         suffix = history[len(state['native_history']):]
         if suffix != rows:
             raise ReconciliationRequired('Unexpected native messages after completed recipe')
+        if pending:
+            _ensure_recipe_journal(run, state, receipt, selected)
         if not rows:
             db.append_message(session_id, 'tool', content=receipt['result'],
                 tool_name=selected.tool_name, tool_call_id=receipt['tool_call_id'],
@@ -95,8 +172,17 @@ def reconcile_recipe(owned, db, work, receipt, *, expected_operation_id):
                 or suffix[0].get('tool_call_id') != receipt['tool_call_id']
                 or suffix[0].get('content') != receipt['result']):
             raise ReconciliationRequired('Native history advanced during recipe feedback repair')
+        if pending:
+            # Recheck the terminal artifact after the native append, before the
+            # one atomic TaskStore reconciliation. Failure leaves it pending.
+            verify_pending_recipe_receipt(cp, run, receipt, store_path=owned._store.path)
+            state['tools'].append(deepcopy(receipt))
         verify_tool_rows(history, state['tools'])
         verify_validation_rows(history, state, cp.metadata.get('pre_effect_validator'))
+        if pending:
+            state.update(phase='ready', native_history=history)
+            return owned.reconcile_operation(expected_operation_id, resolution='completed',
+                result=receipt, state=state, expected_revision=cp.revision)
         verify_recipe_evidence(cp, owned._store.path.parent, history,
             store_path=owned._store.path)
         state.update(phase='ready', native_history=history)
@@ -206,13 +292,11 @@ class CompilerRecovery(Recovery):
                            'owner_epoch': cp.owner_epoch, 'operation_id': cp.operation['id'],
                            'tool_call_id': binding['tool_call_id'], 'recipe_id': args['recipe_id']}
                 projected = self.compiler_client(deepcopy(request))
-                normalized = self._compiler_receipt(args, cp.operation['id'], binding['tool_call_id'], projected)
-                self.definition.completion(self.task_spec, prior + [normalized])
-                result = json.dumps(projected, sort_keys=True, ensure_ascii=False, allow_nan=False)
-                if len(result.encode('utf-8')) > 24576:
-                    raise ReconciliationRequired('Compiler feedback exceeds its bound')
-                receipt = {**details, 'operation_id': cp.operation['id'], 'result': result,
-                           self.definition.receipt_key: normalized, 'reused': False}
+                receipt = make_recipe_receipt(task_root=self.run, task_spec=self.task_spec,
+                    details=details, operation_id=cp.operation['id'], result=projected,
+                    expected_deadline=self.compiler_deadline)
+                self.definition.completion(self.task_spec, prior + [receipt[self.definition.receipt_key]])
+                result = receipt['result']
                 with (self.run / 'effect-receipts.jsonl').open('a', encoding='utf-8', newline='\n') as stream:
                     stream.write(json.dumps(receipt, ensure_ascii=False) + '\n'); stream.flush(); os.fsync(stream.fileno())
                 state['tools'].append(receipt)

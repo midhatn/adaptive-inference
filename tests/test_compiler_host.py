@@ -219,6 +219,68 @@ class CompilerHostTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(binding['task_deadline'], self.deadline)
         self.assertNotIn(self.capability, repr(self.host) + repr(self.host.obligations()) + repr(binding))
 
+    async def test_joined_worker_exports_retained_terminal_receipt_without_redispatch(self):
+        await self.bind()
+        self.intent_operation()
+        _, done = await self.terminal()
+        checkpoint = self.store.load('task')
+        history = self.store.history('task')
+        with self.assertRaises(ValueError):
+            await self.host.terminal_receipt(self.request['operation_id'])
+        self.live = False
+        with self.assertRaises(ValueError):
+            await self.host.terminal_receipt(self.request['operation_id'])
+        self.joined = True
+        with mock.patch.object(self.host, '_validate', side_effect=AssertionError('no live-worker validation')):
+            receipt = await self.host.terminal_receipt(self.request['operation_id'])
+            self.assertEqual(json.loads(receipt['result']), done['result'])
+            self.assertEqual(receipt['compiler_receipt']['status'], 'failed')
+            for key, value in checkpoint.operation['details'].items():
+                self.assertEqual(receipt[key], value)
+            self.assertEqual(receipt['operation_id'], checkpoint.operation['id'])
+            receipt['args']['source'] = 'caller mutation'
+            again = await self.host.terminal_receipt(self.request['operation_id'])
+            self.assertEqual(again['args'], checkpoint.operation['details']['args'])
+        self.assertEqual(self.runs, [self.deadline])
+        self.assertEqual(self.store.load('task'), checkpoint)
+        self.assertEqual(self.store.history('task'), history)
+        self.assertFalse((self.root/'effect-receipts.jsonl').exists())
+        await self.host.retire()
+        with self.assertRaises(ValueError):
+            await self.host.terminal_receipt(self.request['operation_id'])
+
+    async def test_pending_tool_outcome_cannot_be_exported(self):
+        await self.bind()
+        self.intent_operation()
+        self.mode = 'held'
+        _, reply = await self.post()
+        self.assertEqual(reply['state'], 'pending')
+        await asyncio.wait_for(self.started.wait(), 3)
+        self.live, self.joined = False, True
+        with self.assertRaises(ValueError):
+            await self.host.terminal_receipt(self.request['operation_id'])
+        self.release.set()
+
+    async def test_unknown_cleanup_cannot_be_exported_after_retained_tasks_close(self):
+        await self.bind()
+        self.intent_operation()
+        self.mode = 'unknown'
+        _, reply = await self.terminal()
+        self.assertEqual(reply['state'], 'unknown')
+        self.live, self.joined = False, True
+        with self.assertRaises(ValueError):
+            await self.host.terminal_receipt(self.request['operation_id'])
+
+    async def test_changed_saved_tool_artifact_blocks_terminal_export(self):
+        await self.bind()
+        self.intent_operation()
+        await self.terminal()
+        self.live, self.joined = False, True
+        (self.recipes[0].source/'program.cpp').write_text('changed retained source')
+        with self.assertRaisesRegex(ValueError, 'Prepared compiler input changed'):
+            await self.host.terminal_receipt(self.request['operation_id'])
+        self.assertEqual(self.runs, [self.deadline])
+
     async def test_paused_owner_can_bind_but_durable_pause_prevents_dispatch(self):
         self.box.submit(self.cap, 'pause-first', 'pause')
         self.box.consume(self.owned, updated_at_utc=NOW)

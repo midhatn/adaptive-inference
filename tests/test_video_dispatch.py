@@ -251,6 +251,23 @@ class VideoHostTests(unittest.IsolatedAsyncioTestCase):
                 if expected==200: self.assertEqual(body['result']['status'],'binding_refused')
         self.assertEqual(f.runs,[]); self.assertFalse((f.root/'video').exists())
 
+    async def test_joined_worker_exports_exact_terminal_video_without_dispatch_or_store_write(self):
+        f=self.fixture; await f.bind(); request=self.intent()
+        client=CompilerClient(f.client.server.port,f.capability,f.deadline,kind='video',clock=lambda:f.now)
+        result=await asyncio.wait_for(asyncio.to_thread(client,request),5)
+        checkpoint=f.store.load('task'); history=f.store.history('task')
+        f.live,f.joined=False,True
+        with mock.patch.object(f.host,'_validate',side_effect=AssertionError('no redispatch')):
+            receipt=await f.host.terminal_receipt(request['operation_id'])
+        self.assertEqual(json.loads(receipt['result']),result)
+        self.assertEqual(receipt['name'],VIDEO.tool_name)
+        self.assertEqual(receipt['video_receipt']['status'],'passed')
+        self.assertEqual(receipt['owner_epoch'],checkpoint.operation['details']['owner_epoch'])
+        self.assertEqual(f.store.load('task'),checkpoint)
+        self.assertEqual(f.store.history('task'),history)
+        self.assertEqual(f.runs,[f.deadline])
+        self.assertFalse((f.root/'effect-receipts.jsonl').exists())
+
 
 class VideoWireTests(unittest.TestCase):
     def test_real_serialized_request_uses_exact_declared_video_tool(self):
