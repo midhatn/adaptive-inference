@@ -99,13 +99,38 @@ replaced the joined worker's retired binding, while the original deadline and
 cumulative request count stayed intact. Independent review passed 58 checks.
 Provider replies and resource observations were scripted in this SDK gate.
 
-Unexpected worker loss before that checkpoint remains the next implementation
-boundary. The existing recovery path refuses unresolved effects or feedback
-awaiting a native flush. The planned extension will reconcile a retained exact
-receipt through the existing native lease and operation journal, append missing
-feedback once and keep ambiguous effects fenced. It must not repeat completed
-work or grant a new time allowance. Active-tool interruption, actual-model
-restart and computer restart need their own qualification.
+### Completed-result feedback repair
+
+The explicit `run_recovery reconcile` path now recognizes a completed compiler
+or video receipt when the worker disappeared before its native feedback was
+flushed. The repair verifies the selected task, original completed operation,
+deadline, native call and actual artifact. It acquires the existing Hermes native
+turn lease and appends the exact missing result before saving a ready checkpoint.
+If the result was already appended, a retry verifies and reuses it. Conflicting
+messages, changed artifacts, pending effects and live native ownership remain
+refused. Ordinary file reconciliation retains its existing route.
+
+The command requires the original task directory, exact saved receipt and
+operation ID. It does not execute the tool, call a model, change task/request
+allowances or start a replacement worker itself. The coordinator must first
+join and retire the old worker's retained owner, then use ordinary startup after
+repair. Automatic desktop recovery remains a later integration gate.
+
+Ten new component tests, 49 related tests and the complete 1,557-test local core
+suite passed. The component fixtures use real task storage and SQLite-backed
+native history, inert tool outputs and simulated lease/append methods. A fresh
+installed SDK trial now completed actual worker loss, ordinary native-lease
+recovery, feedback repair and replacement under the same task/deadline. One
+real video effect and two scripted provider requests were retained. Independent
+closed review passed 99 checks, with 74 original files unchanged. The
+[installed result](../provenance/recipe-reconciliation/installed-worker-loss-2026-11-02.json)
+also preserves the first failed private checker and the correction to reuse the
+pinned SDK's read-only conversation projection. This is not an actual-model or
+automatic-host recovery claim.
+An unresolved effect with a retained terminal receipt is a separate upcoming
+branch; this increment preserves the existing pending-effect refusal.
+Active-tool interruption, actual-model restart and computer restart still need
+their own qualification.
 
 This sequence uses the existing local recovery mechanisms. The design draws on
 [Temporal's activity idempotency guidance](https://docs.temporal.io/activity-definition#idempotency)

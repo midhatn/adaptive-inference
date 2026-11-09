@@ -1,0 +1,383 @@
+{
+  "artifact": {
+    "audio": false,
+    "bytes": 1051294,
+    "decode_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fixed_duration_seconds": 3,
+    "fixed_frame_rate": 30,
+    "media": {
+      "codec_name": "h264",
+      "frames": 90,
+      "height": 720,
+      "width": 1280
+    },
+    "name": "fixed calibration clip",
+    "probe_sha256": "b07166007a1b411e3db7bb3b97cf446a11fb5e20bb6178754a525f8494f72f23",
+    "sha256": "8425abb7459b478c239771eefb6e8202e1f01c466775ce30d5878b124c98e7cc",
+    "stages": [
+      {
+        "exit_code": 0,
+        "stage": "encode"
+      },
+      {
+        "exit_code": 0,
+        "stage": "probe"
+      },
+      {
+        "exit_code": 0,
+        "stage": "decode"
+      }
+    ]
+  },
+  "budgets": {
+    "clean_stop_at_all_three_boundaries": false,
+    "explicit_budget_activation_or_reset": false,
+    "new_task_allowance_granted": false,
+    "observed_requests_are_not_configured_limit": true,
+    "original_deadline_unchanged": true,
+    "original_episode_and_origin_unchanged": true,
+    "original_task_seconds": 900,
+    "recipe_max_seconds": 90,
+    "request_attempt_limits": {
+      "execution_seconds": 900,
+      "max_admission_attempts": 32,
+      "max_attempts": 8,
+      "max_requests": 8
+    }
+  },
+  "closure": {
+    "cleanup_errors": [],
+    "forced_job_termination": false,
+    "job_accounting": {
+      "active": 0,
+      "limit_terminated": 0,
+      "total": 9
+    },
+    "owned_video_processes_exited": true,
+    "parent_exit_code": 0,
+    "parent_joined": true,
+    "sdk_children": [
+      {
+        "exit_code": 0,
+        "forced_cleanup": false,
+        "joined": true,
+        "label": "prepare"
+      },
+      {
+        "exit_code": 86,
+        "forced_cleanup": false,
+        "joined": true,
+        "label": "worker-first"
+      },
+      {
+        "exit_code": 0,
+        "forced_cleanup": false,
+        "joined": true,
+        "label": "reconcile"
+      },
+      {
+        "exit_code": 0,
+        "forced_cleanup": false,
+        "joined": true,
+        "label": "worker-second"
+      }
+    ],
+    "threads_remaining": [
+      "MainThread"
+    ],
+    "video_binding_pending_after_close": false,
+    "video_children": [
+      {
+        "assigned": true,
+        "command_delivered": true,
+        "exit_code": 0,
+        "forced_cleanup": false,
+        "joined": true
+      },
+      {
+        "assigned": true,
+        "command_delivered": true,
+        "exit_code": 0,
+        "forced_cleanup": false,
+        "joined": true
+      },
+      {
+        "assigned": true,
+        "command_delivered": true,
+        "exit_code": 0,
+        "forced_cleanup": false,
+        "joined": true
+      }
+    ],
+    "video_host_unbound_after_close": true
+  },
+  "core_result": {
+    "actual_video_operations": 1,
+    "audit_native_reader": "Pinned SDK readonly SessionDB conversation projection",
+    "completed_effect_and_video_files_unchanged": true,
+    "completed_tool_redispatched": false,
+    "cumulative_provider_requests": 2,
+    "first_worker_outcome": "Intentional real process exit 86 after completed effect, before native feedback append",
+    "fresh_owners_after_actual_join": true,
+    "harness_passed": true,
+    "native_and_wire_prefixes_retained": true,
+    "phases": [
+      "awaiting_native_flush",
+      "ready",
+      "accepted"
+    ],
+    "provider_requests_per_worker": [
+      1,
+      1
+    ],
+    "raw_sql_integrity_and_session_checks_retained": true,
+    "reconcile_exit_code": 0,
+    "reconcile_provider_calls": 0,
+    "replacement_worker_completed_task": true,
+    "replacement_worker_exit_code": 0,
+    "same_task_session_and_immutable_plan": true,
+    "saved_feedback_consumed_by_replacement": true,
+    "successful_video_operations": 1
+  },
+  "date": "2026-11-02",
+  "design_references": [
+    {
+      "title": "Temporal activity idempotency",
+      "url": "https://docs.temporal.io/activity-definition#idempotency",
+      "use": "Recognize a durable completed effect rather than dispatching it again."
+    },
+    {
+      "title": "LangGraph functional durable execution",
+      "url": "https://docs.langchain.com/oss/python/langgraph/functional-api",
+      "use": "Separate persisted effect results from continuation after worker loss."
+    },
+    {
+      "title": "Pinned Hermes native conversation projection",
+      "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/hermes_state_messages.py#L1545-L1638",
+      "use": "Reuse the supported reader, including derived tool-call identity."
+    }
+  ],
+  "documentation": "docs/video-tool-recipe.md",
+  "environment": {
+    "hermes_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "hermes_source": "https://github.com/NousResearch/hermes-agent",
+    "host_python": {
+      "sha256": "5f7b89a612c9b8af1d6456cdfcd1dbe5ca630849e79aebced9bee9a6694952ec",
+      "version": "3.11.9"
+    },
+    "model_configuration": {
+      "actual_inference": false,
+      "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+      "quality": {
+        "experimental_speed_projection": false,
+        "max_tokens": 10923,
+        "reasoning_budget_tokens": 8192,
+        "reasoning_effort": "high",
+        "strata_tune": {
+          "pcie_frac": 0.37
+        }
+      }
+    },
+    "platform": "Windows x64",
+    "tools": {
+      "ffmpeg": {
+        "sha256": "09948d4cdd0650da6ff5a87577469f2a218dc2615ae379f8f734d24c49de0f73",
+        "version": "ffmpeg version 8.1.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers"
+      },
+      "ffprobe": {
+        "sha256": "a6618e99bb58869ded3c6f37b53aa1a8d701c3591dbb7b5b317d47369c112be2",
+        "version": "ffprobe version 8.1.1-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers"
+      }
+    },
+    "worker_python": {
+      "sha256": "716fbcb56cb6753dd9ea9f7acb3f988e9c4ba65ab492cb32b9bcd0ab81938737",
+      "version": "3.14.7"
+    }
+  },
+  "evidence_sha256": {
+    "actual_reader_diagnostic": "123f01450f34e538d4ca33569558dddd84e3db4d6447bd782d542dce88b47044",
+    "audit_successor_review": "3c29e93533b6af4c5509a7fdf51fe91052667c665120719f08dcca6ead7ffe2d",
+    "closed_review": "9f1438165df6e1b2b30b9ee9fb3f9c466ea1d1b75931bd0c772d82c4a6eb6982",
+    "core": "407607d50894074ffed57807f6380cc15f85ffa1a8a65efc1016d535fb423377",
+    "core_sources": "2882a2f69a35e19241437893d4d2354b66086a64c8be8a845af90ee5f5212c97",
+    "failed_diagnosis": "5c278e3f93a350812b155b176d0d971c85932247f49a988663c2ccee8fa74262",
+    "failed_primary": "ff477494cbe41373ae40de1653e23cca6de5e0715ec634fd51e31af0d083b483",
+    "failed_root_closure": "009490d8821e1155223eacd825a4178c856ae692d51e101138465428615f0e35",
+    "identity": "4298711f07e336d97fc31bf2bf37b037f2af88058114f9051d530911d93fa400",
+    "installation": "ed5687b91cfd65f77a2790362848a125f028cd36ce616fca7fefe9164c4d9add",
+    "package": "62e528571068d1c91cef24cd2e9782b1ab159616186f4b7b54b3d34e40502281",
+    "primary": "f79a018fa863a62e58615930901599d516fdcb02caa6196dd72750486915c7cc",
+    "root_closure": "7c9bb1bc103d3957eef3bb53402c9b8f2fe6666f16c699b565033848a0c5ce1d",
+    "source_review": "1701733586cf4f243af8603efe9e6f519237e44441548e309c2b358f85bcfc4c",
+    "workflow": "3a21143d1040696cdb2e4cdf998b897ea6e0ec8d9f5533bb87e109a738c0a62a",
+    "workflow_closure": "6cfd85273d88f00179ae9d6aac71f5797ef42e64d5aa8da5f882f9409f6cbbe8"
+  },
+  "feature": {
+    "budget_reset": false,
+    "dispatch_during_reconciliation": false,
+    "entry_point": "Explicit existing reconcile command, routed to typed recipe recovery",
+    "existing_file_reconciliation_preserved": true,
+    "ready_retry": "Identical verified ready result is a no-op.",
+    "refusals": [
+      "pending or uncertain effect",
+      "live native turn lease",
+      "conflicting native rows",
+      "changed artifact",
+      "wrong original receipt",
+      "extra native messages"
+    ],
+    "result": "Validate the exact saved effect and native intent; append missing feedback under native turn lease or recognize its identical row, then checkpoint ready.",
+    "starting_boundary": "Already durably operation_completed, awaiting_native_flush, old worker gone and task ownership reclaimed",
+    "supported_recipe_kinds": [
+      "compiler",
+      "video"
+    ]
+  },
+  "independent_review": {
+    "case_files": 74,
+    "case_files_unchanged": true,
+    "checks": 99,
+    "original_database_sql_opened": false,
+    "passed": true,
+    "review_sha256": "9f1438165df6e1b2b30b9ee9fb3f9c466ea1d1b75931bd0c772d82c4a6eb6982",
+    "runtime_locations_compared": 4,
+    "runtime_modules_per_location": 77,
+    "scope": "Independent closed-copy evidence review; no consumed workload replay.",
+    "status": "passed",
+    "workload_replayed": false
+  },
+  "limitations": [
+    "Recovery is explicit; automatic host detection or automatic reconciliation is not qualified.",
+    "Only an already durably completed effect is recovered. Pending or uncertain effects remain fenced.",
+    "Intentional worker process loss is qualified at this declared boundary; arbitrary crash points are not.",
+    "Provider answers and resource observations are scripted. No actual model inference or quality claim.",
+    "No desktop foreground activity, application restart, OS reboot or cross-boot recovery qualification.",
+    "The fixed silent clip is a tool/lifecycle check, not H3, ComfyUI, audio synchronization or media realism qualification.",
+    "Local core/workflow/package evidence does not substitute for the hosted CI matrix."
+  ],
+  "related_records": [
+    "provenance/video-tool/installed-worker-restart-2026-11-02.json",
+    "provenance/recipe-reconciliation/source-lineage.json",
+    "provenance/recipe-reconciliation/local-validation-2026-11-02.json"
+  ],
+  "retained_failures": [
+    {
+      "actual_reader_diagnostic_sha256": "123f01450f34e538d4ca33569558dddd84e3db4d6447bd782d542dce88b47044",
+      "consumed_task_replayed": false,
+      "correction": "Reuse the existing pinned read_only SessionDB/native_history reader on closed copies; retain raw integrity checks and exact comparisons.",
+      "diagnosis_sha256": "5c278e3f93a350812b155b176d0d971c85932247f49a988663c2ccee8fa74262",
+      "failed_case_unchanged": true,
+      "failure": "Manual SQL transcript projection omitted the SDK-derived tool-call UID.",
+      "first_worker_exit_code": 86,
+      "harness_passed": false,
+      "parent_exit_code": 1,
+      "primary_sha256": "ff477494cbe41373ae40de1653e23cca6de5e0715ec634fd51e31af0d083b483",
+      "reconcile_exit_code": 0,
+      "replacement_worker_started": false,
+      "root_closure_sha256": "009490d8821e1155223eacd825a4178c856ae692d51e101138465428615f0e35",
+      "runtime_or_comparison_weakened": false,
+      "stage": "First installed attempt: reconciled-stage private audit"
+    }
+  ],
+  "retained_review_failures": [
+    {
+      "exit_code": 1,
+      "report_sha256": "5f810a03723b0425ec33391e37fc88488ab1a92301780d303210d581df90db83",
+      "scope": "Reviewer initially counted an auxiliary control row as a task; corrected to predecessor task-id-scoped SQL on derived copies. This was a review assertion error, not a product failure."
+    }
+  ],
+  "schema": "adaptive.recipe-reconciliation.installed-feedback-evidence.v1",
+  "scope": "Explicit recovery of already completed recipe feedback after intentional worker process loss; real installed Hermes SDK and one actual NVENC video, scripted provider and resource observations.",
+  "source_identity": {
+    "base_revision": "211bbd41c53b00ff031d944da0959181d8ea5650",
+    "installed_identity_sha256": "4298711f07e336d97fc31bf2bf37b037f2af88058114f9051d530911d93fa400",
+    "note": "Source after the base revision is identified by this exact runtime map and retained source lineage; publication commit is recorded separately.",
+    "published_revision": null,
+    "runtime_map_hash_serialization": "UTF-8 json.dumps(map, sort_keys=True, ensure_ascii=False, allow_nan=False), default separators",
+    "runtime_map_sha256": "67ded8c054bcc17141857bf4b7f2836b9217458d7846c6fc55551b6fec918fcb",
+    "runtime_paths_relative_to": "src/adaptive_inference",
+    "runtime_sha256": {
+      "__init__.py": "1d906cca6d5581290d73292cce949dcaf74001de67bda63b903dfb2e70edacba",
+      "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "adapters.py": "378ee41c1bdbb16873e31752d704e656a70009862d41b36898d30f57a36dfc58",
+      "cli.py": "a13d6c2c52445884f2ee9897eb7fadb75188339be4472db98bd760c18bce5ecf",
+      "client_routing.py": "d57178cfbd5666e75aef311f1362cf8486f48085c6f4995861b4fbd0cb7e41d1",
+      "config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+      "context_budget.py": "cd16b57bc105a179e94dbc9e429c02b901bcd8602cfaf04c9cf8776e9d799ccf",
+      "control_mailbox.py": "12e6ceaef36b41099422040fb23db0a9bccf96a6afb799f0e301a64bccb95888",
+      "costs.py": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1",
+      "demand.py": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+      "demo.py": "5a3b1ff743bee6c45f85df8417bedbc18657f2c59f3e894f1f3298a480b22b93",
+      "desktop/__init__.py": "6169073159f3c0e506752f54aa51b40b058f71ed058d5272e160aa4a61ee7daa",
+      "desktop/activity.py": "3282dc37b493ba3fd347e279b074fa3dfd5d2c1ea5eaba8131dc568d97ec0750",
+      "desktop/cold_start.py": "1264f34910a0d619c6502c7565e66abbfe7ec642391a461390271b8e0799bf68",
+      "desktop/compiler_bridge.py": "701802a5addf4e440df797762896d76e8b7c3add07dad3f2a06d3da645d7a5be",
+      "desktop/compiler_host.py": "2814e4b182580eb2694a716811d360dad6b032e5573cc0632b914ed1c7d33df2",
+      "desktop/compiler_profile.py": "872b8babf3fe26828ce50422485489fdde35bd59f010ff063be66ef253e323fc",
+      "desktop/compiler_recipe.py": "12b31514327a7c168c915b3a321ee1c17bf8446b49181eed6bed2bced55b01d2",
+      "desktop/compiler_template.py": "bf7a3123eb147caded7700c7f67e0c072cfe915239fa3a5cb004e7e1772f7f85",
+      "desktop/composition.py": "066aa1454c88cc08ed9c58452023fb47f1a223981d08428a32b20581ecc5e321",
+      "desktop/continuation_host.py": "9bd258aa8b1a2516e80cd94641f2a9fce3584c5b8aa484badf9854dfc121d7c7",
+      "desktop/control_client.py": "ba950c73328e084329fdb29ab78fdfe86cfed1715a792cdbf9872a74e8c75919",
+      "desktop/control_transport.py": "280d8a55793c241b3ec30e253b758de42386f3329bb6477ba47537f9ca264c6b",
+      "desktop/desktop_controls.py": "081cfc11a5335299ad119007dfc7a428ed011f55386af50d4d1289ec0f62e786",
+      "desktop/execution_budget.py": "77ad74ddbf0eaa89379fbecb305574d5b70cc32f9e63934a14f439ed2c744728",
+      "desktop/foreground_policy.py": "35781fb869c03220c6f48c3e138083b15bbcf7e40187edbfe546ad4da09b7faa",
+      "desktop/gui_launch.py": "c93e837ae15092de1a7814f766731ef38dc118f3e8a50280ee7658b91966355b",
+      "desktop/gui_session.py": "f232609a01f11977d7f011a8b1c7f2b7c2a0c3ca697766b63ec0873ec9f4cc64",
+      "desktop/hermes/__init__.py": "43830f7aa3deb6001eb8aa8646fc515f5d8d74a26f50590984c8278e4db67532",
+      "desktop/hermes/admission.py": "6f12fd6ad21fa194cb337590cf0bbd71b1d394e6a2be0cd79dfdd634af5e0f07",
+      "desktop/hermes/compiler_client.py": "fb0372c6b16738cdb1b0c8d527765e8b7f60a038513950988c84d40b741bf8a1",
+      "desktop/hermes/compiler_evidence.py": "ac869d4964e2ad2136ea19faba27fc1a843438e19b1aad25fc4b9d83d6fc137f",
+      "desktop/hermes/compiler_recovery.py": "ac43642a28d70565a5154edf9c3b1d0b8e068a0189434aeb195453c933018b36",
+      "desktop/hermes/compiler_worker.py": "8d18ef60025318804e81f848546e1c3e0e84f61cf4a09fe7bfd1c759b243d91e",
+      "desktop/hermes/continuation.py": "d3b396bba2ed794b7304e3bebb888e2d8d51568de846fbe6549363b42d6de5c6",
+      "desktop/hermes/continuation_worker.py": "6871ecbfaec346ccd658d957b5f593f0dc242db17c1b13b93ab603f693967b67",
+      "desktop/hermes/control_bridge.py": "7a8e0aa672efeb1c6f676446e0f3b6886fd778f5d0f6c185a87d005a0256a3db",
+      "desktop/hermes/native_reader.py": "1f51ea1180ef0d7ad52359430831084de7cde45e21e758068fee5b9a93079464",
+      "desktop/hermes/pause_activity.py": "3cffa8eae39b956de3d873e82593a052c2682aad5f06b36a8ff845080baf0e5d",
+      "desktop/hermes/recovery.py": "c6f07435ae29f4e2542af585ace107f7952583ed3c0735cf6df2f3a0df438f37",
+      "desktop/hermes/report_contract.py": "d86aa6ee0f18912400aa80d96c343128af08ae80e7d8c367ee9c8733ea5d69de",
+      "desktop/hermes/report_validator.py": "378dd445a088a075d300fc85b86160f3b96790ee046adecf926f9e59e8e7d9af",
+      "desktop/hermes/run_recovery.py": "3d78a3f1f78e024d04b0020e3702c784dfc3723a802bdb87c9cbca25ec827fd3",
+      "desktop/hermes/sdk_pins.py": "538a5ea8651e1106c7c535ccd73b33b2f56de6c736d926ce6b92c5fb6eb075ce",
+      "desktop/hermes/service_stop.py": "235b61ad248083f8f0536767ad79473955d96ad1b40189b73c9cfe71439a51c9",
+      "desktop/installation.py": "13e13d532bedb68f150d1096767c98796de83f74dce54021d286c6c18c521e85",
+      "desktop/load_feasibility.py": "23e94f3ee770b065fb323f30bb104d8d5732bf710bd3cc9b2a27daa746014dda",
+      "desktop/mailbox_runtime.py": "aad1c3b383f6954be89ebe6c9f2e680cd286c672d7bb26bd7027402e0a7d6b72",
+      "desktop/native_owner_adapter.py": "5a79c48911c798310104be07ebb978f9ad9fe4f7ab000c328afd992f75415977",
+      "desktop/owned_job.py": "90b59dbdae226419fc9680c961c21dfa9e061df08512a7a8089d6f6d11b2ccc4",
+      "desktop/persistent_host.py": "acff567d5eb6f2c569588bfa684363907897bdb66be8008bc20c10d3ca7c0011",
+      "desktop/profile.py": "caac6f07fc87ccbf51d97003a0d8cb209d21e04bfc00acda6a5c9e05b2d3fbbc",
+      "desktop/recipe_dispatch.py": "3a4813e156448305e7880c3cc3ac3b82e992b34a0e05b7f6b74f09bc9e2c6f4b",
+      "desktop/retained_ui.py": "749b947510377518c452ae7a70fa21c32f27c3f10225f6eb90d87ef03406f5cb",
+      "desktop/run_gui.py": "eb67c9bac75b72bcc545c234b28c54b8c9c5fbfb3c2183f99e63a47abb3a6ef0",
+      "desktop/saved_tasks.py": "75703584b3c4cda42aed6de0e4645ea75b2a3b1e2e81c702e919f626cc8ec1b7",
+      "desktop/serial_listener.py": "048e8ab061e175a978f755801b9a27e3daa292c1dc7dabe3c8a8763be81199b2",
+      "desktop/startup_pipe.py": "0617c527461b4c437474a947a497300e4c28c06d11f8bb43f1e67fc51a159fae",
+      "desktop/task_admission.py": "2ca007580bca43678c529599b6296ff4b97c15e210b9daeb651a8f2c4f12b25d",
+      "desktop/task_handover.py": "6905f542ac26e5b1ad51fe94cfe3bf07accd7ec057b4d8521a4446a807bdf809",
+      "desktop/ui_intent.py": "ff67208a3890656bc76717ac18c8d0c02a19dc2e09b11b81d88fc1f63c0a29d1",
+      "desktop/ui_progress.py": "466deda7ba15d73ea779abf3b1b2e690e92217950b15afdbdf8acf9cda3d2de9",
+      "desktop/video_profile.py": "2ac53c40937e60d984e2903d643d2ee83372760756d1afedf5406b71644b41e4",
+      "desktop/video_recipe.py": "b255d3f939aa3a1e29449bc397e39b50859fcc0cf8a10201859b2ec2dc50bcff",
+      "desktop/video_template.py": "1a74d771d83eed358196467857e11c5986cfc6c196b6d172c614224db311a835",
+      "desktop/window_marker.py": "e2613ef662993be88c332657e4e53c598fdc006634bf8fabf9e0d0a9765c0d36",
+      "desktop/windows_host_base.py": "ad08c31435bc4da77b43c68321a7c08130ab1c4f7bc688c71191c6497abc97bd",
+      "execution_clock.py": "c9d04e8e029d4d88830560482e2437cab3d06ef140a942d16543c3be95642cff",
+      "feedback.py": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+      "gateway.py": "b2009a8a776bcea4dfc3bedac5296c930ae2211bb8e29d7ccdf76a227fefdef8",
+      "handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+      "resource_policy.py": "53768d4b95b589bb76d1788a9ccceefe60c05b332b1b1f43dece6b04bfec212a",
+      "resources.py": "a72e376e4dfc6021e61756812f93275af20c28ec1438faf5eb381a491d3db4d9",
+      "scheduler.py": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f",
+      "task_prepare.py": "9cddd6e09b3f5435da08316f8d9ccdfbcff67a336f6f74b420108c4c856223b2",
+      "task_spec.py": "2975c0c4489ac863502189777699d13d7b2b8aca6d19191247fd860ed4a0ce76",
+      "task_store.py": "7bf559ea55e0c19155515f321f7505b4d9275648333bcf2c983c2c280bd2e2e6"
+    },
+    "sdist_sha256": "14ea4c7890f92421229125b098a46b2fded79b767c57cf5d1851a0f097a84517",
+    "source_and_input_pins_unchanged": true,
+    "wheel_sha256": "861d13857e4587175dcc1a2acbf198fb7c3e2b91ae10c12a969997a74070db47"
+  },
+  "status": "passed_at_declared_scope"
+}

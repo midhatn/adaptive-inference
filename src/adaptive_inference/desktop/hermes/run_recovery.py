@@ -54,6 +54,17 @@ def verify_task_tools(agent, task_spec=None):
         raise RecoveryStop('SDK tool declarations differ from the supported read/write capabilities')
 
 
+def reconcile_saved_result(owned, db, work, receipt, *, expected_operation_id):
+    """Keep explicit file reconciliation and select the declared recipe route."""
+    from adaptive_inference.desktop.hermes import recovery as rec
+    from adaptive_inference.desktop.recipe_dispatch import definition, recipe_kind
+    kind = recipe_kind(rec.task_contract(owned.checkpoint))
+    if kind is not None and type(receipt) is dict and receipt.get('name') == definition(kind).tool_name:
+        from adaptive_inference.desktop.hermes.compiler_recovery import reconcile_recipe
+        return reconcile_recipe(owned, db, work, receipt, expected_operation_id=expected_operation_id)
+    return rec.reconcile_write(owned, db, work, receipt, expected_operation_id=expected_operation_id)
+
+
 def finish_native_turn(controller, outcome):
     """Retain native failures before checking artifacts the turn did not finish."""
     from adaptive_inference.desktop.hermes.recovery import RecoveryStop
@@ -490,8 +501,8 @@ def _worker(args, *, selected=None):
                 if not args.receipt:
                     raise ValueError('Explicit --receipt file required')
                 receipt = json.loads(args.receipt.read_text(encoding='utf-8'))
-                rec.reconcile_write(owned, db, run / 'work', receipt,
-                                    expected_operation_id=args.operation_id)
+                reconcile_saved_result(owned, db, run / 'work', receipt,
+                                       expected_operation_id=args.operation_id)
                 result.update(passed=True, reconciled=True, provider_calls=0)
             else:
                 history = (rec.resumable(owned, db, run / 'work') if selected is None else selected.verify_native(db))

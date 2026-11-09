@@ -1076,6 +1076,13 @@
   note = {Inspected 2026-11-02 together with hermes_state.py, hermes_state_messages.py and model_tools.py at the same revision. MIT upstream interfaces reused by the opted-in compiler handler and readonly native intent reader; no SDK implementation copied. Reuses the installed worker dependency setup and scopes SDK initialization files to a fresh host-run home. Fixture validation does not establish model-driven handoff}
 }
 
+@misc{hermesCompletedFeedbackReplay,
+  author = {{Nous Research and contributors}},
+  title = {Hermes durable conversation projection and tool-call identity recovery},
+  url = {https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/hermes_state_messages.py},
+  note = {Inspected locally and online 2026-11-02 after the first completed-feedback worker-loss trial exposed a private checker mismatch. The installed MIT SDK derives a missing tool-call UID from the preceding assistant call map. The successor checker reuses the existing native_reader_factory and SessionDB(read_only=True) on verified closed copies instead of reproducing that projection. SQLite WAL and URI documentation were also refreshed; nonempty WAL sidecars are retained and read normally on derived copies. No SDK implementation copied, runtime comparison weakened, failed task replayed or model-recovery claim inferred}
+}
+
 @misc{sqliteClosedCompilerAudit,
   author = {{SQLite authors}},
   title = {Read-only WAL databases and immutable URI connections},

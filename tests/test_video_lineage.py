@@ -8,6 +8,7 @@ import unittest
 from unittest import mock
 
 import compiler_lineage
+import recipe_reconciliation_lineage
 import video_lineage as lineage
 from paused_expiry_lineage import fingerprint
 
@@ -24,7 +25,8 @@ class VideoLineageTests(unittest.TestCase):
         self.assertTrue(rows['files'])
         for relative, row in rows['files'].items():
             with self.subTest(relative=relative):
-                data = (lineage.ROOT / relative).read_bytes()
+                data = recipe_reconciliation_lineage.predecessor(
+                    relative, (lineage.ROOT / relative).read_bytes())
                 before = lineage.retained(relative, row, lineage.ROOT)
                 self.assertEqual(hashlib.sha256(data).hexdigest(), row['successor_sha256'])
                 self.assertEqual(fingerprint(ast.parse(data)), row['successor_ast_sha256'])
