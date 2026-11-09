@@ -24,7 +24,7 @@ class CompilerLaunchTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory(); self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name).resolve()
         self.c = object.__new__(DesktopComposition)
-        self.c.compiler_host = object(); self.c.compiler_bindings = {}
+        self.c.compiler_host = SimpleNamespace(lifecycle=lambda: {'bound': True}); self.c.compiler_bindings = {}
         self.c.host_epoch = 'host-1'; self.c.host = SimpleNamespace(gateway=SimpleNamespace(instance='gateway-1'))
         self.spec = TaskSpec(compiler_data())
         self.plan = {'task_spec': self.spec.data, 'task_spec_sha256': self.spec.sha256}

@@ -1,0 +1,344 @@
+{
+  "contract": {
+    "budget": {
+      "execution_seconds": 900,
+      "max_admission_attempts": 32,
+      "max_attempts": 8,
+      "max_requests": 8
+    },
+    "foreground_policy": "cooperative-owned-foreground.v1",
+    "original_task_deadline_unchanged": true,
+    "profile_sha256": "2e22d83f291b692c1a6af600ab9f05a36f84741db1f8a60a48112fd5385885bf",
+    "task_spec": "examples/tasks/video-testclip/task.json",
+    "task_spec_file_sha256": "8154b215c9cb526053a96ef89fbd12c8bd194058f89a0976c41b2e11d19ad65e",
+    "task_spec_sha256": "e5ebf412ec13e689815f46b42b12ea5e50377a5caf702f1e7a55ee40f1959ab8"
+  },
+  "core_result": {
+    "artifact": {
+      "audio": false,
+      "bytes": 1051294,
+      "decode_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "media": {
+        "codec_name": "h264",
+        "frames": 90,
+        "height": 720,
+        "width": 1280
+      },
+      "probe_sha256": "b07166007a1b411e3db7bb3b97cf446a11fb5e20bb6178754a525f8494f72f23",
+      "sha256": "8425abb7459b478c239771eefb6e8202e1f01c466775ce30d5878b124c98e7cc"
+    },
+    "completed_tool_redispatched": false,
+    "controls": {
+      "other": 0,
+      "resume": 1,
+      "stop": 1
+    },
+    "distinct_native_owners": 2,
+    "foreground": {
+      "actions": 1,
+      "activity_samples": 166
+    },
+    "model_requests": 2,
+    "process_exits": {
+      "reconcile": 0,
+      "supervisor": 0,
+      "worker": 86,
+      "worker-2": 0
+    },
+    "resource_sequence": [
+      "one observed Explorer F5 during the first real IQ3_S request",
+      "foreground policy drains that request and fully releases the first native owner (parked)",
+      "actual return to the controller",
+      "fresh capacity checked and exclusive video grant",
+      "fixed NVENC encode, probe and decode completed by the tool host",
+      "first worker exits with code 86 before effect journal or native feedback",
+      "host exports terminal_receipt, retires the binding and runs reconcile automatically",
+      "replacement worker launched under the original deadline",
+      "distinct native owner restored",
+      "second real request consumed the reconciled video feedback",
+      "task accepted and observed normal Stop"
+    ],
+    "restoration_during_video_grant": false,
+    "video_job_accounting": {
+      "active": 0,
+      "limit_terminated": 0,
+      "total": 9
+    },
+    "video_operations": 1
+  },
+  "date": "2026-11-08",
+  "design_references": [
+    {
+      "title": "Erlang/OTP supervision principles",
+      "url": "https://www.erlang.org/doc/system/sup_princ.html",
+      "use": "Supervisor-owned bounded restart of a failed worker with explicit restart intensity; design reference only."
+    },
+    {
+      "title": "Temporal asynchronous activity completion",
+      "url": "https://docs.temporal.io/develop/python/activities/asynchronous-activity",
+      "use": "Separate exact host-retained external completion from worker lifetime; design reference only."
+    },
+    {
+      "title": "AWS durable-execution idempotency",
+      "url": "https://docs.aws.amazon.com/durable-execution/patterns/best-practices/idempotency/",
+      "use": "Do not redispatch an uncertain side effect; design reference only."
+    },
+    {
+      "title": "Temporal activity idempotency",
+      "url": "https://docs.temporal.io/activity-definition#idempotency",
+      "use": "Recognize a durable completed effect rather than dispatching it again."
+    },
+    {
+      "title": "LangGraph functional durable execution",
+      "url": "https://docs.langchain.com/oss/python/langgraph/functional-api",
+      "use": "Separate persisted effect results from continuation after worker loss."
+    },
+    {
+      "title": "Pinned Hermes native conversation projection",
+      "url": "https://github.com/NousResearch/hermes-agent/blob/14e1e43a23761b369641208e204365cd6cb9399d/hermes_state_messages.py#L1545-L1638",
+      "use": "Reuse the supported reader, including derived tool-call identity."
+    }
+  ],
+  "documentation": "docs/video-tool-recipe.md",
+  "environment": {
+    "hermes_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "hermes_source": "https://github.com/NousResearch/hermes-agent",
+    "host_python": {
+      "sha256": "5f7b89a612c9b8af1d6456cdfcd1dbe5ca630849e79aebced9bee9a6694952ec",
+      "version": "3.11.9"
+    },
+    "model_configuration": {
+      "actual_inference": true,
+      "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+      "quality": {
+        "experimental_speed_projection": false,
+        "max_tokens": 10923,
+        "reasoning_budget_tokens": 8192,
+        "reasoning_effort": "high",
+        "strata_tune": {
+          "pcie_frac": 0.37
+        }
+      }
+    },
+    "platform": "Windows x64",
+    "tools": {
+      "ffmpeg": {
+        "sha256": "09948d4cdd0650da6ff5a87577469f2a218dc2615ae379f8f734d24c49de0f73",
+        "version": "ffmpeg version 8.1.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers"
+      },
+      "ffprobe": {
+        "sha256": "a6618e99bb58869ded3c6f37b53aa1a8d701c3591dbb7b5b317d47369c112be2",
+        "version": "ffprobe version 8.1.1-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers"
+      }
+    },
+    "worker_python": {
+      "sha256": "716fbcb56cb6753dd9ea9f7acb3f988e9c4ba65ab492cb32b9bcd0ab81938737",
+      "version": "3.14.7"
+    }
+  },
+  "evidence_sha256": {
+    "identity": "63f599071fa5827ffefbedaf2ad8b5a8dbf4b53aed1af5320056def9ccbca028",
+    "physical_attempt_01": "5e122883efae18d4eb7b827b8fb0089534b8d7ab6357cbcd2ed25de6ec478b8f",
+    "physical_attempt_02": "4fff1f577a452cdae2f825be464c17800faaab3ac9e6162eb9dca92c16cdeb75",
+    "physical_audit": "448a83578da3731db425264fc406ae9ef258c64cae6d8d44955233800615ae37",
+    "physical_first_worker_loss": "3cbcf0132718be467498053ebc22b164ba23c26cd71677aa9b74b0b4b05c6633",
+    "physical_replacement_result": "482233cffc5ad7495b4172566649882e37c1d7d7db0ad47bf7b10dae8055921f",
+    "physical_root_closure": "17882546406aa0338e486efee09b9c919b1c5f1ea89605bae11f47387c418d27",
+    "physical_video_receipt": "09b68fc82ce210289633b6aa4b992e55b3f904f90d876e121356bfcf29618101",
+    "profile": "2e22d83f291b692c1a6af600ab9f05a36f84741db1f8a60a48112fd5385885bf"
+  },
+  "independent_audit": {
+    "audit_sha256": "448a83578da3731db425264fc406ae9ef258c64cae6d8d44955233800615ae37",
+    "check_names": [
+      "Retained normal app supervisor and verified first-worker fault wrapper pins",
+      "Actual independent observer source",
+      "Retained prepare/worker/reconcile/worker-2 joins with exits [0, 86, 0, 0]",
+      "Actual app GUI listener native Stop and joins",
+      "First lost worker wrote no completion receipt",
+      "Distinct bootstrap and controller-ready records for initial and replacement workers",
+      "Single native session across worker loss and replacement",
+      "Exact public video task and original allowance",
+      "Exact deployment and foreground policy",
+      "Exact previously selected FFmpeg and FFprobe pins",
+      "Accepted same task/session without unknown effect",
+      "Actual installed SDK replacement worker model quality and native completion",
+      "One distinct real fixed video operation without re-execution",
+      "First-worker loss witness, host terminal_receipt export, and reconcile receipt match",
+      "Original request and attempt bounds preserved across worker loss",
+      "Same-instance completed metrics capture",
+      "Complete wire gateway history",
+      "Real serialized request and gateway completion 3af173c8dae3411cb39f2767734e1cd8",
+      "Real serialized request and gateway completion 6aa3011fea774478afd4c24c65131b49",
+      "Every provider request has a durable generation",
+      "Durable request equals actual wire and completed provider",
+      "Durable request equals actual wire and completed provider",
+      "Untruncated cold controller event ledger",
+      "Exact fixed video preparation 5d8a6183da6941f190e58e764a85f22a",
+      "Actual video recipe receipt identity 5d8a6183da6941f190e58e764a85f22a",
+      "Joined bounded video children 5d8a6183da6941f190e58e764a85f22a",
+      "Exact NVENC encode probe decode commands and successful exits 5d8a6183da6941f190e58e764a85f22a",
+      "Exact one native intent and durable reconciled operation 5d8a6183da6941f190e58e764a85f22a",
+      "Actual reconciled video feedback in replacement worker provider request 5d8a6183da6941f190e58e764a85f22a",
+      "Native release then single tool grant and completed cleanup 5d8a6183da6941f190e58e764a85f22a",
+      "Fresh independent tool capacity 5d8a6183da6941f190e58e764a85f22a",
+      "No model restoration while video owns resource grant 5d8a6183da6941f190e58e764a85f22a",
+      "Bounded actual video and probe 5d8a6183da6941f190e58e764a85f22a",
+      "Actual H264 1280x720 90-frame artifact and error-free decode 5d8a6183da6941f190e58e764a85f22a",
+      "One accepted actual video artifact",
+      "Original 900-second allowance and durable deadline unchanged across worker loss and replacement",
+      "Task and mailbox released",
+      "Exact pre-Resume readiness capture",
+      "Observed Resume and Stop match actual retained control identity",
+      "One recorded foreground action for this F5 trial",
+      "Real first-request foreground hold and policy handoff",
+      "Exact installed runtime source map",
+      "Every distinct native owner release has a closed result",
+      "Actual native owner and all recorded exits 0602b21d30eb4198aa1aace11ea0cf30",
+      "Actual native owner and all recorded exits fcbcfc658b15431b97335eaad5b7557c",
+      "Fresh native owner after each release",
+      "Real subsequent requests use a newly verified runtime generation",
+      "Copied base database bytes unchanged",
+      "All explicit audit input bytes unchanged"
+    ],
+    "checks": 49,
+    "closed_database_copies": true,
+    "original_files_unchanged": true,
+    "passed": true,
+    "workload_replayed": false
+  },
+  "limits": [
+    "One bounded foreground/IQ3_S/fixed-video workflow with one intentional worker loss; not repeated reliability or performance evidence.",
+    "The independent observer shutdown still failed; observer shutdown diagnosis remains a separate gate.",
+    "No application restart, reboot, sleep/wake, active-tool interruption or whole-host loss qualification.",
+    "Synthetic silent clip only; no H3/ComfyUI generation, visual realism, audio or named autonomous media-test qualification.",
+    "Model contents were not rehashed; native asset metadata and the unchanged IQ3_S quality settings were retained.",
+    "External FFmpeg build is identified, not distributed."
+  ],
+  "observer": {
+    "closure_passed": false,
+    "end_reason": "three_connection_errors_after_response",
+    "exit_code": 2,
+    "note": "The independent GET-only observer again failed at shutdown, as in earlier physical trials; task and cleanup evidence come from the closed audit."
+  },
+  "preserved_previous_attempts": [
+    {
+      "attempt": "automatic-physical-run-01",
+      "change": "Wait about 20 s into the first request before the foreground action.",
+      "outcome": "operator_timing_window_missed",
+      "sha256": "5e122883efae18d4eb7b827b8fb0089534b8d7ab6357cbcd2ed25de6ec478b8f",
+      "summary": "The workflow completed end to end, but the scripted F5 was sent 1.9 s into the first request; request plus release took 63 s, so the 60 s input-idle window expired 2 s before parked and the driver timed out."
+    },
+    {
+      "attempt": "automatic-physical-run-02",
+      "change": "Restore the active pointer to the last cleanly stopped owner; the terminated owner record was retained untouched.",
+      "outcome": "cold_parking_refused_stale_active_pointer_from_run_01_timeout",
+      "sha256": "4fff1f577a452cdae2f825be464c17800faaab3ac9e6162eb9dca92c16cdeb75",
+      "summary": "Cold parking failed closed before any task launched because the engine active pointer still named the native owner terminated by the run-01 supervisor timeout."
+    }
+  ],
+  "related_records": [
+    "provenance/video-tool/physical-foreground-video-2026-11-02.json",
+    "provenance/automatic-tool-recovery/installed-worker-loss-2026-11-08.json",
+    "provenance/automatic-tool-recovery/local-validation-2026-11-08.json",
+    "examples/tasks/video-testclip/README.md"
+  ],
+  "schema": "adaptive.automatic-tool-recovery.physical-evidence.v1",
+  "scope": "One Windows IQ3_S video task responds to an actual foreground Explorer action, parks inference, runs one fixed NVENC operation, loses its first worker (exit 86) before journal completion, and is recovered automatically by the desktop host with a replacement worker that consumes the durable feedback and completes.",
+  "source_identity": {
+    "base_revision": "9242434991f2c2c21461061d61d898649299b847",
+    "changed_runtime_modules_from_base": [
+      "desktop/composition.py",
+      "desktop/desktop_controls.py",
+      "desktop/task_handover.py"
+    ],
+    "installed_identity_sha256": "63f599071fa5827ffefbedaf2ad8b5a8dbf4b53aed1af5320056def9ccbca028",
+    "note": "Source after the base revision is identified by this exact runtime map and the retained source lineage; the publication commit is recorded separately.",
+    "published_revision": null,
+    "runtime_map_hash_serialization": "UTF-8 json.dumps(map, sort_keys=True, ensure_ascii=False, allow_nan=False), default separators",
+    "runtime_map_sha256": "f2735f97f1027cf7720820a2f9197a4ece610bf19d1f0019c35f79fbfe7c7373",
+    "runtime_paths_relative_to": "src/adaptive_inference",
+    "runtime_sha256": {
+      "__init__.py": "1d906cca6d5581290d73292cce949dcaf74001de67bda63b903dfb2e70edacba",
+      "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "adapters.py": "378ee41c1bdbb16873e31752d704e656a70009862d41b36898d30f57a36dfc58",
+      "cli.py": "a13d6c2c52445884f2ee9897eb7fadb75188339be4472db98bd760c18bce5ecf",
+      "client_routing.py": "d57178cfbd5666e75aef311f1362cf8486f48085c6f4995861b4fbd0cb7e41d1",
+      "config.py": "a6800a081a1e14a46ee18235dd21c1d1a714e6ef4e879840cd2768c590fde669",
+      "context_budget.py": "cd16b57bc105a179e94dbc9e429c02b901bcd8602cfaf04c9cf8776e9d799ccf",
+      "control_mailbox.py": "12e6ceaef36b41099422040fb23db0a9bccf96a6afb799f0e301a64bccb95888",
+      "costs.py": "9e8fcd06d39af57392f191b5d5701aa828f134e5141c7e298aa62e0c232224e1",
+      "demand.py": "76a9fbb26128c1e458348a37f0d15c36f6a9a5ae2d0f89b15d372bd2d1e394ad",
+      "demo.py": "5a3b1ff743bee6c45f85df8417bedbc18657f2c59f3e894f1f3298a480b22b93",
+      "desktop/__init__.py": "6169073159f3c0e506752f54aa51b40b058f71ed058d5272e160aa4a61ee7daa",
+      "desktop/activity.py": "3282dc37b493ba3fd347e279b074fa3dfd5d2c1ea5eaba8131dc568d97ec0750",
+      "desktop/cold_start.py": "1264f34910a0d619c6502c7565e66abbfe7ec642391a461390271b8e0799bf68",
+      "desktop/compiler_bridge.py": "a33613e13995c098488144557a87ee4b34b1ed3f4342610b3a43fa8923945299",
+      "desktop/compiler_host.py": "95a7d000bea96f527996e360eadb7324aaafd583506d4587dae89288d47ab3d2",
+      "desktop/compiler_profile.py": "872b8babf3fe26828ce50422485489fdde35bd59f010ff063be66ef253e323fc",
+      "desktop/compiler_recipe.py": "12b31514327a7c168c915b3a321ee1c17bf8446b49181eed6bed2bced55b01d2",
+      "desktop/compiler_template.py": "bf7a3123eb147caded7700c7f67e0c072cfe915239fa3a5cb004e7e1772f7f85",
+      "desktop/composition.py": "a8688f7dadceac26747e139a8d2e53e3a7a1dd5bdb71751049ab72698650165f",
+      "desktop/continuation_host.py": "9bd258aa8b1a2516e80cd94641f2a9fce3584c5b8aa484badf9854dfc121d7c7",
+      "desktop/control_client.py": "ba950c73328e084329fdb29ab78fdfe86cfed1715a792cdbf9872a74e8c75919",
+      "desktop/control_transport.py": "280d8a55793c241b3ec30e253b758de42386f3329bb6477ba47537f9ca264c6b",
+      "desktop/desktop_controls.py": "89eeb900ce8bcdb079d5400f09408a56e1df15383d58ec74d405a027795469c9",
+      "desktop/execution_budget.py": "77ad74ddbf0eaa89379fbecb305574d5b70cc32f9e63934a14f439ed2c744728",
+      "desktop/foreground_policy.py": "35781fb869c03220c6f48c3e138083b15bbcf7e40187edbfe546ad4da09b7faa",
+      "desktop/gui_launch.py": "c93e837ae15092de1a7814f766731ef38dc118f3e8a50280ee7658b91966355b",
+      "desktop/gui_session.py": "f232609a01f11977d7f011a8b1c7f2b7c2a0c3ca697766b63ec0873ec9f4cc64",
+      "desktop/hermes/__init__.py": "43830f7aa3deb6001eb8aa8646fc515f5d8d74a26f50590984c8278e4db67532",
+      "desktop/hermes/admission.py": "6f12fd6ad21fa194cb337590cf0bbd71b1d394e6a2be0cd79dfdd634af5e0f07",
+      "desktop/hermes/compiler_client.py": "fb0372c6b16738cdb1b0c8d527765e8b7f60a038513950988c84d40b741bf8a1",
+      "desktop/hermes/compiler_evidence.py": "8b2144e5b1634d8e2bc132711d948308ebc62320e98f9129c44817848a806d56",
+      "desktop/hermes/compiler_recovery.py": "03d19056b0c2f73679754aa3eab215d3fb2728b22c71a5ab5e1c327ad6a8c114",
+      "desktop/hermes/compiler_worker.py": "8d18ef60025318804e81f848546e1c3e0e84f61cf4a09fe7bfd1c759b243d91e",
+      "desktop/hermes/continuation.py": "d3b396bba2ed794b7304e3bebb888e2d8d51568de846fbe6549363b42d6de5c6",
+      "desktop/hermes/continuation_worker.py": "6871ecbfaec346ccd658d957b5f593f0dc242db17c1b13b93ab603f693967b67",
+      "desktop/hermes/control_bridge.py": "7a8e0aa672efeb1c6f676446e0f3b6886fd778f5d0f6c185a87d005a0256a3db",
+      "desktop/hermes/native_reader.py": "1f51ea1180ef0d7ad52359430831084de7cde45e21e758068fee5b9a93079464",
+      "desktop/hermes/pause_activity.py": "3cffa8eae39b956de3d873e82593a052c2682aad5f06b36a8ff845080baf0e5d",
+      "desktop/hermes/recovery.py": "c6f07435ae29f4e2542af585ace107f7952583ed3c0735cf6df2f3a0df438f37",
+      "desktop/hermes/report_contract.py": "d86aa6ee0f18912400aa80d96c343128af08ae80e7d8c367ee9c8733ea5d69de",
+      "desktop/hermes/report_validator.py": "378dd445a088a075d300fc85b86160f3b96790ee046adecf926f9e59e8e7d9af",
+      "desktop/hermes/run_recovery.py": "3d78a3f1f78e024d04b0020e3702c784dfc3723a802bdb87c9cbca25ec827fd3",
+      "desktop/hermes/sdk_pins.py": "538a5ea8651e1106c7c535ccd73b33b2f56de6c736d926ce6b92c5fb6eb075ce",
+      "desktop/hermes/service_stop.py": "235b61ad248083f8f0536767ad79473955d96ad1b40189b73c9cfe71439a51c9",
+      "desktop/installation.py": "13e13d532bedb68f150d1096767c98796de83f74dce54021d286c6c18c521e85",
+      "desktop/load_feasibility.py": "23e94f3ee770b065fb323f30bb104d8d5732bf710bd3cc9b2a27daa746014dda",
+      "desktop/mailbox_runtime.py": "aad1c3b383f6954be89ebe6c9f2e680cd286c672d7bb26bd7027402e0a7d6b72",
+      "desktop/native_owner_adapter.py": "5a79c48911c798310104be07ebb978f9ad9fe4f7ab000c328afd992f75415977",
+      "desktop/owned_job.py": "90b59dbdae226419fc9680c961c21dfa9e061df08512a7a8089d6f6d11b2ccc4",
+      "desktop/persistent_host.py": "acff567d5eb6f2c569588bfa684363907897bdb66be8008bc20c10d3ca7c0011",
+      "desktop/profile.py": "caac6f07fc87ccbf51d97003a0d8cb209d21e04bfc00acda6a5c9e05b2d3fbbc",
+      "desktop/recipe_dispatch.py": "3a4813e156448305e7880c3cc3ac3b82e992b34a0e05b7f6b74f09bc9e2c6f4b",
+      "desktop/retained_ui.py": "749b947510377518c452ae7a70fa21c32f27c3f10225f6eb90d87ef03406f5cb",
+      "desktop/run_gui.py": "eb67c9bac75b72bcc545c234b28c54b8c9c5fbfb3c2183f99e63a47abb3a6ef0",
+      "desktop/saved_tasks.py": "75703584b3c4cda42aed6de0e4645ea75b2a3b1e2e81c702e919f626cc8ec1b7",
+      "desktop/serial_listener.py": "048e8ab061e175a978f755801b9a27e3daa292c1dc7dabe3c8a8763be81199b2",
+      "desktop/startup_pipe.py": "0617c527461b4c437474a947a497300e4c28c06d11f8bb43f1e67fc51a159fae",
+      "desktop/task_admission.py": "2ca007580bca43678c529599b6296ff4b97c15e210b9daeb651a8f2c4f12b25d",
+      "desktop/task_handover.py": "8fd90d86635a3b5968a39d32b20e54e67b17c8dc9bb4a90b9fcdcabff97f01b4",
+      "desktop/ui_intent.py": "ff67208a3890656bc76717ac18c8d0c02a19dc2e09b11b81d88fc1f63c0a29d1",
+      "desktop/ui_progress.py": "466deda7ba15d73ea779abf3b1b2e690e92217950b15afdbdf8acf9cda3d2de9",
+      "desktop/video_profile.py": "2ac53c40937e60d984e2903d643d2ee83372760756d1afedf5406b71644b41e4",
+      "desktop/video_recipe.py": "b255d3f939aa3a1e29449bc397e39b50859fcc0cf8a10201859b2ec2dc50bcff",
+      "desktop/video_template.py": "1a74d771d83eed358196467857e11c5986cfc6c196b6d172c614224db311a835",
+      "desktop/window_marker.py": "e2613ef662993be88c332657e4e53c598fdc006634bf8fabf9e0d0a9765c0d36",
+      "desktop/windows_host_base.py": "ad08c31435bc4da77b43c68321a7c08130ab1c4f7bc688c71191c6497abc97bd",
+      "execution_clock.py": "c9d04e8e029d4d88830560482e2437cab3d06ef140a942d16543c3be95642cff",
+      "feedback.py": "c76eba0110659ae67f4a0efd2ca21aff0987af7e9095998e4db9382de20826c3",
+      "gateway.py": "b2009a8a776bcea4dfc3bedac5296c930ae2211bb8e29d7ccdf76a227fefdef8",
+      "handoff.py": "6cd7f593698f6d72fc3ac16d9a541436f65b85103bed2420372364262fcb4db1",
+      "resource_policy.py": "53768d4b95b589bb76d1788a9ccceefe60c05b332b1b1f43dece6b04bfec212a",
+      "resources.py": "a72e376e4dfc6021e61756812f93275af20c28ec1438faf5eb381a491d3db4d9",
+      "scheduler.py": "c7f962bd9ef8e44587cadcc02a41fae8a00de7fc15b105848dcdfc4862bd5b4f",
+      "task_prepare.py": "9cddd6e09b3f5435da08316f8d9ccdfbcff67a336f6f74b420108c4c856223b2",
+      "task_spec.py": "2975c0c4489ac863502189777699d13d7b2b8aca6d19191247fd860ed4a0ce76",
+      "task_store.py": "7bf559ea55e0c19155515f321f7505b4d9275648333bcf2c983c2c280bd2e2e6"
+    },
+    "sdist_sha256": "efd17ce8a5c588878c995857c18b135b12f777c392de1bd48b242947ab1f94f9",
+    "source_lineage_sha256": "8707639da53e139967a5b6762550aca758402aa0dab053e50caa146780243881",
+    "wheel_sha256": "401977bfb0541069752ac386ddc6aaaafad23ab095afc74dc7613ef80481b6a7"
+  },
+  "status": "bounded_foreground_iq3s_automatic_recovery_verified_observer_shutdown_failed"
+}

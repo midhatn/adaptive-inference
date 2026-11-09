@@ -5,12 +5,20 @@ from copy import deepcopy
 from pathlib import Path
 import json
 import os
+import sys
 import tempfile
 import threading
 import time
 from types import SimpleNamespace
 import unittest
 from unittest import mock
+
+WORKTREE_SRC = r"D:\AI\Milestone-20261024-Handoff\pending-tool-recovery-work\src"
+WORKTREE_TESTS = r"D:\AI\Milestone-20261024-Handoff\pending-tool-recovery-work\tests"
+if os.path.isdir(WORKTREE_SRC) and WORKTREE_SRC not in sys.path:
+    sys.path.append(WORKTREE_SRC)
+if os.path.isdir(WORKTREE_TESTS) and WORKTREE_TESTS not in sys.path:
+    sys.path.append(WORKTREE_TESTS)
 
 from adaptive_inference.desktop import composition as q
 from adaptive_inference.desktop.hermes.control_bridge import prepare_task
@@ -230,6 +238,195 @@ class CompositionTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotEqual(self.case.first_ready,old)
         self.assertEqual(old.read_text(),'{"old":true}')
         self.assertEqual(self.case.stop_binding.diagnostics,self.case.saved_diagnostics)
+
+    async def test_it_m2_01_automatic_recovery_compiler_harness(self):
+        """IT-M2-01: End-to-end DesktopComposition.interact automatic recovery with real TaskStore and Mailbox."""
+        from test_compiler_task_spec import compiler_data
+        c = self.case
+        c.work = self.root / 'run'
+        c.work.mkdir(parents=True, exist_ok=True)
+        (c.work / 'work').mkdir(parents=True, exist_ok=True)
+        spec = TaskSpec(compiler_data())
+        c.plan = {
+            'task_id': 'task-it-1',
+            'base_python': os.path.abspath(q.sys.executable),
+            'gateway': 'http://127.0.0.1:8000/v1',
+            'task_spec': spec.data,
+            'task_spec_sha256': spec.sha256,
+        }
+        c.task_spec_path = None
+        c.compiler_kind = 'compiler'
+        c.compiler_bindings = {}
+        c.compiler_bindings_history = []
+        c.compiler_generations = {}
+        c.recovery_records = {}
+        c.worker_replacements_count = 0
+        c.deadline = q.execution_now() + 600.0
+        c.capability = object()
+        c.host_epoch = 'epoch-it'
+        c.first_ready = c.work / 'controller-ready-1.json'
+        c.reopen_context = None
+        c.saved = None
+        c.qualification_hold_after_report = False
+
+        # Set up real TaskStore SQLite & DemandRegistry & Mailbox
+        db_path = c.work / 'task.sqlite3'
+        store = q.TaskStore(db_path)
+        identity = q.DemandIdentity('reg-it-1', 'task-it-1', 'worker', '2026-11-08T00:00:00Z')
+        c.identity = SimpleNamespace(task_id='task-it-1', registration_id='reg-it-1')
+        cp = store.create('task-it-1', spec.prompt, max_attempts=8, metadata={
+            q.NAMESPACE: identity.metadata(),
+            'model': q.MODEL, 'quality': q.QUALITY, 'deadline_clock': q.CLOCK_ID, **spec.metadata()
+        })
+        registry = q.DemandRegistry((q.Registration(store, identity),))
+        c.registry = registry
+        mailbox = q.Mailbox(registry, 'reg-it-1', requester_capability=c.capability)
+
+        # Advance checkpoint to simulate in-flight effect operation
+        with store.claim('task-it-1', expected_revision=cp.revision) as owned:
+            registry.transition('reg-it-1', owned, 'active', expected_revision=owned.checkpoint.revision, updated_at_utc='2026-11-08T00:00:00Z')
+            st = deepcopy(owned.checkpoint.state)
+            st.update(status='pending', attempts=1)
+            effect = owned.begin_operation('effect', details={'tool': 'clang-cl'}, state=st, expected_revision=owned.checkpoint.revision)
+            op_id = effect.operation['id']
+
+        worker_1 = Child(pid=501, code=86)
+        c.handles = [worker_1]
+        c.worker = worker_1
+        c.worker_exit_verified = False
+
+        c.stop_binding = SimpleNamespace(
+            worker=worker_1,
+            mailbox=mailbox,
+            run=c.work,
+            request_id='stop-it-1',
+            _verify_exit=lambda code: 'task_completed' if code == 0 else 'unexpected_exit'
+        )
+        c.stop_id = 'stop-it-1'
+
+        receipt_data = {
+            'operation_id': op_id,
+            'tool': 'clang-cl',
+            'units': 5,
+            'owned_processes_exited': True,
+            'returncode': 0
+        }
+        bound_state = {'bound': True}
+        compiler_host = SimpleNamespace(
+            lifecycle=lambda: dict(bound_state),
+            terminal_receipt=mock.AsyncMock(return_value=receipt_data),
+            retire=mock.AsyncMock(),
+            bind=mock.AsyncMock(),
+            interrupt=mock.Mock()
+        )
+        async def fake_retire(timeout=30):
+            bound_state['bound'] = False
+        compiler_host.retire.side_effect = fake_retire
+        c.compiler_host = compiler_host
+
+        worker_2 = Child(pid=502, code=None)
+        replacement_binding = SimpleNamespace(
+            worker=worker_2,
+            mailbox=mailbox,
+            run=c.work,
+            _capability=object(),
+            request_id='stop-it-2',
+            _verify_exit=lambda code: 'task_completed' if code == 0 else 'unexpected_exit'
+        )
+
+        def mock_launch(cmd, label):
+            if 'reconcile' in label:
+                reconciler = Child(pid=601, code=0)
+                c.handles.append(reconciler)
+                # Repair real SQLite checkpoint via reconcile_operation
+                latest = store.load('task-it-1')
+                with store.claim('task-it-1', expected_revision=latest.revision) as owned:
+                    st = deepcopy(owned.checkpoint.state)
+                    st.update(phase='ready', status='pending')
+                    owned.reconcile_operation(op_id, resolution='completed', result=receipt_data, state=st, expected_revision=owned.checkpoint.revision)
+                return reconciler
+            elif 'worker' in label:
+                boot_path = c.worker_diagnostics() / f'bootstrap-{worker_2.pid}.json'
+                boot_path.parent.mkdir(parents=True, exist_ok=True)
+                boot_path.write_text(json.dumps({
+                    'pid': worker_2.pid,
+                    'task_id': c.identity.task_id,
+                    'registration_id': c.identity.registration_id,
+                    'deadline_monotonic': c.deadline,
+                    'deadline_clock': q.CLOCK_ID,
+                    'owner_epoch': 'epoch-it'
+                }))
+                c.handles.append(worker_2)
+                return worker_2
+            ch = Child(pid=701, code=0)
+            c.handles.append(ch)
+            return ch
+
+        c.launch = mock.Mock(side_effect=mock_launch)
+        def fake_bind_worker_stop():
+            c.stop_binding = replacement_binding
+            c.worker_cap = replacement_binding._capability
+        c.bind_worker_stop = fake_bind_worker_stop
+        def fake_replace(expected, cb):
+            cb()
+            return replacement_binding
+        c.facade = SimpleNamespace(
+            replace_recovered_worker=mock.Mock(side_effect=fake_replace),
+            cooperative_stop=mock.AsyncMock(return_value={'worker_joined': True, 'host_closed': True, 'uncertain': False, 'fault': None})
+        )
+        c.checkpoint = mock.Mock(return_value=SimpleNamespace(
+            revision=5,
+            owner_epoch='epoch-it',
+            prompt=spec.prompt,
+            metadata=spec.metadata(),
+            state=deepcopy(cp.state)
+        ))
+        c.assert_original = mock.Mock()
+        c.host = SimpleNamespace(
+            closing=False, closed=False,
+            controller=SimpleNamespace(fault=None, identity={'owner_id': 'ctrl-it'}),
+            gateway=SimpleNamespace(instance='inst-it'),
+            wait_ready=mock.AsyncMock()
+        )
+        c.gui = SimpleNamespace(process=Child(pid=42))
+        transport_state = {'stop_requested': False, 'stop_confirmed': False}
+        c.transport = SimpleNamespace(lifecycle=lambda: dict(transport_state), _stop_task=None)
+        c.runtime = SimpleNamespace(
+            refresh=mock.AsyncMock(), _transitioning=False,
+            prepared=SimpleNamespace(task_id=c.identity.task_id),
+            selected_execution=lambda: {'execution_id': c.identity.task_id}
+        )
+        c.bind_compiler_worker = mock.AsyncMock()
+
+        interact_task = asyncio.create_task(c.interact())
+        # Let interact() run through worker_1 joining and recovery
+        for _ in range(200):
+            if c.worker is worker_2:
+                break
+            await asyncio.sleep(0.01)
+        self.assertIn((501, op_id), c.recovery_records)
+        self.assertIs(c.worker, worker_2)
+
+        # Now simulate worker_2 completing cleanly
+        worker_2.finish(0)
+        # Wait for interact to observe worker_2 completion
+        for _ in range(50):
+            if c.result['task_completed']:
+                break
+            await asyncio.sleep(0.01)
+        self.assertTrue(c.result['task_completed'])
+
+        # End interact via stop
+        transport_state.update(stop_requested=True, stop_confirmed=True)
+        c.transport._stop_task = asyncio.create_task(asyncio.sleep(0))
+        await asyncio.wait_for(interact_task, timeout=2.0)
+
+        # Verify real SQLite store was repaired
+        final_cp = store.load('task-it-1')
+        self.assertIsNone(final_cp.operation)
+        self.assertFalse(final_cp.requires_reconciliation)
+        self.assertEqual(final_cp.state['status'], 'pending')
+        self.assertEqual(final_cp.state['phase'], 'ready')
 
     async def _prepare_order(self,spec=None,reopened=False):
         from adaptive_inference.desktop import owned_job, activity, cold_start, desktop_controls, gui_launch

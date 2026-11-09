@@ -83,6 +83,17 @@ class HostTaskHandover:
         self.current['facade'].service = self
         self.episodes.append(self.current)
 
+    def replace_worker_episode(self, worker, stop_binding, worker_cap, stop_id, *, first_ready=None):
+        """Update current episode references upon worker replacement."""
+        if self.current is not None:
+            self.current['worker'] = worker
+            self.current['stop_binding'] = stop_binding
+            self.current['worker_cap'] = worker_cap
+            self.current['stop_id'] = stop_id
+            if first_ready is not None:
+                self.current['first_ready'] = first_ready
+            self.current['worker_exit_verified'] = False
+
     def episode(self, runtime):
         for episode in self.episodes:
             if episode['runtime'] is runtime:

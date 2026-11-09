@@ -179,6 +179,56 @@ Provider replies and resource observations were scripted; this gate does not
 establish automatic desktop recovery, active-tool interruption, actual-IQ3_S
 recovery or computer reboot continuation.
 
+## Automatic desktop recovery of a pending tool operation
+
+`DesktopComposition` now detects the pending-effect worker-loss boundary itself
+and runs the verified export, reconcile and replacement sequence described in the
+[video recipe](video-tool-recipe.md#automatic-desktop-recovery). Only three runtime
+modules changed from the published pending-effect increment (`composition.py`,
+`desktop_controls.py`, `task_handover.py`); the
+[source-preservation record](../provenance/automatic-tool-recovery/source-lineage.json)
+binds them and three modified test modules to `9242434`.
+
+The first complete local suite run found **2 errors in 1,595 tests**: two existing
+launch tests used a bare `object()` as the tool host, and the new binding-reuse
+guard calls `compiler_host.lifecycle()`. Production hosts always provide it. The
+test doubles were corrected to report a bound host, tests only; that failed run is
+retained. The complete suite then passed **1,595 tests with no failures, errors or
+skips** in 867.39 seconds, and all 16 remaining workflow commands passed, including
+90 provenance tests ([local validation record](../provenance/automatic-tool-recovery/local-validation-2026-11-08.json)).
+
+### Installed SDK automatic recovery
+
+The [installed SDK trial](../provenance/automatic-tool-recovery/installed-worker-loss-2026-11-08.json)
+ran the installed composition with the real Hermes SDK and one real NVENC
+operation. The first worker exited with code 86 after the host finished the video
+and before the task journal recorded it. With no operator action, the composition
+ran `reconcile` (exit 0, no provider call) and `worker-2` (exit 0), which resumed
+the same task under the same deadline with a fresh owner and completed it after two
+cumulative provider requests. Independent closed review passed **21 checks** with
+**48 original case files unchanged**. Provider replies and resource observations
+were scripted.
+
+### Physical IQ3_S foreground recovery
+
+The [physical trial](../provenance/automatic-tool-recovery/physical-foreground-recovery-2026-11-08.json)
+repeated this with real IQ3_S inference on the default desktop and unchanged quality
+settings. An Explorer `This PC` refresh (F5) during the first request drained and
+parked inference. After return, the host ran the fixed NVENC clip, the first worker
+exited with code 86, and the desktop host reconciled and launched `worker-2`
+automatically. A second native owner served the second request, which consumed
+the reconciled video feedback; the task was accepted and stopped normally. The
+independent closed audit passed **49 checks** with all original files unchanged
+(166 foreground samples, one action, one video operation, empty job accounting).
+
+Two earlier attempts are retained as failures. In the first, the F5 came 1.9 s into
+the request, so the 60 s input-idle window expired 2 s before `parked` and the driver
+timed out. In the second, cold parking correctly refused to start because the engine
+active pointer still named the owner terminated by that timeout. The independent
+observer again failed at shutdown (`three_connection_errors_after_response`); that
+diagnosis remains a separate gate. This is one bounded workflow, not repeated
+reliability, performance, restart or reboot evidence.
+
 ## Original video CI timeout and correction
 
 The [original hosted CI record](../provenance/video-tool/hosted-ci-timeout-2026-11-02.json)

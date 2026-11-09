@@ -40,7 +40,23 @@ citations and unsuccessful evidence. The full milestone sequence is in
 
 ## Current continuation state
 
-**Active isolated M4 increment:** recover a pending compiler/video operation when
+**Active isolated M4 increment:** automatic desktop recovery of a pending
+compiler/video operation after worker loss. `DesktopComposition` now detects
+a non-zero worker exit with one pending effect whose exact terminal result is
+held by the live tool host, exports `CompilerHost.terminal_receipt`, runs the
+ordinary `reconcile` command and launches one replacement worker that keeps the
+task, session, original deadline, counters, reopen context and durable budget.
+It passed the complete [1,595-test local core suite](provenance/automatic-tool-recovery/local-validation-2026-11-08.json)
+and all 16 remaining workflow commands after a tests-only correction (the
+failed first run is retained). The [installed SDK trial](provenance/automatic-tool-recovery/installed-worker-loss-2026-11-08.json)
+passed 21 closed-review checks, and the [physical IQ3_S foreground trial](provenance/automatic-tool-recovery/physical-foreground-recovery-2026-11-08.json)
+passed 49 closed-audit checks: Explorer F5 parked inference, NVENC ran, the
+first worker exited with code 86, and the host recovered automatically. Draft
+[PR #39](https://github.com/midhatn/adaptive-inference/pull/39) is stacked on
+[PR #38](https://github.com/midhatn/adaptive-inference/pull/38). Next: active-tool
+interruption, host loss, observer shutdown diagnosis and M5 restart/reboot.
+
+**Preceding increment (PR #38):** recover a pending compiler/video operation when
 the tool host has retained its exact terminal result but the worker disappeared
 before recording completion. Reuse the existing explicit reconciliation path,
 native lease and task journal; unknown outcomes remain unresolved. This new

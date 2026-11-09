@@ -1124,3 +1124,10 @@
   url = {https://www.ffmpeg.org/ffprobe.html},
   note = {Inspected 2026-11-02 with https://www.ffmpeg.org/ffmpeg-all.html and https://github.com/FFmpeg/FFmpeg/blob/master/doc/ffprobe.texi. Reuses count_frames, select_streams, show_entries and JSON output for the existing exact H264 1280x720 90-frame oracle, followed by full decode. FFmpeg and FFprobe remain external pinned executables. Build-dependent licensing is recorded at https://ffmpeg.org/legal.html; no FFmpeg code or binary is bundled}
 }
+
+@misc{erlangOtpSupervision,
+  author = {{Ericsson AB and Erlang/OTP contributors}},
+  title = {Supervisor Behaviour, Erlang/OTP System Documentation},
+  url = {https://www.erlang.org/doc/system/sup_princ.html},
+  note = {Inspected 2026-11-08 for automatic desktop tool recovery. Design reference only for a supervisor-owned, bounded replacement of a failed worker (restart intensity). Implemented through this repository's existing retained-child lifecycle, task journal and reconcile command; no Erlang/OTP code copied}
+}

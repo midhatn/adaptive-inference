@@ -998,6 +998,19 @@ verified host export and reconciliation path, then qualify automatic SDK recover
 and unchanged-IQ3_S recovery. Interruption during active tool execution remains a
 subsequent gate.
 
+**Automatic desktop recovery result:** `DesktopComposition` now runs that verified
+export, reconcile and replacement sequence itself, through a narrow recovered-state
+lifecycle entry that keeps the task, session, original deadline, counters, reopen
+context and durable budget. The first complete local suite found two test-double
+errors (bare `object()` hosts without `lifecycle()`); tests were corrected, runtime
+unchanged, and the failed run retained. The [local validation record](provenance/automatic-tool-recovery/local-validation-2026-11-08.json)
+then passed 1,595 core tests and all 16 remaining workflow commands. The
+[installed SDK trial](provenance/automatic-tool-recovery/installed-worker-loss-2026-11-08.json)
+(21 closed-review checks) and the [physical IQ3_S foreground trial](provenance/automatic-tool-recovery/physical-foreground-recovery-2026-11-08.json)
+(49 closed-audit checks, two earlier failed attempts retained) both completed with
+automatic recovery after worker exit 86. Next: interruption during an active tool,
+host loss, observer shutdown diagnosis and the M5 restart/reboot gates.
+
 **Validation adjustment:** the [original video CI](provenance/video-tool/hosted-ci-timeout-2026-11-02.json)
 closed with all 12 core-test steps passing, but two final distribution checks
 were cancelled at the whole-job 15-minute limit. Preserve those failures. Give
