@@ -2,6 +2,113 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Bounded compiler tool and installed Hermes feedback
+
+The [second physical compiler task](../provenance/compiler/physical-foreground-compiler-2026-11-02.json)
+at `c72e265` passed **44 primary checks and 34 independent review checks**.
+The runtime is identical to the first task's `414b767` runtime. One actual
+Explorer F5 and refresh was fully bracketed between observations of the same
+first active request; the later observation showed foreground draining with
+admission closed. Eighty-two matching independent activity samples covered the
+hold through parking. No second inference request or compiler grant occurred
+during that hold. The first native owner confirmed 8/8 exits before the grant.
+One compile/test operation produced exactly `23 units`, its three children
+joined, and its owned job was empty. A distinct native owner served request 2,
+which consumed the compiler feedback, and confirmed 9/9 final exits. The task
+completed within its original 900-second allowance; one normal Stop closed the
+application, worker, GUI and transport.
+
+The fresh trial used a single input with immediate observations and corrected
+only the prospective auditor's ordinary-budget assumption. Its strict onset
+predicate, model quality, runtime and acceptance requirements stayed unchanged.
+The complete 1.4968-second action bracket was retained. Original files and copied
+databases were unchanged by the audit; independent review retained 255 input
+hashes. The earlier task and its failed audit/onset remain closed and unchanged.
+
+The second independent observer also exited 1 after three connection errors;
+its separate closure flag remains false. The 44-check result qualifies the
+bounded compiler/foreground workflow, including native cleanup, and does not
+turn that observer result into a pass. No sustained desktop-performance,
+compiler-interruption, model-error-correction, reboot, media or full M4 result
+follows from this one foreground episode.
+
+The [first physical compiler task](../provenance/compiler/physical-compiler-evidence-2026-11-02.json)
+at `414b767` used the installed Hermes SDK and unchanged IQ3_S settings. Two
+actual model requests produced one C++17 compile/test operation and completed
+the original task. The first native owner confirmed seven retained exits before
+the tool grant. The three compiler stages joined, CTest passed, and stdout was
+exactly `23 units` without a newline. The next native owner became ready before
+request 2 and confirmed five retained exits at final release. The app, prepare
+process and worker joined normally; one observed Resume and one final Stop were
+used. No model/provider answer was scripted or task replayed.
+
+The frozen full audit recorded 31 passing checks, then failed at an incorrect
+requirement for reopen-specific budget metadata. A separate copied-state
+diagnosis verified the same deadline in all 20 deadline-bearing checkpoints
+and the original 900-second allowance. A separate 26-check review verified the
+native owners, compiler artifacts, UI controls and unchanged 73-module source,
+host and worker maps. Neither supplement converts the original full audit to a
+pass. The first diagnosis also rejected a JSON projection that changed UTC
+strings; the preserved successor added only the existing clock tags.
+
+The unchanged onset predicate independently returned `Missed first request
+overlap`: there were 32 active-first-request observations before the compound
+foreground action and none after its completion. Real draining, release and
+parking occurred, but the stricter foreground gate remains unmet. The separate
+status observer exited 1 after three connection errors following responses;
+normal application cleanup does not relabel that observation as a pass.
+This qualifies the narrower real-model compiler workflow, not full foreground
+coexistence, compiler Stop/Continue, model-driven error correction, physical
+restart, media quality, performance improvement or complete M4.
+
+The original [push](https://github.com/midhatn/adaptive-inference/actions/runs/41367165412)
+and [PR](https://github.com/midhatn/adaptive-inference/actions/runs/41367175870)
+checks on `414b767`, both attempt 1, passed all 14 jobs, including 12 portable
+core-test steps and 12 distribution checks. These hosted results and the
+physical Windows evidence have different scopes.
+
+The [compiler increment](compiler-tool-recipe.md) lets an explicitly opted-in task
+submit bounded C++ source to a fixed CMake/CTest recipe through the existing
+controller. Its [local record](../provenance/compiler/local-validation-2026-11-02.json)
+binds 1,499 passing core tests, complementary coverage of all 90 provenance tests,
+the remaining local workflow gates, a 1,326-file source package, 73 runtime
+modules and seven successful fresh-installation child processes. These local
+Windows results do not establish the hosted Linux/macOS/Python matrix.
+
+The [fixed-template native run](../provenance/compiler/template-native-validation-2026-11-02.json)
+produced exactly `23 units` and passed CTest with all compiler children joined.
+The [actual installed SDK workflow](../provenance/compiler/installed-sdk-evidence-2026-11-02.json)
+then completed a deliberately failed build followed by corrected source and a
+successful test. Three scripted provider answers exercised real Hermes dispatch,
+the host HTTP route, durable native feedback, two actual compiler operations and
+the original 900-second allowance. An independent 54-check closed audit verified
+that workflow and its normal worker/compiler joins without repeating the task.
+
+The full SDK harness remains failed: its final whole-tree comparison reported a
+change during a readonly database audit. A disposable-copy experiment reproduced
+SQLite creating the exact observed WAL bookkeeping files without changing the
+database/history. The original before/after maps were not retained, so that
+diagnosis does not reconstruct every original file change. Earlier harness
+failures and the interrupted attempt remain preserved. The accepted evidence is
+the independently verified SDK/compiler workflow; that earlier trial claims no model reasoning, real
+foreground/resource handoff, restart or performance result.
+
+## Inert foreground-switch rehearsal
+
+The [1 November rehearsal](../provenance/video-coexistence/inert-focus-switch-2026-11-01.json)
+used a fresh paused controller and unstarted video page at installed source
+`7306a530`. Ordinary Alt+Tab switching preserved Chrome's maximized whole-window
+bounds of 1536×816 and visible video/Start controls on both returns. These UI
+facts are coordinator-attested observations. Independent review of 22 unchanged
+closed records verified zero provider calls, no native-engine launch, no output
+write and normal controller cleanup. The worker's expected Stop exit 4 and the
+page server's intentional Ctrl+C shell exit 1 retain their actual meanings.
+
+The page remained `not_started`. No capture timing, playback quality, physical
+video attribution, performance or full M3 claim follows. Window bounds are not
+a new browser-viewport measurement. Keep this cold task closed and recheck setup
+before a future comparison; the earlier incomplete capture remains failed.
+
 ## Durable reboot-budget source integration
 
 ### First physical restart attempt: expired before continuation

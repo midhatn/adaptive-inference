@@ -495,7 +495,16 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_actual_cpu_child_one_resume_shared_report_and_lifetime(self):
         c=self.c;report=(c.work/'work/report.json').read_bytes();effects=(c.work/'effect-receipts.jsonl').read_bytes()
-        grant=await self.select();reply=await self.continue_task(grant)
+        grant=await self.select()
+        original_save = rec.save
+        readiness_transitions = []
+        def observe_save(path, value):
+            if Path(path).name == 'controller-ready.json':
+                readiness_transitions.append(c.runtime._transitioning)
+            return original_save(path, value)
+        with mock.patch.object(rec, 'save', side_effect=observe_save):
+            reply=await self.continue_task(grant)
+        self.assertEqual(readiness_transitions, [False])
         record=c.continuation.current
         self.assertEqual(reply['phase'],'running')
         self.assertEqual(await c.join_child(record['child']),0)

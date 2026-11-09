@@ -1,0 +1,231 @@
+{
+  "contract": {
+    "job_commit_limit_mib": 2048,
+    "native_control": "Production launch binding, compiler client/host, SDK dispatch and original native conversation. No GUI authorization submitted.",
+    "original_execution_seconds": 900,
+    "parallel_jobs": 2,
+    "recipe_max_seconds": 90,
+    "resource_limit_scope": "Aggregate committed memory per Windows compiler job; not a physical RAM or OS CPU cap.",
+    "task_spec": {
+      "budget": {
+        "execution_seconds": 900,
+        "max_admission_attempts": 32,
+        "max_attempts": 8,
+        "max_requests": 8
+      },
+      "compiler": {
+        "expected_stdout": "23 units",
+        "max_runs": 2,
+        "max_source_chars": 16384,
+        "recipe_id": "cpp17-stdout.v1"
+      },
+      "inputs": [],
+      "outputs": [],
+      "prompt": "Compile and test a C++17 program that writes exactly \"23 units\" to stdout. Correct a compiler error if necessary, then report the actual result.",
+      "schema": "adaptive.task-spec.v2",
+      "validation": {
+        "validator": null
+      }
+    },
+    "task_spec_sha256": "31c1741a5bba14c72855ca57d295cc2c0b4f82c3ee73ea83cae031dd7c0c63c3",
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "build_and_test"
+    ]
+  },
+  "copied_database_diagnosis": {
+    "historical_limit": "The reproduction explains a concrete failure mechanism; it does not recover the missing original before/after inventory.",
+    "immutable_control": "Immutable reads of both the complete copied bundle and proven-empty-WAL main-only copy changed no files. All four cases had identical SQL contents: six messages and one session.",
+    "nonempty_wal_removed_or_ignored": false,
+    "observed": "After proving the saved WAL empty, the mode=ro native reader on a main-file-only copy created an empty WAL and 32768-byte SHM identical to the original audit-time sidecars; the main database remained unchanged.",
+    "original_and_complete_copy_unchanged": true,
+    "passed": true,
+    "references": [
+      "https://sqlite.org/wal.html#read_only_databases",
+      "https://sqlite.org/uri.html#uriimmutable"
+    ],
+    "scope": "Disposable copies only; no original database opened or SDK/compiler/model rerun.",
+    "sql_dump_sha256": "91a82a866440949f55788215ea0c604eb6d24b842e86e730b2d2c5ceec97f43c",
+    "sqlite_version": "3.45.1"
+  },
+  "core_result": {
+    "artifact_bytes": 11776,
+    "artifact_sha256": "64798885617dc8ca73b8dd876582a83142cfe84765a499c7930d09c0c9afa12f",
+    "bridge_pending": 0,
+    "bridge_unknown": 0,
+    "compiler_operations": 2,
+    "compiler_statuses": [
+      "failed",
+      "passed"
+    ],
+    "ctest_passes": 1,
+    "durable_requests_match_wire_and_backend_hashes": true,
+    "exact_native_results_persisted": true,
+    "failed_build_exit_code": 1,
+    "failed_feedback_visible_before_request": 2,
+    "host_binding_retired": true,
+    "independent_checks": 54,
+    "independent_review_passed": true,
+    "inflight_operation": false,
+    "joins": {
+      "all_compiler_children_joined": true,
+      "cleanup_errors": [],
+      "compiler_bootstrap_children": 5,
+      "compiler_bootstrap_exit_codes_by_attempt": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "compiler_job_active_counts": [
+        0,
+        0
+      ],
+      "forced_cleanup": false,
+      "known_recorded_pids_present_at_review": 0,
+      "prepare_and_worker_joined": true,
+      "prepare_exit": 0,
+      "remaining_threads": [
+        "MainThread"
+      ],
+      "sdk_worker_exit": 0
+    },
+    "native_transcript_rows": 6,
+    "native_transcript_sha256": "9f7d2b575e29c2dcb3c7e820735c9c4dca2c69142ba6d59e31367c300855ea98",
+    "original_deadline_and_budget_preserved": true,
+    "original_files_unchanged_by_independent_review": true,
+    "original_operation_receipt_lineage_verified": true,
+    "owner_released": true,
+    "program_exit": 0,
+    "program_stderr_bytes": 0,
+    "provider_requests": 3,
+    "reconciliation_required": false,
+    "stdout": "23 units",
+    "stdout_bytes": 8,
+    "stdout_has_newline": false,
+    "stdout_sha256": "458e1deb705506687fa676772dbc70df06f3168034f03eef9679ac85d5bbc5c7",
+    "successful_feedback_visible_before_request": 3,
+    "successful_stage_exits": {
+      "build": 0,
+      "configure": 0,
+      "test": 0
+    },
+    "task_accepted": true,
+    "test_report_sha256": "5aff70bfdcfced893677840aed72d4e909e45fa6cc1a968701220003d9f26b17"
+  },
+  "environment": {
+    "actual_model_inference": false,
+    "advertised_model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+    "compiler": "Clang 22.1.3 with pinned clang-cl and LLD; exact executable hashes are in the linked native-template record",
+    "context": {
+      "context_length": 65536,
+      "max_tokens": 10923,
+      "reserved_output": 10923,
+      "threshold": 0.8,
+      "threshold_tokens": 46421
+    },
+    "hermes_sdk_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "hermes_sdk_source": "https://github.com/NousResearch/hermes-agent/tree/14e1e43a23761b369641208e204365cd6cb9399d",
+    "host_python": "3.11.9",
+    "platform": "Windows x64",
+    "quality": {
+      "experimental_speed_projection": false,
+      "max_tokens": 10923,
+      "reasoning_budget_tokens": 8192,
+      "reasoning_effort": "high",
+      "strata_tune": {
+        "pcie_frac": 0.37
+      }
+    },
+    "worker_python": "3.14.7"
+  },
+  "evidence_sha256": {
+    "backend_observations": "b726596aaa571552b27107c9268e1d8b7c5b94720c91f31e25b8d38c2ef5a890",
+    "copied_reader_probe_join_receipt": "d55cc00397e40813b47f4fd56dfd13e86698f863aa72f33071f2698ae46ea0d7",
+    "copied_reader_probe_results": "019d6a5f36f512d0dc850b718f0fea8295f4da274dd2a5773c8f8c49244403b2",
+    "effect_receipts": "de41509a83c9baa45efcd930bc3c4705260859ea37c7c727c7d2f284bf56a3c6",
+    "executed_harness": "823fcbc8a6004991697cec48f5c0a84705968d787e4d44e67e04c3a9117cdaeb",
+    "failed_recipe_receipt": "a63df30bda94542f93ce5d51da2a9414948bf3f04689c8c555b23b7c70973f8d",
+    "independent_closed_review": "ef551cc5b12de8ddb4133f8c4c6a632567ee37778d68a623144ef2a65e440bae",
+    "independent_review_script": "4291b9b4fc842951ecd6e4fd3a16ca50807682ea53eb06bca39ccb5273483763",
+    "process_observation": "bb58dd5af1158e5c99ecb3c95fd2d480da816023f88af2ef6692f63406ad92f8",
+    "raw_harness_receipt": "9e4f2a7e951dee2494c5498e91bb05e1f6f27d76acd330c24785023238fcbe16",
+    "raw_sdk_worker_result": "9811d8a216cee791d8eabab726ef08dd55d19e6ff17007100924fca651c19543",
+    "successful_recipe_receipt": "a52753891978e7e321c33f763ea3327fa48a788ae9339a6d536bfc9b5bfbb953",
+    "wire_observations": "54c905febca9d65b828e4f4897ed526d7492262ca7e5867016143ee9a377bec4"
+  },
+  "full_harness_result": {
+    "attempt": "04",
+    "boundary": "After the SDK worker joined and all semantic checks in closed_audit succeeded; its final whole-tree hash comparison failed.",
+    "exit_code": 1,
+    "failure": "Closed audit changed task evidence",
+    "limitation": "The harness did not retain its before/after maps, so we cannot assert that only SQLite sidecars changed during the original audit. The failed receipt remains unchanged.",
+    "original_full_tree_delta_reconstructable": false,
+    "passed": false,
+    "separate_review": "The later 54-check review verifies the narrower core result using closed artifacts and immutable database copies. It does not convert attempt 04 into a full harness pass."
+  },
+  "limits": [
+    "Provider answers and resource telemetry are scripted. This does not establish model reasoning, inference quality, real native-engine release or foreground handoff.",
+    "No installed desktop UI, Stop during compilation, Continue or physical restart was exercised.",
+    "No performance comparison is claimed; this review did not rerun the task.",
+    "The result covers the exact Windows build and environment; hosted cross-platform validation remains separate.",
+    "Private paths, capabilities and databases remain local. This sanitized summary publishes hashes and repository references only."
+  ],
+  "preserved_failed_attempts": [
+    {
+      "attempt": "01",
+      "exit_code": 1,
+      "failure_record_sha256": "3e62eebfa9ee6a0f1afca0b1f0bdbb643a3bc202f0288bad131458633f15751d",
+      "reason": "An unclosed list bracket prevented parsing before imports or any task/server/compiler launch. The initial independent source review also missed this syntax error.",
+      "source_sha256": "df95a19047cf14c0fc07fb006cf31b75cfca0874dfef2f90be3ef71e0adab0c7"
+    },
+    {
+      "attempt": "02",
+      "exit_code": 1,
+      "reason": "The private no-UI stub wrongly refused a status read. No provider/compiler call occurred; prepare joined normally, while the worker was killed during cleanup and joined with exit 1.",
+      "receipt_sha256": "20c6fe0eafa1fdfc3bfce044721094b43546f6c885045e20952a0ad198718231",
+      "source_sha256": "65ebe61face795da73d13db98950cef1aaa78922f0c9b3f9527f9ce4497d92d4"
+    },
+    {
+      "attempt": "03",
+      "exit_code": 1,
+      "failure_record_sha256": "34ed3eaf61730d2f4c449780ad37fbb1558cc44749cba3e362f2306151876852",
+      "normal_child_joins_confirmed": false,
+      "reason": "The private resource fixture reused a simulated owner identity on its second restore; the controller correctly faulted after two compiler operations. The run was explicitly interrupted. No terminal harness receipt or normal child-join claim exists.",
+      "source_sha256": "175f8a8c0289d4526c625e6985f15fffd794dc092137f4a0865feac077288a52"
+    }
+  ],
+  "recorded_date": "2026-11-02",
+  "related_records": {
+    "implementation": "docs/compiler-tool-recipe.md",
+    "local_validation": "provenance/compiler/local-validation-2026-11-02.json",
+    "source_lineage": "provenance/compiler/source-lineage.json",
+    "template_native_validation": "provenance/compiler/template-native-validation-2026-11-02.json"
+  },
+  "schema": "adaptive.compiler.installed-sdk-evidence.v1",
+  "scope": "An installed pinned Hermes SDK conversation receives a real C++ build failure, submits corrected source, receives actual CTest success, and completes the original task. Provider answers and resource observations are scripted.",
+  "source_identity": {
+    "baseline_commit": "84ef4d21bf948c8266c76910a22648c27f1113d8",
+    "expected_installed_identity_sha256": "9535f84a9faa9eb22a3f7a11a20d033714f61c2ed225beb9b483e50164fb94c2",
+    "local_validation_record_sha256_at_review": "b5564e1af03b854a008dde93d514a3cc3697ddfc4ee07b59851bec17fb0f2485",
+    "note": "The baseline commit alone does not contain the candidate. Exact runtime bytes below identify the additional implementation; the integrating maintainer assigns the publication commit.",
+    "runtime_map": {
+      "hash_serialization": "UTF-8 json.dumps(map, sort_keys=True, ensure_ascii=False, allow_nan=False), default separators",
+      "json_pointer": "/source_identity/runtime_sha256",
+      "map_sha256": "c54825a1c8b0a49f39707dd47e9ecfd42e53c82f732d00a667421fa2cd9092ad",
+      "modules": 73,
+      "path": "provenance/compiler/local-validation-2026-11-02.json",
+      "paths_relative_to": "src/adaptive_inference"
+    },
+    "source_lineage_sha256": "21606221cf65fba78fab867228d7aee4a82a1d52593c3aa13402266a5ef81f8d",
+    "template_native_record_sha256": "4bd4ad52c583b83b5af3f3d636e0ac5814f9f123fe27a1ead22fb3934fd02ea2",
+    "wheel_sha256": "dcb8f266d88f6fbcee0abc56fbb27596de7a5e4149b632336768373e5ee37bb0"
+  },
+  "status": "core_workflow_verified_full_harness_failed"
+}

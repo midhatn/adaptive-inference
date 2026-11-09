@@ -44,7 +44,7 @@ def command_path(path):
 
 def create_setup(destination, *, worker_python, hermes_source,
                  hermes_site_packages, native_owner, gateway_port=18100,
-                 foreground_policy=COOPERATIVE_POLICY):
+                 foreground_policy=COOPERATIVE_POLICY, compiler_settings=None):
     destination = Path(destination).absolute()
     if destination.exists() or not destination.parent.is_dir():
         raise ValueError('Choose a new setup folder under an existing parent')
@@ -76,6 +76,13 @@ def create_setup(destination, *, worker_python, hermes_source,
         },
         'foreground_policy': foreground_policy,
     }
+    if compiler_settings is not None:
+        from adaptive_inference.desktop.compiler_profile import (
+            compiler_settings as parse_compiler_settings, verify_settings,
+        )
+        value = json.loads(Path(compiler_settings).read_text(encoding='utf-8'))
+        verify_settings(parse_compiler_settings(value))
+        profile['compiler'] = value
     WindowsProfile.from_dict(profile)
     launch_source = Path(__file__).with_name('launch.py').read_bytes()
     command = ('@echo off\nsetlocal DisableDelayedExpansion\nchcp 65001 >nul\n'
@@ -104,6 +111,8 @@ def main(argv=None):
     parser.add_argument('--gateway-port', type=int, default=18100)
     parser.add_argument('--foreground-policy', choices=(COOPERATIVE_POLICY, STRICT_POLICY),
                         default=COOPERATIVE_POLICY)
+    parser.add_argument('--compiler-settings', type=Path,
+                        help='Optional explicit compiler-settings JSON; verifies tool hashes without running them')
     args = parser.parse_args(argv)
     try:
         print(json.dumps(create_setup(**vars(args)), indent=2))

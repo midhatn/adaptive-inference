@@ -109,7 +109,20 @@ def resumable(owned, db, work):
     verify_tool_rows(history, state['tools'])
     verify_validation_rows(history,state,checkpoint.metadata.get('pre_effect_validator'))
     verify_artifacts(state, work, task_spec=task_contract(checkpoint))
+    verified_compiler_receipts(checkpoint, Path(work).parent, native_rows=history,
+                              store_path=owned._store.path)
     return history
+
+
+def verified_compiler_receipts(checkpoint, task_root, *, native_rows=None, store_path=None):
+    """Shared read-only compiler proof at safe restart, Stop and result boundaries."""
+    spec = task_contract(checkpoint)
+    if spec is None or spec.compiler is None:
+        return None
+    from adaptive_inference.desktop.hermes.compiler_evidence import verify_compiler_evidence
+    return verify_compiler_evidence(checkpoint, task_root,
+        checkpoint.state['native_history'] if native_rows is None else native_rows,
+        store_path=store_path)
 
 
 def task_contract(checkpoint):
@@ -191,6 +204,10 @@ class Recovery:
 
     def state(self):
         return copy.deepcopy(self.owned.checkpoint.state)
+
+    def compiler_receipts(self):
+        """File-only recovery grants no compiler authority or completion proof."""
+        return None
 
     def checkpoint(self, state):
         return self.owned.save_checkpoint(state, expected_revision=self.owned.checkpoint.revision)
@@ -501,7 +518,8 @@ class Recovery:
             self.control_safe_point()
             state = self.state()
         if self.task_spec is not None:
-            self.task_spec.completion(self.work, state['tools'], outcome.get('final_response', ''))
+            self.task_spec.completion(self.work, state['tools'], outcome.get('final_response', ''),
+                                      compiler_receipts=self.compiler_receipts())
         state.update(status='accepted', phase='accepted', native_history=history,
                      output=str(outcome.get('final_response', '')))
         self.checkpoint(state)
@@ -564,5 +582,9 @@ ACTIVE = None
 def register(ctx):
     if ACTIVE is None:
         raise RuntimeError('Recovery requires an explicitly owned host task')
+    if ACTIVE.task_spec is not None and ACTIVE.task_spec.compiler is not None:
+        from adaptive_inference.desktop.hermes.compiler_recovery import CompilerRecovery
+        if type(ACTIVE) is not CompilerRecovery or ACTIVE.register_tool(ctx) is None:
+            raise RuntimeError('Compiler task requires its registered public SDK tool')
     ctx.register_middleware('llm_execution', ACTIVE.llm)
     ctx.register_middleware('tool_execution', ACTIVE.tool)

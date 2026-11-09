@@ -25,6 +25,20 @@ completed result repeated no work. See the [later-task result](provenance/instal
 This is a development-source increment beyond the released alpha above;
 computer-reboot and broad daily-use qualification remain on the roadmap.
 
+**Compiler development:** an installed IQ3_S/Hermes task has now yielded to a
+real foreground action, released the model's native resources, built and tested
+C++, restored inference and completed its original task. The program produced
+exactly `23 units`. The [fresh physical result](provenance/compiler/physical-foreground-compiler-2026-11-02.json)
+passed 44 primary checks and 34 independent review checks, including the timing
+of foreground activity and normal owned cleanup. Its separate status observer
+still failed during shutdown. The [earlier attempt](provenance/compiler/physical-compiler-evidence-2026-11-02.json)
+retains its failed audit and missed foreground overlap. The separate
+[SDK evidence](provenance/compiler/installed-sdk-evidence-2026-11-02.json)
+qualifies compiler-error correction with scripted provider replies. Full
+daily-use coexistence, real-model error correction and broad M4 remain open.
+Try the [compiler task and setup example](examples/tasks/compiler-stdout/README.md)
+and read the [compiler recipe and scope](docs/compiler-tool-recipe.md).
+
 **Continuing this project with an AI or a team?** Start with
 [AGENTS.md](AGENTS.md), the dated [continuation handoff](HANDOFF.md), and the
 [multi-agent workflow](docs/multi-agent-collaboration.md). They preserve the goal,

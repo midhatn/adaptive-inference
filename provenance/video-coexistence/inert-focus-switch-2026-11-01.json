@@ -1,0 +1,60 @@
+{
+  "schema": "adaptive.video.inert-focus-switch.v1",
+  "recorded_date": "2026-11-01",
+  "result": "accepted_at_inert_rehearsal_scope",
+  "scope": "Ordinary window switching with a fresh paused controller and an unstarted video page; no model, playback measurement or graphics capture.",
+  "installed_source": "7306a53085ddc31d53d2ba50e91975c80cfc0014",
+  "installed_modules_verified_per_role": 60,
+  "operator_observation": {
+    "basis": "Coordinator-attested actual Computer Use actions and returned screenshots; the independent reviewer checked closed records, not an archived screenshot sequence.",
+    "ordinary_alt_tab_actions": 4,
+    "chrome_returns": 2,
+    "chrome_whole_window_bounds": {"width": 1536, "height": 816, "origin_x": 0, "origin_y": 0},
+    "bounds_are_browser_viewport_measurement": false,
+    "maximized_state_preserved_on_both_returns": true,
+    "complete_video_area_and_enabled_start_visible": true,
+    "activation_or_geometry_repair_during_switching": false,
+    "controller_resume_actions": 0,
+    "video_play_or_measurement_start_actions": 0,
+    "ordinary_stop_actions": 1
+  },
+  "closed_record_review": {
+    "accepted": true,
+    "raw_inputs_unchanged": 22,
+    "sqlite_connections_opened": 0,
+    "provider_calls": 0,
+    "native_engine_launch_attempted": false,
+    "output_written": false,
+    "task_completed": false,
+    "task_expired": false,
+    "original_task_budget_seconds": 900,
+    "host_exit_code": 0,
+    "prepare_exit_code": 0,
+    "worker_exit_code": 4,
+    "worker_exit_meaning": "Expected cooperative service Stop during paused bootstrap; the task's passed=false outcome is retained.",
+    "gui_exit_code": 0,
+    "retained_obligations_and_control_cleanup_confirmed": true,
+    "forced_child_termination": false,
+    "page_result": "incomplete/not_started",
+    "page_server_shell_exit_code": 1,
+    "page_server_exit_meaning": "Intentional Ctrl+C after controller closure; not relabelled exit zero."
+  },
+  "evidence_sha256": {
+    "operator_attestation": "f3c31ac1e411143434aef552d5c5185a59864e4ed58188abdca495667ca6ab21",
+    "independent_review": "ae87abdace29207c5faad9421a395def0685b4e95668f23d17e512b3adee14e0",
+    "ui_review_addendum": "32f926809455a4b99ece35ad0cc511668f96b58963a195fdf1f6d7d70efe20f9",
+    "controller_supervisor": "a2105787c36c20eb38572171dce9ab5e38af3b35ab73dc9e2dce43fa999e08b5",
+    "controller_result": "cdb79e01ce3f0db995d95bf94fb4f7f2795a4ed0e948f4e807bca4cb1ca62e01",
+    "unstarted_page": "71d514a598db649da484d9fd0bfd6499ea58f36b366dba2b5862d076a0959bc7"
+  },
+  "limits": [
+    "No capture-to-Start timing margin, playback quality, physical display attribution, model performance, full M3 or reboot result is established.",
+    "The whole-window bounds above cannot be directly compared with earlier browser viewport dimensions.",
+    "The rehearsal task is closed and must not be resumed or replayed. Existing comparison attempts retain their outcomes.",
+    "A future comparison requires fresh setup and timing verification; this rehearsal does not repair the previous incomplete graphics capture."
+  ],
+  "references": [
+    "https://support.microsoft.com/en-us/windows/experience/how-to-multitask-in-windows",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow"
+  ]
+}

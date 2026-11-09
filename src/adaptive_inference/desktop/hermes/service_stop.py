@@ -346,6 +346,8 @@ class WorkerStopBinding:
         flushed_tools(cp.state)
         from adaptive_inference.desktop.hermes.recovery import task_contract
         verify_artifacts(cp.state, self.run/'work', task_spec=task_contract(cp))
+        from adaptive_inference.desktop.hermes.recovery import verified_compiler_receipts
+        verified_compiler_receipts(cp, self.run, store_path=self.mailbox.store.path)
         path = self.diagnostics/f'result-{self.worker.pid}.json'
         raw = path.read_bytes()
         if len(raw) > 1024 * 1024:

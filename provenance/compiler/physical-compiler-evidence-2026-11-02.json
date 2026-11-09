@@ -1,0 +1,240 @@
+{
+  "contract": {
+    "budget": {
+      "execution_seconds": 900,
+      "max_admission_attempts": 32,
+      "max_attempts": 8,
+      "max_requests": 8
+    },
+    "compiler": {
+      "expected_stdout": "23 units",
+      "max_runs": 2,
+      "max_source_chars": 16384,
+      "recipe_id": "cpp17-stdout.v1"
+    },
+    "job_commit_limit_mib": 2048,
+    "parallel_jobs": 2,
+    "recipe_max_seconds": 90,
+    "resource_limit_scope": "Aggregate committed memory for the owned Windows compiler job and explicit build parallelism; not physical RAM, CPU isolation or system-wide reservation.",
+    "task_spec": "examples/tasks/compiler-stdout/task.json",
+    "task_spec_file_sha256": "105b5a33ddc7ea6a91d19342eb43e6006e2c4f3e1dcba72664417d93c08a8410",
+    "task_spec_sha256": "69f2397ad31abda8b7b12e8eb4823ae66619476465e680f53157405576fab832"
+  },
+  "core_result": {
+    "artifact_bytes": 9216,
+    "artifact_sha256": "918c5a658f4be622c48a8ad7df0294c1aa5e4af47a21f9dbf48b8f23d3404ddb",
+    "compiler_admission_timing_note": "Recipe timing begins while waiting for a grant. The first compiler stage starts only after the grant; admission start is not process execution.",
+    "compiler_operations": 1,
+    "compiler_statuses": [
+      "passed"
+    ],
+    "durable_feedback_in_request": 2,
+    "durable_request_wire_and_native_history_checked": true,
+    "joins": {
+      "app_exit": 0,
+      "compiler_bootstrap_children": 3,
+      "compiler_children_joined": true,
+      "compiler_job_accounting": {
+        "active": 0,
+        "limit_terminated": 0,
+        "total": 58
+      },
+      "emergency_app_termination": false,
+      "forced_compiler_cleanup": false,
+      "gui_exit": 0,
+      "listener_and_transport_closed": true,
+      "native_retained_and_confirmed_exits": [
+        7,
+        5
+      ],
+      "native_server_exits": [
+        0,
+        0
+      ],
+      "prepare_exit": 0,
+      "worker_exit": 0
+    },
+    "model_requests": 2,
+    "program_exit": 0,
+    "program_stderr_bytes": 0,
+    "provider_runtime_generations": [
+      1,
+      2
+    ],
+    "resource_sequence": [
+      "first native owner fully released",
+      "fresh capacity checked",
+      "exclusive compiler grant",
+      "configure, build and CTest completed",
+      "compiler grant completed",
+      "distinct native owner restored",
+      "second real inference request consumed compiler feedback",
+      "second native owner fully released",
+      "observed normal Stop"
+    ],
+    "restoration_during_compiler_grant": false,
+    "stage_exits": {
+      "build": 0,
+      "configure": 0,
+      "test": 0
+    },
+    "stdout": "23 units",
+    "stdout_bytes": 8,
+    "stdout_has_newline": false,
+    "stdout_sha256": "458e1deb705506687fa676772dbc70df06f3168034f03eef9679ac85d5bbc5c7",
+    "task_accepted": true,
+    "test_report_sha256": "c305e26880858c5d89b54d5ae78bf98feed660d9784e7ffb3d9ea0e730bff552",
+    "tests_passed": [
+      "program_stdout"
+    ]
+  },
+  "environment": {
+    "actual_model_inference": true,
+    "compiler_reference": "provenance/compiler/template-native-validation-2026-11-02.json",
+    "context": {
+      "context_length": 65536,
+      "max_tokens": 10923,
+      "reserved_output": 10923,
+      "threshold": 0.8,
+      "threshold_tokens": 46421
+    },
+    "hermes_sdk_revision": "14e1e43a23761b369641208e204365cd6cb9399d",
+    "hermes_sdk_source": "https://github.com/NousResearch/hermes-agent/tree/14e1e43a23761b369641208e204365cd6cb9399d",
+    "host_python": "3.11.9",
+    "model": "qwen3.8-flash-next-iq3_s-adaptive-media-beta",
+    "platform": "Windows x64",
+    "quality": {
+      "experimental_speed_projection": false,
+      "max_tokens": 10923,
+      "reasoning_budget_tokens": 8192,
+      "reasoning_effort": "high",
+      "strata_tune": {
+        "pcie_frac": 0.37
+      }
+    },
+    "worker_python": "3.14.7"
+  },
+  "evidence_sha256": {
+    "app_result": "3525bbb9589d1128644f75de8c7d837a746a9240392b5c0a1134071f625aca2e",
+    "app_supervisor": "cf8a8956b0f7c87b3afbd889422fe030cf83d21529145510caf20e0f02fc4c2c",
+    "budget_and_onset_diagnosis": "9861dd2e3388a5da3e2eaf2db90c58ff8e180dd50c8b7c531b7ca289f9a1a20b",
+    "compiler_recipe_receipt": "8fc20c1819420ad49469b6b324a31216ec8288bb699bf8e1a4e8a67f49d8410a",
+    "effect_receipts": "0df826e7d46f6b10de69a26fd8be4e5cfdab23f7d8bdeb105df78fdf9110ad4d",
+    "exact_onset_projection": "044f10f55cef4a59d3e494942a5a57c213365fbc1043b1069ded0d5823e39813",
+    "full_audit": "6b227a3e1f1c0e742e3bc70e22c36fd9ccf2bd7d4389c47ebb2ac5920213512d",
+    "host_result": "bac5a702d32f47e57598cd9f2c1c8a92a5e87c4da714f7aa38c6a415ae770a70",
+    "independent_functional_review": "5d5087e1f2550001fa44099d3f4533d566e7bde88785fce3af87856efdfc738f",
+    "independent_observer": "619adda23c152cafd94238c666e26283c3d8a8a73436be5b9576dec4ccffa2c9",
+    "native_results_in_release_order": [
+      "f6a8a388ed90ce0438a9ba0a3e2c4f2ee24a187287cb0253c715b9563724e021",
+      "59a4a1c06e2717e47cc0bcf1f097c8c9e109122280633764da20c5f767a97733"
+    ],
+    "rejected_projection_diagnosis": "ddadba392f1271dc8a4e4325e057c4e1597802a18e1371c1126a6a40af362738",
+    "root_join_attestation": "31d3ba4aef947ea48f4eb0aba2a869bfcf675c5ced9133ae95977a74dbd3fd42",
+    "wire_observations": "0a76602511843b86266901d138435b45a9d730979e3795aff3f66977c4626563",
+    "worker_result": "f4e3b76d708796e0cc025f5c10e3c08286bace46187bafadd565b6bde268bcbb"
+  },
+  "limits": [
+    "This is a scoped real-model compiler workflow result, not complete M4 or successful foreground qualification.",
+    "No restart, reboot, sleep/wake, worker-replacement, active compiler cancellation or model-error-correction result is claimed for this run.",
+    "No performance comparison, gaming/video quality, media autonomy, OS-wide resource reservation or arbitrary application isolation was tested.",
+    "The named autonomous media test and its latest-supported-stack requirements remain separate. This record applies only to the exact pinned composition.",
+    "No repeated reliability or cross-platform inference result is claimed. Raw private prompts, identifiers, paths, runtime binaries and databases remain local."
+  ],
+  "recorded_date": "2026-11-02",
+  "references": [
+    "https://sqlite.org/wal.html#read_only_databases",
+    "https://sqlite.org/uri.html#uriimmutable"
+  ],
+  "related_records": {
+    "implementation": "docs/compiler-tool-recipe.md",
+    "installed_sdk_predecessor": "provenance/compiler/installed-sdk-evidence-2026-11-02.json",
+    "local_validation": "provenance/compiler/local-validation-2026-11-02.json",
+    "public_task": "examples/tasks/compiler-stdout/README.md",
+    "source_lineage": "provenance/compiler/source-lineage.json"
+  },
+  "schema": "adaptive.compiler.physical-evidence.v1",
+  "scope": "One Windows IQ3_S task dispatches a real compiler operation, receives its actual result in the following model request, and completes with owned cleanup. The full foreground acceptance gate did not pass.",
+  "source_identity": {
+    "actual_installed_identity_file_sha256": "68950b06b3036e2bde93e9466fe61ff5098a5b4f6c3c53ac49304ff1d52f20ee",
+    "host_worker_and_source_maps_identical": true,
+    "native_engine_sha256": "744205e4e024b5cbba19e4b560678ffe21e6899e59050929f7af51557f3c6198",
+    "native_manifest_sha256": "0fa3fa2c976c0d49b7849c80159307fabc0a4f82313a3eb6202a3d62f4ab7f14",
+    "native_provenance_sha256": "e612f721b5f17fba777606d72ed27ac463cb51917f2d955d10fe70ec24e6212f",
+    "package_version": "0.4.0a1",
+    "runtime_map": {
+      "hash_serialization": "UTF-8 json.dumps(map, sort_keys=True, ensure_ascii=False, allow_nan=False), default separators",
+      "json_pointer": "/source_identity/runtime_sha256",
+      "map_sha256": "c54825a1c8b0a49f39707dd47e9ecfd42e53c82f732d00a667421fa2cd9092ad",
+      "modules": 73,
+      "path": "provenance/compiler/local-validation-2026-11-02.json",
+      "paths_relative_to": "src/adaptive_inference"
+    },
+    "tested_commit": "414b7670b4dbbb00f8c2e9dec4ab143fba516b65"
+  },
+  "status": "real_model_compiler_workflow_verified_full_foreground_qualification_failed",
+  "validation": {
+    "independent_functional_review": {
+      "checks": 26,
+      "exit_code": 0,
+      "input_files_unchanged": 251,
+      "passed_at_narrow_scope": true,
+      "scope": "Closed JSON, source/installed file hashes, native results, artifacts, CTest and observed controls. No database reads or workload replay."
+    },
+    "independent_observer": {
+      "activity_error_samples": 0,
+      "end_reason": "three_connection_errors_after_response",
+      "exit_code": 1,
+      "samples": 1808,
+      "scope": "App and native cleanup are independently retained; the observer shutdown failure remains a separate failed observation.",
+      "successful_connection_refusal_observation": false,
+      "valid_responses": 357
+    },
+    "ordinary_budget_diagnosis": {
+      "execution_seconds": 900,
+      "first_deadline_revision": 2,
+      "last_history_revision": 21,
+      "reopen_mode_enabled": false,
+      "restart_budget_metadata_required": false,
+      "source_explanation": "The desktop CLI calls execute without enable_reopen. Composition establishes execution_now()+900; the worker persists that deadline. Restart budget metadata is created only with an explicit boot/reopen context.",
+      "source_paths": [
+        "src/adaptive_inference/cli.py",
+        "src/adaptive_inference/desktop/composition.py",
+        "src/adaptive_inference/desktop/saved_tasks.py",
+        "src/adaptive_inference/desktop/hermes/run_recovery.py"
+      ],
+      "unchanged_deadline_checkpoints": 20,
+      "verified": true
+    },
+    "original_full_audit": {
+      "completed_passing_checks": 31,
+      "error_key": "adaptive_inference.execution_budget.v1",
+      "error_type": "KeyError",
+      "exit_code": 1,
+      "explanation": "The private auditor required restart-specific budget metadata from an ordinary same-session CLI run. It stopped before the foreground-onset and remaining native-owner checks. Its failure is preserved.",
+      "passed": false
+    },
+    "preservation": {
+      "full_audit_repeated": false,
+      "immutable_database_copies_unchanged": true,
+      "method": "Original inventories before/after; SQL only on verified closed immutable copies; separate diagnostics retain original failed results.",
+      "nonempty_wal_discarded": false,
+      "original_files_unchanged": true,
+      "task_replayed": false
+    },
+    "projection_diagnosis": {
+      "correction": "A separate Python JSON projection preserved every original value and added only clock tags already present in the raw observations. Original and rejected projections remain retained.",
+      "initial_exit_code": 1,
+      "onset_calls_before_rejection": 0,
+      "reason": "A PowerShell JSON round-trip converted UTC strings to local-offset strings; an exact-value guard rejected the derived projection before onset."
+    },
+    "strict_foreground_onset": {
+      "active_first_request_observations_after_action": 0,
+      "active_first_request_observations_before_action": 32,
+      "error": "Missed first request overlap",
+      "explanation": "The preserved composite switch-and-click action ended after the first request completed. Actual draining, release and parking were observed, but no first-request-active status followed the completed action. The action interval was not narrowed retrospectively.",
+      "passed": false,
+      "standalone_calls": 1
+    }
+  }
+}
