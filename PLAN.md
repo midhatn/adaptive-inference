@@ -2,6 +2,13 @@
 
 **Updated: 9 November 2026. Status: living plan, with evidence-based completion gates.**
 
+This is a **research-first implementation plan**. The destination and acceptance
+standards guide the work; the proposed mechanisms and sequence remain revisable.
+Before implementing a new approach, inspect existing work and use the findings
+to choose or change the next step. After validation, update the plan again when
+the result changes that decision. Follow the [planning loop](#how-the-roadmap-changes)
+throughout the milestones, rather than treating this document as a fixed checklist.
+
 ## Destination
 
 Make an always-on agent practical on an everyday computer. A person can browse,
@@ -1624,9 +1631,50 @@ promises of an eventual merge. Target-specific delivery remains traceable here.
 
 ## How the roadmap changes
 
-The destination and evidence standards remain stable. Implementations, order and
-scope can change when a real failure, new upstream capability or user priority
-makes another route better.
+This repository owns the plan and its rationale. This file defines the current
+priorities and acceptance gates; [HANDOFF.md](HANDOFF.md) records the next action
+and ownership; [research notes](docs/research.md) explain inspected approaches;
+the [evidence ledger](docs/evidence.md) establishes validated results. Keep these
+records consistent with the actual source and live work. Stale chat context, old
+PRs and historical continuation paragraphs must not silently replace the current
+plan. Current user direction applies; record resulting scope or priority changes
+in the canonical plan and handoff before continuing affected work.
+
+The always-on destination, original task intent and evidence standards remain
+stable. Mechanisms, milestone order, implementation boundaries and estimates
+can change when research, measurements, review or user priorities show a better
+route. An unqualified mechanism can be replaced or dropped without dropping the
+user outcome it was meant to provide. Resume the next incomplete work identified
+by the current continuation and milestone dependencies. Do not restart completed
+milestones from historical instructions.
+
+Use this loop for each new problem or materially changed assumption:
+
+1. **Frame the next useful outcome.** Inspect the current source and retained
+   evidence. State the unresolved question, user-visible result and acceptance
+   criteria. Prioritize a blocker in the working reference system.
+2. **Research before implementation.** Search current primary research, official
+   documentation and relevant GitHub implementations, issues and PRs. Recheck
+   applicable earlier findings instead of repeating a completed search. Record
+   source revision/date, applicability and license when reuse is proposed.
+3. **Choose and revise the plan.** Compare suitable existing approaches against
+   this workload and its constraints. Record whether to reuse, adapt, test,
+   defer or reject an approach, and why. Explain the remaining gap before adding
+   original work. Update affected dependencies and the next action before acting
+   on a changed route. A research finding is a hypothesis, not qualification.
+4. **Implement and validate a bounded increment.** Use the existing contracts
+   and [agent engineering workflow](docs/multi-agent-collaboration.md#engineering-practices).
+   Run the checks that answer the stated question, retaining exact inputs,
+   failures and limitations. Use real end-to-end evidence for end-to-end claims.
+5. **Feed the result back into the plan.** Compare it with the original criteria.
+   Continue a supported approach, diagnose a failed one, or choose another
+   researched route. Update status, rationale and next action before handing
+   work over; follow that updated plan in the next increment.
+
+Keep research proportionate to the decision. Once the evidence supports a
+bounded implementation or experiment, proceed. An open question can be tested
+without first solving every possible case. More elaborate research, agent
+frameworks or optional optimization need a concrete benefit to the main goal.
 
 Maintain a compact milestone record with: **ID, status, user outcome, dependency,
 responsible owner, exact source, acceptance test, evidence, known limit and next
@@ -1634,18 +1682,21 @@ decision**. Use distinct states: planned, implementing, awaiting qualification,
 qualified, released, or held with a concrete reason. Do not collapse local
 implementation, release and upstream adoption into one checkmark.
 
-Review the plan after every accepted milestone, significant failed run or
-relevant upstream change. Record what changed, the observation that justified
-it and the next experiment. Keep failed evidence; issue a successor attempt
-rather than rewriting an earlier result. Reprioritize a functional blocker
-ahead of optimization, and defer an optional feature that adds complexity
-without measurable value.
+Revisit the plan after a relevant research finding or upstream change, a
+significant failure, an accepted milestone, review feedback or a changed user
+priority. Record a short dated decision beside the affected milestone or in its
+linked research record: **evidence → previous assumption → revised approach →
+affected milestones → next validation → revisit condition**. Link that decision
+from the current continuation; do not create a second competing roadmap.
+Small corrections can use the existing issue/PR record and need no new document.
 
-The implementation loop is **observe the issue → search existing solutions →
-adapt the smallest suitable approach → validate → update the plan from the
-evidence → continue**. Review feedback participates in the same loop. A failed
-approach changes the next experiment, not the original user objective or the
-standard required to claim success.
+Preserve failed evidence and completed effects. A changed experiment needs its
+own identity and prospective acceptance criteria; it does not repair an earlier
+result, refund its budget or justify repeating accepted work without a reason.
+Do not lower model quality, remove required user outcomes or weaken a success
+criterion to obtain a pass. Reprioritize functional blockers ahead of optional
+optimization. Keep the named autonomous media test's baseline and quality gates
+when its stage is reached.
 
 These milestones are an order of work, not calendar commitments. Estimate the
 next small delivery after its dependencies and environment are known; update

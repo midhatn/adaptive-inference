@@ -25,6 +25,13 @@ a new mechanism. Preserve the user's original objective, IQ3_S quality baseline,
 citations and unsuccessful evidence. The full milestone sequence is in
 [PLAN.md](PLAN.md); acceptance standards are not reduced when an experiment fails.
 
+The roadmap is a [research-first implementation plan](PLAN.md#how-the-roadmap-changes).
+Use new research to revise an approach before implementing it, then use the
+actual result to decide the next step. Record material changes and their evidence
+in the repository so the next contributor follows the revised plan. Resume the
+next incomplete work identified by the current continuation and dependencies;
+do not restart completed milestones from historical instructions.
+
 ## Read only what the next decision needs
 
 | Question | Authoritative starting point |
