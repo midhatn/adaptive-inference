@@ -1,9 +1,14 @@
 # Preserve a task's time allowance across a normal reboot
 
-Status: source, package, hosted, isolated installation and scripted SDK gates
-passed. The next gate is an actual clean Stop/Windows Restart/resume trial.
-The accepted same-boot application restart does not establish computer-reboot
-recovery; no physical reboot result is claimed here.
+Status as of 9 November 2026: the source is integrated on main after source,
+package, hosted, isolated installation and scripted SDK gates passed. The
+[first actual clean Stop/Windows Restart attempt](../provenance/installed-reopen/reboot-budget/physical-restart-expired-2026-11-02.json)
+preserved saved work, but its original allowance expired before continuation.
+The installed reader refused execution before another application/worker launch.
+That failed attempt stays closed; do not replay it or reset its budget.
+Successful physical reboot continuation remains an open gate requiring a fresh,
+separately coordinated case. Accepted same-boot application reopening does not
+establish computer-reboot recovery.
 
 The first source component is the pure
 [`execution_budget` helper](../src/adaptive_inference/desktop/execution_budget.py).

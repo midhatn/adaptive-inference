@@ -27,6 +27,7 @@ that goal. A convenient component pass does not shrink it.
 ## Shared working rules
 
 - This repository is the canonical source. Preserve engine/agent adapters as consumers of shared contracts.
+- Apply the active goal's [engineering practices](docs/multi-agent-collaboration.md#engineering-practices): small reviewable increments, explicit acceptance, meaningful validation, independent review and durable handoffs. Improve the process from evidence while prioritizing the working main workflow.
 - Keep citations, source revisions and license notices with every reused mechanism.
 - Research first before designing a solution to each new problem: search current primary research, GitHub implementations/issues/PRs and official documentation. Reuse or adapt a suitable existing mechanism before inventing one; record the sources inspected, applicability, licensing and why any necessary new work remains. Reuse prior findings when their relevance and revision are checked.
 - Use the existing queue, feedback and capability boundaries; do not invent unsupported backend controls.

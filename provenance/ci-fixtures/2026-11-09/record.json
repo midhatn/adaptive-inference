@@ -1,0 +1,145 @@
+{
+  "date": "2026-11-09",
+  "scope": "Test-fixture timing correction; no production runtime or task-budget change",
+  "base_revision": "0ee8d3726b8184648b8f5e003e527e6409c37f76",
+  "files": {
+    "tests/test_continuation_host.py": {
+      "predecessor_source": "provenance/ci-fixtures/2026-11-09/predecessor/tests/test_continuation_host.py",
+      "predecessor_sha256": "4858cf5d589dd3960ccf16f16896c8c6c085672d8c6aa4425c37184f02810bbf",
+      "successor_sha256": "aadeefab7622f5dba4fb1c604cfeca9d09c52263b44a98e62e794a09001ddee0"
+    },
+    "tests/test_desktop_mailbox_runtime.py": {
+      "predecessor_source": "provenance/ci-fixtures/2026-11-09/predecessor/tests/test_desktop_mailbox_runtime.py",
+      "predecessor_sha256": "02cb14272823904f022307a5757f3a13daa9fe68bf734d6e6238554d57268697",
+      "intermediate_successor_sha256": "12c11cf6cf1bc3007e18a5051e192d8dd43af34aa3b44d34eae4458091de9430",
+      "successor_sha256": "55ebc08fa3def908431556bd3e2089a034762296df235ae1df1dbe1647e730c4"
+    }
+  },
+  "original_failures": [
+    {
+      "run": 42554614440,
+      "job": 128957438758,
+      "attempt": 1,
+      "head": "4796c680920a4af3ee0ed7cef8b0b153d66852ba",
+      "platform": "windows-latest / Python 3.12",
+      "test": "test_continuation_host.HostTests.test_transport_continue_preserves_live_intent_and_duplicate_does_not_launch",
+      "failure": "ExpiredObservation during resume_authority -> MailboxRuntime._install",
+      "original_outcome": "failed; not rerun or relabeled",
+      "log_sha256": "deb14ea4ecc09d3e7ebdd01d2089a489e7219832d1eb40661b2adb0033018018"
+    },
+    {
+      "run": 42555520520,
+      "job": 128960228351,
+      "attempt": 1,
+      "head": "0ee8d3726b8184648b8f5e003e527e6409c37f76",
+      "platform": "windows-latest / Python 3.11",
+      "test": "test_desktop_mailbox_runtime.RuntimeTests.test_refresh_revokes_external_later_pause_even_before_owner_ack",
+      "failure": "TimeoutError in the three-second whole-fixture completed_control join guard",
+      "original_outcome": "failed; not rerun or relabeled",
+      "log_sha256": "0ae8d1ee261c9bc59cfee0d1553157b1f2ded137e7329a23998a2b5c076cbede"
+    }
+  ],
+  "changes": [
+    "Use the existing logical-observation-clock fixture pattern for one ordinary continuation transport test, refreshing its cache under that clock.",
+    "Use the existing project/CPython 30-second whole-fixture guard for joining retained control work; keep shielding and final-intent assertions."
+  ],
+  "unchanged": [
+    "All 77 production runtime modules",
+    "Production observation freshness and read timeouts",
+    "Real child, UI, execution and orchestration clocks",
+    "Task and tool allowances",
+    "Stale-observation refusals and duplicate-launch assertions"
+  ],
+  "validation": {
+    "tested_revision": "a83844b5fed20bf01dcfd61d4061b00961b787cc",
+    "mailbox_fixture_sha256": "12c11cf6cf1bc3007e18a5051e192d8dd43af34aa3b44d34eae4458091de9430",
+    "selected_tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "scope": "Both previously failing cases, six defining-module completed_control callers and five expiry/refusal cases; the two aliased callers were not included",
+    "test_elapsed_s": 3.108,
+    "receipt_sha256": "debe2466a111ceec2c3186c44fd6f8ca6b329ff443c4da80a67de6c65a7eaffa",
+    "owned_child_exit_codes": [
+      5,
+      5,
+      0
+    ],
+    "all_owned_children_joined": true,
+    "cleanup_killed": false,
+    "new_hosted_result": "Not claimed by this local record; observe the new commit original workflows separately"
+  },
+  "historical_reader_followup": {
+    "failed_head": "a83844b5fed20bf01dcfd61d4061b00961b787cc",
+    "original_failed_runs": [42557615924, 42557619469],
+    "original_attempt": 1,
+    "failure": "Historical compiler source assertion read the corrected live continuation fixture rather than its exact retained predecessor",
+    "representative_job": 128966748035,
+    "representative_log_sha256": "8a25fb23a4e5e98b531df85501b4167d5aa9433dd25fc4e43cd84a1e6fee5146",
+    "change": "Reuse the existing outer source-lineage reader to project only the two declared exact successor fixture hashes to their retained predecessors. Unknown bytes still reach unchanged historical assertions. Runtime projection and original manifests are unchanged.",
+    "source_sha256": {
+      "tests/automatic_tool_recovery_lineage.py": "49e2c487d8d5f3dad0840523d0fc8bbda2c642e30bd0c685220fe0a5cca18628",
+      "tests/test_automatic_tool_recovery_lineage.py": "dcf8700726072b98289c6c43ebfa66052767918fe97bb4004bb4f1546c8cf41a"
+    },
+    "local_validation": {
+      "status": "incomplete_outer_guard_timeout",
+      "planned_tests": 145,
+      "completed_passes": 118,
+      "remaining_including_interrupted": 27,
+      "logged_failures_or_errors": 0,
+      "all_three_new_archive_regressions_completed": true,
+      "original_failed_compiler_assertion_completed": true,
+      "outer_guard_s": 600,
+      "retained_test_child_joined": true,
+      "retained_test_child_terminated_at_guard": true,
+      "supervisor_exit_code": 1,
+      "candidate_hashes_match_prelaunch_record": true,
+      "full_worker_source_inventory_receipt_written": false,
+      "log_sha256": "67c77aa183e43672656e908b7822c0e50f51e227d60ea8218e61ddc91c9d614f",
+      "supervisor_sha256": "da520007b3171be30b9a38dd9137c63c333e0f2a18c102cc52563e010bd7aa98",
+      "partial_audit_sha256": "9cd9533be307b1a684a1ed7f4cb05d2f89d12c62fb42d4e50a715a55f420b237",
+      "interpretation": "Partial log evidence, not a passing full lineage suite. No rerun or guard extension. Fresh required hosted CI must validate the full successor."
+    }
+  },
+  "shared_helper_followup": {
+    "failed_head": "411a3e0ed528a8b99c54f169574d0f7765c67c15",
+    "original_runs": [42559679949, 42559684062],
+    "representative_job": 128973128415,
+    "representative_log_sha256": "d891ff6612f985f308ec2b254dfd3cdaf686ce3352477a1af45f42c9a54867fa",
+    "failure": "ExpiryRuntimeTests aliases completed_control without inheriting RuntimeTests, so the new self.control_completion_timeout_s attribute was absent",
+    "change": "Move the unchanged 30-second guard to the defining module scope so both direct and aliased callers use the same bound. Preserve shielding, assertions and production source.",
+    "validation": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "scope": "Six direct and two aliased helper callers, three archive regressions and the original compiler source assertion",
+      "elapsed_s": 8.265,
+      "sources_unchanged": true,
+      "supervisor_exit_code": 0,
+      "retained_test_child_joined": true,
+      "timed_out": false,
+      "runtime_or_task_budgets_changed": false,
+      "result_sha256": "9099e90fd24e27928d59a2b26203dac55b1a8107e46d51f248de81d62e0d96e5",
+      "supervisor_sha256": "41fa51c1bd38a87a4ec741b1cb3738515544d784d97f83a33fbe46905f5a3567",
+      "log_sha256": "aa00a1903efb47e508dcf741aeeaf083c3f7645ca9bbf32f0065cf6281afc464",
+      "full_hosted_successor": "Required separately; the earlier failed runs and incomplete local sweep remain unchanged"
+    },
+    "reference": "https://docs.python.org/3/tutorial/classes.html#python-scopes-and-namespaces"
+  },
+  "research": [
+    {
+      "url": "https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py",
+      "use": "Existing SHORT_TIMEOUT whole-test orchestration guard, not a product latency threshold"
+    },
+    {
+      "url": "https://docs.python.org/3.12/library/asyncio-task.html#shielding-from-cancellation",
+      "use": "Keep retained asynchronous work shielded and joined after the caller waits"
+    }
+  ],
+  "limits": [
+    "These are CPU/source fixture checks, not installed-agent, model, native-engine or physical responsiveness results.",
+    "Historical failure logs stay failed. Increasing a fixture join allowance does not extend any product task allowance.",
+    "Retained predecessor files are historical data for offline inspection, not the selected test implementation."
+  ]
+}

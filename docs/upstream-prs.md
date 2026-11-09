@@ -6,6 +6,30 @@ The newer generalized integrations and their published PRs are tracked in the
 [current delivery ledger](upstream-delivery.md). That ledger supplements this
 historical inventory; it does not relabel earlier proposals as merged or tested.
 
+## Current status: 9 November 2026
+
+A read-only refresh through **2026-11-09 at 03:03 UTC** checked all 57 unique PRs
+linked across this registry and the delivery ledger: **24 open, three merged and
+30 closed unmerged**. This includes third-party source references, not 57 authored
+submissions. Comments, reviews, inline threads and current check results were
+read for all 24 open PRs and four relevant closed PRs; the other closed entries
+received a metadata/state refresh. No unresolved inline review threads were
+returned in that inspected set. This adds no runtime or performance validation.
+
+The [original twelve propagated PRs](upstream-delivery.md#current-status-9-november-2026)
+remain ten open, one merged and one closed with a merged successor. Nine open
+documentation/example PRs apply cleanly; our broad Strata #1493 remains a
+conflicting draft. Strata #1324 and #1937 are third-party experimental proposals,
+not additional owned propagation work. Their second-Windows-PC and upstream
+disk-design gates remain separate from this project's recovery qualification.
+
+The fresh accessible-account search found no involved PR in Comfy-Org/ComfyUI;
+the historical repository alias was not searchable. Existing attribution and
+dated validation below remain unchanged. No generic project-progress comments,
+upstream merges or unrelated propagation were made during this refresh.
+
+## Historical inventory and refreshes
+
 The inventory was checked at **2026-10-23T22:51:07Z** (24 October 2026 in the reviewer's local date). It includes **29 Strata**, **7 Hermes**, **1 related fork** authored/involved PRs and **6 explicitly cited source/successor PRs**, including closed work. Metadata and complete conversation/review timelines were read for all 43 entries through the GitHub connector at that time. States below are timestamped observations, not a live status feed.
 
 The same accessible-account search found no involved PR in Comfy-Org/ComfyUI or its historical comfyanonymous/ComfyUI name. This is not a claim about inaccessible repositories. Titles below are GitHub's current titles. A PR marked closed may have been ported with credit; it is not labeled merged unless GitHub reports a merge.

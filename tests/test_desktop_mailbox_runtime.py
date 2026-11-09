@@ -21,6 +21,12 @@ from adaptive_inference.desktop.ui_intent import UIBinding, UIIntentGate, Verifi
 NOW = '2026-10-24T18:00:00Z'
 OBJECTIVE = 'Keep the original task and finish the validated artifact.'
 
+# Whole-fixture join guard for actual SQLite/thread work, not a product
+# freshness or response-latency requirement. Keep it at module scope because
+# other fixtures reuse completed_control without inheriting RuntimeTests.
+# https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py
+CONTROL_COMPLETION_TIMEOUT_S = 30
+
 
 class DataFixture:
     def data(self):
@@ -135,7 +141,8 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
         # and its authority read finish. Final-intent assertions need that task.
         reply = await self.request(method, request_id=request_id)
         self.assertTrue(reply['ok'], reply)
-        await asyncio.wait_for(asyncio.shield(self.transport._records[request_id]['task']), 3)
+        await asyncio.wait_for(asyncio.shield(self.transport._records[request_id]['task']),
+                               CONTROL_COMPLETION_TIMEOUT_S)
         return reply
 
     def matches(self):

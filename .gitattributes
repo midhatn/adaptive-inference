@@ -76,3 +76,5 @@ provenance/compiler/predecessor/src/adaptive_inference/desktop/hermes/report_con
 # Preserve exact compiler predecessors and video qualification records.
 provenance/video-tool/** -text whitespace=cr-at-eol
 provenance/video-tool/predecessor/src/adaptive_inference/desktop/hermes/report_contract.py whitespace=cr-at-eol,-blank-at-eof
+# Exact historical CI fixture bytes include their original CRLF line endings.
+provenance/ci-fixtures/** -text whitespace=cr-at-eol

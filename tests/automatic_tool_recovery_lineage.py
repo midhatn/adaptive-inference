@@ -13,6 +13,47 @@ from paused_expiry_lineage import fingerprint
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = 'provenance/automatic-tool-recovery'
+CI_FIXTURES = 'provenance/ci-fixtures/2026-11-09'
+CI_FIXTURE_FILES = {'tests/test_continuation_host.py', 'tests/test_desktop_mailbox_runtime.py'}
+
+
+def ci_fixture_record(root):
+    path = root / CI_FIXTURES / 'record.json'
+    if not path.exists():
+        return None
+    rows = json.loads(path.read_bytes())
+    if set(rows['files']) != CI_FIXTURE_FILES:
+        raise AssertionError('Changed CI fixture source set')
+    return rows
+
+
+def ci_fixture_inputs(root):
+    rows = ci_fixture_record(root)
+    if rows is None:
+        return []
+    return [root / CI_FIXTURES / 'record.json',
+            *(root / CI_FIXTURES / 'predecessor' / relative for relative in sorted(CI_FIXTURE_FILES))]
+
+
+def ci_fixture_predecessor(relative, data, root):
+    """Reuse exact-file projection for later test-only timing corrections.
+
+    Archived fixtures are data only. Their old qualification does not apply to
+    the corrected tests, and unknown bytes still face unchanged inner checks.
+    """
+    if relative not in CI_FIXTURE_FILES:
+        return data
+    rows = ci_fixture_record(root)
+    if rows is None:
+        return data
+    row = rows['files'][relative]
+    expected = CI_FIXTURES + '/predecessor/' + relative
+    if row['predecessor_source'] != expected:
+        raise AssertionError('Changed CI fixture predecessor path')
+    before = (root / expected).read_bytes()
+    if hashlib.sha256(before).hexdigest() != row['predecessor_sha256']:
+        raise AssertionError('Changed CI fixture predecessor bytes')
+    return before if hashlib.sha256(data).hexdigest() == row['successor_sha256'] else data
 
 
 def record(root=None):
@@ -25,9 +66,10 @@ def inputs(root=None):
     root = ROOT if root is None else root
     rows = record(root)
     if rows is None:
-        return []
+        return ci_fixture_inputs(root)
     return [root / ARCHIVE / 'source-lineage.json',
-            *(root / row['predecessor_source'] for row in rows['files'].values())]
+            *(root / row['predecessor_source'] for row in rows['files'].values()),
+            *ci_fixture_inputs(root)]
 
 
 def retained(relative, row, root):
@@ -46,6 +88,7 @@ def retained(relative, row, root):
 def predecessor(relative, data, root=None):
     """Project known complete successor bytes; unknown bytes remain unknown."""
     root = ROOT if root is None else root
+    data = ci_fixture_predecessor(relative, data, root)
     rows = record(root)
     row = None if rows is None else rows['files'].get(relative)
     if row is None:

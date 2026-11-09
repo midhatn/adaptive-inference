@@ -2,6 +2,77 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Development integration — 9 November 2026
+
+The six reviewed development PRs merged in dependency order. Before each merge,
+all fourteen original hosted jobs for its exact head had completed successfully;
+the prospective merge tree matched that head. After each merge, the actual
+merge tree was checked again and the reviewed head was an ancestor of main.
+The following identities preserve the integration record independently of PR
+descriptions. Hosted source checks do not extend the installed or physical
+qualification recorded in the receipts below.
+
+| PR | Reviewed head | Merge commit |
+| --- | --- | --- |
+| [#34](https://github.com/midhatn/adaptive-inference/pull/34) | `f94e11b360c15d41b621ee9641301521846774b0` | `3819a8209a66800901654279a01639dd5a305739` |
+| [#35](https://github.com/midhatn/adaptive-inference/pull/35) | `1f7f28e1388d4aa39fa6ff7f8ddc2445f88e127d` | `771692fa5abc650679130790a302a03e9c079f24` |
+| [#36](https://github.com/midhatn/adaptive-inference/pull/36) | `e62a2915759eb32a42d607b1a0837103bb54e426` | `6753acad46df17b5d35dd9e8a89a176132592fb8` |
+| [#37](https://github.com/midhatn/adaptive-inference/pull/37) | `3a07a7776ed41fc811aa92ef2f8ee0b9639d13f9` | `ba6bf2cc665d6851c528791920e591fe4b29d86c` |
+| [#38](https://github.com/midhatn/adaptive-inference/pull/38) | `9242434991f2c2c21461061d61d898649299b847` | `4796c680920a4af3ee0ed7cef8b0b153d66852ba` |
+| [#39](https://github.com/midhatn/adaptive-inference/pull/39) | `08053a00d92c065b88bda3ce14f80a7cfe078f0f` | `f362ed0ed8c0f9f6552bd71c9c3ba9e8a847aa3a` |
+
+The final merge tree is `7d17387075e4ac11be05384c5c1b109eaa76f149`, identical to
+the reviewed #39 head. This is development integration, not a new release or
+installation. The existing `0.4.0a1` tag and assets remain unchanged. Successful
+physical computer-reboot continuation remains unqualified: the recorded expired
+attempt stays failed. The automatic recovery result still requires an exact
+completed tool result in the surviving host, and its separate shutdown observer
+remains failed pending diagnosis. See the [Unreleased notes](../CHANGELOG.md#unreleased--development-after-040a1)
+and [current plan](../PLAN.md) for the applicable capabilities and next work.
+
+### Follow-up Windows CI fixture correction
+
+The original post-merge [PR38 main run](https://github.com/midhatn/adaptive-inference/actions/runs/42554614440)
+failed on Windows/Python 3.12 when an ordinary continuation test used an expired
+observation. The production one-second freshness check correctly refused it.
+The original [documentation push](https://github.com/midhatn/adaptive-inference/actions/runs/42555520520)
+then failed on Windows/Python 3.11 because a three-second test-only join guard
+expired while retained control work was pending. Both original runs stay failed.
+
+The [correction record](../provenance/ci-fixtures/2026-11-09/record.json) retains
+exact predecessor test files, failure identities and local validation. The first
+fixture now reuses the existing logical observation-clock pattern. The second
+uses the existing project/CPython 30-second whole-fixture guard while preserving
+shielded ownership and final-intent assertions. Twelve selected tests passed:
+both affected paths, six defining-module callers and five negative expiry checks.
+The two callers that borrow the helper from another class were not included.
+Three owned inert children joined with their expected exits, without cleanup
+kills. Runtime files, production freshness, real execution clocks and task/tool
+allowances are unchanged. These source tests do not qualify installed agents,
+hardware, physical responsiveness or reboot recovery. Successor hosted CI is a
+separate gate; a local pass does not relabel an original failed run.
+
+Both original workflows at `a83844b` then failed an unchanged historical source
+assertion: the historical reader still selected the corrected live fixture.
+The follow-up reuses the existing source-lineage chain to select only the exact
+retained predecessor of either declared fixture. Unknown source bytes continue
+to face the original assertions. Three new archive/identity regression tests
+and the originally failing compiler assertion passed. A broader local sweep
+logged 118 passes out of 145 planned tests before its original 600-second
+outer guard expired; the retained child was terminated and joined, leaving
+27 tests incomplete. This is **not a passing full-suite result**. Its partial
+log and failed supervisor outcome remain recorded; required fresh hosted CI
+must pass on the corrected successor before merge.
+
+The next original hosted pair at `411a3e0` exposed that missing alias coverage:
+`ExpiryRuntimeTests` borrows the helper without inheriting its defining class,
+so the new instance-setting lookup raised `AttributeError`. Move the unchanged
+30-second guard to module scope. Twelve targeted successor checks passed:
+all six direct and both aliased calling tests, three source-archive regressions,
+and the original compiler source assertion. The retained test child joined
+normally, with no timeout or source change during the check. Production behavior
+and prior failed outcomes are unchanged; the new head still requires full CI.
+
 ## Agent-requested GPU video and foreground handoff
 
 The [second physical video task](../provenance/video-tool/physical-foreground-video-2026-11-02.json)
