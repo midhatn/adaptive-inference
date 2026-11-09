@@ -1,6 +1,6 @@
 # Adaptive Inference roadmap
 
-**Updated: 1 November 2026. Status: living plan, with evidence-based completion gates.**
+**Updated: 2 November 2026. Status: living plan, with evidence-based completion gates.**
 
 ## Destination
 
@@ -901,6 +901,18 @@ does not become an arbitrary shell-execution endpoint.
 
 ### M5 — Survive application and computer lifecycle changes
 
+**Physical restart feedback — 2 November 2026:** the
+[first normal Windows Restart attempt](provenance/installed-reopen/reboot-budget/physical-restart-expired-2026-11-02.json)
+preserved the completed first task and the second task's confirmed read, but its
+original allowance expired before postboot continuation. The installed reader
+correctly refused the expired execution before app launch. This attempt does not
+satisfy the successful-reboot gate and must not be replayed or given a renewed
+deadline. A fresh attempt must include a concrete postboot return path within
+the unchanged 900 seconds. Preserve the observer's separate three-timeout result;
+add bounded error-stage/numeric diagnostics before another physical observation,
+keeping timeout distinct from confirmed connection refusal. M4 compiler/tool
+integration can continue independently while this physical gate remains open.
+
 **Installed application path passed, 1 November 2026:** the [recorded IQ3_S
 trial](provenance/installed-reopen/application-restart-2026-11-01.json) closed an
 unfinished task after one confirmed read and reopened that same task through the
@@ -955,12 +967,45 @@ parents joined normally. Independent closed review accepted this same-boot
 scope; both bounded observer shutdown errors and prior failures are retained.
 The model, quality, prompt and budgets were unchanged. Do not replay this trial.
 
-**Next lifecycle step:** publish the qualified runtime and evidence, then design
+**Next lifecycle step:** PR #33 is merged at `3aad3146` with its exact reviewed
+tree after all 14 original hosted jobs and 12 distribution checks passed. Implement
 the original durable budget policy for changed Windows boots before a separate
 actual reboot trial. Reuse existing persisted-expiration and owned transaction
 patterns; keep original elapsed-time limits and consumed work across boots.
+The [bounded implementation plan](docs/reboot-budget.md) reuses Temporal's fixed
+execution-expiry policy and the existing owned TaskStore transaction. Keep the
+worker's exact committed-deadline check and use a versioned boot transition;
+same-boot reopening must never rebase a deadline.
 Start with clean Stop and fresh paused Resume. Crash/uncertain-effect recovery
 remains a separate case, and old tasks without expiry metadata stay unchanged.
+The first integrated controlled-boot test preserves a confirmed read and finishes
+with one write after fresh paused reopening. Explicit Continue must retain the
+expired policy only in its sealed predecessor; its separately granted successor
+remains outside this first reboot qualification. Complete source/package/installed
+gates before a physical reboot. A test-only lock cleanup error was corrected;
+the original failed affected-suite result remains retained. The combined
+integration passed 123 behavior checks, 104 source-preservation checks and all
+1,394 tests in the complete suite. Corrected source `260187a` subsequently passed
+package verification of 1,280 source files/63 runtime modules, all 14 original
+hosted jobs and 12 distribution checks. Fresh isolated installation and the
+[actual pinned SDK fixture](provenance/installed-reopen/reboot-budget/installed-sdk-validation-2026-11-01.json)
+passed independent review: four scripted calls retained validation feedback,
+produced one correct report and preserved the initial budget across 33 history
+rows. Startup consumed allowance before generation. This clears the software
+and installation prerequisites for the separately coordinated IQ3_S reboot
+trial; it does not qualify that physical transition. Preserve the existing
+installed result and its source, and do not repeat these completed gates.
+**Publication feedback:** the first PR #34 hosted candidate reached an older
+explicit-Continue evidence reader that still hashed the current producer as its
+historical version. The [bounded reader correction](provenance/installed-reopen/reboot-budget/harness-reader-correction.json)
+uses the existing exact SHA/AST predecessor view; the historical producer pin,
+runtime and qualification predicates remain unchanged. Its 52 harness checks
+and all 90 provenance checks passed. Include local provenance discovery alongside
+core discovery before the next package/publication gate, then require the
+corrected head's original hosted checks (completed for `260187a`). The installed
+wheel and corrected wheel have identical contents across all 74 members; source
+archives and wheel container bytes remain distinct. Preserve the failed head
+and private runner failure separately; neither changes earlier runtime results.
 Research existing lifecycle/budget implementations first. Do not replay the
 accepted application trial or silently reset a saved monotonic deadline. M3's
 inert window-switch rehearsal and M4 useful-tool/media gates remain open; this

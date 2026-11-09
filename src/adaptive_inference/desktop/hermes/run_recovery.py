@@ -475,8 +475,11 @@ def _worker(args, *, selected=None):
                 previous=owned.checkpoint.state.get('deadline_monotonic')
                 if previous is not None and previous!=deadline:
                     raise ReconciliationRequired('Whole task deadline cannot reset across restart')
+                from adaptive_inference.desktop.saved_tasks import worker_budget
+                state = worker_budget(owned.checkpoint.state, plan.get(CONTEXT), deadline=deadline,
+                    boot_id=getattr(args, 'execution_boot_id', None))
                 if previous is None:
-                    state=rec.copy.deepcopy(owned.checkpoint.state);state['deadline_monotonic']=deadline
+                    state['deadline_monotonic']=deadline
                     owned.save_checkpoint(state,expected_revision=owned.checkpoint.revision)
             db = SessionDB(run / 'home/state.db')
             if args.mode == 'reconcile':
@@ -712,6 +715,7 @@ def main():
     p.add_argument('--receipt', type=Path)
     p.add_argument('--operation-id')
     p.add_argument('--deadline-monotonic',type=float)
+    p.add_argument('--execution-boot-id')
     p.add_argument('--gateway-instance')
     p.add_argument('--stop-request-id')
     p.add_argument('--qualification-hold-after-report',action='store_true')

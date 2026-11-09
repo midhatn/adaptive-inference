@@ -106,9 +106,10 @@ class InstalledReopenLineageTests(unittest.TestCase):
                 self.assertEqual(lineage.reopen_predecessor(relative, data + b'\n# unreviewed\n'),
                                  data + b'\n# unreviewed\n')
         runtime = lineage.ROOT / 'src/adaptive_inference'
-        current = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
+        actual = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
+        current = lineage.reboot_budget_runtime_view(actual)
         self.assertEqual(len(current), 62)
-        self.assertEqual(len(lineage.reopen_runtime_view(current)), 61)
+        self.assertEqual(len(lineage.reopen_runtime_view(actual)), 61)
         self.assertEqual({name: hashlib.sha256(data).hexdigest()
                           for name, data in lineage.preparation_runtime_view().items()},
                          lineage.record()['unchanged_runtime'])
@@ -284,17 +285,17 @@ class HandoverReopenLineageTests(unittest.TestCase):
 
     def test_both_runtime_modules_project_before_saved_tasks_is_removed(self):
         runtime = lineage.ROOT / 'src/adaptive_inference'
-        current = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
-        current = lineage.tool_capabilities_runtime_view(current)
+        actual = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
+        current = lineage.tool_capabilities_runtime_view(actual)
         before = dict(current)
-        view = lineage.handover_runtime_view(current)
+        view = lineage.handover_runtime_view(actual)
         self.assertEqual(current, before)
         self.assertEqual(set(view), set(current))
         for name in current:
             expected = (lineage.handover_predecessor('src/adaptive_inference/' + name, current[name])
                         if name in lineage.HANDOVER_RUNTIME else current[name])
             self.assertEqual(view[name], expected)
-        self.assertEqual(len(lineage.reopen_runtime_view(current)), 61)
+        self.assertEqual(len(lineage.reopen_runtime_view(actual)), 61)
         self.assertEqual({name: hashlib.sha256(data).hexdigest()
                           for name, data in lineage.preparation_runtime_view().items()},
                          lineage.record()['unchanged_runtime'])
@@ -319,7 +320,7 @@ class HandoverReopenLineageTests(unittest.TestCase):
         for name in lineage.HANDOVER_RUNTIME:
             relative = 'src/adaptive_inference/' + name
             target = lineage.ROOT / relative
-            data = target.read_bytes()
+            data = lineage.reboot_budget_predecessor(relative, target.read_bytes())
             row = lineage.handover_record()['files'][relative]
             tree = ast.parse(data)
             original = fingerprint(tree)
@@ -360,6 +361,7 @@ class ToolCapabilitiesLineageTests(unittest.TestCase):
         for relative, row in rows['files'].items():
             with self.subTest(relative=relative):
                 current = (lineage.ROOT / relative).read_bytes()
+                current = lineage.reboot_budget_predecessor(relative, current)
                 before = (lineage.ROOT / row['predecessor_source']).read_bytes()
                 self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
                 self.assertEqual(fingerprint(ast.parse(current)), row['successor_ast_sha256'])
@@ -385,9 +387,10 @@ class ToolCapabilitiesLineageTests(unittest.TestCase):
 
     def test_runtime_projection_keeps_complete_closure_and_refuses_unknown_changes(self):
         runtime = lineage.ROOT / 'src/adaptive_inference'
-        current = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
+        actual = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
+        current = lineage.reboot_budget_runtime_view(actual)
         before = dict(current)
-        view = lineage.tool_capabilities_runtime_view(current)
+        view = lineage.tool_capabilities_runtime_view(actual)
         self.assertEqual(current, before)
         self.assertEqual(set(view), set(current))
         for name in current:
@@ -416,7 +419,7 @@ class ToolCapabilitiesLineageTests(unittest.TestCase):
         name = lineage.TOOL_CAPABILITIES_RUNTIME[0]
         relative = 'src/adaptive_inference/' + name
         target = lineage.ROOT / relative
-        data = target.read_bytes(); tree = ast.parse(data)
+        data = lineage.reboot_budget_predecessor(relative, target.read_bytes()); tree = ast.parse(data)
         original = fingerprint(tree)
         row = lineage.tool_capabilities_record()['files'][relative]
         self.assertEqual(fingerprint(lineage.restore_tool_capabilities(tree, name)),
@@ -445,6 +448,118 @@ class ToolCapabilitiesLineageTests(unittest.TestCase):
                         lineage, 'tool_capabilities_record', return_value=changed):
                     with self.assertRaisesRegex(AssertionError, 'tool-capability'):
                         lineage.tool_capabilities_predecessor(relative, current)
+
+
+class RebootBudgetLineageTests(unittest.TestCase):
+    def test_exact_delta_restores_c7_and_preserves_every_prior_manifest(self):
+        rows = lineage.reboot_budget_record()
+        self.assertEqual(rows['schema'], 'adaptive.installed-reopen.reboot-budget.v1')
+        self.assertEqual(rows['predecessor_revision'], 'c7d6493c364b73d2124240992fe11e76fdc585c2')
+        self.assertEqual(rows['runtime_changes'], list(lineage.REBOOT_BUDGET_RUNTIME))
+        self.assertEqual(set(rows['files']), lineage.REBOOT_BUDGET_INPUTS)
+        for relative, row in rows['files'].items():
+            with self.subTest(relative=relative):
+                current = (lineage.ROOT / relative).read_bytes()
+                before = (lineage.ROOT / row['predecessor_source']).read_bytes()
+                self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
+                self.assertEqual(fingerprint(ast.parse(current)), row['successor_ast_sha256'])
+                self.assertEqual(hashlib.sha256(before).hexdigest(), row['predecessor_sha256'])
+                self.assertEqual(fingerprint(ast.parse(before)), row['predecessor_ast_sha256'])
+                self.assertEqual(lineage.reboot_budget_predecessor(relative, current), before)
+                self.assertEqual(lineage.reboot_budget_predecessor(relative, before), before)
+        for relative, expected in rows['preserved_manifests'].items():
+            self.assertEqual(hashlib.sha256((lineage.ROOT / relative).read_bytes()).hexdigest(), expected)
+        prior = lineage.TOOL_CAPABILITIES + '/source-lineage.json'
+        self.assertEqual(set(rows['preserved_manifests']),
+                         set(lineage.tool_capabilities_record()['preserved_manifests']) | {prior})
+        self.assertTrue(set(lineage.reboot_budget_inputs()).issubset(lineage.preparation_inputs()))
+
+    def test_unknown_bytes_and_legacy_roots_are_not_projected(self):
+        for relative in lineage.REBOOT_BUDGET_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            unknown = current + b'\n# unreviewed reboot source\n'
+            with self.subTest(relative=relative):
+                self.assertEqual(lineage.reboot_budget_predecessor(relative, unknown), unknown)
+                self.assertEqual(lineage.preparation_predecessor(relative, unknown), unknown)
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    self.assertEqual(lineage.reboot_budget_predecessor(relative, current, root), current)
+                    self.assertEqual(lineage.reboot_budget_inputs(root), [])
+                    sample = {'unknown.py': b'pass\n'}
+                    self.assertEqual(lineage.reboot_budget_runtime_view(sample, root), sample)
+
+    def test_complete_runtime_and_addition_cannot_hide_unknown_changes(self):
+        runtime = lineage.ROOT / 'src/adaptive_inference'
+        current = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
+        before = dict(current)
+        self.assertEqual(len(current), 63)
+        view = lineage.reboot_budget_runtime_view(current)
+        self.assertEqual(current, before)
+        self.assertEqual(set(view), set(current) - {lineage.REBOOT_BUDGET_ADDITION})
+        self.assertEqual({name: hashlib.sha256(data).hexdigest() for name, data in view.items()},
+                         lineage.reboot_budget_record()['baseline_runtime'])
+        self.assertEqual({name: hashlib.sha256(data).hexdigest()
+                          for name, data in lineage.preparation_runtime_view().items()},
+                         lineage.record()['unchanged_runtime'])
+        missing = dict(current); del missing[lineage.REBOOT_BUDGET_ADDITION]
+        with self.assertRaisesRegex(AssertionError, 'runtime closure'):
+            lineage.reboot_budget_runtime_view(missing)
+        original_read = Path.read_bytes
+        for name in (*lineage.REBOOT_BUDGET_RUNTIME, lineage.REBOOT_BUDGET_ADDITION):
+            target = runtime / name
+            def read(path):
+                data = original_read(path)
+                return data + b'\n# same AST, unknown bytes\n' if path == target else data
+            with self.subTest(name=name), mock.patch.object(Path, 'read_bytes', read):
+                with self.assertRaisesRegex(AssertionError, 'runtime source'):
+                    aliases.runtime_view()
+        original_view = lineage.reboot_budget_runtime_view
+        def extra(current, root=None):
+            return {**original_view(current, root), 'unreviewed.py': b'pass\n'}
+        with mock.patch.object(lineage, 'reboot_budget_runtime_view', extra):
+            with self.assertRaisesRegex(AssertionError, 'runtime closure'):
+                aliases.runtime_view()
+
+    def test_ast_mapping_requires_complete_current_bytes(self):
+        original_read = Path.read_bytes
+        for name in lineage.REBOOT_BUDGET_RUNTIME:
+            relative = 'src/adaptive_inference/' + name
+            target = lineage.ROOT / relative
+            data = target.read_bytes(); tree = ast.parse(data)
+            row = lineage.reboot_budget_record()['files'][relative]
+            original = fingerprint(tree)
+            with self.subTest(name=name):
+                self.assertEqual(fingerprint(lineage.restore_reboot_budget(tree, name)),
+                                 row['predecessor_ast_sha256'])
+                self.assertEqual(fingerprint(tree), original)
+                unknown = ast.parse(data + b'\nunreviewed = True\n')
+                self.assertEqual(fingerprint(lineage.restore_reboot_budget(unknown, name)), fingerprint(unknown))
+                def read(path):
+                    raw = original_read(path)
+                    return raw + b'\n# same AST, unknown bytes\n' if path == target else raw
+                with mock.patch.object(Path, 'read_bytes', read):
+                    with self.assertRaisesRegex(AssertionError, 'complete reboot-budget source'):
+                        lineage.restore_preparation(tree, name)
+
+    def test_predecessor_successor_and_addition_identity_tampering_is_refused(self):
+        rows = lineage.reboot_budget_record()
+        for relative in lineage.REBOOT_BUDGET_INPUTS:
+            current = (lineage.ROOT / relative).read_bytes()
+            for field in ('predecessor_source', 'predecessor_sha256', 'predecessor_ast_sha256',
+                          'successor_ast_sha256'):
+                changed = deepcopy(rows); changed['files'][relative][field] = '0' * 64
+                with self.subTest(relative=relative, field=field), mock.patch.object(
+                        lineage, 'reboot_budget_record', return_value=changed):
+                    with self.assertRaisesRegex(AssertionError, 'reboot-budget'):
+                        lineage.reboot_budget_predecessor(relative, current)
+        runtime = lineage.ROOT / 'src/adaptive_inference'
+        current = {p.relative_to(runtime).as_posix(): p.read_bytes() for p in runtime.rglob('*.py')}
+        for field in ('source', 'sha256', 'ast_sha256'):
+            changed = deepcopy(rows); changed['addition'][field] = '0' * 64
+            with self.subTest(addition=field), mock.patch.object(
+                    lineage, 'reboot_budget_record', return_value=changed):
+                with self.assertRaisesRegex(AssertionError, 'reboot-budget'):
+                    lineage.reboot_budget_runtime_view(current)
 
 
 if __name__ == '__main__':

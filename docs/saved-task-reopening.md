@@ -44,8 +44,8 @@ another worker/model call. The initial-task result retains its original source.
 
 ## Current scope
 
-Execution reopening requires the original supported Windows boot, profile,
-package, model configuration and safe checkpoint. A changed or unavailable boot
+The qualified application-restart version requires the original Windows boot,
+profile, package, model configuration and safe checkpoint. A changed or unavailable boot
 observation, exhausted deadline, live owner, changed input or unresolved effect
 refuses continuation. An old Resume receipt does not start a new host. New GUI,
 process and resource bindings are established before a fresh Resume.
@@ -73,8 +73,12 @@ passed at source `6ac601546daf32d96e38b6689a5818e4cc8dafa8`: one saved read
 survived ordinary Stop and reopening, the original task completed with one
 physical output write, and the completed-result view made no additional model
 call or canonical file change. This qualifies that installed same-boot path.
-OS reboot needs a durable budget policy that does not reuse a prior boot's
-monotonic timestamp. Crash recovery, sleep/wake, hibernation and Fast Startup
+The current development source adds a [versioned budget policy](reboot-budget.md)
+for newly created tasks after clean Stop. It retains fixed expiration across
+boots and commits the current boot's remaining deadline before paused startup.
+Legacy tasks retain the same-boot rule. Controlled-clock tests are separate from
+the installed and physical reboot gates; the accepted results above do not
+establish computer-restart recovery. Crash recovery, sleep/wake, hibernation and Fast Startup
 remain separately qualified cases.
 See [M5 in the roadmap](../PLAN.md#m5--survive-application-and-computer-lifecycle-changes)
 and the [evidence ledger](evidence.md) for the current validation boundary.

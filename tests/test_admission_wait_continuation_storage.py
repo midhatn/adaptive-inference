@@ -11,6 +11,7 @@ from unittest import mock
 from adaptive_inference.control_mailbox import Mailbox, ACKS, EXECUTION_OUTCOME, REQUESTS, ControlBlocked
 from adaptive_inference.demand import DemandIdentity, DemandRegistry, Registration, NAMESPACE
 from adaptive_inference.execution_clock import CLOCK_ID
+from adaptive_inference.desktop.execution_budget import BUDGET, create_budget, tighten_budget
 from adaptive_inference.task_store import TaskStore, ReconciliationRequired, RevisionConflict
 from adaptive_inference.desktop.hermes.control_bridge import prepare_task
 from adaptive_inference.desktop.hermes.continuation import ContinuationAuthority, AUTHORITY, LINK, PENDING_DISPOSITION
@@ -32,7 +33,7 @@ class WaitContinuationTests(unittest.TestCase):
         self.root = Path(temp.name).resolve()
         self.seed_wait()
 
-    def seed_wait(self, *, requests=2, deferrals=1, late_pause=True, pending_model=None):
+    def seed_wait(self, *, requests=2, deferrals=1, late_pause=True, pending_model=None, state_changes=None):
         self.store = TaskStore(self.root/'task.sqlite3')
         self.old_identity = DemandIdentity('initial', 'orders-report', 'host', NOW)
         self.metadata = {'deadline_clock': CLOCK_ID, 'sdk_revision': 'pinned-sdk-fixture',
@@ -53,6 +54,7 @@ class WaitContinuationTests(unittest.TestCase):
                          admission_attempts=requests+deferrals,
                          admission_deferrals=[{'attempt_id': 'deferred-'+str(i)} for i in range(deferrals)],
                          phase='waiting_admission', pending_request=deepcopy(self.pending), native_history=history)
+            state.update(state_changes or {})
             owned.save_checkpoint(state, expected_revision=owned.checkpoint.revision)
             if late_pause:
                 self.mailbox.submit(self.cap, 'stop-late', 'pause')
@@ -130,6 +132,32 @@ class WaitContinuationTests(unittest.TestCase):
         self.assertEqual(self.store.load(self.old.task_id).state['pending_request'], self.pending)
         self.assertEqual((self.old.state[EXECUTION_OUTCOME]['request_count'], self.old.state[EXECUTION_OUTCOME]['ack_count']), (2, 1))
         self.assertEqual(grant['wire_prefix_count'], 2); self.assertFalse(grant['release_proven_by_store'])
+
+    def test_wait_projection_drops_expired_budget_without_rewriting_predecessor(self):
+        origin_utc = 1_700_000_000_000_000_000
+        budget = create_budget(boot_id='a'*64, deadline=1000.,
+            observation={'utc_ns': origin_utc, 'qpc_before': 100., 'qpc_after': 100.})
+        budget = tighten_budget(budget, boot_id='a'*64,
+            observation={'utc_ns': origin_utc+900_000_000_000, 'qpc_before': 1000., 'qpc_after': 1000.})
+        self.assertEqual(budget['remaining_cap_ns'], 0)
+        self.root = self.root/'versioned'; self.root.mkdir()
+        self.seed_wait(state_changes={BUDGET: budget})
+        original, mailbox = self.raw_old(), self.mailbox_rows()
+        grant = self.authorize()
+        successor = self.store.load(self.payload['successor_id'])
+        expected = deepcopy(self.old.state)
+        expected.pop(EXECUTION_OUTCOME); expected.pop(ACKS); expected.pop(BUDGET)
+        expected.update(phase='ready', pending_request=None, deadline_monotonic=2100.)
+        expected[NAMESPACE] = successor.state[NAMESPACE]
+        self.assertEqual(successor.state, expected)
+        self.assertEqual(self.raw_old(), original); self.assertEqual(self.mailbox_rows(), mailbox)
+        self.assertEqual(self.store.load(self.old.task_id).state[BUDGET], budget)
+        self.assertEqual(grant['pending_request_disposition']['request_sha256'], digest(self.pending))
+        with self.authority.claim_selected(grant, host_generation='host-epoch') as (_, owned):
+            self.assertNotIn(BUDGET, owned.checkpoint.state)
+            self.assertEqual((owned.checkpoint.state['requests'], owned.checkpoint.state['attempts'],
+                              owned.checkpoint.state['admission_attempts']), (2, 2, 3))
+        self.assertEqual(self.raw_old(), original); self.assertEqual(self.mailbox_rows(), mailbox)
 
     def test_duplicate_and_lost_reply_return_immutable_grant_without_renewal(self):
         grant = self.authorize(); self.now = 3000.

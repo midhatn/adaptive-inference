@@ -229,6 +229,16 @@ class StopAtPause:
         resumable(owned, self.recovery.db, self.recovery.work)
         state = owned.checkpoint.state
         flushed_tools(state)
+        from adaptive_inference.desktop.execution_budget import BUDGET, tighten_budget
+        if BUDGET in state:
+            from adaptive_inference.execution_clock import execution_observation
+            from adaptive_inference.desktop.saved_tasks import CONTEXT, task_budget
+            budget = task_budget(state, owned.checkpoint.metadata[CONTEXT])
+            state = deepcopy(state)
+            state[BUDGET] = tighten_budget(budget, boot_id=budget['episode']['boot_id'],
+                                          observation=execution_observation())
+            owned.save_checkpoint(state, expected_revision=owned.checkpoint.revision)
+            state = owned.checkpoint.state
         raise ProductStop({'schema': SCHEMA, 'request_id': self.request_id,
             'task_id': mailbox.identity.task_id, 'registration_id': mailbox.identity.registration_id,
             'pid': os.getpid(), 'owner_epoch': owned.checkpoint.owner_epoch,

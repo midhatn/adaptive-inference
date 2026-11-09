@@ -430,6 +430,8 @@ class DesktopComposition:
                 self.task_spec_sha256 = self.saved['spec'].sha256
         self.plan = read(self.work/'plan.json')
         self.store = TaskStore(self.work/'task.sqlite3')
+        if self.saved is not None:
+            self.saved = saved_tasks.activate_saved_budget(self.saved, self.store, boot=boot)
         self.identity = DemandIdentity(**self.plan['demand_identity'])
         self.registry = DemandRegistry((Registration(self.store,self.identity),))
         self.capability = object()
@@ -468,6 +470,8 @@ class DesktopComposition:
             'adaptive_inference.desktop.hermes.run_recovery', 'worker', '--run', str(self.work),
             '--controller-ready', str(self.first_ready), '--gateway-instance', self.host.gateway.instance,
             '--deadline-monotonic', str(self.deadline), '--stop-request-id', self.stop_id]
+        if self.reopen_context is not None:
+            command.extend(['--execution-boot-id', rec.digest(self.reopen_context['boot'])])
         if self.saved is not None:
             command.extend(['--diagnostics', str(self.saved_diagnostics)])
         if self.qualification_hold_after_report:
