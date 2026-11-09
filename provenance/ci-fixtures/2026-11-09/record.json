@@ -66,6 +66,38 @@
     "cleanup_killed": false,
     "new_hosted_result": "Not claimed by this local record; observe the new commit original workflows separately"
   },
+  "historical_reader_followup": {
+    "failed_head": "a83844b5fed20bf01dcfd61d4061b00961b787cc",
+    "original_failed_runs": [42557615924, 42557619469],
+    "original_attempt": 1,
+    "failure": "Historical compiler source assertion read the corrected live continuation fixture rather than its exact retained predecessor",
+    "representative_job": 128966748035,
+    "representative_log_sha256": "8a25fb23a4e5e98b531df85501b4167d5aa9433dd25fc4e43cd84a1e6fee5146",
+    "change": "Reuse the existing outer source-lineage reader to project only the two declared exact successor fixture hashes to their retained predecessors. Unknown bytes still reach unchanged historical assertions. Runtime projection and original manifests are unchanged.",
+    "source_sha256": {
+      "tests/automatic_tool_recovery_lineage.py": "49e2c487d8d5f3dad0840523d0fc8bbda2c642e30bd0c685220fe0a5cca18628",
+      "tests/test_automatic_tool_recovery_lineage.py": "dcf8700726072b98289c6c43ebfa66052767918fe97bb4004bb4f1546c8cf41a"
+    },
+    "local_validation": {
+      "status": "incomplete_outer_guard_timeout",
+      "planned_tests": 145,
+      "completed_passes": 118,
+      "remaining_including_interrupted": 27,
+      "logged_failures_or_errors": 0,
+      "all_three_new_archive_regressions_completed": true,
+      "original_failed_compiler_assertion_completed": true,
+      "outer_guard_s": 600,
+      "retained_test_child_joined": true,
+      "retained_test_child_terminated_at_guard": true,
+      "supervisor_exit_code": 1,
+      "candidate_hashes_match_prelaunch_record": true,
+      "full_worker_source_inventory_receipt_written": false,
+      "log_sha256": "67c77aa183e43672656e908b7822c0e50f51e227d60ea8218e61ddc91c9d614f",
+      "supervisor_sha256": "da520007b3171be30b9a38dd9137c63c333e0f2a18c102cc52563e010bd7aa98",
+      "partial_audit_sha256": "9cd9533be307b1a684a1ed7f4cb05d2f89d12c62fb42d4e50a715a55f420b237",
+      "interpretation": "Partial log evidence, not a passing full lineage suite. No rerun or guard extension. Fresh required hosted CI must validate the full successor."
+    }
+  },
   "research": [
     {
       "url": "https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py",
