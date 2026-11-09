@@ -44,7 +44,8 @@ exact predecessor test files, failure identities and local validation. The first
 fixture now reuses the existing logical observation-clock pattern. The second
 uses the existing project/CPython 30-second whole-fixture guard while preserving
 shielded ownership and final-intent assertions. Twelve selected tests passed:
-both affected paths, all six helper callers and five negative expiry checks.
+both affected paths, six defining-module callers and five negative expiry checks.
+The two callers that borrow the helper from another class were not included.
 Three owned inert children joined with their expected exits, without cleanup
 kills. Runtime files, production freshness, real execution clocks and task/tool
 allowances are unchanged. These source tests do not qualify installed agents,
@@ -62,6 +63,15 @@ outer guard expired; the retained child was terminated and joined, leaving
 27 tests incomplete. This is **not a passing full-suite result**. Its partial
 log and failed supervisor outcome remain recorded; required fresh hosted CI
 must pass on the corrected successor before merge.
+
+The next original hosted pair at `411a3e0` exposed that missing alias coverage:
+`ExpiryRuntimeTests` borrows the helper without inheriting its defining class,
+so the new instance-setting lookup raised `AttributeError`. Move the unchanged
+30-second guard to module scope. Twelve targeted successor checks passed:
+all six direct and both aliased calling tests, three source-archive regressions,
+and the original compiler source assertion. The retained test child joined
+normally, with no timeout or source change during the check. Production behavior
+and prior failed outcomes are unchanged; the new head still requires full CI.
 
 ## Agent-requested GPU video and foreground handoff
 

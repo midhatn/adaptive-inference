@@ -11,7 +11,8 @@
     "tests/test_desktop_mailbox_runtime.py": {
       "predecessor_source": "provenance/ci-fixtures/2026-11-09/predecessor/tests/test_desktop_mailbox_runtime.py",
       "predecessor_sha256": "02cb14272823904f022307a5757f3a13daa9fe68bf734d6e6238554d57268697",
-      "successor_sha256": "12c11cf6cf1bc3007e18a5051e192d8dd43af34aa3b44d34eae4458091de9430"
+      "intermediate_successor_sha256": "12c11cf6cf1bc3007e18a5051e192d8dd43af34aa3b44d34eae4458091de9430",
+      "successor_sha256": "55ebc08fa3def908431556bd3e2089a034762296df235ae1df1dbe1647e730c4"
     }
   },
   "original_failures": [
@@ -50,11 +51,13 @@
     "Stale-observation refusals and duplicate-launch assertions"
   ],
   "validation": {
+    "tested_revision": "a83844b5fed20bf01dcfd61d4061b00961b787cc",
+    "mailbox_fixture_sha256": "12c11cf6cf1bc3007e18a5051e192d8dd43af34aa3b44d34eae4458091de9430",
     "selected_tests": 12,
     "failures": 0,
     "errors": 0,
     "skips": 0,
-    "scope": "Both previously failing cases, all six completed_control callers and five expiry/refusal cases",
+    "scope": "Both previously failing cases, six defining-module completed_control callers and five expiry/refusal cases; the two aliased callers were not included",
     "test_elapsed_s": 3.108,
     "receipt_sha256": "debe2466a111ceec2c3186c44fd6f8ca6b329ff443c4da80a67de6c65a7eaffa",
     "owned_child_exit_codes": [
@@ -97,6 +100,32 @@
       "partial_audit_sha256": "9cd9533be307b1a684a1ed7f4cb05d2f89d12c62fb42d4e50a715a55f420b237",
       "interpretation": "Partial log evidence, not a passing full lineage suite. No rerun or guard extension. Fresh required hosted CI must validate the full successor."
     }
+  },
+  "shared_helper_followup": {
+    "failed_head": "411a3e0ed528a8b99c54f169574d0f7765c67c15",
+    "original_runs": [42559679949, 42559684062],
+    "representative_job": 128973128415,
+    "representative_log_sha256": "d891ff6612f985f308ec2b254dfd3cdaf686ce3352477a1af45f42c9a54867fa",
+    "failure": "ExpiryRuntimeTests aliases completed_control without inheriting RuntimeTests, so the new self.control_completion_timeout_s attribute was absent",
+    "change": "Move the unchanged 30-second guard to the defining module scope so both direct and aliased callers use the same bound. Preserve shielding, assertions and production source.",
+    "validation": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "scope": "Six direct and two aliased helper callers, three archive regressions and the original compiler source assertion",
+      "elapsed_s": 8.265,
+      "sources_unchanged": true,
+      "supervisor_exit_code": 0,
+      "retained_test_child_joined": true,
+      "timed_out": false,
+      "runtime_or_task_budgets_changed": false,
+      "result_sha256": "9099e90fd24e27928d59a2b26203dac55b1a8107e46d51f248de81d62e0d96e5",
+      "supervisor_sha256": "41fa51c1bd38a87a4ec741b1cb3738515544d784d97f83a33fbe46905f5a3567",
+      "log_sha256": "aa00a1903efb47e508dcf741aeeaf083c3f7645ca9bbf32f0065cf6281afc464",
+      "full_hosted_successor": "Required separately; the earlier failed runs and incomplete local sweep remain unchanged"
+    },
+    "reference": "https://docs.python.org/3/tutorial/classes.html#python-scopes-and-namespaces"
   },
   "research": [
     {

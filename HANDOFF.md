@@ -57,6 +57,9 @@ retains two original hosted failures and twelve passing targeted checks, includi
 negative expiry checks. Production deadlines and runtime source are unchanged.
 Its historical-reader follow-up retains a separate failed hosted pair and an
 incomplete local sweep (118 passes, 27 unfinished at the original outer guard).
+The next hosted run exposed two untested aliased helper callers; a shared
+module-level guard fixes that dependency, with twelve focused successor checks
+passing across direct/aliased callers and historical-source assertions.
 Use the exact current PR checks before integrating; historical or local passes
 do not override a failed required check. Main branch protection is enabled.
 
