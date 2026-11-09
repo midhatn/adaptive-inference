@@ -73,6 +73,16 @@ and the original compiler source assertion. The retained test child joined
 normally, with no timeout or source change during the check. Production behavior
 and prior failed outcomes are unchanged; the new head still requires full CI.
 
+The corrected successor `142a838de9cd8f41a1f027c13578301f11077bb7`
+subsequently passed both original hosted workflows: all 14 jobs, 12 full-core
+checks, 12 distribution checks and both offline/source-delta checks passed.
+[PR #40](https://github.com/midhatn/adaptive-inference/pull/40) merged through
+the protected branch at `d33c979e1047f9c125ab94788fcbb2b3d8ef6c12`, with
+exactly the reviewed tree `c18247124cadbf9b3503467a37a569c9370daa6d`.
+The correction record retains the successful run/job identities and independent
+terminal-audit hashes alongside every earlier failure. This is source/package
+validation, with no new installed, model or physical qualification.
+
 ## Installed active-tool interruption and observer correction — 9 November 2026
 
 The [installed SDK/compiler record](../provenance/compiler/installed-active-tool-interruption-2026-11-09.json)

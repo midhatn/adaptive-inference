@@ -127,6 +127,119 @@
     },
     "reference": "https://docs.python.org/3/tutorial/classes.html#python-scopes-and-namespaces"
   },
+  "hosted_successor_validation": {
+    "date": "2026-11-09",
+    "head": "142a838de9cd8f41a1f027c13578301f11077bb7",
+    "conclusion": "success",
+    "scope": "Exact-source hosted CI and distribution checks; no new installed, model, physical or reboot qualification",
+    "actions_app_id": 15368,
+    "original_attempts_only": true,
+    "jobs_passed": 14,
+    "core_steps_passed": 12,
+    "distribution_steps_passed": 12,
+    "offline_steps_passed": 2,
+    "source_delta_steps_passed": 2,
+    "workflows": [
+      {
+        "id": 42560726971,
+        "event": "push",
+        "attempt": 1,
+        "url": "https://github.com/midhatn/adaptive-inference/actions/runs/42560726971",
+        "conclusion": "success",
+        "jobs": [
+          {
+            "id": 128976344376,
+            "name": "offline-source",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976344579,
+            "name": "portable (ubuntu-latest, 3.11)",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976344580,
+            "name": "portable (ubuntu-latest, 3.12)",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976344602,
+            "name": "portable (windows-latest, 3.12)",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976344659,
+            "name": "portable (macos-latest, 3.12)",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976344676,
+            "name": "portable (macos-latest, 3.11)",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976344728,
+            "name": "portable (windows-latest, 3.11)",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "id": 42560730165,
+        "event": "pull_request",
+        "attempt": 1,
+        "url": "https://github.com/midhatn/adaptive-inference/actions/runs/42560730165",
+        "conclusion": "success",
+        "jobs": [
+          {
+            "id": 128976354376,
+            "name": "offline-source",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976354531,
+            "name": "portable (ubuntu-latest, 3.12)",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976354549,
+            "name": "portable (windows-latest, 3.11)",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976354617,
+            "name": "portable (ubuntu-latest, 3.11)",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976354642,
+            "name": "portable (macos-latest, 3.12)",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976354652,
+            "name": "portable (macos-latest, 3.11)",
+            "conclusion": "success"
+          },
+          {
+            "id": 128976354703,
+            "name": "portable (windows-latest, 3.12)",
+            "conclusion": "success"
+          }
+        ]
+      }
+    ],
+    "ordinary_protected_merge": {
+      "pr": 40,
+      "commit": "d33c979e1047f9c125ab94788fcbb2b3d8ef6c12",
+      "tree": "c18247124cadbf9b3503467a37a569c9370daa6d",
+      "tree_matches_reviewed_head": true,
+      "admin_bypass": false
+    },
+    "terminal_receipt_sha256": "f266eec17b6665a46ec8da256d3da683119516ab96d2465612d2fa8423da2faf",
+    "independent_terminal_audit_sha256": "940ccc7653b1a9986226b97cbefccff4bd0350fb6561947797ed53f525378b9e",
+    "earlier_failed_runs_and_incomplete_local_sweep_unchanged": true
+  },
   "research": [
     {
       "url": "https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py",

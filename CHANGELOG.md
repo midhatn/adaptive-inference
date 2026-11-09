@@ -18,6 +18,12 @@ These changes belong to the development source. The published `0.4.0a1` tag and 
 
 The automatic-recovery source passed the complete **1,595-test local core suite** and all **16 additional workflow commands**, with the earlier failed test-double attempt retained. Source checks, installed SDK fixtures and physical IQ3_S evidence remain separately identified in the [evidence ledger](docs/evidence.md) and [local validation record](provenance/automatic-tool-recovery/local-validation-2026-11-08.json). These results do not complete M3, M4, M5, daily-use qualification or the full Adaptive-Hermes-Media-Autonomous Test.
 
+The corrected CI-fixture/roadmap successor subsequently passed all **14 original
+hosted jobs**, including **12 full-core and 12 distribution checks**, and merged
+as [PR #40](https://github.com/midhatn/adaptive-inference/pull/40). Its
+[record](provenance/ci-fixtures/2026-11-09/record.json) preserves the successful
+successor and the earlier failed or incomplete attempts separately.
+
 ## 0.4.0a1 — supported Windows reference alpha (2026-11-01)
 
 This prerelease packages the supported Windows/IQ3_S/Hermes reference, ordinary

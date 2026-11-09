@@ -63,6 +63,12 @@ passing across direct/aliased callers and historical-source assertions.
 Use the exact current PR checks before integrating; historical or local passes
 do not override a failed required check. Main branch protection is enabled.
 
+[PR #40](https://github.com/midhatn/adaptive-inference/pull/40) has now merged
+at `d33c979e1047f9c125ab94788fcbb2b3d8ef6c12` with its exact reviewed tree.
+All 14 original hosted jobs passed, including 12 full-core and 12 distribution
+checks; the [canonical record](provenance/ci-fixtures/2026-11-09/record.json)
+retains those outcomes without changing earlier failures or qualification scope.
+
 **Latest bounded M4 gate — 9 November 2026:** the
 [installed active-compiler interruption case](provenance/compiler/installed-active-tool-interruption-2026-11-09.json)
 passed 61 independent closed-evidence checks. One actual Hermes SDK worker

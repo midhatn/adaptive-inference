@@ -75,6 +75,12 @@ passed 49 closed-audit checks at the exact-known-result boundary described in
 the [evidence ledger](docs/evidence.md#physical-iq3_s-foreground-recovery).
 That result does not complete M4 or qualify successful computer-reboot recovery.
 
+The roadmap/engineering-practices and CI-fixture follow-up
+[PR #40](https://github.com/midhatn/adaptive-inference/pull/40) is also merged,
+at `d33c979e1047f9c125ab94788fcbb2b3d8ef6c12`, after all 14 original hosted
+jobs passed. Its [retained validation](provenance/ci-fixtures/2026-11-09/record.json)
+preserves earlier failures. All 77 production runtime modules remain unchanged.
+
 **Latest bounded gate — 9 November 2026:** an installed Hermes SDK worker
 interrupted an actual compiler test, retained its feedback and completed a
 distinct successful compiler call within the same task and original budget.
