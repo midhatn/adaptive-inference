@@ -1138,3 +1138,19 @@
   url = {https://github.com/python/cpython/issues/85480},
   note = {Inspected 2026-11-09 with Python urllib.error and http.client documentation and Microsoft's TCP_INITIAL_RTO_PARAMETERS reference. A bounded local Python 3.11.9 loopback diagnostic reproduced two-second connect timeouts and actual WinError 10061 refusal with a five-second bound; accepted stalled responses remained timeouts. The GET-only observer reuses its existing urllib parser and loop with a longer bound only after known gateway identity and terminal-path existence, clamped to remaining loop time. No external implementation or TCP setting change is copied; historical physical observer failures remain unchanged}
 }
+
+@misc{openaiAgentFirstHarnessEngineering,
+  author = {Ryan Lopopolo and OpenAI},
+  title = {Harness engineering: leveraging Codex in an agent-first world},
+  year = {2026},
+  url = {https://openai.com/index/harness-engineering/},
+  note = {Reviewed 2026-11-09. Repository knowledge as the system of record, concise agent entry instructions, bounded work and inspectable feedback inform this project's existing collaboration workflow. Practice reference only; no implementation copied or reported throughput inherited}
+}
+
+@misc{anthropicApplicationHarnessDesign,
+  author = {{Anthropic}},
+  title = {Harness design for long-running application development},
+  year = {2026},
+  url = {https://www.anthropic.com/engineering/harness-design-long-running-apps},
+  note = {Reviewed 2026-11-09. Structured handoffs and separation of implementation from evaluation inform the evidence-based agent engineering requirement. Independent review still requires actual acceptance evidence; no agent harness code or provider dependency copied}
+}

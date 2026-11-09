@@ -12,6 +12,33 @@ contains the engine profiles and client entry points. All actual inference
 qualification uses the established IQ3_S model; fixture responses are labeled
 separately. No smaller model or reduced reasoning allowance substitutes for it.
 
+## Current status: 9 November 2026
+
+The read-only refresh through **2026-11-09 at 03:03 UTC** confirms **ten open,
+one merged and one closed unmerged** among the original twelve propagated PRs.
+The nine open documentation/example PRs apply cleanly; this does not clear their
+review, CLA, preview or draft gates. The remaining open PR, Strata #1493, is a
+conflicting experimental draft. Its next step remains a narrow adapter using
+current upstream controls, followed by a reproduced missing contract or defect
+and exact target validation before revising the broader proposal.
+
+Hermes #143827 remains merged for the routing-plugin catalog entry. OpenClaw
+#182080 remains closed in favor of merged #182565's existing provider-routing
+recipe. Neither accepts this repository's newer desktop controller or qualifies
+an installed autonomous workflow. Aider #5899 now reports one successful
+`license/cla` status dated 8 November; it is not a code-test pass. Other recorded
+contribution and check gates remain unresolved, with no new maintainer correction
+identified in the original twelve.
+
+The account used for this refresh has read access, without push, maintain, admin
+or triage permissions, in all 13 external repositories checked. Upstream merges
+and maintainer-only labels therefore remain with those repositories; fixing our
+own fork branches is still possible when a concrete target change is validated.
+No upstream comment or branch update was warranted by this status refresh.
+Canonical release results are propagated only when they validate a specific
+mergeable change in the receiving PR, not as a general progress announcement.
+Earlier head identities and validation dates below retain their original scope.
+
 ## Delivery sequence
 
 1. Preserve the implementation, exact source inputs, licenses and runnable checks here.
@@ -47,7 +74,7 @@ MLX-LM and vLLM.
 
 | Target | Submitted or retained integration | Recorded delivery status |
 | --- | --- | --- |
-| Strata | [Existing #1493](https://github.com/Niko1221/Strata/pull/1493), head `06ba725d8b9bb42b457302f71dd85204e9760c32` | Draft and conflicting as observed on 30 October. Its 46 CPU/fake-engine routing checks remain historical; `metal-link` and native/public-workflow gates remain unresolved. First evaluate existing upstream load/unload/VRAM controls through a narrow canonical adapter before revising the broader draft. [#3399](https://github.com/Niko1221/Strata/pull/3399) is closed unmerged: [e2e99ae5](https://github.com/Niko1221/Strata/commit/e2e99ae54aae9a5a28938223679ab9a5ec4ef33c) ported its exact child-identity test and the token-default fix with credit, alongside kossum's QoS test. This is source/attribution verification, not a new runtime result. |
+| Strata | [Existing #1493](https://github.com/Niko1221/Strata/pull/1493), head `06ba725d8b9bb42b457302f71dd85204e9760c32` | Draft and conflicting on 30 October, reconfirmed 9 November. Its 46 CPU/fake-engine routing checks remain historical; `metal-link` and native/public-workflow gates remain unresolved. First evaluate existing upstream load/unload/VRAM controls through a narrow canonical adapter before revising the broader draft. [#3399](https://github.com/Niko1221/Strata/pull/3399) is closed unmerged: [e2e99ae5](https://github.com/Niko1221/Strata/commit/e2e99ae54aae9a5a28938223679ab9a5ec4ef33c) ported its exact child-identity test and the token-default fix with credit, alongside kossum's QoS test. This is source/attribution verification, not a new runtime result. |
 | llama.cpp | Existing OpenAI-compatible server profile and preserved native source inputs | Human-authored upstream submission required by its contribution policy |
 | vLLM | Existing compatible server profile; no duplicate provider | Human validation and DCO required before an upstream submission |
 | SGLang | [#46199](https://github.com/sgl-project/sglang/pull/46199), head `c3aaf7ec` | Ready for review. All 121 returned checks on the unchanged head comprise 33 successes, 82 skips, five failures and one neutral result; the latest processor workflow succeeded. Prior draft/title/aggregate failures remain on this head, and fork preview requires maintainer approval. Six gateway/SDK fixture checks are not native SGLang qualification. |
@@ -57,7 +84,7 @@ MLX-LM and vLLM.
 | TGI | Retained legacy profile | Repository archived; no new upstream PR possible |
 | Hermes | [Catalog #143827](https://github.com/NousResearch/hermes-agent/pull/143827), head `2c1411b3` | Merged on 24 October at 20:23:02 UTC (`e7b15ab1`); 17 checks succeeded and 23 skipped. The catalog entry pins `d6f4e201` and `plugins/hermes`. This is not upstream acceptance of the desktop controller or new native/agent qualification. |
 | OpenClaw | [Docs #182080](https://github.com/openclaw/openclaw/pull/182080), head `f64d74b0`, linked to [issue #182077](https://github.com/openclaw/openclaw/issues/182077) | Closed unmerged on 30 October as superseded by [#182565](https://github.com/openclaw/openclaw/pull/182565), merged at `45fc29dcf159095be6251dba21c249af08a5d05a` on 27 October and closing the issue. The successor documents existing same-model routes, settings, fallbacks and precedence. Original patch, schema/MDX checks and failed/skipped CI remain historical. Documentation acceptance does not qualify runtime scheduling or agent performance. |
-| Aider | [#5899](https://github.com/Aider-AI/aider/pull/5899), head `d5e113fb` | Open base-path clarification, distinct from existing runtime-normalization #5488. No hosted checks reported. |
+| Aider | [#5899](https://github.com/Aider-AI/aider/pull/5899), head `d5e113fb` | Open base-path clarification, distinct from existing runtime-normalization #5488. The earlier snapshot reported no hosted checks; the 9 November refresh reports one successful `license/cla` status dated 8 November, not a code-test pass. |
 | OpenHands | [SDK #6180](https://github.com/OpenHands/software-agent-sdk/pull/6180), head `415785b5`, and [docs #997](https://github.com/OpenHands/docs/pull/997), head `4ef32371` | Both drafts. The SDK's human-only template section remains unchanged; companion docs should land with or after the example. SDK and gateway checks use HTTP fixtures. |
 | Continue | [#13415](https://github.com/continuedev/continue/pull/13415), head `12eba630` | Open base-path guide. CLA, Snyk quota, FFmpeg setup and aggregate checks remain unresolved; formatting passed. |
 | Cline | [Docs #15308](https://github.com/cline/cline/pull/15308), head `cbbc9626`, plus [feature discussion #15309](https://github.com/cline/cline/discussions/15309) | Open route clarification; fork preview needs maintainer approval. Explicit budget-field support is proposed separately and not implemented. |

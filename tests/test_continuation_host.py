@@ -303,7 +303,15 @@ class HostTests(unittest.IsolatedAsyncioTestCase):
         return json.loads(writer.data)
 
     async def test_transport_continue_preserves_live_intent_and_duplicate_does_not_launch(self):
-        c=self.c;await self.start_transport()
+        c=self.c
+        # As in test_desktop_mailbox_runtime, observation age is a logical
+        # fixture input, not SQLite/CI scheduling speed. Keep the actual child,
+        # UI, execution and orchestration clocks unchanged; expiry has its own
+        # explicit negative tests. Refresh before using this clock's cache.
+        observation_clock=mock.patch.object(c.runtime,'_clock',return_value=time.monotonic())
+        observation_clock.start();self.addCleanup(observation_clock.stop)
+        await c.runtime.refresh()
+        await self.start_transport()
         restoring=asyncio.create_task(self.restore());self.tasks.append(restoring)
         first=await self.wire('continue');self.assertTrue(first['ok'])
         task=self.transport._records['continue-1']['task'];self.tasks.append(task)
