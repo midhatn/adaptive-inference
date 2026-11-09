@@ -20,6 +20,40 @@ also draws on [research on long-running agent harnesses](https://www.anthropic.c
 This is a coordination practice, not evidence that adding more agents guarantees
 success. Sources and the scope of reuse are retained in [REFERENCES.bib](../REFERENCES.bib).
 
+## Engineering practices
+
+These practices are an explicit requirement of the active project goal, added
+9 November 2026. The workflow below applies them without requiring a particular
+agent product or a second human reviewer for every change.
+
+- Keep `AGENTS.md` a concise entry map; use the canonical plan, current handoff
+  and linked source/evidence instead of relying on an agent's chat memory.
+- Define the user-visible outcome, acceptance and ownership before a bounded
+  change. Prefer a small working increment and reuse established mechanisms.
+- Give independent workers disjoint scopes. Review the actual diff and evidence;
+  agreement between agents does not establish correctness.
+- Match checks to the change. Separate deterministic functional tests from real
+  timing and hardware measurements. Diagnose failures before retrying; never
+  weaken production requirements to hide a test-environment problem.
+- Retain exact inputs, dependencies, citations, failed attempts and rollback
+  points. Close owned processes and document the next action before handoff.
+- Integrate through pull requests with required checks and resolved discussions.
+  Update the plan when evidence changes the next useful step. Avoid process or
+  optional edge-case work that does not advance the functional main workflow.
+
+This extends the existing incremental-session approach using OpenAI's
+[repository knowledge and feedback-loop guidance](https://openai.com/index/harness-engineering/)
+and Anthropic's [separate implementation/evaluation and structured-handoff work](https://www.anthropic.com/engineering/harness-design-long-running-apps),
+reviewed on 9 November 2026. These are engineering references, not inherited
+performance guarantees or copied harness code.
+
+The canonical GitHub `main` branch is protected as of this date: a pull request,
+an up-to-date branch, all seven CI job contexts from GitHub Actions and resolved
+conversations are required. Force-push and deletion are disabled, including for
+administrators. Required human approvals are zero; independent agent review and
+the evidence gates above still apply. Fork maintainers should configure their
+own equivalent protection; repository files cannot enforce remote settings.
+
 ## Divide work by a concrete contract
 
 One work item has a coordinator/integration owner, bounded implementation or

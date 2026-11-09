@@ -86,6 +86,11 @@ class FakeLifecycle:
 
 
 class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
+    # Whole-fixture join guard for actual SQLite/thread work, not a product
+    # freshness or response-latency requirement. Reuse CPython SHORT_TIMEOUT:
+    # https://github.com/python/cpython/blob/v3.12.10/Lib/test/support/__init__.py
+    control_completion_timeout_s = 30
+
     async def asyncSetUp(self):
         self.data()
         self.demand()
@@ -135,7 +140,8 @@ class RuntimeTests(DataFixture, unittest.IsolatedAsyncioTestCase):
         # and its authority read finish. Final-intent assertions need that task.
         reply = await self.request(method, request_id=request_id)
         self.assertTrue(reply['ok'], reply)
-        await asyncio.wait_for(asyncio.shield(self.transport._records[request_id]['task']), 3)
+        await asyncio.wait_for(asyncio.shield(self.transport._records[request_id]['task']),
+                               self.control_completion_timeout_s)
         return reply
 
     def matches(self):

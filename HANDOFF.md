@@ -51,6 +51,13 @@ describe these development capabilities; published `0.4.0a1` artifacts retain
 their original scope. [PLAN.md](PLAN.md) is the authoritative goal, milestone
 order and next-work plan. M3–M5 and daily-use qualification remain incomplete.
 
+The active goal also requires the [agent engineering practices](docs/multi-agent-collaboration.md#engineering-practices).
+The follow-up [Windows CI fixture correction](docs/evidence.md#follow-up-windows-ci-fixture-correction)
+retains two original hosted failures and twelve passing targeted checks, including
+negative expiry checks. Production deadlines and runtime source are unchanged.
+Use the exact current PR checks before integrating; historical or local passes
+do not override a failed required check. Main branch protection is enabled.
+
 **Latest accepted M4 increment:** automatic desktop recovery of a pending
 compiler/video operation after worker loss. `DesktopComposition` now detects
 a non-zero worker exit with one pending effect whose exact terminal result is

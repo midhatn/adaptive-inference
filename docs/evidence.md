@@ -30,6 +30,27 @@ completed tool result in the surviving host, and its separate shutdown observer
 remains failed pending diagnosis. See the [Unreleased notes](../CHANGELOG.md#unreleased--development-after-040a1)
 and [current plan](../PLAN.md) for the applicable capabilities and next work.
 
+### Follow-up Windows CI fixture correction
+
+The original post-merge [PR38 main run](https://github.com/midhatn/adaptive-inference/actions/runs/42554614440)
+failed on Windows/Python 3.12 when an ordinary continuation test used an expired
+observation. The production one-second freshness check correctly refused it.
+The original [documentation push](https://github.com/midhatn/adaptive-inference/actions/runs/42555520520)
+then failed on Windows/Python 3.11 because a three-second test-only join guard
+expired while retained control work was pending. Both original runs stay failed.
+
+The [correction record](../provenance/ci-fixtures/2026-11-09/record.json) retains
+exact predecessor test files, failure identities and local validation. The first
+fixture now reuses the existing logical observation-clock pattern. The second
+uses the existing project/CPython 30-second whole-fixture guard while preserving
+shielded ownership and final-intent assertions. Twelve selected tests passed:
+both affected paths, all six helper callers and five negative expiry checks.
+Three owned inert children joined with their expected exits, without cleanup
+kills. Runtime files, production freshness, real execution clocks and task/tool
+allowances are unchanged. These source tests do not qualify installed agents,
+hardware, physical responsiveness or reboot recovery. Successor hosted CI is a
+separate gate; a local pass does not relabel an original failed run.
+
 ## Agent-requested GPU video and foreground handoff
 
 The [second physical video task](../provenance/video-tool/physical-foreground-video-2026-11-02.json)

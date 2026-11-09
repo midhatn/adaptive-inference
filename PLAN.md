@@ -25,6 +25,22 @@ evidence and citations. See the [always-on vision](docs/always-on-controller.md)
 [integration contract](docs/integration-contract.md) and
 [source-preservation contract](docs/source-of-truth.md).
 
+### Engineering requirement for the active goal
+
+Develop this project using current, evidence-based best practices for agent-led
+software engineering. Apply the [collaboration workflow](docs/multi-agent-collaboration.md#engineering-practices)
+throughout every milestone: research existing solutions, define a bounded user
+result and acceptance criteria, implement a small reviewable change, run the
+appropriate checks, obtain independent review where useful, integrate through
+protected pull requests, and leave a reproducible handoff. Use observed failures
+and review feedback to improve both the implementation and this plan.
+
+Prefer a working end-to-end increment over speculative frameworks, optional
+optimization or exhaustive outlier handling. Preserve failed evidence and
+qualification standards; agent agreement alone is not validation. Revisit a
+practice when new research or project evidence shows a better approach, keeping
+the supporting citations and the reason for the change in this repository.
+
 ## Starting point
 
 This snapshot distinguishes released work, development work and future goals.
