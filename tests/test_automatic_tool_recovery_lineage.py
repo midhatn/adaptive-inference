@@ -18,6 +18,53 @@ class AutomaticToolRecoveryLineageTests(unittest.TestCase):
         return {path.relative_to(runtime).as_posix(): path.read_bytes()
                 for path in runtime.rglob('*.py')}
 
+    def test_ci_fixture_delta_preserves_both_exact_archives_without_executing_them(self):
+        rows = lineage.ci_fixture_record(lineage.ROOT)
+        self.assertEqual(set(rows['files']), lineage.CI_FIXTURE_FILES)
+        self.assertTrue(set(lineage.ci_fixture_inputs(lineage.ROOT)) <= set(lineage.inputs()))
+        for relative, row in rows['files'].items():
+            with self.subTest(relative=relative):
+                current = (lineage.ROOT / relative).read_bytes()
+                before = (lineage.ROOT / row['predecessor_source']).read_bytes()
+                self.assertEqual(hashlib.sha256(current).hexdigest(), row['successor_sha256'])
+                self.assertEqual(hashlib.sha256(before).hexdigest(), row['predecessor_sha256'])
+                self.assertNotEqual(current, before)
+                self.assertEqual(lineage.predecessor(relative, current), before)
+                self.assertEqual(lineage.predecessor(relative, before), before)
+                for extra in (b'\n# unreviewed fixture\n', b'\nunreviewed = True\n'):
+                    changed = current + extra
+                    self.assertEqual(lineage.predecessor(relative, changed), changed)
+                    self.assertNotEqual(hashlib.sha256(changed).hexdigest(), row['predecessor_sha256'])
+                with tempfile.TemporaryDirectory() as directory:
+                    self.assertEqual(lineage.predecessor(relative, current, Path(directory)), current)
+
+    def test_ci_fixture_archive_path_and_hash_tampering_is_refused(self):
+        rows = lineage.ci_fixture_record(lineage.ROOT)
+        for relative in lineage.CI_FIXTURE_FILES:
+            data = (lineage.ROOT / relative).read_bytes()
+            for field in ('predecessor_source', 'predecessor_sha256'):
+                changed = deepcopy(rows); changed['files'][relative][field] = '0' * 64
+                with self.subTest(relative=relative, field=field), mock.patch.object(
+                        lineage, 'ci_fixture_record', return_value=changed):
+                    with self.assertRaisesRegex(AssertionError, 'CI fixture predecessor'):
+                        lineage.predecessor(relative, data)
+            changed = deepcopy(rows); changed['files'][relative]['successor_sha256'] = '0' * 64
+            with mock.patch.object(lineage, 'ci_fixture_record', return_value=changed):
+                self.assertEqual(lineage.predecessor(relative, data), data)
+
+    def test_modified_ci_fixture_archive_bytes_cannot_satisfy_historical_readers(self):
+        rows = lineage.ci_fixture_record(lineage.ROOT)
+        original_read = Path.read_bytes
+        for relative, row in rows['files'].items():
+            current = (lineage.ROOT / relative).read_bytes()
+            target = lineage.ROOT / row['predecessor_source']
+            def read(path):
+                raw = original_read(path)
+                return raw + b'\n# changed retained bytes\n' if path == target else raw
+            with self.subTest(relative=relative), mock.patch.object(Path, 'read_bytes', read):
+                with self.assertRaisesRegex(AssertionError, 'CI fixture predecessor bytes'):
+                    lineage.predecessor(relative, current)
+
     def test_exact_pending_tool_predecessors_and_evidence_remain_unchanged(self):
         rows = lineage.record()
         self.assertEqual(rows['predecessor_revision'], '9242434991f2c2c21461061d61d898649299b847')

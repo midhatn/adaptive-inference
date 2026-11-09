@@ -55,6 +55,8 @@ The active goal also requires the [agent engineering practices](docs/multi-agent
 The follow-up [Windows CI fixture correction](docs/evidence.md#follow-up-windows-ci-fixture-correction)
 retains two original hosted failures and twelve passing targeted checks, including
 negative expiry checks. Production deadlines and runtime source are unchanged.
+Its historical-reader follow-up retains a separate failed hosted pair and an
+incomplete local sweep (118 passes, 27 unfinished at the original outer guard).
 Use the exact current PR checks before integrating; historical or local passes
 do not override a failed required check. Main branch protection is enabled.
 

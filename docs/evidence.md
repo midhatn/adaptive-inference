@@ -51,6 +51,18 @@ allowances are unchanged. These source tests do not qualify installed agents,
 hardware, physical responsiveness or reboot recovery. Successor hosted CI is a
 separate gate; a local pass does not relabel an original failed run.
 
+Both original workflows at `a83844b` then failed an unchanged historical source
+assertion: the historical reader still selected the corrected live fixture.
+The follow-up reuses the existing source-lineage chain to select only the exact
+retained predecessor of either declared fixture. Unknown source bytes continue
+to face the original assertions. Three new archive/identity regression tests
+and the originally failing compiler assertion passed. A broader local sweep
+logged 118 passes out of 145 planned tests before its original 600-second
+outer guard expired; the retained child was terminated and joined, leaving
+27 tests incomplete. This is **not a passing full-suite result**. Its partial
+log and failed supervisor outcome remain recorded; required fresh hosted CI
+must pass on the corrected successor before merge.
+
 ## Agent-requested GPU video and foreground handoff
 
 The [second physical video task](../provenance/video-tool/physical-foreground-video-2026-11-02.json)
