@@ -9,6 +9,7 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest import mock
 import urllib.error
 import urllib.request
 
@@ -42,6 +43,20 @@ class FakeActivity:
                                'valid': True, 'cpu_cores_used': None, 'cpu_window_s': None},
                 'session_input_idle_s': 61., 'host': {'cpu_busy_fraction': None,
                     'ram_available_gib': None, 'commit_available_gib': None}, 'errors': []}
+
+
+class FakeClock:
+    def __init__(self):
+        self.now = 0.
+
+    def monotonic(self):
+        return self.now
+
+    def time(self):
+        return 1000. + self.now
+
+    def sleep(self, seconds):
+        self.now += seconds
 
 
 class AdaptiveBindingTests(unittest.TestCase):
@@ -202,6 +217,114 @@ class AdaptiveBindingTests(unittest.TestCase):
         self.assertEqual(result['valid_responses'], 1)
         self.assertFalse(result['task_completion_claimed'])
         self.assertEqual(calls, [('GET', '/status'), ('GET', '/status')])
+
+    def test_known_terminal_gateway_requires_real_refusal_after_owned_listener_closes(self):
+        port, calls, close = self.server([self.status()])
+        run = self.folder / 'closed-gateway'
+        original_fetch = observer.fetch_status
+        def fetch(opener, url, timeout):
+            value = original_fetch(opener, url, timeout)
+            close()
+            run.mkdir()
+            (run / 'result.private.json').write_text('existence only, not JSON')
+            return value
+        with mock.patch.object(observer, 'fetch_status', side_effect=fetch):
+            result = self.observe(self.profile(port), run, FakeActivity(), duration_s=10)
+        rows = OBSERVATIONS[-1]['rows']
+        requests = [row for row in rows if 'status_timeout_s' in row]
+        self.assertEqual(result['end_reason'], 'terminal_path_exists_and_connection_refused')
+        self.assertEqual(result['valid_responses'], 1)
+        self.assertEqual(calls, [('GET', '/status')])
+        self.assertEqual([row['status_timeout_limit_s'] for row in requests], [2., 5.])
+        self.assertEqual([row['status_timeout_s'] for row in requests], [2., 5.])
+        error = requests[-1]['observation_error']
+        self.assertEqual(error['reason_type'], 'ConnectionRefusedError')
+        self.assertTrue(error['connection_refused'])
+        self.assertIsInstance(error['errno'], int)
+        if sys.platform == 'win32':
+            self.assertEqual(error['winerror'], 10061)
+        self.assertFalse(result['task_completion_claimed'])
+
+    def test_terminal_marker_does_not_turn_timeout_or_reset_into_closure(self):
+        for name, error in (('wrapped-timeout', urllib.error.URLError(TimeoutError())),
+                            ('response-timeout', TimeoutError()),
+                            ('reset', ConnectionResetError(10054, 'fixture reset'))):
+            with self.subTest(error=name):
+                run = self.folder / name
+                calls = []
+                def fetch(opener, url, timeout):
+                    calls.append(timeout)
+                    if len(calls) == 1:
+                        run.mkdir()
+                        (run / 'result.private.json').write_text('existence only')
+                        return json.loads(self.status()[2])
+                    raise error
+                with mock.patch.object(observer, 'fetch_status', side_effect=fetch):
+                    result = self.observe(self.profile(), run, FakeActivity(), duration_s=10)
+                self.assertEqual(result['end_reason'], 'three_connection_errors_after_response')
+                self.assertEqual(calls, [2., 5., 5., 5.])
+                errors = [row['observation_error'] for row in OBSERVATIONS[-1]['rows']
+                          if 'observation_error' in row]
+                self.assertEqual(len(errors), 3)
+                self.assertTrue(all(not item['connection_refused'] for item in errors))
+                self.assertFalse(result['qualification_claimed'])
+
+    def test_terminal_marker_without_known_instance_keeps_normal_bound(self):
+        run = self.folder / 'unknown-gateway'
+        clock = FakeClock()
+        calls = []
+        def fetch(opener, url, timeout):
+            calls.append(timeout)
+            run.mkdir(exist_ok=True)
+            (run / 'result.private.json').write_text('existence only')
+            raise urllib.error.URLError(ConnectionRefusedError(10061, 'fixture refusal'))
+        with mock.patch.object(observer, 'time', clock), \
+                mock.patch.object(observer, 'fetch_status', side_effect=fetch):
+            result = self.observe(self.profile(), run, FakeActivity(), duration_s=.15)
+        requests = [row for row in OBSERVATIONS[-1]['rows'] if 'status_timeout_s' in row]
+        self.assertGreaterEqual(len(calls), 2)
+        self.assertTrue(any(row['terminal_path_exists'] for row in requests))
+        self.assertTrue(all(row['status_timeout_limit_s'] == 2. for row in requests))
+        self.assertTrue(all(0 < bound <= 2. for bound in calls))
+        self.assertEqual(result['end_reason'], 'observation_deadline')
+        self.assertIsNone(result['gateway_instance'])
+
+    def test_known_instance_without_terminal_marker_keeps_normal_bound(self):
+        calls = []
+        def fetch(opener, url, timeout):
+            calls.append(timeout)
+            if len(calls) == 1:
+                return json.loads(self.status()[2])
+            raise urllib.error.URLError(ConnectionRefusedError(10061, 'fixture refusal'))
+        with mock.patch.object(observer, 'fetch_status', side_effect=fetch):
+            result = self.observe(self.profile(), self.folder / 'no-marker', FakeActivity(),
+                                  duration_s=10)
+        self.assertEqual(calls, [2., 2., 2., 2.])
+        self.assertEqual(result['end_reason'], 'three_connection_errors_after_response')
+        self.assertFalse(result['terminal_path_exists'])
+
+    def test_terminal_timeout_is_clamped_to_original_outer_allowance(self):
+        clock = FakeClock()
+        run = self.folder / 'near-deadline'
+        calls = []
+        def fetch(opener, url, timeout):
+            calls.append(timeout)
+            if len(calls) == 1:
+                run.mkdir()
+                (run / 'result.private.json').write_text('existence only')
+                clock.now = 9.5
+                return json.loads(self.status()[2])
+            clock.now += timeout
+            raise TimeoutError()
+        with mock.patch.object(observer, 'time', clock), \
+                mock.patch.object(observer, 'fetch_status', side_effect=fetch):
+            result = self.observe(self.profile(), run, FakeActivity(), duration_s=10)
+        self.assertEqual(calls, [2., .5])
+        self.assertEqual(result['elapsed_s'], 10.)
+        self.assertEqual(result['end_reason'], 'observation_deadline')
+        requests = [row for row in OBSERVATIONS[-1]['rows'] if 'status_timeout_s' in row]
+        self.assertEqual(requests[-1]['status_timeout_limit_s'], 5.)
+        self.assertEqual(requests[-1]['status_timeout_s'], .5)
 
     def test_redirect_and_oversize_are_refused_without_followup(self):
         for response, expected in (

@@ -1131,3 +1131,10 @@
   url = {https://www.erlang.org/doc/system/sup_princ.html},
   note = {Inspected 2026-11-08 for automatic desktop tool recovery. Design reference only for a supervisor-owned, bounded replacement of a failed worker (restart intensity). Implemented through this repository's existing retained-child lifecycle, task journal and reconcile command; no Erlang/OTP code copied}
 }
+
+@misc{cpythonWindowsLoopbackRefusal,
+  author = {Steve Dower and Python contributors},
+  title = {socket.connect() slow to time out on Windows, CPython issue 85480},
+  url = {https://github.com/python/cpython/issues/85480},
+  note = {Inspected 2026-11-09 with Python urllib.error and http.client documentation and Microsoft's TCP_INITIAL_RTO_PARAMETERS reference. A bounded local Python 3.11.9 loopback diagnostic reproduced two-second connect timeouts and actual WinError 10061 refusal with a five-second bound; accepted stalled responses remained timeouts. The GET-only observer reuses its existing urllib parser and loop with a longer bound only after known gateway identity and terminal-path existence, clamped to remaining loop time. No external implementation or TCP setting change is copied; historical physical observer failures remain unchanged}
+}
