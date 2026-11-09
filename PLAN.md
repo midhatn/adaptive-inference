@@ -207,7 +207,7 @@ and public reproduction retain their separate evidence boundaries.
 | M1 | One complete corrected handoff and agent-restart workflow | Existing foundation | Accepted for the bounded Windows/Strata/Hermes IQ3_S composition |
 | M2 | A practical persistent controller with durable waiting and clear user intent | M1 for live integration acceptance | Active: bounded foreground/continuation/two-task run passed both audits; public reproduction, task preparation and setup/launcher startup checks available; narrow reference alpha delivery is next |
 | M3 | Measured coexistence with real desktop applications | M2 for broad qualification; a bounded control-window policy now feeds M2 | Early policy work active; broad desktop qualification planned |
-| M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Active: real compiler and installed SDK feedback verified with scripted provider/resource inputs; IQ3_S foreground handoff remains open |
+| M4 | Agent-driven compiler and GPU-tool handoffs | M1 and M2; foreground acceptance from M3 | Active: bounded IQ3_S foreground/compiler handoff passed; actual GPU video component passed; installed-agent video qualification is next |
 | M5 | Recovery across application restart, sleep/wake and computer reboot | M2 and supported M4 effect contracts | Planned |
 | M6 | A reproducible daily-use release with fault and soak qualification | M3, M4 and M5 for its advertised scope | Planned |
 | M7 | Broader engine and agent adapters using the same contracts | M2 contract stability; native acceptance follows M3–M6 | Staged expansion |
@@ -914,12 +914,53 @@ and normal Stop. Its independent observer again failed during shutdown. Keep
 both consumed tasks closed and preserve that failure. This qualifies the bounded
 compiler/foreground workflow, not desktop performance or all M4 outcomes.
 
-**Next useful-tool increment:** research and reuse the existing checked GPU
-video encode/probe/decode path, connect it to authorized agent dispatch and the
-same resource/ownership/feedback contract, then progress through component,
-actual-tool and installed-SDK gates before an unchanged-IQ3_S trial. Keep
-failure/interruption recovery as explicit acceptance work. This small recipe
+**Next useful-tool increment:** the [fixed GPU video recipe](docs/video-tool-recipe.md)
+reuses the existing checked encode/probe/decode commands, FFmpeg's documented
+frame-counting oracle and the current retained process owner. The
+[actual-tool component gate](provenance/video-tool/native-component-2026-11-02.json)
+passed with FFmpeg/FFprobe 8.1.1 and all owned processes joined; its native
+adapter and resource observations were scripted. Source now connects the
+explicit video task to the same authorization, feedback and completion path.
+Review found and corrected the two ordinary saved-result/new-task gates that
+still checked compiler capability only. Those gates now passed separately:
+[1,541 core tests and package/install checks](provenance/video-tool/local-validation-2026-11-02.json),
+[installed SDK dispatch with scripted replies](provenance/video-tool/installed-sdk-evidence-2026-11-02.json),
+and a [real IQ3_S foreground/video task](provenance/video-tool/physical-foreground-video-2026-11-02.json)
+with 47 passing primary checks. Its full action bracket and 87 matching activity
+samples establish the bounded foreground hold through parking. Model resources
+were released before video execution; the restored model consumed the saved
+result. The observer's shutdown failure remains separate. The
+[first video attempt](provenance/video-tool/physical-video-evidence-2026-11-02.json)
+missed the foreground action; preserve it. The fresh trial changed observation
+timing only, keeping runtime, quality, budgets and the onset predicate fixed.
+
+**Installed safe-worker restart accepted:** the [separate SDK gate](provenance/video-tool/installed-worker-restart-2026-11-02.json)
+completed one actual video operation, saved its receipt/native feedback, stopped
+the first worker cooperatively and completed with a replacement worker. The
+same task/session, original deadline and cumulative request accounting were
+preserved; the video was not repeated. An independent 58-check review passed.
+Provider replies and resource observations were scripted. This qualifies a
+same-host safe checkpoint, not abrupt worker loss or an actual-model restart.
+
+**Next:** reconcile completed useful-tool receipts after unexpected worker loss
+before feedback/native flush. Reuse the existing operation journal, native turn
+lease and retained owner: recover the exact recorded result, append feedback
+only if missing, and preserve the original operation and deadline. Unknown
+effects or unconfirmed cleanup must remain unresolved. First validate this
+boundary in component tests, then in an installed SDK interruption/replacement
+trial, and finally with unchanged IQ3_S inference. The safe-restart task is
+closed and must not be replayed. Keep one useful-tool family per
+deployment in this first increment; cross-family switching remains a later
+integration gate. Observer shutdown diagnosis and successful physical reboot
+continuation retain their separate gates. This small recipe
 does not replace the named model-bearing media test or its tuning/baseline gates.
+
+**Validation adjustment:** the [original video CI](provenance/video-tool/hosted-ci-timeout-2026-11-02.json)
+closed with all 12 core-test steps passing, but two final distribution checks
+were cancelled at the whole-job 15-minute limit. Preserve those failures. Give
+all portable jobs the existing Windows allowance of 30 minutes and observe the
+new commit's original runs. Do not change test assertions, task/recipe limits
+or claim a pass for the two interrupted checks.
 
 The named end-to-end media gate is the
 [Adaptive-Hermes-Media-Autonomous Test](docs/adaptive-hermes-media-autonomous-test.md).

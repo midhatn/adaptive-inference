@@ -34,11 +34,11 @@ in that historical refresh comprised **eleven open and one merged**. A focused
 leaving **ten open, one merged and one closed unmerged** among the original twelve.
 Strata #3399 was separately closed unmerged after its attributed upstream port;
 #1493 remains draft and conflicting. Other target entries retain their individual
-snapshots unless a later check is stated.
+snapshots unless a later check is stated. A **2 November 2026** read-only refresh records LangGraph #9419 closed `not_planned` and its documented `langchain-ai/docs` destination below; no new PR or adapter qualification follows.
 Three related issues and one feature discussion are tracked separately. The
 18-target scope is unchanged. The delivery release is v0.3.0; retained gateway
 qualification used v0.2.0, as recorded separately in the ledger. The [machine-readable ledger](../upstream/delivery.json)
-records full head revisions, check results, outstanding conditions and the original
+retains earlier dated head revisions, check results, outstanding conditions and the original
 source-policy references; the [registry](../upstream/registry.json) preserves the
 historical PR inventory alongside this refresh.
 The [remaining engine submission requirements](upstream-submission-requirements.md)
@@ -62,7 +62,7 @@ MLX-LM and vLLM.
 | Continue | [#13415](https://github.com/continuedev/continue/pull/13415), head `12eba630` | Open base-path guide. CLA, Snyk quota, FFmpeg setup and aggregate checks remain unresolved; formatting passed. |
 | Cline | [Docs #15308](https://github.com/cline/cline/pull/15308), head `cbbc9626`, plus [feature discussion #15309](https://github.com/cline/cline/discussions/15309) | Open route clarification; fork preview needs maintainer approval. Explicit budget-field support is proposed separately and not implemented. |
 | Roo Code | Retained legacy configuration | Repository archived; no new upstream PR possible |
-| LangGraph | Existing ChatOpenAI client and [proposal #9419](https://github.com/langchain-ai/langgraph/issues/9419) | Issue open, no assignment or approval recorded; external PR waits for that required step. |
+| LangGraph | Existing ChatOpenAI client and [proposal #9419](https://github.com/langchain-ai/langgraph/issues/9419) | Issue closed `not_planned` on 31 October. The [reply by eliornl](https://github.com/langchain-ai/langgraph/issues/9419#issuecomment-6543998484), whose GitHub association is `CONTRIBUTOR`, directs docs/examples proposals to `langchain-ai/docs`. Inspect that destination's current requirements and existing examples before submitting there; no approval, assignment or new PR is recorded. |
 | AutoGen | Existing client factory with explicit capabilities | Maintainers declare it unmaintained; preserve compatibility here |
 | CrewAI | [#8481](https://github.com/crewAIInc/crewAI/pull/8481), head `34302500`, linked to [issue #8480](https://github.com/crewAIInc/crewAI/issues/8480) | Open four-language guide. Required `llm-generated` label needs maintainer permissions; full-site validation retains an unchanged upstream Korean frontmatter failure. |
 
@@ -80,8 +80,9 @@ heads; their fork previews still require maintainer approval.
 
 OpenHands's [SDK template](https://github.com/OpenHands/software-agent-sdk/blob/acd96e6fa424c02432304395b9208f99be24b54d/.github/PULL_REQUEST_TEMPLATE.md)
 reserves the HUMAN section for its author. CrewAI's [contribution guide](https://github.com/crewAIInc/crewAI/blob/07361f6dc5f96d22efe565ff89297d22bce4a90f/.github/CONTRIBUTING.md)
-requires its AI-authorship label, and LangGraph's [PR template](https://github.com/langchain-ai/langgraph/blob/4897c51365d3c82a3808da2bdb7ef2d55daba1a9/.github/PULL_REQUEST_TEMPLATE.md)
-requires an approved issue and assignment. Cline's proposal follows its designated
+requires its AI-authorship label. The original LangGraph proposal followed its [then-inspected PR template](https://github.com/langchain-ai/langgraph/blob/4897c51365d3c82a3808da2bdb7ef2d55daba1a9/.github/PULL_REQUEST_TEMPLATE.md)
+requiring an approved issue and assignment; the later destination guidance does
+not establish the requirements or approval of `langchain-ai/docs`. Cline's proposal follows its designated
 Feature Requests discussion route; the documentation exception does not approve
 the proposed budget feature. Required policy steps remain explicit rather than
 being inferred from publication or local test success.

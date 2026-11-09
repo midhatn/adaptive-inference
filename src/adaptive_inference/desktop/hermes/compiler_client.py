@@ -25,6 +25,7 @@ from adaptive_inference.desktop.compiler_bridge import (
     HEADER, ROUTE, REQUEST_LIMIT, RESPONSE_LIMIT, STAGES, _decode as decode_request)
 from adaptive_inference.execution_clock import execution_now
 from adaptive_inference.task_spec import COMPILER_STATUSES, strict_json
+from adaptive_inference.desktop.recipe_dispatch import definition
 
 _PRE_DISPATCH = {'binding_refused', 'preparation_failed', 'cancelled_before_dispatch'}
 _RESULT_FIELDS = {'schema', 'operation_id', 'recipe_id', 'recipe_sha256', 'status',
@@ -52,7 +53,8 @@ class CompilerClient:
     An uncertain exchange fences this client; the durable owner reconciles it.
     """
     def __init__(self, port, capability, task_deadline, *, clock=execution_now,
-                 opener=None, sleep=time.sleep, request_timeout=2., poll_interval=.1):
+                 opener=None, sleep=time.sleep, request_timeout=2., poll_interval=.1, kind='compiler'):
+        self.definition = definition(kind)
         if (type(port) is not int or not 1 <= port <= 65535
                 or not _sha(capability)
                 or type(task_deadline) not in (int, float)
@@ -67,7 +69,7 @@ class CompilerClient:
         self._capability, self._clock, self._sleep = capability, clock, sleep
         self._opener = opener if opener is not None else urllib.request.build_opener(
             urllib.request.ProxyHandler({}), _NoRedirect())
-        self._url = f'http://127.0.0.1:{port}{ROUTE}'
+        self._url = f'http://127.0.0.1:{port}{self.definition.route}'
         self._request_timeout, self._poll_interval = request_timeout, poll_interval
         self._lock, self._failed, self._last_clock = threading.Lock(), False, None
 
@@ -87,7 +89,7 @@ class CompilerClient:
 
     def _exchange(self, body):
         request = urllib.request.Request(self._url, data=body, method='POST', headers={
-            HEADER: self._capability, 'Content-Type': 'application/json',
+            self.definition.header: self._capability, 'Content-Type': 'application/json',
             'Accept': 'application/json', 'Accept-Encoding': 'identity'})
         timeout = min(self._request_timeout, self._remaining())
         try:
@@ -132,7 +134,7 @@ class CompilerClient:
             return None
         result = reply['result']
         if (type(result) is not dict or not _RESULT_FIELDS <= set(result)
-                or result['schema'] != 'compiler-operation-result.v1'
+                or result['schema'] != self.definition.result_schema
                 or result['operation_id'] != request['operation_id']
                 or result['recipe_id'] != request['recipe_id']
                 or type(result['status']) is not str or result['status'] not in COMPILER_STATUSES
@@ -147,26 +149,35 @@ class CompilerClient:
                     or result['recipe_sha256'] is not None and not _sha(result['recipe_sha256'])):
                 raise CompilerClientError('unconfirmed_terminal_result')
         else:
-            extra = ({'artifact_sha256', 'artifact_bytes', 'test_report_sha256', 'tests_passed'}
-                     if result['passed'] else {'diagnostics'})
+            success_fields = ({'artifact_sha256', 'artifact_bytes', 'test_report_sha256', 'tests_passed'}
+                              if self.definition.kind == 'compiler'
+                              else {'artifact_sha256', 'artifact_bytes', 'probe_sha256', 'media'})
+            extra = success_fields if result['passed'] else {'diagnostics'}
             if (set(result) != _RESULT_FIELDS | {'receipt_sha256', 'stages'} | extra
                     or not _sha(result['recipe_sha256']) or not _sha(result['receipt_sha256'])
-                    or type(result['stages']) is not list or len(result['stages']) > len(STAGES)
+                    or type(result['stages']) is not list or len(result['stages']) > len(self.definition.stages)
                     or any(type(row) is not dict or not {'stage'} <= set(row) <= {'stage', 'exit_code'}
-                           or row['stage'] not in STAGES
+                           or row['stage'] not in self.definition.stages
                            or 'exit_code' in row and type(row['exit_code']) is not int
                            for row in result['stages'])):
                 raise CompilerClientError('unconfirmed_terminal_result')
             if result['passed']:
+                if self.definition.kind == 'video':
+                    from adaptive_inference.desktop.video_template import validate_success_projection
+                    try:
+                        validate_success_projection(result)
+                    except (ValueError, TypeError, KeyError):
+                        raise CompilerClientError('unconfirmed_terminal_result') from None
+                    return result
                 if (not result['dispatched'] or not _sha(result['artifact_sha256'])
                         or not _sha(result['test_report_sha256'])
                         or type(result['artifact_bytes']) is not int or result['artifact_bytes'] <= 0
                         or type(result['tests_passed']) is not list or not result['tests_passed']
                         or any(type(name) is not str or not name for name in result['tests_passed'])):
                     raise CompilerClientError('unconfirmed_terminal_result')
-            elif (type(result['diagnostics']) is not list or len(result['diagnostics']) > len(STAGES)
+            elif (type(result['diagnostics']) is not list or len(result['diagnostics']) > len(self.definition.stages)
                   or any(type(row) is not dict or set(row) != {'stage', 'text', 'truncated'}
-                         or row['stage'] not in STAGES or type(row['text']) is not str
+                         or row['stage'] not in self.definition.stages or type(row['text']) is not str
                          or len(row['text']) > 4096 or type(row['truncated']) is not bool
                          for row in result['diagnostics'])):
                 raise CompilerClientError('unconfirmed_terminal_result')
@@ -178,7 +189,7 @@ class CompilerClient:
                               ensure_ascii=False, allow_nan=False).encode('utf-8')
             if len(body) > REQUEST_LIMIT or self._capability.encode() in body:
                 raise ValueError('bounded request required')
-            identity = decode_request(body)
+            identity = decode_request(body, kind=self.definition.kind)
         except Exception:
             raise CompilerClientError('invalid_request') from None
         if not self._lock.acquire(blocking=False):

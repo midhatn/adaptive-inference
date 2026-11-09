@@ -23,6 +23,7 @@ import threading
 
 from aiohttp import web
 from adaptive_inference.desktop.compiler_recipe import CompilerRecipe, RecipeCleanupError, run_recipe
+from adaptive_inference.desktop.recipe_dispatch import definition
 
 ROUTE = '/_adaptive/compiler-operation'
 HEADER = 'X-Adaptive-Compiler-Capability'
@@ -45,10 +46,10 @@ def _constant(_):
     raise ValueError('Non-finite JSON')
 
 
-def _decode(raw):
+def _decode(raw, *, kind='compiler'):
     value = json.loads(raw, object_pairs_hook=_unique, parse_constant=_constant)
     if (type(value) is not dict or set(value) != FIELDS
-            or value['schema'] != 'compiler-operation.v1'
+            or value['schema'] != definition(kind).request_schema
             or any(type(value[key]) is not str
                    or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:-]{0,127}', value[key])
                    for key in FIELDS - {'schema'})):
@@ -78,7 +79,10 @@ class CompilerBridge:
     No database ownership is transferred to this bridge.
     """
     def __init__(self, controller, recipes, *, capability, task_deadline,
-                 validate_binding, runner=run_recipe, reply_timeout=.1, max_operations=16):
+                 validate_binding, runner=None, reply_timeout=.1, max_operations=16, kind='compiler'):
+        self.definition = definition(kind)
+        _, self.recipe_type, default_runner, _ = self.definition.components()
+        runner = default_runner if runner is None else runner
         if (type(capability) is not str or not re.fullmatch('[0-9a-f]{64}', capability)
                 or type(task_deadline) not in (int, float) or not math.isfinite(task_deadline)
                 or task_deadline <= 0 or not callable(validate_binding) or not callable(runner)
@@ -103,7 +107,7 @@ class CompilerBridge:
         self._owner()
         if self._installed or self._closing:
             raise RuntimeError('Install the compiler route once before host startup')
-        app.router.add_post(ROUTE, self.handle)
+        app.router.add_post(self.definition.route, self.handle)
         self._installed = True
 
     def _reply(self, value, *, status=200):
@@ -114,7 +118,7 @@ class CompilerBridge:
 
     async def handle(self, request):
         self._owner()
-        token = request.headers.get(HEADER, '')
+        token = request.headers.get(self.definition.header, '')
         if (request.headers.get('Origin') is not None or type(token) is not str
                 or not re.fullmatch('[0-9a-f]{64}', token)
                 or not secrets.compare_digest(token, self._capability)):
@@ -128,7 +132,7 @@ class CompilerBridge:
                     body.extend(chunk)
                     if len(body) > REQUEST_LIMIT:
                         raise ValueError('Request too large')
-            value = _decode(body)
+            value = _decode(body, kind=self.definition.kind)
         except (ValueError, UnicodeError, RecursionError, TimeoutError):
             return self._reply({'ok': False, 'error': 'invalid_request'}, status=400)
         operation_id = value['operation_id']
@@ -160,7 +164,7 @@ class CompilerBridge:
 
     def _terminal(self, record, status, *, dispatched=False):
         # Dispatch is tri-state: True/False require evidence; None is unknown.
-        return {'schema': 'compiler-operation-result.v1', 'operation_id': record['request']['operation_id'],
+        return {'schema': self.definition.result_schema, 'operation_id': record['request']['operation_id'],
                 'recipe_id': record['request']['recipe_id'], 'recipe_sha256': record['recipe_sha256'],
                 'status': status, 'passed': False, 'dispatched': dispatched,
                 'owned_processes_exited': not record['unknown'], 'task_deadline': self.task_deadline}
@@ -178,8 +182,8 @@ class CompilerBridge:
                 record['result'] = self._terminal(record, 'cancelled_before_dispatch')
                 return
             recipe = await self.recipes[record['request']['recipe_id']](deepcopy(record['request']))
-            if type(recipe) is not CompilerRecipe:
-                raise TypeError('Trusted factory did not prepare a CompilerRecipe')
+            if type(recipe) is not self.recipe_type:
+                raise TypeError('Trusted factory did not prepare the selected recipe type')
             record['recipe'] = recipe
             record['recipe_sha256'] = hashlib.sha256(_json(asdict(recipe)).encode()).hexdigest()
             if record['interrupted']:
@@ -232,9 +236,11 @@ class CompilerBridge:
     def _diagnostics(self, recipe):
         result = []
         redactions = [self._capability, *(value for _, value in recipe.environment if value)]
-        redactions.extend(str(path) for path in (recipe.source, recipe.run,
-            recipe.cmake.path.parent, recipe.ctest.path.parent, recipe.compiler.path.parent, recipe.ninja.path.parent))
-        for stage in STAGES:
+        paths = ((recipe.source, recipe.run, recipe.cmake.path.parent, recipe.ctest.path.parent,
+                  recipe.compiler.path.parent, recipe.ninja.path.parent) if self.definition.kind == 'compiler'
+                 else (recipe.run, recipe.ffmpeg.path.parent, recipe.ffprobe.path.parent))
+        redactions.extend(str(path) for path in paths)
+        for stage in self.definition.stages:
             path = recipe.run / (stage + '.log')
             if not path.exists():
                 continue
@@ -255,7 +261,7 @@ class CompilerBridge:
 
     def _project(self, record, receipt):
         recipe = record['recipe']
-        if (type(receipt) is not dict or receipt.get('schema') != 'compiler-recipe.v1'
+        if (type(receipt) is not dict or receipt.get('schema') != self.definition.receipt_schema
                 or receipt != self._read_receipt(recipe)
                 or receipt.get('task_deadline') != self.task_deadline
                 or type(receipt.get('deadline')) not in (int, float)
@@ -269,13 +275,17 @@ class CompilerBridge:
                 or any(child.get('joined') is not True or type(child.get('exit_code')) is not int
                        for child in receipt['children'])
                 or type(receipt.get('stages')) is not list
-                or any(row.get('stage') not in STAGES for row in receipt['stages'])):
+                or any(row.get('stage') not in self.definition.stages for row in receipt['stages'])):
             raise ValueError('Recipe result lacks exact confirmed terminal evidence')
         result = self._terminal(record, receipt['status'],
                                 dispatched=any(c.get('command_delivered') is True for c in receipt['children']))
         result.update(passed=receipt['passed'], receipt_sha256=hashlib.sha256((recipe.run / 'receipt.json').read_bytes()).hexdigest(),
                       stages=[{k: row[k] for k in ('stage', 'exit_code') if k in row} for row in receipt['stages']])
         if receipt['passed']:
+            if self.definition.kind == 'video':
+                from adaptive_inference.desktop.video_template import project_success
+                result.update(project_success(recipe, receipt))
+                return result
             for key in ('artifact_sha256', 'test_report_sha256'):
                 if type(receipt.get(key)) is not str or not re.fullmatch('[0-9a-f]{64}', receipt[key]):
                     raise ValueError('Successful recipe lacks artifact identity')

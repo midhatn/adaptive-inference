@@ -44,7 +44,7 @@ def command_path(path):
 
 def create_setup(destination, *, worker_python, hermes_source,
                  hermes_site_packages, native_owner, gateway_port=18100,
-                 foreground_policy=COOPERATIVE_POLICY, compiler_settings=None):
+                 foreground_policy=COOPERATIVE_POLICY, compiler_settings=None, video_settings=None):
     destination = Path(destination).absolute()
     if destination.exists() or not destination.parent.is_dir():
         raise ValueError('Choose a new setup folder under an existing parent')
@@ -83,6 +83,13 @@ def create_setup(destination, *, worker_python, hermes_source,
         value = json.loads(Path(compiler_settings).read_text(encoding='utf-8'))
         verify_settings(parse_compiler_settings(value))
         profile['compiler'] = value
+    if video_settings is not None:
+        from adaptive_inference.desktop.video_profile import (
+            video_settings as parse_video_settings, verify_settings,
+        )
+        value = json.loads(Path(video_settings).read_text(encoding='utf-8'))
+        verify_settings(parse_video_settings(value))
+        profile['video'] = value
     WindowsProfile.from_dict(profile)
     launch_source = Path(__file__).with_name('launch.py').read_bytes()
     command = ('@echo off\nsetlocal DisableDelayedExpansion\nchcp 65001 >nul\n'
@@ -113,6 +120,8 @@ def main(argv=None):
                         default=COOPERATIVE_POLICY)
     parser.add_argument('--compiler-settings', type=Path,
                         help='Optional explicit compiler-settings JSON; verifies tool hashes without running them')
+    parser.add_argument('--video-settings', type=Path,
+                        help='Optional explicit FFmpeg/FFprobe settings JSON; verifies hashes without running them')
     args = parser.parse_args(argv)
     try:
         print(json.dumps(create_setup(**vars(args)), indent=2))

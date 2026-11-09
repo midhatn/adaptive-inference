@@ -2,6 +2,164 @@
 
 This ledger separates portable software tests, source reconstruction, actual SDK/host fixtures, real model tasks and historical predecessor results. A pass in one does not establish a pass in another. The older prototype checks below did not execute the new gateway; the new gateway has its own evidence here.
 
+## Agent-requested GPU video and foreground handoff
+
+The [second physical video task](../provenance/video-tool/physical-foreground-video-2026-11-02.json)
+passed **47 primary checks**, **34 independent functional checks** and a separate
+**17-check foreground review**. These overlapping checks are not summed. The
+actual IQ3_S model made two requests and one NVENC video operation. An Explorer
+F5 and immediate refresh fell entirely between observations of the first active
+request. Admission closed for foreground draining, then stayed closed through
+parking; 87 matching activity samples covered the hold. The first native owner
+confirmed 8/8 process exits. After return to the controller, one resource grant
+covered encode, probe and decode. Three video children joined normally, and the
+owned job was empty. A distinct model owner served request 2, consumed the saved
+video result and confirmed 7/7 exits. One ordinary Stop closed the app normally.
+
+The clip is silent H.264, 1280×720, 90 frames and 1,051,294 bytes, with full decode
+and artifact/probe hashes checked. The original 900-second task allowance and
+90-second recipe limit, including admission wait, stayed fixed. All 77 runtime
+modules matched source and both installed interpreters. Original evidence and
+copied base databases remained unchanged by review.
+
+The [first physical task](../provenance/video-tool/physical-video-evidence-2026-11-02.json)
+completed the real video workflow but had no foreground action. Its primary
+audit failed that requirement after 37 passing checks; a separate 35-check
+review qualified only the useful workflow. That review's earlier incorrect
+reopen-budget assumption and correction remain recorded. The fresh second task
+changed observation timing only; it used the same runtime, model, quality,
+budgets and strict foreground predicate. Neither consumed task was replayed.
+
+Both independent observers exited 1 after shutdown connection errors. Their
+closure acceptance remains failed, separately from verified app/native cleanup.
+This bounded foreground episode does not establish sustained responsiveness,
+isolate tool demand from foreground release causation, or qualify interruption,
+worker recovery, H3/audio quality, reboot continuation or complete M4.
+
+Earlier separate gates also passed: [local validation](../provenance/video-tool/local-validation-2026-11-02.json)
+contains 1,541 core tests, 16 workflow commands, package verification, fresh
+installation and public setup. The initial core supervisor timeout is retained;
+only the test supervisor's limit changed for the complete run, not task limits.
+[Installed SDK evidence](../provenance/video-tool/installed-sdk-evidence-2026-11-02.json)
+uses two scripted provider replies and actual video execution, with an independent
+34-check review. Its resource observations were scripted and its headless harness
+does not claim GUI Stop. Final publication packaging and exact-head hosted CI
+are recorded separately from these installed and physical results.
+
+## Safe installed-worker restart after video
+
+The [2 November installed restart record](../provenance/video-tool/installed-worker-restart-2026-11-02.json)
+passed an independent **58-check review**, with 63 original/copied case files
+unchanged. An actual installed Hermes worker requested one NVENC operation,
+saved its checked receipt and native feedback, then stopped cooperatively with
+the expected exit code 4. After the old worker joined and its binding retired,
+a replacement worker acquired a fresh owner, consumed the saved feedback and
+completed with exit code 0. It did not execute the video operation again.
+
+The task, native session, original prompt and deadline stayed the same. Two
+provider requests were counted cumulatively, one per worker; reopening consumed
+remaining time instead of granting another 900 seconds. The one successful
+artifact and saved native prefix remained unchanged. All three video children
+joined with exit code 0, without forced cleanup. All 77 runtime modules matched
+the installed source. Root closure and independent review are separate records.
+
+The installed SDK, worker processes, HTTP dispatch and video encode/probe/decode
+were real. Provider replies, resource observations and the native inference
+adapter were scripted. This demonstrates a safe same-host worker restart after
+completed useful work. It does not establish abrupt-crash recovery, interruption
+of an active video operation, actual-model restart, application restart, Windows
+reboot continuation, H3/audio quality or a performance improvement.
+
+## Original video CI timeout and correction
+
+The [original hosted CI record](../provenance/video-tool/hosted-ci-timeout-2026-11-02.json)
+for `66deb339` retains both original attempt-1 runs: 14 terminal jobs, 12 passed
+and two cancelled. All 12 core-test steps passed; 10 distribution checks passed
+and two were interrupted. GitHub explicitly reported the 15-minute whole-job
+timeout for both Ubuntu/Python 3.12 jobs after their 1,541-test core suites and
+package builds had succeeded. An independent 38-check diagnosis verified the
+cause. The interrupted distribution checks remain unqualified.
+
+The correction sets the portable job limit to 30 minutes; the offline-source
+job remains at 15 minutes. Commands, assertions, runtime code and the 900/90-second
+task/recipe limits are unchanged. A successor commit requires its own original
+hosted CI outcome; this record does not turn the older cancellations into passes.
+
+The [successor at `b9235b6`](../provenance/video-tool/hosted-ci-fixture-2026-11-02.json)
+also closed with 12/14 jobs passing. Both Ubuntu/Python 3.12 jobs completed under
+the revised allowance. Two Windows/Python 3.11 jobs failed different mailbox
+fixture assertions; ten core suites and ten distribution checks passed, while
+the two failed core jobs skipped distribution verification. These are retained
+assertion failures, not job timeouts.
+
+Controlled local setup delays reproduced both fixture failures. One fixture
+allowed its cached observation to age during synchronous setup; it now refreshes
+through the ordinary API before testing Resume. The other now waits for the
+authority-read setup event before starting its existing held-thread-entry check,
+using the adjacent test's established coordination pattern. The same injected
+delays then passed, as did all 28 tests in the affected module. Independent
+review confirmed the final behavioral assertions and all 77 runtime modules are
+unchanged. The application limits and ordinary freshness, I/O and held-read
+bounds were preserved. The hosted response body was unavailable, so the causal
+explanation combines recorded timings, source inspection and local reproduction;
+it is not a recovered hosted response. That correction's own hosted result is
+recorded separately below.
+
+### Explicit observation time in mailbox fixtures
+
+The [original `211bbd41` runs](../provenance/video-tool/hosted-observation-clock-2026-11-02.json)
+closed with **13 of 14 jobs passing**. The PR workflow passed; the push workflow
+failed one Windows/Python 3.11 mailbox test. Eleven core suites and eleven
+distribution checks passed; the failed core job skipped distribution verification.
+The historical-control fixture spent 6.609 seconds in synchronous setup before
+its Resume assertion. This time the log retained the refused response:
+`{"ok": false, "error": "runtime_error"}`. All original outcomes remain intact.
+
+The fixture used real elapsed time to age its cached observation while performing setup
+that was not intended as a disk-speed measurement. The correction reuses the
+logical observation clock already used by the continuation-observation tests.
+Exactly two dedicated freshness tests advance that input explicitly: one proves
+expired status performs no database I/O, and the other advances time between a
+real snapshot thread's entry and release to verify freshness from the original
+read start. SQLite operations, threads, UI time, behavior assertions and existing
+I/O, entry, release and join bounds remain unchanged. The earlier refresh and
+authority-entry coordination fixes are retained.
+
+A controlled 3.2-second setup delay reproduced the original refusal and
+assertion failure; the same case and delay then passed. The complete mailbox
+module and dependent continuation-observation tests passed **45 tests**, and an
+independent **42-check source/evidence review** confirmed the scope. All 77
+production modules are unchanged. The injected runtime clock also serves a
+legacy deadline fallback, but these 28 mailbox fixtures contain no deadline
+state; production deadlines and the 17 separate continuation tests are unchanged.
+This corrects test inputs and does not change application freshness policy or
+establish performance, installed-agent or physical qualification. The successor
+commit still requires its own original hosted results.
+
+## Fixed GPU video-tool component
+
+The [2 November component record](../provenance/video-tool/native-component-2026-11-02.json)
+separates nine simulated process-owner checks from one actual Windows/NVENC
+run. The real run used the existing retained process owner and pinned external
+FFmpeg/FFprobe 8.1.1. Encode, probe and full decode all exited zero. Three
+retained gated children joined, and the job accounted for nine processes total
+with zero active or limit-terminated processes. No forced job termination was
+needed. The observation pump joined and scheduler closed.
+
+The silent 1280×720 H.264 clip contains exactly 90 frames and is 1,051,294 bytes.
+Its hash matches the earlier checked video artifact. One resource grant covered
+all three stages; its 90-second cap included admission wait within the original
+900-second task allowance. The component author checked 19 closed-evidence
+conditions with 21 inputs unchanged; root independently reviewed the source
+before actual execution. This evidence-consistency check is not presented as a
+second independent source review.
+
+Resource observations and the native inference adapter were scripted. This gate
+does not establish actual inference release/restoration, installed Hermes
+dispatch, foreground coexistence, H3 generation, sound/synchronization quality,
+restart survival or a performance improvement. The [agent-facing integration](video-tool-recipe.md)
+has its own source and installed/real-model qualification gates.
+
 ## Bounded compiler tool and installed Hermes feedback
 
 The [second physical compiler task](../provenance/compiler/physical-foreground-compiler-2026-11-02.json)
@@ -2351,3 +2509,26 @@ The c6b correction collected 225 CPU tests: 224 passed and one POSIX-only test w
 ## What is not established
 
 No comparative latency/throughput win, broad task-quality improvement, arbitrary-tool recovery, visual browser interaction, GPU kernel preemption or general autonomous operation is claimed. The bounded native handoff above qualifies only its declared GPU tool and agent task. Exact reconstruction does not make a fresh native binary bit-identical across toolchains. The upstream branches and this standalone gateway are separate deliverables; review the tested revision and composition for each claim.
+
+## Hosted positive idle-release wait (2 November 2026)
+
+The original `bf26c3c` push workflow passed; its PR workflow failed one
+Windows/Python 3.12 positive idle-release test. Thirteen of fourteen jobs,
+eleven core suites and eleven distribution checks passed. The failed job
+skipped distribution verification. The [source-bound record](../provenance/video-tool/hosted-idle-release-fixture-2026-11-02.json)
+preserves the original failure and distinguishes it from the local diagnosis.
+
+The test stopped waiting for a parked controller after three seconds while
+the hosted log recorded slow synchronous drive turns. A controlled local
+status-save delay reproduced that timeout. Giving only this positive test
+wait thirty seconds let the same delayed case refresh its absent-demand
+observation, respect the original idle grace, release exactly once and close
+normally. That controlled delay is not a reconstruction of the original
+hosted state or scheduling.
+
+All 20 affected-module tests passed. Independent review checked 103 file-only
+conditions and four manual scope points, with no findings. The general wait
+helper, behavior assertions, 77 runtime modules, real SQLite/thread/persistence
+operations and production freshness, idle and close limits are unchanged.
+This fixture correction adds no release-latency or physical qualification;
+the successor still requires its own original hosted results.

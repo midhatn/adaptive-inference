@@ -40,8 +40,15 @@ citations and unsuccessful evidence. The full milestone sequence is in
 
 ## Current continuation state
 
-**Active isolated M4 increment:** qualify the [bounded compiler recipe](docs/compiler-tool-recipe.md)
-and its authorized worker-to-host connection. The reboot candidate at `84ef4d2`
+**Active isolated M4 increment:** extend the validated [agent-requested GPU video recipe](docs/video-tool-recipe.md)
+from a safe installed-worker restart to recovery after unexpected worker loss.
+The [safe-restart gate](provenance/video-tool/installed-worker-restart-2026-11-02.json)
+preserved one completed video operation across two workers in the same task and
+original time allowance. Provider replies and resource observations were scripted;
+the installed SDK and video execution were real. Its separate fresh
+IQ3_S trial passed 47 primary checks, 34 independent functional checks and a
+separate 17-check foreground review. The earlier [compiler recipe](docs/compiler-tool-recipe.md)
+also passed its bounded foreground/task gate. The reboot candidate at `84ef4d2`
 has passed all 14 original hosted jobs/12 distribution checks. Its first actual
 Windows Restart preserved saved work but expired before continuation; the
 [attempt record](provenance/installed-reopen/reboot-budget/physical-restart-expired-2026-11-02.json)
@@ -110,10 +117,50 @@ the strict onset predicate and production runtime stayed fixed. Both actual
 tasks remain closed. The second observer also exited 1; retain that independent
 shutdown failure even though the task and foreground checks passed.
 
-Next research and connect the existing checked GPU video encode/probe/decode
-recipe to authorized agent dispatch, reusing the tool grant, retained process
-ownership and durable feedback. Keep it bounded before the larger media test.
-Compiler interruption and failure recovery, successful reboot continuation,
+The fixed [GPU video recipe](docs/video-tool-recipe.md) now reuses the earlier
+checked encode/probe/decode commands and existing compiler process owner.
+Its [actual-tool component run](provenance/video-tool/native-component-2026-11-02.json)
+passed using pinned FFmpeg/FFprobe 8.1.1: three stages and retained children
+exited zero, final job accounting was empty, and the exact 90-frame clip matched
+the earlier artifact hash. Native inference and resource observations were
+scripted; this is not installed-agent or real-model video acceptance.
+
+The source connects explicit v3 task opt-in, pinned video settings, the existing
+host/worker operation owner, exact video feedback and saved completion. A small
+two-recipe selector preserves compiler wire/receipt contracts; each deployment
+selects compiler or video for now. Review also corrected the saved-task verifier
+and later-task admission check to recognize video. The [local gates](provenance/video-tool/local-validation-2026-11-02.json)
+passed 1,541 core tests, 16 remaining workflow commands, package verification and
+a fresh host/worker installation. The [installed SDK gate](provenance/video-tool/installed-sdk-evidence-2026-11-02.json)
+passed with scripted provider replies and real video execution. The
+[first real task](provenance/video-tool/physical-video-evidence-2026-11-02.json)
+completed the useful work but missed its foreground action. The
+[fresh second task](provenance/video-tool/physical-foreground-video-2026-11-02.json)
+passed the unchanged onset predicate and complete task audit: 47 primary,
+34 independent functional and 17 separate onset-review checks. These overlapping
+counts are not added together. It retained the entire F5 action bracket,
+87 matching foreground samples, native release before video, durable feedback,
+model restoration and normal Stop. Both observer shutdowns still failed.
+The runtime, IQ3_S settings and original 900/90-second limits stayed fixed.
+Keep both consumed tasks closed. A subsequent [installed safe-worker restart](provenance/video-tool/installed-worker-restart-2026-11-02.json)
+passed an independent 58-check review. The first worker saved one actual video
+result and stopped cooperatively; a replacement worker used that exact feedback
+and completed without dispatching the video again. The original task, session,
+deadline and two-request accounting were preserved. This headless SDK gate used
+scripted provider replies and resource observations; it does not qualify an
+abrupt crash, actual-model restart, application restart or computer restart.
+
+The original CI for `66deb339` is closed: 12 of 14 jobs passed, and both
+Ubuntu/Python 3.12 jobs hit their 15-minute whole-job limit during distribution
+verification. All 12 core-test steps passed. The [timeout record](provenance/video-tool/hosted-ci-timeout-2026-11-02.json)
+preserves both interrupted checks. The portable job allowance is now 30 minutes,
+with commands, assertions and product limits unchanged; the successor head needs
+its own original hosted CI result.
+
+Next reconcile a retained exact tool receipt when a worker dies before durable
+feedback/native flush, using the existing operation journal, native lease and
+retained owners. Qualify that changed boundary before an installed interruption
+trial and then an unchanged-IQ3_S run. Successful reboot continuation,
 observer shutdown diagnosis and the autonomous media workflow retain separate
 gates. This single foreground episode is not sustained desktop-performance evidence.
 
@@ -215,12 +262,12 @@ daily-use qualification remain open.
 | Stable main starting point | Commit `8396676dcc55ffbbf09e0ff640db9238519a07ea`, including merged PR #31/#32 and their earlier prerequisites. Verify current `main`; this is a dated anchor, not a claim that it remains HEAD. |
 | Released reference and active work | [v0.4.0a1](https://github.com/midhatn/adaptive-inference/releases/tag/v0.4.0a1) is published at tested source `57f673f8e934e275bc2bd51e85d434dc7025bc9a`; PR #28's merged tree matches it exactly. PR #29's measurement preparation merged after its exact-head checks. The first adaptive diagnostic and following control are closed; their scoped results and unmet comparison gates are recorded in the [evidence ledger](docs/evidence.md#first-adaptive-video-diagnostic). |
 | Installed source used for the latest experiments | Later-task M5 used `b35b631aca9ec37da9955903b87463201a6b3630`; initial-task M5 used `6ac601546daf32d96e38b6689a5818e4cc8dafa8`; the earlier M3 video sequence used `7306a53085ddc31d53d2ba50e91975c80cfc0014`. All preserved IQ3_S and quality. Source, package, actual-SDK and physical evidence remain separate levels. |
-| Current work | PR #34 remains draft after its expired physical restart attempt. PR #35 contains the bounded compiler increment; its runtime passed the original hosted checks. The second actual IQ3_S compiler task now passes 44 primary and 34 independent checks, including strict foreground onset, resource release/restoration and normal cleanup. Observer shutdown remains failed, and the first attempt's failures remain unchanged. |
-| Latest accepted single-task result | The installed same-boot application restart preserved one input read, the task/native session and original deadline; three calls total completed the correct 23-unit answer with one physical write. A third launch viewed the result without additional calls or changes to the eight canonical files. All three app parents joined normally; bounded observer shutdown errors remain retained. See the source-bound M5 record above. |
+| Current work | The isolated video increment passed local/package/install, installed SDK and real IQ3_S foreground/task gates. Its second physical task passed 47 primary checks, 34 independent functional checks and 17 separate onset-review checks; the first missed its foreground action. Publish this as a separate increment stacked on compiler PR #35, then qualify useful-tool interruption/recovery. PR #34 remains draft after its expired physical restart attempt. Both compiler and video tasks remain closed; observer shutdown and earlier failures remain preserved. |
+| Preserved M5 same-boot result | The installed same-boot application restart preserved one input read, the task/native session and original deadline; three calls total completed the correct 23-unit answer with one physical write. A third launch viewed the result without additional calls or changes to the eight canonical files. All three app parents joined normally; bounded observer shutdown errors remain retained. See the source-bound M5 record above. |
 | Preserved M2 recovery result | Case17 passed both original audits: 99 primary recovery/handover checks plus the foreground/lineage supplement. Its correct inventory result survived safe expiry and one Continue; a separate welcome task completed before one normal Stop. Six calls produced two physical writes. Welcome has format-only acceptance. Full M2 is broader than that run. |
 | Preserved limits and failures | Original quality, 900-second execution budgets, 2,700-second outer bound and task accounting remain unchanged. Cases14/15/16 keep their original failed outcomes. Case17 retains the rejected file-picker input and 30-second operating-target misses; neither repeated a task control nor violated the strict foreground gate. |
 | Foreground evidence | Case17 retained 25 real document actions, 24 wholly preseal, maximum adjacent interval 54.680872 seconds and preseal tail 37.453106 seconds. The original supplement passed onset, continuous hold and saved-read lineage; the postseal action is excluded from coverage. This is not a desktop-performance or GPU-preemption measurement. |
-| Next experiment | Research-first integration of the existing checked video encode/probe/decode recipe into agent tool dispatch, beginning with component and installed-SDK gates before another IQ3_S trial. Keep both completed compiler tasks closed. A future M5 attempt needs fresh identity, prompt postboot return and unchanged allowance. M3's next bounded diagnostic remains video-surface attribution without inference. |
+| Next experiment | Qualify installed useful-tool interruption and worker recovery on the existing compiler/video journal and owner, preserving completed effects and feedback. Do not repeat consumed tasks. A future M5 attempt needs fresh identity, prompt postboot return and unchanged allowance. M3's next bounded diagnostic remains video-surface attribution without inference. |
 | Latest release validation | Corrected source `57f673f` passed all 14 original hosted jobs, final archive/runtime verification and merge-tree verification. All five uploaded assets and the tag were verified at publication. The 48-check watchdog and 21-check refusal corrections retain their own local scope; earlier failed runs remain failed. |
 | M3 publication | [PR #29](https://github.com/midhatn/adaptive-inference/pull/29) merged at `f6c0da1` with the tested `3136e35` tree. Its original 14 head jobs and seven post-merge jobs passed, including portable archive checks. Earlier archive/fixture failures remain retained; these preparation checks do not requalify the installed runtime. |
 | Diagnostic publication and test correction | [PR #30](https://github.com/midhatn/adaptive-inference/pull/30) merged at `c348398` with the tested `72ac717` tree after 14 head jobs and seven post-merge jobs passed. Its original `fd4d483` pair retains 13 passes and one Windows SQLite concurrency-fixture failure. The [bounded correction](docs/evidence.md#sqlite-concurrency-fixture-ownership) keeps test threads in a retained child and joins before cleanup; 18 focused checks passed. Runtime, models and physical records are unchanged. |
